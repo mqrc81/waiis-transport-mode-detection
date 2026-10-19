@@ -10,11 +10,13 @@ requires-python = ">=3.11"
 dependencies = [
     "lightgbm>=4.7.0",
     "matplotlib>=3.11.2",
+    "mlflow>=1.27.0",
     "numpy>=2.4.6",
     "pandas>=3.0.6",
     "pyarrow>=26.0.0",
     "scikit-learn>=1.9.1",
     "scipy>=1.17.1",
+    "scipy-stubs~=1.17.1",
 ]
 
 [project.scripts]
@@ -23,6 +25,9 @@ transport-mode-detection = "transport_mode_detection:main"
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "tmd"
 
 [dependency-groups]
 dev = [
