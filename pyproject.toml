@@ -1,5 +1,31 @@
 [project]
 name = "transport-mode-detection"
 version = "0.1.0"
-requires-python = ">=3.9"
-dependencies = []
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Marc Schmidt", email = "mrc.schmidt@gmx.net" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "lightgbm>=4.7.0",
+    "matplotlib>=3.11.2",
+    "numpy>=2.4.6",
+    "pandas>=3.0.6",
+    "pyarrow>=26.0.0",
+    "scikit-learn>=1.9.1",
+    "scipy>=1.17.1",
+]
+
+[project.scripts]
+transport-mode-detection = "transport_mode_detection:main"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.17.1",
+]
