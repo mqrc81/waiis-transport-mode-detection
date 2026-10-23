@@ -1,6 +1,8 @@
 # Custom
 /data
 .idea
+mlflow.db
+mlartifacts/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
