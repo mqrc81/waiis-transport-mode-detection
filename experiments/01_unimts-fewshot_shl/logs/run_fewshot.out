@@ -1,0 +1,480 @@
+22:03:46 B_k1_s0_probe
+acc: 0.5529166666666666, prec: 0.5945609048083412, rec: 0.6980000000000001, f1: 0.5505612567436289
+TIMES {'total_s': 125.9, 'train_epochs_s': 100.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.2, 'test_eval_s': 20.9, 'ckpt_save_s': 95.3, 'n_ckpt_saves': 200}
+22:05:53 B_k1_s0_full
+acc: 0.4766666666666667, prec: 0.49315941219789483, rec: 0.5742222222222222, f1: 0.4575720071885631
+TIMES {'total_s': 113.5, 'train_epochs_s': 88.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.3, 'test_eval_s': 20.7, 'ckpt_save_s': 67.0, 'n_ckpt_saves': 200}
+22:07:48 B_k1_s0_random
+acc: 0.47708333333333336, prec: 0.47054347698934196, rec: 0.49366666666666664, f1: 0.40632862215346327
+TIMES {'total_s': 46.0, 'train_epochs_s': 20.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 22.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:08:36 B_k1_s0_random_gyro
+acc: 0.41083333333333333, prec: 0.44801220100513167, rec: 0.5144444444444444, f1: 0.3784581640250852
+TIMES {'total_s': 43.3, 'train_epochs_s': 18.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.8, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:09:21 B_k2_s0_probe
+acc: 0.7270833333333333, prec: 0.6753998441323511, rec: 0.7651111111111111, f1: 0.6935554317052767
+TIMES {'total_s': 37.3, 'train_epochs_s': 11.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.6, 'test_eval_s': 21.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:09:59 B_k2_s0_full
+acc: 0.58875, prec: 0.575598856337456, rec: 0.6443333333333333, f1: 0.5663300887153996
+TIMES {'total_s': 59.6, 'train_epochs_s': 33.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.6, 'test_eval_s': 22.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:11:00 B_k2_s0_random
+acc: 0.43666666666666665, prec: 0.4759851996234678, rec: 0.5172222222222221, f1: 0.3999835785476482
+TIMES {'total_s': 58.7, 'train_epochs_s': 33.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:12:00 B_k2_s0_random_gyro
+acc: 0.4608333333333333, prec: 0.4909516304106834, rec: 0.5532222222222222, f1: 0.43212277086188516
+TIMES {'total_s': 58.9, 'train_epochs_s': 33.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 22.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:13:01 B_k5_s0_probe
+acc: 0.5641666666666667, prec: 0.6412396113177175, rec: 0.7442222222222222, f1: 0.5727923298448955
+TIMES {'total_s': 53.9, 'train_epochs_s': 28.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.9, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:13:56 B_k5_s0_full
+acc: 0.65625, prec: 0.5471272940696433, rec: 0.6042222222222223, f1: 0.5608750713408711
+TIMES {'total_s': 107.4, 'train_epochs_s': 81.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.6, 'test_eval_s': 22.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:15:45 B_k5_s0_random
+acc: 0.52125, prec: 0.46940331780514427, rec: 0.5232222222222223, f1: 0.44086391991747825
+TIMES {'total_s': 105.4, 'train_epochs_s': 80.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.5, 'test_eval_s': 21.8, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:17:32 B_k5_s0_random_gyro
+acc: 0.5429166666666667, prec: 0.47453439607910347, rec: 0.5308888888888889, f1: 0.454317496620165
+TIMES {'total_s': 104.4, 'train_epochs_s': 79.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:19:18 B_k10_s0_probe
+acc: 0.7, prec: 0.7232897954049448, rec: 0.8061111111111111, f1: 0.6967568794621252
+TIMES {'total_s': 80.3, 'train_epochs_s': 55.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.5, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:20:39 B_k10_s0_full
+acc: 0.8154166666666667, prec: 0.6838291067392087, rec: 0.6614444444444444, f1: 0.6663710010623202
+TIMES {'total_s': 186.3, 'train_epochs_s': 160.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.8, 'test_eval_s': 21.8, 'ckpt_save_s': 0.2, 'n_ckpt_saves': 200}
+22:23:48 B_k10_s0_random
+acc: 0.6641666666666667, prec: 0.5552361325278272, rec: 0.5953333333333334, f1: 0.5483538750998672
+TIMES {'total_s': 183.5, 'train_epochs_s': 158.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.8, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:26:53 B_k10_s0_random_gyro
+acc: 0.7495833333333334, prec: 0.6355902109271382, rec: 0.637, f1: 0.6351289823228522
+TIMES {'total_s': 183.5, 'train_epochs_s': 158.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.6, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 175}
+22:29:58 C_k1_s0_probe
+acc: 0.43625, prec: 0.5156493482287123, rec: 0.43625, f1: 0.43946173042279535
+TIMES {'total_s': 38.9, 'train_epochs_s': 14.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.6, 'test_eval_s': 20.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:30:39 C_k1_s0_full
+acc: 0.41291666666666665, prec: 0.45861455108204924, rec: 0.41291666666666665, f1: 0.41193840506941937
+TIMES {'total_s': 65.7, 'train_epochs_s': 41.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:31:46 C_k1_s0_random
+acc: 0.24291666666666667, prec: 0.2602963356378057, rec: 0.24291666666666664, f1: 0.2024423092413954
+TIMES {'total_s': 65.6, 'train_epochs_s': 41.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:32:53 C_k1_s0_random_gyro
+acc: 0.27625, prec: 0.27075939961980267, rec: 0.27625, f1: 0.25016042040313735
+TIMES {'total_s': 65.8, 'train_epochs_s': 41.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:34:00 C_k2_s0_probe
+acc: 0.5016666666666667, prec: 0.4994458095683316, rec: 0.5016666666666667, f1: 0.48223087149663435
+TIMES {'total_s': 52.8, 'train_epochs_s': 28.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 20.8, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:34:54 C_k2_s0_full
+acc: 0.4275, prec: 0.4445134716176861, rec: 0.4275, f1: 0.4294354380395414
+TIMES {'total_s': 107.9, 'train_epochs_s': 83.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.3, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:36:43 C_k2_s0_random
+acc: 0.30541666666666667, prec: 0.28197334767563675, rec: 0.30541666666666667, f1: 0.27883751715284194
+TIMES {'total_s': 107.7, 'train_epochs_s': 83.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:38:32 C_k2_s0_random_gyro
+acc: 0.3179166666666667, prec: 0.32628984316898335, rec: 0.3179166666666667, f1: 0.31342672662706816
+TIMES {'total_s': 107.8, 'train_epochs_s': 83.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:40:22 C_k5_s0_probe
+acc: 0.49583333333333335, prec: 0.5087843439063411, rec: 0.49583333333333335, f1: 0.481987895737727
+TIMES {'total_s': 98.1, 'train_epochs_s': 73.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.9, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:42:01 C_k5_s0_full
+acc: 0.41625, prec: 0.42033327693326855, rec: 0.41625, f1: 0.4055291892048626
+TIMES {'total_s': 238.5, 'train_epochs_s': 212.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.3, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:46:01 C_k5_s0_random
+acc: 0.34208333333333335, prec: 0.31007745222446836, rec: 0.3420833333333333, f1: 0.3164196336325617
+TIMES {'total_s': 237.7, 'train_epochs_s': 212.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.0, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:50:01 C_k5_s0_random_gyro
+acc: 0.32416666666666666, prec: 0.2979655791569932, rec: 0.32416666666666666, f1: 0.3010218568210119
+TIMES {'total_s': 238.1, 'train_epochs_s': 212.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.9, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+22:54:01 C_k10_s0_probe
+acc: 0.51125, prec: 0.5132338068160197, rec: 0.51125, f1: 0.48777016847041466
+TIMES {'total_s': 171.1, 'train_epochs_s': 146.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.8, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 122}
+22:56:53 C_k10_s0_full
+acc: 0.3770833333333333, prec: 0.3829163103290103, rec: 0.3770833333333333, f1: 0.35630789899862975
+TIMES {'total_s': 458.9, 'train_epochs_s': 431.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.6, 'test_eval_s': 21.8, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 38}
+23:04:34 C_k10_s0_random
+acc: 0.28791666666666665, prec: 0.30367076263926046, rec: 0.28791666666666665, f1: 0.2739636458280554
+TIMES {'total_s': 456.2, 'train_epochs_s': 429.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.1, 'test_eval_s': 21.7, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 27}
+23:12:13 C_k10_s0_random_gyro
+acc: 0.3425, prec: 0.3458518752489999, rec: 0.3425, f1: 0.3336416698646535
+TIMES {'total_s': 456.3, 'train_epochs_s': 429.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.1, 'test_eval_s': 21.7, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 25}
+23:19:52 B_k1_s1_probe
+acc: 0.62375, prec: 0.5076200426701317, rec: 0.5686666666666667, f1: 0.517960939700261
+TIMES {'total_s': 30.4, 'train_epochs_s': 6.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:20:24 B_k1_s1_full
+acc: 0.5104166666666666, prec: 0.4736784937357932, rec: 0.5082222222222222, f1: 0.42502079909162643
+TIMES {'total_s': 40.7, 'train_epochs_s': 17.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.8, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:21:06 B_k1_s1_random
+acc: 0.36291666666666667, prec: 0.4385269443498154, rec: 0.41577777777777775, f1: 0.2858137484208237
+TIMES {'total_s': 40.6, 'train_epochs_s': 17.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.7, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:21:48 B_k1_s1_random_gyro
+acc: 0.37625, prec: 0.45172797404149606, rec: 0.44655555555555554, f1: 0.3212447794496252
+TIMES {'total_s': 40.9, 'train_epochs_s': 17.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:22:30 B_k2_s1_probe
+acc: 0.685, prec: 0.6989717153821763, rec: 0.747, f1: 0.6740634776662603
+TIMES {'total_s': 35.6, 'train_epochs_s': 11.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:23:07 B_k2_s1_full
+acc: 0.71875, prec: 0.6437035283813817, rec: 0.6316666666666667, f1: 0.6343897851151844
+TIMES {'total_s': 56.8, 'train_epochs_s': 32.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:24:05 B_k2_s1_random
+acc: 0.4875, prec: 0.4288763687172495, rec: 0.45777777777777784, f1: 0.40770264714855003
+TIMES {'total_s': 56.7, 'train_epochs_s': 32.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:25:03 B_k2_s1_random_gyro
+acc: 0.6595833333333333, prec: 0.513364531445672, rec: 0.5134444444444445, f1: 0.5048035833643337
+TIMES {'total_s': 56.5, 'train_epochs_s': 32.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:26:01 B_k5_s1_probe
+acc: 0.6616666666666666, prec: 0.6591995668581386, rec: 0.7636666666666666, f1: 0.6497687383574889
+TIMES {'total_s': 51.6, 'train_epochs_s': 27.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:26:54 B_k5_s1_full
+acc: 0.5570833333333334, prec: 0.5544149119066933, rec: 0.6128888888888889, f1: 0.5380008868362139
+TIMES {'total_s': 104.1, 'train_epochs_s': 79.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.4, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:28:40 B_k5_s1_random
+acc: 0.38166666666666665, prec: 0.41053667053198, rec: 0.4303333333333334, f1: 0.3509902422861973
+TIMES {'total_s': 103.9, 'train_epochs_s': 79.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:30:25 B_k5_s1_random_gyro
+acc: 0.42916666666666664, prec: 0.4483376944297108, rec: 0.5, f1: 0.38996864585164737
+TIMES {'total_s': 104.2, 'train_epochs_s': 79.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:32:11 B_k10_s1_probe
+acc: 0.5925, prec: 0.671091512004546, rec: 0.7484444444444445, f1: 0.606493030971674
+TIMES {'total_s': 79.8, 'train_epochs_s': 55.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:33:32 B_k10_s1_full
+acc: 0.725, prec: 0.6441028490739984, rec: 0.6944444444444445, f1: 0.6590486505031533
+TIMES {'total_s': 186.9, 'train_epochs_s': 161.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.8, 'test_eval_s': 22.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:36:41 B_k10_s1_random
+acc: 0.6358333333333334, prec: 0.5511299937387862, rec: 0.607111111111111, f1: 0.5588585178496941
+TIMES {'total_s': 184.7, 'train_epochs_s': 159.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.7, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:39:47 B_k10_s1_random_gyro
+acc: 0.6720833333333334, prec: 0.5816291125669135, rec: 0.6308888888888889, f1: 0.5953789497764923
+TIMES {'total_s': 185.9, 'train_epochs_s': 160.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.7, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:42:55 C_k1_s1_probe
+acc: 0.3770833333333333, prec: 0.4305475920302313, rec: 0.3770833333333333, f1: 0.3745706504148417
+TIMES {'total_s': 39.0, 'train_epochs_s': 14.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:43:36 C_k1_s1_full
+acc: 0.3975, prec: 0.4520594514297439, rec: 0.39749999999999996, f1: 0.402555597218351
+TIMES {'total_s': 66.8, 'train_epochs_s': 42.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:44:44 C_k1_s1_random
+acc: 0.325, prec: 0.3068691454269805, rec: 0.325, f1: 0.2979172780071684
+TIMES {'total_s': 66.7, 'train_epochs_s': 42.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:45:52 C_k1_s1_random_gyro
+acc: 0.34125, prec: 0.33130360494306715, rec: 0.34125000000000005, f1: 0.3283622052906745
+TIMES {'total_s': 66.6, 'train_epochs_s': 42.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:47:00 C_k2_s1_probe
+acc: 0.44375, prec: 0.457669543261381, rec: 0.44375, f1: 0.4285162852028125
+TIMES {'total_s': 53.5, 'train_epochs_s': 29.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:47:55 C_k2_s1_full
+acc: 0.41625, prec: 0.434966663539344, rec: 0.41625, f1: 0.4083555583216629
+TIMES {'total_s': 109.1, 'train_epochs_s': 84.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.5, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:49:45 C_k2_s1_random
+acc: 0.27666666666666667, prec: 0.2761857277272823, rec: 0.2766666666666666, f1: 0.26112195363220964
+TIMES {'total_s': 108.9, 'train_epochs_s': 84.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:51:36 C_k2_s1_random_gyro
+acc: 0.3104166666666667, prec: 0.3364944714023406, rec: 0.3104166666666667, f1: 0.29031841992297125
+TIMES {'total_s': 109.1, 'train_epochs_s': 84.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.4, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:53:26 C_k5_s1_probe
+acc: 0.53625, prec: 0.5378125040733447, rec: 0.53625, f1: 0.5206043794335347
+TIMES {'total_s': 98.2, 'train_epochs_s': 73.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.3, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+23:55:06 C_k5_s1_full
+acc: 0.4554166666666667, prec: 0.47199731832906466, rec: 0.4554166666666667, f1: 0.4542424496212954
+TIMES {'total_s': 240.1, 'train_epochs_s': 213.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.3, 'test_eval_s': 21.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 175}
+23:59:08 C_k5_s1_random
+acc: 0.33625, prec: 0.3057580909616973, rec: 0.33625000000000005, f1: 0.31008374451564
+TIMES {'total_s': 241.5, 'train_epochs_s': 215.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.5, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 167}
+00:03:11 C_k5_s1_random_gyro
+acc: 0.3441666666666667, prec: 0.33175976019935316, rec: 0.3441666666666666, f1: 0.32907532513227594
+TIMES {'total_s': 238.3, 'train_epochs_s': 212.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.1, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 162}
+00:07:12 C_k10_s1_probe
+acc: 0.46541666666666665, prec: 0.4787553689727545, rec: 0.4654166666666667, f1: 0.4520148862719236
+TIMES {'total_s': 169.8, 'train_epochs_s': 145.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.8, 'test_eval_s': 20.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 122}
+00:10:03 C_k10_s1_full
+acc: 0.44458333333333333, prec: 0.4478573699262104, rec: 0.44458333333333333, f1: 0.4373883699644395
+TIMES {'total_s': 463.5, 'train_epochs_s': 432.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.7, 'test_eval_s': 25.2, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 51}
+00:17:49 C_k10_s1_random
+acc: 0.34791666666666665, prec: 0.34388571789632083, rec: 0.34791666666666665, f1: 0.3283249743110107
+TIMES {'total_s': 459.0, 'train_epochs_s': 431.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.2, 'test_eval_s': 22.1, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 27}
+00:25:31 C_k10_s1_random_gyro
+acc: 0.2783333333333333, prec: 0.34529620414249707, rec: 0.2783333333333333, f1: 0.24922197891880285
+TIMES {'total_s': 458.3, 'train_epochs_s': 431.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.3, 'test_eval_s': 21.8, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 24}
+00:33:11 B_k1_s2_probe
+acc: 0.48583333333333334, prec: 0.5019690939702269, rec: 0.5458888888888889, f1: 0.4827341588668566
+TIMES {'total_s': 30.5, 'train_epochs_s': 6.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:33:43 B_k1_s2_full
+acc: 0.6508333333333334, prec: 0.5645562892025162, rec: 0.6166666666666667, f1: 0.5765367585068243
+TIMES {'total_s': 40.9, 'train_epochs_s': 17.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:34:26 B_k1_s2_random
+acc: 0.34541666666666665, prec: 0.4580681710886602, rec: 0.4597777777777778, f1: 0.3012625544571656
+TIMES {'total_s': 40.7, 'train_epochs_s': 16.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:35:08 B_k1_s2_random_gyro
+acc: 0.46875, prec: 0.49634760578988496, rec: 0.5518888888888889, f1: 0.43590012629566294
+TIMES {'total_s': 40.8, 'train_epochs_s': 16.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:35:50 B_k2_s2_probe
+acc: 0.6591666666666667, prec: 0.6610309628664965, rec: 0.7754444444444445, f1: 0.6498468443209315
+TIMES {'total_s': 35.2, 'train_epochs_s': 11.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:36:27 B_k2_s2_full
+acc: 0.53625, prec: 0.5574951376493094, rec: 0.6228888888888889, f1: 0.5277770683610545
+TIMES {'total_s': 56.5, 'train_epochs_s': 32.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:37:24 B_k2_s2_random
+acc: 0.46791666666666665, prec: 0.4750091725336268, rec: 0.5374444444444445, f1: 0.44001743354696404
+TIMES {'total_s': 56.5, 'train_epochs_s': 32.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:38:22 B_k2_s2_random_gyro
+acc: 0.5495833333333333, prec: 0.5516489139515456, rec: 0.6081111111111112, f1: 0.5285264890795864
+TIMES {'total_s': 56.6, 'train_epochs_s': 32.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:39:20 B_k5_s2_probe
+acc: 0.6808333333333333, prec: 0.6617406701975, rec: 0.7714444444444445, f1: 0.6630911681697147
+TIMES {'total_s': 51.5, 'train_epochs_s': 27.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:40:13 B_k5_s2_full
+acc: 0.6758333333333333, prec: 0.5920072838422268, rec: 0.6513333333333334, f1: 0.606755611763858
+TIMES {'total_s': 104.2, 'train_epochs_s': 79.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.3, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:41:59 B_k5_s2_random
+acc: 0.51375, prec: 0.48312316223130924, rec: 0.5366666666666667, f1: 0.44872562660854953
+TIMES {'total_s': 103.9, 'train_epochs_s': 79.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:43:44 B_k5_s2_random_gyro
+acc: 0.6966666666666667, prec: 0.5840588680283337, rec: 0.6204444444444445, f1: 0.5976141738610533
+TIMES {'total_s': 104.1, 'train_epochs_s': 79.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:45:30 B_k10_s2_probe
+acc: 0.7066666666666667, prec: 0.6612588175058063, rec: 0.759, f1: 0.6765179666848429
+TIMES {'total_s': 80.4, 'train_epochs_s': 55.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.4, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:46:52 B_k10_s2_full
+acc: 0.7229166666666667, prec: 0.6011872809466235, rec: 0.6344444444444445, f1: 0.6096892664349881
+TIMES {'total_s': 186.4, 'train_epochs_s': 160.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.9, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:50:00 B_k10_s2_random
+acc: 0.6, prec: 0.5165765528094766, rec: 0.5726666666666668, f1: 0.5201697039504873
+TIMES {'total_s': 185.7, 'train_epochs_s': 160.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.7, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:53:07 B_k10_s2_random_gyro
+acc: 0.6741666666666667, prec: 0.5664363061355308, rec: 0.6150000000000001, f1: 0.5811311132516171
+TIMES {'total_s': 184.7, 'train_epochs_s': 159.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.7, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:56:14 C_k1_s2_probe
+acc: 0.42833333333333334, prec: 0.4438541742334038, rec: 0.42833333333333334, f1: 0.40221869528697873
+TIMES {'total_s': 39.0, 'train_epochs_s': 14.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:56:54 C_k1_s2_full
+acc: 0.38375, prec: 0.3710140832773469, rec: 0.38375000000000004, f1: 0.3640185206455227
+TIMES {'total_s': 67.0, 'train_epochs_s': 42.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:58:02 C_k1_s2_random
+acc: 0.2679166666666667, prec: 0.2294539360386556, rec: 0.2679166666666667, f1: 0.2158748043606081
+TIMES {'total_s': 66.8, 'train_epochs_s': 42.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+00:59:10 C_k1_s2_random_gyro
+acc: 0.2875, prec: 0.31452409457484853, rec: 0.2875, f1: 0.2549447944124242
+TIMES {'total_s': 66.6, 'train_epochs_s': 42.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:00:18 C_k2_s2_probe
+acc: 0.5266666666666666, prec: 0.5225506766160664, rec: 0.5266666666666666, f1: 0.5121298435322862
+TIMES {'total_s': 53.4, 'train_epochs_s': 29.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:01:13 C_k2_s2_full
+acc: 0.46, prec: 0.4933200675916578, rec: 0.45999999999999996, f1: 0.4709685479327185
+TIMES {'total_s': 109.1, 'train_epochs_s': 84.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.4, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:03:04 C_k2_s2_random
+acc: 0.3275, prec: 0.312697171307454, rec: 0.3275, f1: 0.298989575934695
+TIMES {'total_s': 108.7, 'train_epochs_s': 83.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:04:54 C_k2_s2_random_gyro
+acc: 0.3720833333333333, prec: 0.37261942883303134, rec: 0.3720833333333333, f1: 0.3628658318681369
+TIMES {'total_s': 108.8, 'train_epochs_s': 84.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:06:44 C_k5_s2_probe
+acc: 0.5016666666666667, prec: 0.49096589421711745, rec: 0.5016666666666667, f1: 0.47607801451283116
+TIMES {'total_s': 98.0, 'train_epochs_s': 73.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.3, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:08:24 C_k5_s2_full
+acc: 0.44375, prec: 0.41625658624661077, rec: 0.44375000000000003, f1: 0.4254365232460684
+TIMES {'total_s': 240.5, 'train_epochs_s': 214.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.2, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:12:26 C_k5_s2_random
+acc: 0.32083333333333336, prec: 0.2854848522383197, rec: 0.32083333333333336, f1: 0.29631275192686324
+TIMES {'total_s': 239.5, 'train_epochs_s': 213.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.0, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:16:27 C_k5_s2_random_gyro
+acc: 0.335, prec: 0.3015563910727413, rec: 0.335, f1: 0.3121329436159015
+TIMES {'total_s': 239.1, 'train_epochs_s': 213.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.0, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:20:28 C_k10_s2_probe
+acc: 0.5170833333333333, prec: 0.5119550147869368, rec: 0.5170833333333333, f1: 0.4957711488075888
+TIMES {'total_s': 171.6, 'train_epochs_s': 146.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.8, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 125}
+01:23:21 C_k10_s2_full
+acc: 0.485, prec: 0.5143612225509885, rec: 0.485, f1: 0.4755710951904126
+TIMES {'total_s': 463.7, 'train_epochs_s': 436.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.7, 'test_eval_s': 21.8, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 47}
+01:31:07 C_k10_s2_random
+acc: 0.3308333333333333, prec: 0.3294786528418694, rec: 0.33083333333333337, f1: 0.31446048654225306
+TIMES {'total_s': 456.5, 'train_epochs_s': 429.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.1, 'test_eval_s': 21.7, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 21}
+01:38:46 C_k10_s2_random_gyro
+acc: 0.3408333333333333, prec: 0.3201081615875645, rec: 0.3408333333333333, f1: 0.31689785832327233
+TIMES {'total_s': 456.1, 'train_epochs_s': 429.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.1, 'test_eval_s': 21.5, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 27}
+01:46:25 B_k1_s3_probe
+acc: 0.5679166666666666, prec: 0.6196325869082892, rec: 0.7086666666666667, f1: 0.5732374263391792
+TIMES {'total_s': 30.4, 'train_epochs_s': 6.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:46:57 B_k1_s3_full
+acc: 0.5579166666666666, prec: 0.5480510172923784, rec: 0.5987777777777777, f1: 0.5339420306374716
+TIMES {'total_s': 41.5, 'train_epochs_s': 17.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.2, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:47:40 B_k1_s3_random
+acc: 0.4325, prec: 0.44504128903391277, rec: 0.5083333333333333, f1: 0.39887827672849124
+TIMES {'total_s': 41.2, 'train_epochs_s': 17.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:48:23 B_k1_s3_random_gyro
+acc: 0.4775, prec: 0.5566026156870807, rec: 0.5696666666666667, f1: 0.49195430402985646
+TIMES {'total_s': 41.1, 'train_epochs_s': 17.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:49:05 B_k2_s3_probe
+acc: 0.60125, prec: 0.5024903491065187, rec: 0.5624444444444444, f1: 0.5070706624141187
+TIMES {'total_s': 35.5, 'train_epochs_s': 11.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.2, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:49:42 B_k2_s3_full
+acc: 0.41208333333333336, prec: 0.44903757239831926, rec: 0.47622222222222216, f1: 0.358240939747763
+TIMES {'total_s': 56.9, 'train_epochs_s': 32.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:50:40 B_k2_s3_random
+acc: 0.40375, prec: 0.43924391647206146, rec: 0.4697777777777778, f1: 0.3509359591069489
+TIMES {'total_s': 56.9, 'train_epochs_s': 32.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:51:39 B_k2_s3_random_gyro
+acc: 0.3775, prec: 0.4514612629919101, rec: 0.4934444444444445, f1: 0.34232522900279033
+TIMES {'total_s': 56.7, 'train_epochs_s': 32.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:52:37 B_k5_s3_probe
+acc: 0.7533333333333333, prec: 0.6561290258459184, rec: 0.6833333333333332, f1: 0.6642384086253644
+TIMES {'total_s': 51.5, 'train_epochs_s': 27.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:53:30 B_k5_s3_full
+acc: 0.6416666666666667, prec: 0.5435519297671355, rec: 0.5922222222222223, f1: 0.555640383008804
+TIMES {'total_s': 104.3, 'train_epochs_s': 79.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.4, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:55:15 B_k5_s3_random
+acc: 0.635, prec: 0.5183253590787837, rec: 0.5687777777777778, f1: 0.5279501739272981
+TIMES {'total_s': 104.0, 'train_epochs_s': 79.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:57:01 B_k5_s3_random_gyro
+acc: 0.6670833333333334, prec: 0.5751033019613444, rec: 0.5983333333333333, f1: 0.5817278688189873
+TIMES {'total_s': 104.6, 'train_epochs_s': 79.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.8, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+01:58:47 B_k10_s3_probe
+acc: 0.7833333333333333, prec: 0.7270372710065022, rec: 0.7842222222222222, f1: 0.7404060613303832
+TIMES {'total_s': 80.3, 'train_epochs_s': 55.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.6, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:00:11 B_k10_s3_full
+acc: 0.8066666666666666, prec: 0.6790210042964206, rec: 0.6494444444444444, f1: 0.651376988596138
+TIMES {'total_s': 186.0, 'train_epochs_s': 160.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.8, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:03:19 B_k10_s3_random
+acc: 0.6558333333333334, prec: 0.5271247103227519, rec: 0.5792222222222222, f1: 0.534303435588177
+TIMES {'total_s': 184.7, 'train_epochs_s': 159.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.6, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 180}
+02:06:25 B_k10_s3_random_gyro
+acc: 0.7520833333333333, prec: 0.6004975352867334, rec: 0.616, f1: 0.5993743209440945
+TIMES {'total_s': 186.3, 'train_epochs_s': 160.7, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.7, 'test_eval_s': 21.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 182}
+02:09:33 C_k1_s3_probe
+acc: 0.4116666666666667, prec: 0.4486739308715336, rec: 0.4116666666666666, f1: 0.39791844997797
+TIMES {'total_s': 39.1, 'train_epochs_s': 14.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:10:14 C_k1_s3_full
+acc: 0.41083333333333333, prec: 0.47503109931658904, rec: 0.4108333333333334, f1: 0.4195775965663252
+TIMES {'total_s': 66.7, 'train_epochs_s': 42.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:11:22 C_k1_s3_random
+acc: 0.28125, prec: 0.3101262880637786, rec: 0.28125, f1: 0.26556816034662484
+TIMES {'total_s': 66.8, 'train_epochs_s': 42.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:12:30 C_k1_s3_random_gyro
+acc: 0.34541666666666665, prec: 0.36653437814606865, rec: 0.34541666666666665, f1: 0.3400338113160476
+TIMES {'total_s': 66.7, 'train_epochs_s': 42.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:13:38 C_k2_s3_probe
+acc: 0.45625, prec: 0.5085691168298931, rec: 0.45625, f1: 0.4371523379885369
+TIMES {'total_s': 53.4, 'train_epochs_s': 29.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:14:33 C_k2_s3_full
+acc: 0.44666666666666666, prec: 0.44811793937037236, rec: 0.44666666666666666, f1: 0.43545750088581864
+TIMES {'total_s': 109.4, 'train_epochs_s': 84.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.4, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:16:24 C_k2_s3_random
+acc: 0.35291666666666666, prec: 0.3621084692491645, rec: 0.35291666666666666, f1: 0.3398065886564854
+TIMES {'total_s': 108.9, 'train_epochs_s': 84.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:18:14 C_k2_s3_random_gyro
+acc: 0.3770833333333333, prec: 0.3538237784839367, rec: 0.3770833333333333, f1: 0.3528799876853951
+TIMES {'total_s': 108.8, 'train_epochs_s': 84.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:20:05 C_k5_s3_probe
+acc: 0.5066666666666667, prec: 0.5331319997776996, rec: 0.5066666666666666, f1: 0.507216981245349
+TIMES {'total_s': 98.3, 'train_epochs_s': 73.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.3, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+02:21:44 C_k5_s3_full
+acc: 0.47541666666666665, prec: 0.5036280270467333, rec: 0.47541666666666665, f1: 0.4776819105260798
+TIMES {'total_s': 239.9, 'train_epochs_s': 214.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.2, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 187}
+02:25:46 C_k5_s3_random
+acc: 0.37666666666666665, prec: 0.3675865981603277, rec: 0.3766666666666667, f1: 0.35654550170040844
+TIMES {'total_s': 238.4, 'train_epochs_s': 212.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.9, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 175}
+02:29:46 C_k5_s3_random_gyro
+acc: 0.37583333333333335, prec: 0.3949232495208895, rec: 0.3758333333333333, f1: 0.36736910352230373
+TIMES {'total_s': 238.4, 'train_epochs_s': 212.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.0, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 189}
+02:33:47 C_k10_s3_probe
+acc: 0.49375, prec: 0.5908292940335573, rec: 0.49375, f1: 0.4883289408572999
+TIMES {'total_s': 171.1, 'train_epochs_s': 146.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.8, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 115}
+02:36:39 C_k10_s3_full
+acc: 0.47041666666666665, prec: 0.5288640039524332, rec: 0.4704166666666667, f1: 0.4743306530167477
+TIMES {'total_s': 462.5, 'train_epochs_s': 435.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.7, 'test_eval_s': 21.8, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 39}
+02:44:24 C_k10_s3_random
+acc: 0.3641666666666667, prec: 0.3600558839755804, rec: 0.36416666666666664, f1: 0.34564497206692824
+TIMES {'total_s': 455.7, 'train_epochs_s': 428.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.1, 'test_eval_s': 22.0, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 26}
+02:52:02 C_k10_s3_random_gyro
+acc: 0.36375, prec: 0.3793809887330034, rec: 0.36374999999999996, f1: 0.35330901614147636
+TIMES {'total_s': 454.7, 'train_epochs_s': 427.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.2, 'test_eval_s': 21.7, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 26}
+02:59:39 B_k1_s4_probe
+acc: 0.58375, prec: 0.5279486147610386, rec: 0.5255555555555556, f1: 0.5162561177329582
+TIMES {'total_s': 30.4, 'train_epochs_s': 6.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:00:11 B_k1_s4_full
+acc: 0.5966666666666667, prec: 0.565436251483034, rec: 0.6124444444444445, f1: 0.5584863162185191
+TIMES {'total_s': 40.9, 'train_epochs_s': 17.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:00:54 B_k1_s4_random
+acc: 0.4, prec: 0.4293509196720615, rec: 0.44166666666666665, f1: 0.3417313573276876
+TIMES {'total_s': 40.8, 'train_epochs_s': 17.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:01:36 B_k1_s4_random_gyro
+acc: 0.46708333333333335, prec: 0.5024787186226586, rec: 0.5631111111111111, f1: 0.45243521921122704
+TIMES {'total_s': 40.9, 'train_epochs_s': 17.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 20.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:02:18 B_k2_s4_probe
+acc: 0.44208333333333333, prec: 0.6310712211062874, rec: 0.6793333333333335, f1: 0.4854760900425674
+TIMES {'total_s': 35.5, 'train_epochs_s': 11.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:02:55 B_k2_s4_full
+acc: 0.40791666666666665, prec: 0.5927348395846675, rec: 0.6623333333333333, f1: 0.4208287094015862
+TIMES {'total_s': 56.7, 'train_epochs_s': 32.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.2, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:03:53 B_k2_s4_random
+acc: 0.3254166666666667, prec: 0.38800255968930664, rec: 0.37766666666666665, f1: 0.2361078317450885
+TIMES {'total_s': 56.5, 'train_epochs_s': 32.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 21.4, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:04:51 B_k2_s4_random_gyro
+acc: 0.3745833333333333, prec: 0.3976356371025373, rec: 0.40344444444444444, f1: 0.28718840516285854
+TIMES {'total_s': 56.8, 'train_epochs_s': 32.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:05:49 B_k5_s4_probe
+acc: 0.66375, prec: 0.5345428372483815, rec: 0.5631111111111111, f1: 0.5442515004247865
+TIMES {'total_s': 51.6, 'train_epochs_s': 27.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:06:42 B_k5_s4_full
+acc: 0.5625, prec: 0.5437984154222817, rec: 0.5597777777777778, f1: 0.5266161879762846
+TIMES {'total_s': 104.4, 'train_epochs_s': 79.3, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.4, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:08:28 B_k5_s4_random
+acc: 0.5491666666666667, prec: 0.4839630397670436, rec: 0.5368888888888889, f1: 0.4762248234513309
+TIMES {'total_s': 103.9, 'train_epochs_s': 79.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:10:13 B_k5_s4_random_gyro
+acc: 0.5125, prec: 0.503850103836161, rec: 0.5678888888888889, f1: 0.48054917263881364
+TIMES {'total_s': 103.7, 'train_epochs_s': 79.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:11:58 B_k10_s4_probe
+acc: 0.6645833333333333, prec: 0.6823695910994781, rec: 0.7762222222222223, f1: 0.6613894564483741
+TIMES {'total_s': 79.9, 'train_epochs_s': 55.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:13:19 B_k10_s4_full
+acc: 0.6375, prec: 0.5340750325614226, rec: 0.59, f1: 0.5413995194666233
+TIMES {'total_s': 186.6, 'train_epochs_s': 161.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.9, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:16:28 B_k10_s4_random
+acc: 0.5725, prec: 0.47094889567037085, rec: 0.5219999999999999, f1: 0.4695569547981077
+TIMES {'total_s': 185.1, 'train_epochs_s': 159.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.6, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:19:35 B_k10_s4_random_gyro
+acc: 0.5908333333333333, prec: 0.49397557449343593, rec: 0.5441111111111111, f1: 0.49422933202272795
+TIMES {'total_s': 185.9, 'train_epochs_s': 160.6, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.7, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 197}
+03:22:42 C_k1_s4_probe
+acc: 0.3983333333333333, prec: 0.46521756568606126, rec: 0.3983333333333334, f1: 0.37566474110050646
+TIMES {'total_s': 39.1, 'train_epochs_s': 15.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.1, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:23:23 C_k1_s4_full
+acc: 0.34625, prec: 0.3904886579539931, rec: 0.34625, f1: 0.3274912755560234
+TIMES {'total_s': 66.7, 'train_epochs_s': 42.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.8, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:24:31 C_k1_s4_random
+acc: 0.24416666666666667, prec: 0.2217388191798078, rec: 0.24416666666666664, f1: 0.2251782166586744
+TIMES {'total_s': 66.7, 'train_epochs_s': 42.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:25:39 C_k1_s4_random_gyro
+acc: 0.25916666666666666, prec: 0.24678239862549584, rec: 0.25916666666666666, f1: 0.2336723826436401
+TIMES {'total_s': 66.6, 'train_epochs_s': 42.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 2.9, 'test_eval_s': 21.3, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:26:47 C_k2_s4_probe
+acc: 0.43166666666666664, prec: 0.46405754701710367, rec: 0.43166666666666664, f1: 0.43637626450651396
+TIMES {'total_s': 53.2, 'train_epochs_s': 29.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.0, 'test_eval_s': 21.0, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:27:42 C_k2_s4_full
+acc: 0.4191666666666667, prec: 0.4532846242639412, rec: 0.4191666666666667, f1: 0.4235517396303191
+TIMES {'total_s': 109.4, 'train_epochs_s': 84.5, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.3, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:29:32 C_k2_s4_random
+acc: 0.31625, prec: 0.2890125638279113, rec: 0.31625000000000003, f1: 0.2887727427879092
+TIMES {'total_s': 108.9, 'train_epochs_s': 84.0, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.7, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:31:23 C_k2_s4_random_gyro
+acc: 0.33125, prec: 0.3062431053753192, rec: 0.33125000000000004, f1: 0.3087579538984746
+TIMES {'total_s': 108.8, 'train_epochs_s': 84.1, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.6, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:33:13 C_k5_s4_probe
+acc: 0.4454166666666667, prec: 0.4646076348027993, rec: 0.4454166666666667, f1: 0.4451323728613467
+TIMES {'total_s': 98.2, 'train_epochs_s': 73.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.2, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:34:53 C_k5_s4_full
+acc: 0.4375, prec: 0.4349899996871013, rec: 0.43749999999999994, f1: 0.4265641966251668
+TIMES {'total_s': 240.8, 'train_epochs_s': 214.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.4, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:38:55 C_k5_s4_random
+acc: 0.33375, prec: 0.31529791303191296, rec: 0.33375000000000005, f1: 0.3089807269494653
+TIMES {'total_s': 239.2, 'train_epochs_s': 213.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.0, 'test_eval_s': 21.8, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:42:56 C_k5_s4_random_gyro
+acc: 0.36083333333333334, prec: 0.34295439107167136, rec: 0.36083333333333334, f1: 0.34637843856887196
+TIMES {'total_s': 239.3, 'train_epochs_s': 213.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 4.0, 'test_eval_s': 21.5, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 200}
+03:46:57 C_k10_s4_probe
+acc: 0.5158333333333334, prec: 0.525703660643515, rec: 0.5158333333333334, f1: 0.492416046677308
+TIMES {'total_s': 171.6, 'train_epochs_s': 146.8, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 3.7, 'test_eval_s': 21.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 122}
+03:49:50 C_k10_s4_full
+acc: 0.47041666666666665, prec: 0.48463810309016864, rec: 0.47041666666666665, f1: 0.4700057101615444
+TIMES {'total_s': 460.8, 'train_epochs_s': 433.2, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.5, 'test_eval_s': 22.1, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 37}
+03:57:33 C_k10_s4_random
+acc: 0.3145833333333333, prec: 0.31070538580300966, rec: 0.3145833333333333, f1: 0.3042413067218127
+TIMES {'total_s': 457.2, 'train_epochs_s': 429.9, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.4, 'test_eval_s': 21.9, 'ckpt_save_s': 0.1, 'n_ckpt_saves': 30}
+04:05:13 C_k10_s4_random_gyro
+acc: 0.31166666666666665, prec: 0.31590283641465805, rec: 0.31166666666666665, f1: 0.30500982890769274
+TIMES {'total_s': 455.3, 'train_epochs_s': 428.4, 'n_epochs_timed': 199, 'setup_plus_epoch1_s': 5.1, 'test_eval_s': 21.8, 'ckpt_save_s': 0.0, 'n_ckpt_saves': 26}

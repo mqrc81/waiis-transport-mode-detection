@@ -9,9 +9,9 @@ phone, so size and latency matter as much as accuracy. Work is in Python, over f
 - `src/tmd`: shared code. Anything a second experiment would reuse goes here.
 - `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion. Add `patches/`, `env/` or `results/` only when there is something to put in them.
 - `mlflow.db`, `mlartifacts/`: MLflow tracking store and run artifacts (git-ignored).
-- `DECISIONS.md`, `../LICENSES.md`: project-wide.
+- `DECISIONS.md`, `LICENSES.md`: project-wide.
 - `log/`: my daily logs. **Do not edit.**
-- Outside git: data in `../data/` (`raw/`, `processed/`, `checkpoints/`), upstream clones in `../ext/`. Paths are relative to project root.
+- Outside git: data in the data root `../data/` (`raw/`, `processed/`, `checkpoints/`; absolute path in `CLAUDE.local.md`), upstream clones in `../ext/`. Paths are relative to project root.
 
 ## Working on an experiment
 - Follow the README's Plan, including its stop-points.

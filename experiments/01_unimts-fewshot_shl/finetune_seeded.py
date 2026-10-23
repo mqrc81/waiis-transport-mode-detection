@@ -6,13 +6,15 @@
 - times training epochs, checkpoint writes and test evaluation
 - keeps the best-loss checkpoint in memory (same selection, no 275 MB writes); deletes ./checkpoint/<run_tag>/ afterwards
 - --device mps: redirects the script's .to("cpu") calls (model, inputs, labels) to the Apple GPU
-Usage (from repo root): python experiments/shl/finetune_seeded.py --seed S --out results/x.npz -- <finetune_custom.py args>
+Usage (cwd shl_common.UNIMTS_HOME): python <exp>/finetune_seeded.py --seed S --out x.npz -- <finetune_custom.py args>
+(finetune_custom.py is taken from shl_common.EXT; it needs checkpoint/, config.json and UniMTS_data in the cwd)
 The finetune args must include a unique --run_tag and no --k (the k-shot file is the whole train set).
 """
 import argparse, builtins, os, random, runpy, shutil, sys, time
 import numpy as np
 import torch
 import sklearn.metrics
+from shl_common import EXT
 
 p = argparse.ArgumentParser()
 p.add_argument('--seed', type=int, required=True)
@@ -96,11 +98,11 @@ def stamped_print(*args, **kw):
 
 builtins.print = stamped_print
 
-sys.path.insert(0, os.getcwd())
+sys.path.insert(0, str(EXT))
 sys.argv = ['finetune_custom.py'] + rest
 t_start = time.time()
 try:
-    runpy.run_path('finetune_custom.py', run_name='__main__')
+    runpy.run_path(os.path.join(EXT, 'finetune_custom.py'), run_name='__main__')
 finally:
     builtins.print = _print
     shutil.rmtree(f'./checkpoint/{run_tag}', ignore_errors=True)

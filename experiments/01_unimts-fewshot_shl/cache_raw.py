@@ -6,12 +6,9 @@ Columns (doc/doc_dataset.pdf, sec. 3.2 and 3.11):
 Usage: python cache_raw.py [recid ...]   (default: all recordings)
 """
 import sys
-from pathlib import Path
 import numpy as np
 import pandas as pd
-
-SRC = Path('/Users/ms/Projects/waiis/UniMTS2/shl-data/release/User1')
-DST = Path('/Users/ms/data/shl_unimts/raw')
+from shl_common import SHL_RAW as SRC, RAW as DST
 
 
 def read(path, ncols):

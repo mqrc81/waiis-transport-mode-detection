@@ -1,8 +1,18 @@
-"""Shared helpers for the SHL experiments."""
+"""Shared helpers and paths for the SHL experiments."""
+from pathlib import Path
 import numpy as np
 
-RAW = '/Users/ms/data/shl_unimts/raw'
-OUT = '/Users/ms/data/shl_unimts'
+HERE = Path(__file__).resolve().parent
+PROJECT = HERE.parents[1]
+DATA = PROJECT.parent / 'data'                      # data root, see CLAUDE.local.md
+EXT = PROJECT.parent / 'ext' / 'UniMTS'             # upstream clone + patches/UniMTS.patch
+UNIMTS_HOME = DATA / 'checkpoints' / 'unimts'       # cwd for upstream scripts: checkpoint/, config.json, UniMTS_data
+CKPT = UNIMTS_HOME / 'checkpoint' / 'UniMTS.pth'
+SHL_RAW = DATA / 'raw' / 'shl' / 'release' / 'User1'
+OUT = DATA / 'processed' / 'shl_u1_hips_w10s'       # {raw,hz20,hz100,kshot}/
+RAW = OUT / 'raw'
+RUNS = DATA / 'processed' / HERE.name               # result .npz files: zeroshot/, fewshot/
+LOGS = HERE / 'logs'
 FS = 100          # Hz, SHL resampled grid (doc 3.2)
 WIN = 10 * FS     # 10 s windows
 CLASSES = {0: 'Null', 1: 'Still', 2: 'Walk', 3: 'Run', 4: 'Bike',

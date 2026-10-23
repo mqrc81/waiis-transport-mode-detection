@@ -1,6 +1,6 @@
 """Step 4: draw k windows per class from fewshot_pool, per (set, k, seed). All methods use these files.
 Usage: python make_kshot.py
-Writes /Users/ms/data/shl_unimts/kshot/{set}/k{k}_s{seed}/: idx.npy (rows of fewshot_pool, same at 20 and 100 Hz),
+Writes <data>/processed/shl_u1_hips_w10s/kshot/{set}/k{k}_s{seed}/: idx.npy (rows of fewshot_pool, same at 20 and 100 Hz),
 X_hz20.npy, X_hz100.npy, y.npy, meta.csv
 """
 import os

@@ -224,3 +224,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Experiments: env exports and logs belong in git (ENV/ above matches env/ on case-insensitive macOS; *.log above)
+!experiments/*/env/
+!experiments/*/logs/**
+!experiments/*/results/**/*.log
+# Machine-specific settings (data root)
+CLAUDE.local.md

@@ -1,0 +1,292 @@
+diff --git a/data.py b/data.py
+index 3d51c93..70f7e24 100644
+--- a/data.py
++++ b/data.py
+@@ -239,7 +239,7 @@ def load(dataset, padding_size, data_path, split='test', k=None):
+     # load text
+     label_dictionary = data['label_dictionary']
+     label_list = [' '.join(labels) for labels in label_dictionary.values()]
+-    all_text = clip.tokenize(label_list).cuda()
++    all_text = clip.tokenize(label_list).to("cpu")
+     
+     return real_inputs, real_masks, real_labels, label_list, all_text, num_classes
+ 
+@@ -316,6 +316,6 @@ def load_custom_data(X_path, y_path, config_path, joint_list, original_sampling_
+     # load text
+     label_dictionary = data['label_dictionary']
+     label_list = [' '.join(labels) for labels in label_dictionary.values()]
+-    all_text = clip.tokenize(label_list).cuda()
++    all_text = clip.tokenize(label_list).to("cpu")
+     
+     return real_inputs, real_masks, real_labels, label_list, all_text
+\ No newline at end of file
+diff --git a/evaluate.py b/evaluate.py
+index a50d496..de894bc 100644
+--- a/evaluate.py
++++ b/evaluate.py
+@@ -14,8 +14,8 @@ from data import load, load_multiple
+ from utils import compute_metrics_np
+ from contrastive import ContrastiveModule
+ 
+-def main(args):
+ 
++def main(args):
+     repo_id = "xiyuanz/UniMTS"
+     checkpoint_file = "checkpoint/UniMTS.pth"
+     config_file = "config.json"
+@@ -29,10 +29,14 @@ def main(args):
+         with zipfile.ZipFile("UniMTS_data.zip", 'r') as zip_ref:
+             zip_ref.extractall("./")
+ 
++    device = torch.device("cpu")
++
+     # load real data
+-    dataset_list = ['Opp_g','UCIHAR','MotionSense','w-HAR','Shoaib','har70plus','realworld','TNDA-HAR','PAMAP',\
+-                    'USCHAD','Mhealth','Harth','ut-complex','Wharf','WISDM','DSADS','UTD-MHAD','MMAct']
+-    real_inputs_list, real_masks_list, real_labels_list, label_list_list, all_text_list, _ = load_multiple(dataset_list, args.padding_size, args.data_path)
++    dataset_list = ['Opp_g', 'UCIHAR', 'MotionSense', 'w-HAR', 'Shoaib', 'har70plus', 'realworld', 'TNDA-HAR', 'PAMAP', \
++                    'USCHAD', 'Mhealth', 'Harth', 'ut-complex', 'Wharf', 'WISDM', 'DSADS', 'UTD-MHAD', 'MMAct']
++    real_inputs_list, real_masks_list, real_labels_list, label_list_list, all_text_list, _ = load_multiple(dataset_list,
++                                                                                                           args.padding_size,
++                                                                                                           args.data_path)
+     test_real_dataloader_list = []
+     for real_inputs, real_masks, real_labels in zip(real_inputs_list, real_masks_list, real_labels_list):
+         real_dataset = TensorDataset(real_inputs, real_masks, real_labels)
+@@ -41,40 +45,45 @@ def main(args):
+     date = datetime.datetime.now().strftime("%d-%m-%y_%H:%M")
+     wandb.init(
+         project='UniMTS',
+-        name=f"{args.run_tag}_{args.stage}_" + f"{date}" 
++        name=f"{args.run_tag}_{args.stage}_" + f"{date}"
+     )
+ 
+-    model = ContrastiveModule(args).cuda()
++    model = ContrastiveModule(args).to(device)
++
++    model.model.load_state_dict(torch.load(f'{args.checkpoint}', map_location=device))
+ 
+-    model.model.load_state_dict(torch.load(f'{args.checkpoint}'))
+-        
+     model.eval()
+     with torch.no_grad():
+-        for ds, real_labels, test_real_dataloader, label_list, all_text in zip(dataset_list, real_labels_list, test_real_dataloader_list, label_list_list, all_text_list):
++        for ds, real_labels, test_real_dataloader, label_list, all_text in zip(dataset_list, real_labels_list,
++                                                                               test_real_dataloader_list,
++                                                                               label_list_list, all_text_list):
+             pred_whole, logits_whole = [], []
+             for input, mask, label in test_real_dataloader:
+-                
+-                input = input.cuda()
+-                mask = mask.cuda()
+-                label = label.cuda()
++
++                input = input.to(device)
++                mask = mask.to(device)
++                label = label.to(device)
+ 
+                 if not args.gyro:
+                     b, t, c = input.shape
+-                    indices = np.array([range(i, i+3) for i in range(0, c, 6)]).flatten()
+-                    input = input[:,:,indices]
++                    indices = np.array([range(i, i + 3) for i in range(0, c, 6)]).flatten()
++                    input = input[:, :, indices]
+ 
+                 b, t, c = input.shape
+                 if args.stft:
+-                    input_stft = input.permute(0,2,1).reshape(b * c,t)
+-                    input_stft = torch.abs(torch.stft(input_stft, n_fft = 25, hop_length = 28, onesided = False, center = True, return_complex = True))
+-                    input_stft = input_stft.reshape(b, c, input_stft.shape[-2], input_stft.shape[-1]).reshape(b, c, t).permute(0,2,1)
++                    input_stft = input.permute(0, 2, 1).reshape(b * c, t)
++                    input_stft = torch.abs(torch.stft(input_stft, n_fft=25, hop_length=28, onesided=False, center=True,
++                                                      return_complex=True))
++                    input_stft = input_stft.reshape(b, c, input_stft.shape[-2], input_stft.shape[-1]).reshape(b, c,
++                                                                                                              t).permute(
++                        0, 2, 1)
+                     input = torch.cat((input, input_stft), dim=-1)
+ 
+                 input = input.reshape(b, t, 22, -1).permute(0, 3, 1, 2).unsqueeze(-1)
+-                
++
+                 logits_per_imu, logits_per_text = model(input, all_text)
+                 logits_whole.append(logits_per_imu)
+-                
++
+                 pred = torch.argmax(logits_per_imu, dim=-1).detach().cpu().numpy()
+                 pred_whole.append(pred)
+ 
+@@ -88,13 +97,15 @@ def main(args):
+             wandb.log({f"{ds} acc": acc, f"{ds} prec": prec, f"{ds} rec": rec, f"{ds} f1": f1})
+ 
+             logits_whole = torch.cat(logits_whole)
+-            r_at_1, r_at_2, r_at_3, r_at_4, r_at_5, mrr_score = compute_metrics_np(logits_whole.detach().cpu().numpy(), real_labels.numpy())
+-            
++            r_at_1, r_at_2, r_at_3, r_at_4, r_at_5, mrr_score = compute_metrics_np(logits_whole.detach().cpu().numpy(),
++                                                                                   real_labels.numpy())
++
+             print(f"{ds} R@1: {r_at_1}, R@2: {r_at_2}, R@3: {r_at_3}, R@4: {r_at_4}, R@5: {r_at_5}, MRR: {mrr_score}")
+-            wandb.log({f"{ds} R@1": r_at_1, f"{ds} R@2": r_at_2, f"{ds} R@3": r_at_3, f"{ds} R@4": r_at_4, f"{ds} R@5": r_at_5, f"{ds} MRR": mrr_score})
+-            
+-if __name__ == "__main__":
++            wandb.log({f"{ds} R@1": r_at_1, f"{ds} R@2": r_at_2, f"{ds} R@3": r_at_3, f"{ds} R@4": r_at_4,
++                       f"{ds} R@5": r_at_5, f"{ds} MRR": mrr_score})
+ 
++
++if __name__ == "__main__":
+     parser = argparse.ArgumentParser(description='Unified Pre-trained Motion Time Series Model')
+ 
+     # data
+@@ -109,7 +120,7 @@ if __name__ == "__main__":
+     parser.add_argument('--batch_size', type=int, default=64, help='batch size')
+ 
+     parser.add_argument('--checkpoint', type=str, default='./checkpoint/UniMTS.pth', help='/path/to/checkpoint/')
+-    
++
+     args = parser.parse_args()
+ 
+-    main(args)
+\ No newline at end of file
++    main(args)
+diff --git a/evaluate_custom.py b/evaluate_custom.py
+index 29e8356..2937e46 100644
+--- a/evaluate_custom.py
++++ b/evaluate_custom.py
+@@ -43,7 +43,7 @@ def main(args):
+         name=f"{args.run_tag}_{args.stage}_" + f"{date}" 
+     )
+ 
+-    model = ContrastiveModule(args).cuda()
++    model = ContrastiveModule(args).to("cpu")
+ 
+     model.model.load_state_dict(torch.load(f'{args.checkpoint}'))
+         
+@@ -52,9 +52,9 @@ def main(args):
+         pred_whole, logits_whole = [], []
+         for input, mask, label in test_real_dataloader:
+             
+-            input = input.cuda()
+-            mask = mask.cuda()
+-            label = label.cuda()
++            input = input.to("cpu")
++            mask = mask.to("cpu")
++            label = label.to("cpu")
+ 
+             if not args.gyro:
+                 b, t, c = input.shape
+diff --git a/finetune.py b/finetune.py
+index 89eedb6..31fe24c 100644
+--- a/finetune.py
++++ b/finetune.py
+@@ -58,7 +58,7 @@ def main(args):
+             zip(dataset_list, train_dataloader_list, test_dataloader_list, test_labels_list, label_list_list, all_text_list, num_classes_list):
+         
+         args.num_class = num_class
+-        model = ContrastiveModule(args).cuda()
++        model = ContrastiveModule(args).to("cpu")
+         optimizer = optim.Adam(model.parameters(), lr=1e-4)
+ 
+         if args.mode == 'full' or args.mode == 'probe':
+@@ -75,8 +75,8 @@ def main(args):
+             model.train()
+             for i, (input, mask, label) in enumerate(train_dataloader):
+ 
+-                input = input.cuda()
+-                labels = label.cuda()
++                input = input.to("cpu")
++                labels = label.to("cpu")
+ 
+                 if not args.gyro:
+                     b, t, c = input.shape
+@@ -119,8 +119,8 @@ def main(args):
+             pred_whole, logits_whole = [], []
+             for input, mask, label in test_dataloader:
+                 
+-                input = input.cuda()
+-                label = label.cuda()
++                input = input.to("cpu")
++                label = label.to("cpu")
+ 
+                 if not args.gyro:
+                     b, t, c = input.shape
+diff --git a/finetune_custom.py b/finetune_custom.py
+index ec1b813..94786aa 100644
+--- a/finetune_custom.py
++++ b/finetune_custom.py
+@@ -53,7 +53,7 @@ def main(args):
+     save_path = './checkpoint/%s/' % args.run_tag
+     os.makedirs(save_path, exist_ok=True)
+ 
+-    model = ContrastiveModule(args).cuda()
++    model = ContrastiveModule(args).to("cpu")
+     optimizer = optim.Adam(model.parameters(), lr=1e-4)
+ 
+     if args.mode == 'full' or args.mode == 'probe':
+@@ -70,8 +70,8 @@ def main(args):
+         model.train()
+         for i, (input, mask, label) in enumerate(train_dataloader):
+ 
+-            input = input.cuda()
+-            labels = label.cuda()
++            input = input.to("cpu")
++            labels = label.to("cpu")
+ 
+             if not args.gyro:
+                 b, t, c = input.shape
+@@ -114,8 +114,8 @@ def main(args):
+         pred_whole, logits_whole = [], []
+         for input, mask, label in test_dataloader:
+             
+-            input = input.cuda()
+-            label = label.cuda()
++            input = input.to("cpu")
++            label = label.to("cpu")
+ 
+             if not args.gyro:
+                 b, t, c = input.shape
+diff --git a/pretrain.py b/pretrain.py
+index e0c7855..df94188 100644
+--- a/pretrain.py
++++ b/pretrain.py
+@@ -26,7 +26,7 @@ def main(args):
+         name=f"{args.run_tag}_{args.stage}_" + f"{date}" 
+     )
+ 
+-    model = ContrastiveModule(args).cuda()
++    model = ContrastiveModule(args).to("cpu")
+     optimizer = optim.Adam(model.parameters(), lr=1e-4)
+ 
+     save_path = './checkpoint/%s/' % args.run_tag
+@@ -40,9 +40,9 @@ def main(args):
+         model.train()
+         for i, batch in enumerate(train_loader):
+ 
+-            inputs_imu = batch['imu'].float().cuda()
+-            inputs_text = clip.tokenize(batch['text'], truncate=True).cuda()
+-            mask = batch['mask'].float().cuda()
++            inputs_imu = batch['imu'].float().to("cpu")
++            inputs_text = clip.tokenize(batch['text'], truncate=True).to("cpu")
++            mask = batch['mask'].float().to("cpu")
+ 
+             input = inputs_imu * mask
+ 
+@@ -68,7 +68,7 @@ def main(args):
+             logits_per_imu, logits_per_text = model(input, inputs_text)
+ 
+             # positive keys are the entries on the diagonal
+-            labels = torch.arange(len(batch['imu'])).cuda()
++            labels = torch.arange(len(batch['imu'])).to("cpu")
+         
+             loss = F.cross_entropy(logits_per_imu / args.temperature, labels, reduction="mean")
+            
+diff --git a/utils.py b/utils.py
+index efe7a1a..28c55ba 100644
+--- a/utils.py
++++ b/utils.py
+@@ -23,7 +23,7 @@ def augment_data(data):
+     
+     for i in range(B):
+         for c in range(0, M, 6):
+-            R = random_rotation_matrix().cuda()
++            R = random_rotation_matrix().to("cpu")
+             acc = data[i, :, c:c+3].transpose(0, 1)  # Shape (3, T)
+             gyro = data[i, :, c+3:c+6].transpose(0, 1)  # Shape (3, T)
+             

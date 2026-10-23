@@ -2,15 +2,15 @@
 
 20 Hz: zero-phase FIR decimation (resample_poly, factor 5, padtype='line') of each continuous
 signal stretch BEFORE windowing. 100 Hz: the same windows, same order, same meta.
-Usage: python make_windows.py      (reads /Users/ms/data/shl_unimts/raw, run cache_raw.py first)
-Writes /Users/ms/data/shl_unimts/{hz20,hz100}/{A,B,C}/ and windows_log.txt
+Usage: python make_windows.py      (reads <data>/processed/shl_u1_hips_w10s/raw, run cache_raw.py first)
+Writes <data>/processed/shl_u1_hips_w10s/{hz20,hz100}/{A,B,C}/ and logs/windows_log.txt
 """
 import glob, json, os, sys
 from collections import Counter
 import numpy as np
 import pandas as pd
 from scipy.signal import resample_poly
-from shl_common import RAW, OUT, FS, WIN, CLASSES, day_of, load_raw, signal_stretches, pure_windows
+from shl_common import RAW, OUT, LOGS, EXT, FS, WIN, CLASSES, day_of, load_raw, signal_stretches, pure_windows
 
 POOL_DAYS = {'190517', '250517'}
 TEST_CAP = 300          # windows per SHL class in the test split
@@ -145,14 +145,14 @@ def main():
             assert x20.dtype == np.float32 and x20.shape[1:] == (200, 6) and x100.shape[1:] == (1000, 6)
             assert len(x20) == len(x100) == len(y) == len(a) and y.dtype == np.int64
     assert (sel[sel.split == 'test'].shl_label.value_counts() <= TEST_CAP).all()
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+    sys.path.insert(0, str(EXT))
     from data import load_custom_data
     inp, mask, lab, label_list, _ = load_custom_data(
         f'{OUT}/hz20/C/X_test.npy', f'{OUT}/hz20/C/y_test.npy', f'{OUT}/hz20/C/labels_w1.json', [5], 20)
     log(f'load_custom_data(hz20/C test, joint 5, rate 20): inputs {tuple(inp.shape)}, mask mean {mask.mean():.2f}, '
         f'labels {label_list}; resampling is identity: {np.allclose(inp[:, :, 30:36].numpy(), np.load(f"{OUT}/hz20/C/X_test.npy"), atol=1e-4)}')
 
-    with open(f'{OUT}/windows_log.txt', 'w') as f:
+    with open(f'{LOGS}/windows_log.txt', 'w') as f:
         f.write('\n'.join(log_lines) + '\n')
 
 

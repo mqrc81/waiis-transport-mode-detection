@@ -1,0 +1,15 @@
+/opt/homebrew/anaconda3/envs/unimts/lib/python3.9/site-packages/clip/clip.py:6: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import packaging
+Couldn't access the Hub to check for update but local file already exists. Defaulting to existing file. (error: Cannot reach https://huggingface.co/xiyuanz/UniMTS/resolve/main/config.json: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.)
+/opt/homebrew/anaconda3/envs/unimts/lib/python3.9/site-packages/sklearn/metrics/_classification.py:1565: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
+torch.Size([80, 200, 132]) torch.Size([80])
+torch.Size([2400, 200, 132]) torch.Size([2400])
+Epoch [1/5], Loss: 2.1018
+Epoch [2/5], Loss: 1.9186
+Epoch [3/5], Loss: 1.7542
+Epoch [4/5], Loss: 1.6445
+Epoch [5/5], Loss: 1.4798
+acc: 0.41875, prec: 0.3661547175996739, rec: 0.41875000000000007, f1: 0.3230258718259367
+R@1: 0.41875, R@2: 0.5341666666666667, R@3: 0.6525, R@4: 0.7604166666666666, R@5: 0.8241666666666667, MRR: 0.5821770833333333
+TIMES {'total_s': 41.7, 'train_epochs_s': 11.9, 'n_epochs_timed': 4, 'setup_plus_epoch1_s': 8.0, 'test_eval_s': 21.7, 'ckpt_save_s': 2.8, 'n_ckpt_saves': 5}

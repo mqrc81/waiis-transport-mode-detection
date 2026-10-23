@@ -1,0 +1,123 @@
+# Zero-shot UniMTS on SHL hips (User 1), 20 Hz, acc only (--gyro 0)
+
+Selection of joint/wording on fewshot_pool (set A), reported on test. Chance macro-F1 ~ 1/n_classes.
+
+## Set A
+
+| set | split | joint | wording | n | acc | macro_f1 | rec_still | rec_walk | rec_run |
+|---|---|---|---|---|---|---|---|---|---|
+| A | fewshot_pool | 1 | w1 | 1017 | 0.768 | 0.769 | 0.987 | 0.431 | 0.997 |
+| A | fewshot_pool | 1 | w2 | 1017 | 0.821 | 0.825 | 0.993 | 0.559 | 0.997 |
+| A | fewshot_pool | 2 | w1 | 1017 | 0.679 | 0.658 | 0.993 | 0.202 | 1.000 |
+| A | fewshot_pool | 2 | w2 | 1017 | 0.739 | 0.735 | 0.993 | 0.355 | 0.997 |
+| A | fewshot_pool | 5 | w1 | 1017 | 0.756 | 0.755 | 0.990 | 0.399 | 0.997 |
+| A | fewshot_pool | 5 | w2 | 1017 | 0.819 | 0.823 | 0.993 | 0.554 | 0.997 |
+| A | fewshot_pool | 6 | w1 | 1017 | 0.669 | 0.642 | 0.993 | 0.175 | 1.000 |
+| A | fewshot_pool | 6 | w2 | 1017 | 0.743 | 0.739 | 0.993 | 0.365 | 0.997 |
+| A | test | 1 | w1 | 900 | 0.917 | 0.914 | 0.993 | 0.777 | 0.980 |
+| A | test | 1 | w2 | 900 | 0.938 | 0.937 | 0.993 | 0.840 | 0.980 |
+| A | test | 2 | w1 | 900 | 0.856 | 0.847 | 0.993 | 0.593 | 0.980 |
+| A | test | 2 | w2 | 900 | 0.887 | 0.882 | 0.993 | 0.687 | 0.980 |
+| A | test | 5 | w1 | 900 | 0.920 | 0.918 | 0.993 | 0.787 | 0.980 |
+| A | test | 5 | w2 | 900 | 0.939 | 0.938 | 0.993 | 0.843 | 0.980 |
+| A | test | 6 | w1 | 900 | 0.853 | 0.844 | 0.993 | 0.587 | 0.980 |
+| A | test | 6 | w2 | 900 | 0.889 | 0.884 | 0.993 | 0.693 | 0.980 |
+
+Confusion matrix, set A, test, joint 1, w1 (rows true, cols predicted)
+
+| index | still | walk | run |
+|---|---|---|---|
+| true still | 298 | 2 | 0 |
+| true walk | 20 | 233 | 47 |
+| true run | 0 | 6 | 294 |
+
+Confusion matrix, set A, test, joint 1, w2 (rows true, cols predicted)
+
+| index | standing still | walking | jogging |
+|---|---|---|---|
+| true standing still | 298 | 2 | 0 |
+| true walking | 18 | 252 | 30 |
+| true jogging | 0 | 6 | 294 |
+
+Confusion matrix, set A, test, joint 2, w1 (rows true, cols predicted)
+
+| index | still | walk | run |
+|---|---|---|---|
+| true still | 298 | 2 | 0 |
+| true walk | 21 | 178 | 101 |
+| true run | 0 | 6 | 294 |
+
+Confusion matrix, set A, test, joint 2, w2 (rows true, cols predicted)
+
+| index | standing still | walking | jogging |
+|---|---|---|---|
+| true standing still | 298 | 2 | 0 |
+| true walking | 26 | 206 | 68 |
+| true jogging | 1 | 5 | 294 |
+
+Confusion matrix, set A, test, joint 5, w1 (rows true, cols predicted)
+
+| index | still | walk | run |
+|---|---|---|---|
+| true still | 298 | 2 | 0 |
+| true walk | 20 | 236 | 44 |
+| true run | 0 | 6 | 294 |
+
+Confusion matrix, set A, test, joint 5, w2 (rows true, cols predicted)
+
+| index | standing still | walking | jogging |
+|---|---|---|---|
+| true standing still | 298 | 2 | 0 |
+| true walking | 18 | 253 | 29 |
+| true jogging | 0 | 6 | 294 |
+
+Confusion matrix, set A, test, joint 6, w1 (rows true, cols predicted)
+
+| index | still | walk | run |
+|---|---|---|---|
+| true still | 298 | 2 | 0 |
+| true walk | 22 | 176 | 102 |
+| true run | 0 | 6 | 294 |
+
+Confusion matrix, set A, test, joint 6, w2 (rows true, cols predicted)
+
+| index | standing still | walking | jogging |
+|---|---|---|---|
+| true standing still | 298 | 2 | 0 |
+| true walking | 26 | 208 | 66 |
+| true jogging | 1 | 5 | 294 |
+
+## Set B
+
+| set | split | joint | wording | n | acc | macro_f1 | rec_still | rec_walk or run | rec_vehicle |
+|---|---|---|---|---|---|---|---|---|---|
+| B | fewshot_pool | 1 | w2 | 5870 | 0.316 | 0.436 | 0.987 | 0.940 | 0.183 |
+| B | test | 1 | w2 | 2400 | 0.507 | 0.542 | 0.983 | 0.922 | 0.247 |
+
+Confusion matrix, set B, test, joint 1, w2 (rows true, cols predicted)
+
+| index | standing still | walking or running | riding in a vehicle |
+|---|---|---|---|
+| true standing still | 295 | 0 | 5 |
+| true walking or running | 17 | 553 | 30 |
+| true riding in a vehicle | 1022 | 108 | 370 |
+
+## Set C
+
+| set | split | joint | wording | n | acc | macro_f1 | rec_still | rec_walk | rec_run | rec_bike | rec_car | rec_bus | rec_train | rec_subway |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| C | fewshot_pool | 1 | w2 | 5870 | 0.170 | 0.220 | 0.957 | 0.037 | 0.997 | 0.349 | 0.077 | 0.094 | 0.007 | 0.002 |
+| C | test | 1 | w2 | 2400 | 0.343 | 0.295 | 0.923 | 0.230 | 0.967 | 0.413 | 0.120 | 0.083 | 0.010 | 0.000 |
+
+Confusion matrix, set C, test, joint 1, w2 (rows true, cols predicted)
+
+| index | standing still | walking | jogging | cycling | driving a car | riding a bus | riding a train | riding the subway |
+|---|---|---|---|---|---|---|---|---|
+| true standing still | 277 | 1 | 0 | 4 | 5 | 10 | 3 | 0 |
+| true walking | 10 | 69 | 6 | 197 | 4 | 3 | 9 | 2 |
+| true jogging | 0 | 1 | 290 | 8 | 0 | 1 | 0 | 0 |
+| true cycling | 4 | 20 | 1 | 124 | 37 | 2 | 3 | 109 |
+| true driving a car | 227 | 0 | 0 | 1 | 36 | 29 | 7 | 0 |
+| true riding a bus | 211 | 1 | 0 | 8 | 50 | 25 | 3 | 2 |
+| true riding a train | 272 | 2 | 0 | 3 | 10 | 10 | 3 | 0 |
+| true riding the subway | 257 | 1 | 0 | 5 | 13 | 14 | 10 | 0 |

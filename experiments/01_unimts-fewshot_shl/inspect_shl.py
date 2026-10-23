@@ -1,11 +1,11 @@
 """Step 0: sanity numbers for one recording and pure-window counts for all cached ones.
 Usage: python inspect_shl.py [recid_for_stats]   (default 010317)
-Writes /Users/ms/data/shl_unimts/window_counts.csv
+Writes logs/window_counts.csv
 """
 import sys, glob, os
 import numpy as np
 import pandas as pd
-from shl_common import RAW, OUT, CLASSES, load_raw, pure_windows, day_of
+from shl_common import RAW, LOGS, CLASSES, load_raw, pure_windows, day_of
 
 rec = sys.argv[1] if len(sys.argv) > 1 else '010317'
 t, x, y = load_raw(rec)
@@ -34,7 +34,7 @@ for f in sorted(glob.glob(f'{RAW}/*.npz')):
     cnt = np.bincount(y[w], minlength=9)
     rows.append({'rec': r, 'day': day_of(r), **{CLASSES[c]: int(cnt[c]) for c in range(1, 9)}})
 df = pd.DataFrame(rows)
-df.to_csv(f'{OUT}/window_counts.csv', index=False)
+df.to_csv(f'{LOGS}/window_counts.csv', index=False)
 pd.set_option('display.width', 200, 'display.max_rows', 200)
 per_day = df.drop(columns='rec').groupby('day', sort=False).sum()
 print(per_day.to_string())

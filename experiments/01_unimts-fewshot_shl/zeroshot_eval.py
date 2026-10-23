@@ -1,9 +1,10 @@
 """Step 3: zero-shot UniMTS on SHL windows; same loop as evaluate_custom.py:50-71, but saves predictions.
-Run from the repo root (imports data.py / contrastive.py).
-Usage: python experiments/shl/zeroshot_eval.py --set A --split test --joint 5 --wording w1 --out results/zeroshot
+Imports data.py / contrastive.py from the upstream clone (shl_common.EXT).
+Usage: python zeroshot_eval.py --set A --split test --joint 5 --wording w1 --out <data>/processed/01_unimts-fewshot_shl/zeroshot
 """
 import argparse, os, sys
-sys.path.insert(0, os.getcwd())   # repo root
+from shl_common import EXT, CKPT, OUT
+sys.path.insert(0, str(EXT))
 import numpy as np
 import torch
 from sklearn.metrics import f1_score
@@ -12,7 +13,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from data import load_custom_data
 from contrastive import ContrastiveModule
 
-DATA = '/Users/ms/data/shl_unimts/hz20'
+DATA = OUT / 'hz20'
 
 p = argparse.ArgumentParser()
 p.add_argument('--set', required=True)
@@ -20,7 +21,7 @@ p.add_argument('--split', required=True, choices=['test', 'fewshot_pool'])
 p.add_argument('--joint', type=int, required=True)
 p.add_argument('--wording', required=True, choices=['w1', 'w2'])
 p.add_argument('--out', required=True)
-p.add_argument('--checkpoint', default='./checkpoint/UniMTS.pth')
+p.add_argument('--checkpoint', default=str(CKPT))
 a = p.parse_args()
 
 d = f'{DATA}/{a.set}'

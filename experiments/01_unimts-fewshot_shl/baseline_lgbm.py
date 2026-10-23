@@ -2,16 +2,18 @@
 Variants: {acc, accgyro} x {hz20, hz100}. Orientation-invariant channels |acc| (and |gyro|).
 Per channel: mean, std, p10/p50/p90, zero crossings around the mean, Welch band energies
 0-1/1-3/3-6/6-10 Hz, dominant frequency (same features at both rates).
-Usage: experiments/shl/.env-lgbm/bin/python experiments/shl/baseline_lgbm.py
-Writes experiments/shl/results/fewshot/runs/{set}_k{k}_s{seed}_lgbm_{chan}_{hz}.npz (y, pred), same format as UniMTS runs.
+Usage: /opt/homebrew/anaconda3/envs/tmd-lgbm/bin/python baseline_lgbm.py [--out DIR]
+Writes <data>/processed/01_unimts-fewshot_shl/fewshot/runs/{set}_k{k}_s{seed}_lgbm_{chan}_{hz}.npz (y, pred), same format as UniMTS runs.
 """
-import os
+import argparse, os
 import numpy as np
 import lightgbm as lgb
 from scipy.signal import welch
+from shl_common import OUT as D, RUNS
 
-D = '/Users/ms/data/shl_unimts'
-RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results', 'fewshot', 'runs')
+p = argparse.ArgumentParser()
+p.add_argument('--out', default=str(RUNS / 'fewshot' / 'runs'))
+RES = p.parse_args().out
 SETS, KS, SEEDS = ['B', 'C'], [1, 2, 5, 10], range(5)
 RATES = {'hz20': 20, 'hz100': 100}
 BANDS = [(0, 1), (1, 3), (3, 6), (6, 10)]

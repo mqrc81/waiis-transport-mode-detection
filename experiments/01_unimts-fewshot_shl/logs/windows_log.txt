@@ -1,0 +1,23 @@
+recordings: 90; pool days: ['190517', '250517']; seed 0; test cap 300/class
+[fewshot_pool] diagnostic 10 s grid from recording start, first failing rule: {'null': 4290, 'pure': 5848}
+[test] diagnostic 10 s grid from recording start, first failing rule: {'null': 77577, 'pure': 133510, 'nan': 5, 'mixed_label': 6}
+pure windows extracted (run tiling, start snapped to 20 Hz grid):
+shl_label     Still   Walk   Run   Bike    Car    Bus  Train  Subway
+split                                                               
+fewshot_pool    299    406   312    499   1924    588    922     920
+test          20167  18062  6021  16780  22566  17732  19274   13562
+final windows after test cap:
+shl_label     Still  Walk  Run  Bike   Car  Bus  Train  Subway
+split                                                         
+fewshot_pool    299   406  312   499  1924  588    922     920
+test            300   300  300   300   300  300    300     300
+|X20 - decimate(X100 window)| mean: edges (first/last 10) 0.0312, interior 0.00000  (stretch-level decimation has no window-edge transient)
+[fewshot_pool] median |acc| 100 Hz 9.830, 20 Hz 9.825 m/s2; median |gyro| 20 Hz 0.058 rad/s
+[test] median |acc| 100 Hz 9.898, 20 Hz 9.895 m/s2; median |gyro| 20 Hz 0.111 rad/s
+set A fewshot_pool N= 1017 per class {'still': 299, 'walk': 406, 'run': 312}
+set A test         N=  900 per class {'still': 300, 'walk': 300, 'run': 300}
+set B fewshot_pool N= 5870 per class {'still': 299, 'walk or run': 718, 'vehicle': 4853}
+set B test         N= 2400 per class {'still': 300, 'walk or run': 600, 'vehicle': 1500}
+set C fewshot_pool N= 5870 per class {'still': 299, 'walk': 406, 'run': 312, 'bike': 499, 'car': 1924, 'bus': 588, 'train': 922, 'subway': 920}
+set C test         N= 2400 per class {'still': 300, 'walk': 300, 'run': 300, 'bike': 300, 'car': 300, 'bus': 300, 'train': 300, 'subway': 300}
+load_custom_data(hz20/C test, joint 5, rate 20): inputs (2400, 200, 132), mask mean 1.00, labels ['still', 'walk', 'run', 'bike', 'car', 'bus', 'train', 'subway']; resampling is identity: True

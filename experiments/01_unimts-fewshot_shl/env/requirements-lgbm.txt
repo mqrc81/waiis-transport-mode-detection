@@ -1,0 +1,7 @@
+# conda-forge env for the LightGBM baseline: conda create -p experiments/shl/.env-lgbm -c conda-forge --file experiments/shl/requirements-lgbm.txt
+python=3.11
+lightgbm=4.6
+scikit-learn
+scipy
+pandas
+matplotlib

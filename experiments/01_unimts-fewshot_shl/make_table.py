@@ -1,19 +1,22 @@
 """Step 6: few-shot results table, plots and confusion matrices.
-Usage: experiments/shl/.env-lgbm/bin/python experiments/shl/make_table.py
-Reads results/fewshot/runs/*.npz (UniMTS + LightGBM) and results/zeroshot/{set}_test_j1_w2.npz (k=0).
+Usage: /opt/homebrew/anaconda3/envs/tmd-lgbm/bin/python make_table.py --runs <data>/processed/01_unimts-fewshot_shl
+Reads <runs>/fewshot/runs/*.npz (UniMTS + LightGBM) and <runs>/zeroshot/{set}_test_j1_w2.npz (k=0).
 Writes results/shl_fewshot.csv, results/shl_fewshot.md, results/shl_fewshot_{set}.png
 """
-import glob, json, os, re
+import argparse, glob, json, os, re
 import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn.metrics import f1_score, confusion_matrix
+from shl_common import OUT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES = f'{HERE}/results'
-D = '/Users/ms/data/shl_unimts'
+p = argparse.ArgumentParser()
+p.add_argument('--runs', required=True, help='directory with fewshot/runs/ and zeroshot/ .npz files')
+RUNS = p.parse_args().runs
 METHODS = ['zeroshot', 'probe', 'full', 'random', 'random_gyro',
            'lgbm_acc_hz20', 'lgbm_accgyro_hz20', 'lgbm_acc_hz100', 'lgbm_accgyro_hz100']
 PRETRAINED = ['probe', 'full']
@@ -21,7 +24,7 @@ LIKE_FOR_LIKE = 'lgbm_acc_hz20'
 
 
 def names(s):
-    return [' '.join(v) for v in json.load(open(f'{D}/hz20/{s}/labels_w1.json'))['label_dictionary'].values()]
+    return [' '.join(v) for v in json.load(open(f'{OUT}/hz20/{s}/labels_w1.json'))['label_dictionary'].values()]
 
 
 def md_table(df, index=True):
@@ -32,11 +35,11 @@ def md_table(df, index=True):
 
 
 runs = []
-for f in glob.glob(f'{RES}/fewshot/runs/*.npz'):
+for f in glob.glob(f'{RUNS}/fewshot/runs/*.npz'):
     m = re.match(r'([A-C])_k(\d+)_s(\d)_(.+)\.npz', os.path.basename(f))
     runs.append((m[1], int(m[2]), int(m[3]), m[4], f))
 for s in ['B', 'C']:
-    runs.append((s, 0, 0, 'zeroshot', f'{RES}/zeroshot/{s}_test_j1_w2.npz'))
+    runs.append((s, 0, 0, 'zeroshot', f'{RUNS}/zeroshot/{s}_test_j1_w2.npz'))
 
 rows, preds = [], {}
 for s, k, seed, method, f in runs:
