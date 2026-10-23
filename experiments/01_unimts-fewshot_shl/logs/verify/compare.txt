@@ -1,0 +1,10 @@
+== zero-shot, set B, test, joint 1, w2
+zeroshot.csv: acc 0.5075 macro_f1 0.5422
+{'f1_old': 0.5422034120526851, 'f1_new': 0.5422034120526851, 'pred_agree': np.float64(1.0), 'max_abs_logit_diff': 0.0}
+== few-shot, set B, k=1, seed 0, probe (MPS)
+shl_fewshot.csv (mean over 5 seeds, not seed 0): f1_mean 0.5281 f1_std 0.0348
+{'f1_old': 0.5505612567436289, 'f1_new': 0.5505612567436289, 'pred_agree': np.float64(1.0), 'final_loss_old': 0.4981, 'final_loss_new': 0.4981, 'max_abs_loss_diff': 0.0}
+== LightGBM, all variants
+160/160 runs with identical predictions
+shl_fewshot.csv B lgbm_acc_hz20 k=10 (mean over seeds): f1_mean 0.7149
+B_k10_s0_lgbm_acc_hz20: {'f1_old': 0.6734383678266002, 'f1_new': 0.6734383678266002, 'pred_agree': np.float64(1.0)}

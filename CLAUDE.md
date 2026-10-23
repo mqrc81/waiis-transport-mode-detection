@@ -33,10 +33,10 @@ phone, so size and latency matter as much as accuracy. Work is in Python, over f
 - Report macro-F1, per-class recall, the confusion matrix, model size and latency per window (single thread, after warm-up, median and p95).
 
 ## Logging results
-- Log every run through `src/tracking.py`: `with run(experiment, params):`, then `mlflow.log_metrics` and `mlflow.log_figure`. The experiment name is the experiment folder name.
+- Log every run through `src/tmd/tracking.py`: `with run(experiment, params):`, then `mlflow.log_metrics` and `mlflow.log_figure`. The experiment name is the experiment folder name.
 - Params include model, dataset, rate_hz, class_set, seed, and anything the Plan varies.
 - The helper tags the git commit and `dirty`. Log dirty runs anyway, and mention it in Results.
-- When the experiment finishes, export its runs once with `uv run python src/tracking.py export <experiment>`. Commit the export (`results/runs.csv` in the experiment folder) with the final Results tables, which are generated from it. Never edit the export by hand. Until then, MLflow is the only record.
+- When the experiment finishes, export its runs once with `uv run python src/tmd/tracking.py export <experiment>`. Commit the export (`results/runs.csv` in the experiment folder) with the final Results tables, which are generated from it. Never edit the export by hand. Until then, MLflow is the only record.
 - To inspect runs, use `mlflow.search_runs` in a short script and print only what you need.
 - Experiment 01 predates MLflow and keeps its own CSV.
 

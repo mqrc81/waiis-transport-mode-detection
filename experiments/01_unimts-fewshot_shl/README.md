@@ -260,6 +260,50 @@ These files are unchanged: `check_resample.py`, `COMMANDS.md` (historical record
   `*.log` is ignored. `CLAUDE.local.md` is now ignored.
 - `../../LICENSES.md`: added SHL and UniMTS entries.
 
+### Verification after the migration (2026-10-23)
+
+These are reruns from the new layout, with cwd `<data>/checkpoints/unimts`, `WANDB_MODE=disabled` and
+`HF_HUB_OFFLINE=1`. The outputs went to `<data>/processed/01_unimts-fewshot_shl/verify/`, so the original run files
+are untouched. The logs are in `logs/verify/` and the comparison is in `logs/verify/compare.txt`
+(`verify_migration.py`).
+
+```sh
+PY=/opt/homebrew/anaconda3/envs/unimts/bin/python; PYL=/opt/homebrew/anaconda3/envs/tmd-lgbm/bin/python
+$PY zeroshot_eval.py --set B --split test --joint 1 --wording w2 --out $V/zeroshot
+caffeinate -i $PY finetune_seeded.py --seed 0 --device mps --out $V/fewshot/B_k1_s0_probe.npz -- --mode probe --gyro 0 \
+  --run_tag shl_verify_B_k1_s0_probe --num_class 3 --joint_list 1 --original_sampling_rate 20 --num_epochs 200 \
+  --X_train_path $D/kshot/B/k1_s0/X_hz20.npy --y_train_path $D/kshot/B/k1_s0/y.npy \
+  --X_test_path $D/hz20/B/X_test.npy --y_test_path $D/hz20/B/y_test.npy --config_path $D/hz20/B/labels_w2.json
+$PYL baseline_lgbm.py --out $V/lgbm                      # all 160 variants, 8 s
+$PY verify_migration.py > logs/verify/compare.txt
+bash run_fewshot.sh                                      # skips all 160 existing runs: no output, so RES paths resolve
+$PY make_zeroshot_table.py --runs <data>/processed/01_unimts-fewshot_shl [--pick-best]   # -> "1 w2"
+$PYL make_table.py --runs <data>/processed/01_unimts-fewshot_shl                          # 322 runs
+```
+
+| Config | CSV (as committed) | Original run file | Rerun, new layout |
+|---|---|---|---|
+| Zero-shot B, test, j1, w2 | `zeroshot.csv`: acc 0.5075, macro-F1 0.5422 | macro-F1 0.5422 | macro-F1 0.5422, acc 0.5075. Predictions 100% identical, max abs logit diff 0.0 |
+| Few-shot B, k=1, seed 0, probe (MPS) | `shl_fewshot.csv`: 0.5281 ± 0.0348 (**mean over 5 seeds**) | macro-F1 0.5506, final loss 0.4981 | macro-F1 0.5506, final loss 0.4981. Predictions 100% identical, max abs loss diff 0.0 over 200 epochs |
+| LightGBM B, k=10, seed 0, lgbm_acc_hz20 | `shl_fewshot.csv`: 0.7149 (mean over 5 seeds) | macro-F1 0.6734 | macro-F1 0.6734. All 160 LightGBM runs have identical predictions |
+
+`shl_fewshot.csv` holds only means over seeds, so the per-seed comparison is against the original `.npz` files. The
+seed-0 value 0.5506 lies inside the mean ± std of 0.5281 ± 0.0348.
+
+Regenerating `results/zeroshot.{md,csv}` and `results/shl_fewshot.{md,csv,png}` with the new `--runs` argument left
+every file byte-identical (`git status` was clean).
+
+Further observations:
+
+- **`config.json` and `.cache`.** The upstream `hf_hub_download(config.json)` resolves offline because the file
+  exists in the cwd. The log says "Couldn't access the Hub … Defaulting to existing file".
+  - `config.json` stays a copy (`{}`) in `<data>/checkpoints/unimts/`. A symlink to `../ext/UniMTS/config.json` isn't
+    possible: the GitHub repo has no `config.json`; it is a Hugging Face download.
+  - `.cache/huggingface/` (HF download metadata, 16 KB) is only in `<data>/checkpoints/unimts/`, outside git. It isn't
+    needed.
+- **Temporary checkpoint.** `finetune_seeded.py` removed its temporary `checkpoint/shl_verify_B_k1_s0_probe/` after
+  the run.
+
 ## Open questions
 
 1. **UniMTS licence source.** The GitHub repo has no LICENSE file and no licence metadata. Apache-2.0 comes from the
