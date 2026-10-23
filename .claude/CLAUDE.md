@@ -6,12 +6,12 @@ accelerometer + gyroscope. Current production rate is 25 Hz; the model must even
 phone, so size and latency matter as much as accuracy. Work is in Python, over files.
 
 ## Layout
-- `../src/tmd`: shared code. Anything a second experiment would reuse goes here.
-- `experiments/NN_question_dataset/`: one folder per experiment. `../README.md` holds Question / Plan / Results / Conclusion. Add `patches/`, `env/` or `results/` only when there is something to put in them.
+- `src/tmd`: shared code. Anything a second experiment would reuse goes here.
+- `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion. Add `patches/`, `env/` or `results/` only when there is something to put in them.
 - `mlflow.db`, `mlartifacts/`: MLflow tracking store and run artifacts (git-ignored).
 - `DECISIONS.md`, `../LICENSES.md`: project-wide.
-- `../log`: my daily logs. **Do not edit.**
-- Outside git: data in `../data/` (`raw/`, `processed/`, `checkpoints/`), upstream clones in `../../ext`. Paths are relative to project root.
+- `log/`: my daily logs. **Do not edit.**
+- Outside git: data in `../data/` (`raw/`, `processed/`, `checkpoints/`), upstream clones in `../ext/`. Paths are relative to project root.
 
 ## Working on an experiment
 - Follow the README's Plan, including its stop-points.
