@@ -1,0 +1,5 @@
+/opt/homebrew/anaconda3/envs/unimts/lib/python3.9/site-packages/clip/clip.py:6: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import packaging
+torch.Size([2400, 200, 132]) torch.Size([2400])
+B_test_j1_w2: acc 0.5075 macro-F1 0.5422
+$PY $E/zeroshot_eval.py --set B --split test --joint 1 --wording w2 --out   697.91s user 48.44s system 360% cpu 3:26.92 total

@@ -258,7 +258,6 @@ These files are unchanged: `check_resample.py`, `COMMANDS.md` (historical record
 - `../../.gitignore`: added exceptions so `experiments/*/env/`, `experiments/*/logs/**` and
   `experiments/*/results/**/*.log` are tracked. Without them, `ENV/` matches `env/` on case-insensitive macOS, and
   `*.log` is ignored. `CLAUDE.local.md` is now ignored.
-- `../../.claude/CLAUDE.md`: `../LICENSES.md` → `LICENSES.md`. The data root line now points to `CLAUDE.local.md`.
 - `../../LICENSES.md`: added SHL and UniMTS entries.
 
 ## Open questions

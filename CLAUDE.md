@@ -10,8 +10,8 @@ phone, so size and latency matter as much as accuracy. Work is in Python, over f
 - `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion. Add `patches/`, `env/` or `results/` only when there is something to put in them.
 - `mlflow.db`, `mlartifacts/`: MLflow tracking store and run artifacts (git-ignored).
 - `DECISIONS.md`, `LICENSES.md`: project-wide.
-- `log/`: my daily logs. **Do not edit.**
-- Outside git: data in the data root `../data/` (`raw/`, `processed/`, `checkpoints/`; absolute path in `CLAUDE.local.md`), upstream clones in `../ext/`. Paths are relative to project root.
+- `log`: my daily logs. **Do not edit.**
+- Outside git: data in the data root `data` (`raw/`, `processed/`, `checkpoints/`; absolute path in `CLAUDE.local.md`), upstream clones in `../ext/`. Paths are relative to project root.
 
 ## Working on an experiment
 - Follow the README's Plan, including its stop-points.
@@ -20,11 +20,12 @@ phone, so size and latency matter as much as accuracy. Work is in Python, over f
 
 ## Rules
 - Data, checkpoints and environments never go in git.
-- Edit files in `../../ext` only when needed. Save them with git diff > experiments/NN_name/patches/<repo>.patch, and record the upstream commit hash in the README. Before another experiment uses the same clone, reset it (`git checkout .`) and apply that experiment's patch.
+- Edit files in `../ext` only when needed. Save them with git diff > experiments/NN_name/patches/<repo>.patch, and record the upstream commit hash in the README. Before another experiment uses the same clone, reset it (`git checkout .`) and apply that experiment's patch.
 - Ask before deleting files or installing anything system-wide. Adding packages with `uv add` is fine.
 - Any deviation from an upstream README or from the Plan is recorded in Results, with file and line.
 - Third-party environments (not managed by uv) are exported to the experiment's `env/` folder (`pip freeze` or `conda env export`).
 - Files in `processed/` are named by their parameters, e.g. `shl_u1_hips_20hz_w10s.npz`.
+- Our code runs with uv. Upstream repos are reproduced in the environment their README specifies (conda if so), exported to the experiment's `env/`. Porting adopted upstream code into the uv env is a separate step, verified against the shipped-env numbers.
 
 ## Evaluation conventions
 - Split by user; by day only when there is a single user, and say so. Never random window splits.
