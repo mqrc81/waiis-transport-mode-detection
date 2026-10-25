@@ -1,0 +1,18 @@
+SHL User 1 day folds (hips hours per class):
+      days  still  walk  run  bike   car   bus  train  subway
+fold                                                         
+0       16   15.0   9.5  3.8  10.6  15.8   9.3   12.2     8.0
+1       15    9.8   9.5  3.1   8.5  14.8  10.7   10.4     7.9
+2       15   10.0   9.2  2.5   7.0  12.1  10.6   10.9     7.3
+3       15   10.2  11.5  3.9  11.1   8.3  10.7    8.7     7.5
+4       15   12.2  12.1  4.4  11.1  17.2   9.9   14.1     9.6
+
+ExtraSensory: 12 test / 48 dev users; train users (ON_A_TRAIN mapped): ['1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842', '33A85C34-CFE4-4732-9E73-0A7AC861B27A', '3600D531-0C55-44A7-AE95-A7A38519464E', 'A76A5AF5-5A93-4CF2-A16E-62353BB70E8A', 'B7F9D634-263E-4A97-87F9-6FFB4DDCB36C']
+                users  iphone  still  walk  run  bike   car  bus  train  subway
+partition fold                                                                 
+dev        0       10       6  35222  3305   74   559  1694  191      0       0
+           1        9       5  46130  4272  287   655  2463  184     97       0
+           2        9       5  30383  2802  153   782  1590  427     24       0
+           3       10       5  35580  3439   55   824   977  234    115       0
+           4       10       6  49971  3676  168   880  2248  325     37       0
+test      -1       12       7  51885  3936  159   899  1910  338     69       0

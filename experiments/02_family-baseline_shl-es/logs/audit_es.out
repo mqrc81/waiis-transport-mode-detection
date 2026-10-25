@@ -1,0 +1,3 @@
+60 users, 377346 minutes; reasons {'ok': 305418, 'unlabelled': 70353, 'drop:ON_A_PLANE': 630, 'drop:ELLIPTICAL_MACHINE': 233, 'drop:ELEVATOR': 200, 'drop:TREADMILL': 164, 'drop:SKATEBOARDING': 131, 'drop:STATIONARY_BIKE': 86, 'check:MOTORBIKE': 86, 'conflict': 18, 'drop:ON_A_BOAT': 18, 'drop:WHEELCHAIR': 9}
+usable (class ok + acc + gyro): 289019; per class {'still': 249171, 'walk': 21430, 'car': 10882, 'bike': 4599, 'bus': 1699, 'run': 896, 'train': 342}
+ON_A_TRAIN minutes 344 in 5 users

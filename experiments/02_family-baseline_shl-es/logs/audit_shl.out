@@ -1,0 +1,6 @@
+User1: 90 recordings; without Label.txt/Motion: ['160517']
+User1_4phones: 3 recordings; without Label.txt/Motion: []
+User2_4phones: 3 recordings; without Label.txt/Motion: []
+User3_4phones: 3 recordings; without Label.txt/Motion: []
+126 recording x position rows -> /Users/ms/Projects/waiis/transport-mode-detection/experiments/02_family-baseline_shl-es/results/audit/shl_recordings.csv
+days in >1 session: ['220617', '260617', '270617']

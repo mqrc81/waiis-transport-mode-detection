@@ -5,13 +5,13 @@ Usage in an experiment script:
     import mlflow
     from tmd.tracking import run
 
-    with run("02_pretrained-vs-lightgbm_shl-bologna", params):
+    with run("02_family-baseline_shl-es", params):
         mlflow.log_metrics({"macro_f1": f1, "size_mb": size, "latency_ms_p50": p50})
         mlflow.log_figure(cm_fig, "confusion_matrix.png")
 
 Export an experiment's runs (the CSV that goes in git):
 
-    uv run python -m tmd.tracking export 02_pretrained-vs-lightgbm_shl-bologna
+    uv run python -m tmd.tracking export 02_family-baseline_shl-es
 """
 from __future__ import annotations
 
@@ -20,11 +20,16 @@ import subprocess
 from contextlib import contextmanager
 from pathlib import Path
 
-import mlflow
+import os
 
-REPO = Path(__file__).resolve().parents[2]  # src/tmd/tracking.py -> repo root
-TRACKING_URI = f"sqlite:///{REPO / 'mlflow.db'}"  # git-ignored
-ARTIFACTS = REPO / "mlartifacts"                    # git-ignored
+import mlflow
+from dotenv import load_dotenv
+
+_ROOT = Path(__file__).resolve().parents[2]       # src/tmd/tracking.py -> repo root
+load_dotenv(_ROOT / ".env")                       # by path, so scripts can run from any folder
+REPO = Path(os.getenv("REPO", _ROOT))
+TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{REPO / 'mlflow.db'}")  # git-ignored
+ARTIFACTS = Path(os.getenv("MLFLOW_ARTIFACTS", REPO / "mlartifacts"))               # git-ignored
 
 
 def _git(*args: str) -> str:

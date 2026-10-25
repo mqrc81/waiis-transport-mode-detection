@@ -1,0 +1,26 @@
+label,minutes,users,in_drop_list,mapped_to,reason
+ELEVATOR,200,12,True,walk:117; still:83,drop:ELEVATOR:200
+ON_A_PLANE,630,4,True,still:630,drop:ON_A_PLANE:630
+ON_A_BOAT,18,1,True,still:18,drop:ON_A_BOAT:18
+RIDING_AN_ANIMAL,0,0,True,,
+SKATEBOARDING,131,3,True,still:59; bike:56; -:16,drop:SKATEBOARDING:131
+STATIONARY_BIKE,86,2,True,bike:86,drop:STATIONARY_BIKE:86
+TREADMILL,164,2,True,run:131; walk:33,drop:TREADMILL:164
+ELLIPTICAL_MACHINE,233,2,True,still:197; run:36,drop:ELLIPTICAL_MACHINE:233
+WHEELCHAIR,9,1,True,still:9,drop:WHEELCHAIR:9
+USING_CRUTCHES,0,0,True,,
+MOTORBIKE,86,1,False,car:86,check:MOTORBIKE:86
+ON_A_TRAIN,344,5,False,train:344,ok:342; conflict:2
+ON_A_BUS,1794,31,False,bus:1794,ok:1793; conflict:1
+IN_A_CAR,6083,33,False,car:6082; bus:1,ok:6082; conflict:1
+STROLLING,806,11,False,walk:574; car:193; still:39,ok:806
+HIKING,0,0,False,,
+STANDING_AND_MOVING,29754,58,False,still:29124; car:440; walk:158; bus:32,ok:29675; drop:SKATEBOARDING:59; drop:ELEVATOR:20
+STANDING_IN_PLACE,8028,59,False,still:7903; bus:115; car:5; train:4; walk:1,ok:7947; drop:ELEVATOR:63; drop:ON_A_BOAT:18
+WALKING,22517,60,False,walk:22134; car:359; -:16; bus:6; train:2,ok:22349; drop:ELEVATOR:117; drop:TREADMILL:33; drop:SKATEBOARDING:16; conflict:2
+RUNNING,1335,28,False,run:1090; -:245,ok:908; unlabelled:245; drop:TREADMILL:131; drop:ELLIPTICAL_MACHINE:36; conflict:15
+BICYCLING,5020,25,False,bike:5020,ok:4878; drop:STATIONARY_BIKE:86; drop:SKATEBOARDING:56
+LIMPING,62,1,False,walk:41; still:21,ok:62
+JUMPING,29,1,False,-:29,unlabelled:29
+PHONE_AWAY_FROM_ME,17937,27,False,still:16131; car:667; walk:623; -:401; run:115,ok:17501; unlabelled:401; drop:ELEVATOR:35
+PHONE_STRAPPED,27,1,False,still:27,ok:27
