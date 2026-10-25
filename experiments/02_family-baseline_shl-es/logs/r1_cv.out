@@ -1,0 +1,7 @@
+{'fold': 0, 'rounds': 202, 'n_trees': 1616, 'model_bytes': 5718747, 'shl_class_f1': 0.782, 'shl_family_f1': 0.868, 'es_class_f1': 0.251, 'es_family_f1': 0.312}
+{'fold': 1, 'rounds': 111, 'n_trees': 888, 'model_bytes': 3149085, 'shl_class_f1': 0.75, 'shl_family_f1': 0.82, 'es_class_f1': 0.249, 'es_family_f1': 0.31}
+{'fold': 2, 'rounds': 257, 'n_trees': 2056, 'model_bytes': 7268771, 'shl_class_f1': 0.75, 'shl_family_f1': 0.851, 'es_class_f1': 0.251, 'es_family_f1': 0.314}
+{'fold': 3, 'rounds': 129, 'n_trees': 1032, 'model_bytes': 3659666, 'shl_class_f1': 0.747, 'shl_family_f1': 0.834, 'es_class_f1': 0.274, 'es_family_f1': 0.351}
+{'fold': 4, 'rounds': 458, 'n_trees': 3664, 'model_bytes': 12933430, 'shl_class_f1': 0.743, 'shl_family_f1': 0.832, 'es_class_f1': 0.248, 'es_family_f1': 0.314}
+{'shl_class_macro_f1': 0.755, 'shl_family_macro_f1': 0.842, 'folds_shl_class_f1_std': np.float64(0.016), 'es_class_macro_f1': 0.259, 'es_family_macro_f1': 0.32, 'es_family_macro_f1_ci_lo': 0.286, 'es_family_macro_f1_ci_hi': 0.35, 'model_bytes_mean': 6545939.8, 'lat_features_ms_p50': 2.096, 'lat_model_ms_p50': 0.045}
+motorbike -> {'road': 269, 'rail': 71, 'foot': 41, 'bike': 28, 'still': 7}

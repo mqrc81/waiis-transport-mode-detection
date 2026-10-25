@@ -1,0 +1,2 @@
+SHL: 635987 windows (99.5% pure) -> shl_u1_25hz_w5s_s2.5s_feat-v1.parquet
+ES dev: 1364126 windows from 227128 minutes; snippets {'ok': 227128, 'hole_over_0.5s': 1482, 'span_over_40s': 122, 'overlap_under_5s': 418, 'time_not_increasing': 759, 'missing_acc_or_gyro': 16261}

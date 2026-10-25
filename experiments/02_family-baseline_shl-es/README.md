@@ -268,6 +268,167 @@ search. Usable minutes:
 
 Splits approved 2026-10-25 and written to `splits/` (one row per SHL day; one row per ExtraSensory user).
 
+### Step 2: features per 5 s window, R1 with cross-validation (2026-10-25) — **stop-point**
+
+**Commands** (from this folder):
+
+```
+uv run python make_features.py --workers 6   # <data>/processed/{shl_u1,es_dev}_25hz_w5s_s2.5s_feat-v1.parquet (~6 min)
+uv run python r1_cv.py --seed 0              # MLflow run R1_lgbm_feat-v1_seed0; preds and models in
+                                             # <data>/processed/02_family-baseline_shl-es/r1_25hz_w5s_s2.5s_feat-v1_seed0/
+```
+
+MLflow run: `c615aedd62da40159a0b65113820aad1` (experiment `02_family-baseline_shl-es`, commit `7f435c5`,
+**dirty**: the step-2 code below was not yet committed when it ran). Window counts are in
+`results/features_counts.json`.
+
+**Shared code added in `src/tmd`:**
+- `resample.py`: everything goes onto a uniform 100 Hz grid, then `resample_poly(x, 1, 4, padtype="line")`
+  (Kaiser FIR low-pass + decimation to 25 Hz).
+  - SHL: per NaN-free stretch.
+  - ExtraSensory: per snippet, with linear interpolation onto 100 Hz inside the snippet only, over the acc ∩ gyro
+    time range. Acc units are decided per snippet (median |acc| < 3 → g → × 9.80665).
+- `windows.py`: 5 s windows; label = majority; pure = one label throughout.
+- `features.py`: features v1.
+- `evaluate.py`: macro-F1, recall, confusion matrices, user bootstrap, latency.
+
+**Windows:**
+- 5 s = 125 samples. The 2.5 s stride is 62.5 samples, so starts are ⌊k · 62.5⌋ (strides alternate 62 / 63).
+- Windows whose majority label is Null are removed.
+- SHL User 1 (dev days only): 635,987 windows, 99.5% pure. Hips 562,925; Hand / Torso / Bag about 24,350 each
+  (3 days). Training uses pure windows; evaluation uses all of them.
+- ExtraSensory dev users (48): 1,364,126 windows from 227,128 minutes (labelled `ok` + motorbike check).
+
+**Features v1** (`tmd.features`): 145 = 5 channels × 29.
+- Channels, all independent of phone orientation: |a|; vertical a (projected on gravity); horizontal |a|; |ω|; jerk
+  |da/dt|. Gravity is a 2nd-order Butterworth low-pass at 0.3 Hz, run forward-backward **inside each window**, so a
+  window's features depend on that window alone.
+- Per channel:
+  - mean, std, min, max, p5/25/50/75/95, IQR, skew, kurtosis, mean |diff|, mean-crossing rate;
+  - ACF peak and its lag over 0.2–2 s; Hjorth mobility and complexity;
+  - Welch PSD (64-sample segments, 50% overlap): log and relative energy in 0–1 / 1–3 / 3–6 / 6–12.5 Hz, dominant
+    frequency, spectral centroid, normalised spectral entropy.
+- A test rotating a noisy synthetic window changes every feature by < 4e-6 relative.
+- Python cost: 0.04 ms per window in batch.
+
+**Reference: arXiv 2407.11048** ("Signal Sleuths", SHL 2024; the paper itself doesn't say it won). Their setup:
+- 100 Hz, non-overlapping 5 s windows.
+- acc, gyro, mag; per modality, the magnitude of the raw signal, of its 1st and 2nd gradient, and of its integral;
+  raw axes pooled across x, y, z as mean/std or sorted.
+- About 70 features per signal (980 in total): 17 PSD/DCT bands from 0.1 to 50 Hz on z-normalised signals, centroid
+  and bandwidth, ACF stats, zero-crossing rate and slope sign change, entropies, Hjorth, Katz fractal dimension.
+- Magnitude-based time-domain features (quantiles, mean, std) are deliberately left out.
+- CatBoost (1000 iterations, balanced class weights), no smoothing.
+
+What I took from it: the jerk-magnitude channel and Hjorth / spectral centroid. Differences, on purpose:
+- 25 Hz caps the bands at 12.5 Hz.
+- We keep magnitude statistics. They separate still from vehicles, and 02's test is whether that holds across datasets.
+- We use vertical/horizontal projections (brief) instead of gradient/integral magnitudes.
+- No magnetometer (experiment 03).
+
+**Model and protocol (R1).**
+- LightGBM multiclass on the 8 classes:
+  - learning rate 0.1, 31 leaves, min_child_samples 50, feature/bagging fraction 0.8, L2 1;
+  - class weights balanced on the training windows; seed 0.
+- Family probability = sum of the class probabilities; family prediction = argmax of that.
+- Per fold k:
+  - number of rounds: early stopping (patience 30, multi-logloss) on day-fold (k+1) mod 5, trained on the other 3
+    training folds. Only training data is used.
+  - Then a refit on all 4 training folds with that number of rounds.
+- No hyperparameter search; the values above are fixed defaults.
+- ExtraSensory dev users are never trained on in R1, so every one of them is cross-dataset. They are scored with
+  the **mean of the 5 fold models' probabilities**. The 95% CI comes from resampling the 48 users (1000 draws).
+- Macro-F1 averages only the classes present in the evaluated data (subway is absent from ExtraSensory). Predicting
+  an absent class still counts as an error.
+
+#### R1 results
+
+| eval set | n windows | macro-F1 8 classes | macro-F1 family |
+|---|---|---|---|
+| SHL User 1, out-of-fold, all positions | 635,987 | **0.755** (folds 0.754 ± 0.016) | **0.842** (folds 0.841 ± 0.019) |
+| SHL, pure windows only | 632,869 | 0.756 | 0.843 |
+| SHL Hips (76 days) | 562,925 | 0.776 | 0.859 |
+| SHL Hips, the 3 four-phone days only | 24,358 | 0.725 | 0.827 |
+| SHL Torso (3 days) | 24,352 | 0.597 | 0.726 |
+| SHL Bag (3 days) | 24,356 | 0.692 | 0.807 |
+| SHL Hand (3 days) | 24,354 | 0.510 | 0.590 |
+| **ExtraSensory dev users (cross-dataset)** | 1,363,710 | **0.259** (95% CI over users 0.223–0.307) | **0.320** (0.286–0.350) |
+| ES iPhone | 989,746 | 0.284 | 0.352 |
+| ES Android | 373,964 | 0.225 | 0.276 |
+| ES in pocket | 108,052 | 0.311 | 0.399 |
+| ES in bag | 58,006 | 0.282 | 0.390 |
+| ES in hand | 71,771 | 0.320 | 0.285 |
+| ES on table | 499,760 | 0.092 | 0.101 |
+| ES no position | 626,121 | 0.260 | 0.328 |
+
+The single fold models on ExtraSensory give family 0.320 ± 0.017, the same as the ensemble.
+
+**Per-class recall:**
+
+| | still | walk | run | bike | car | bus | train | subway |
+|---|---|---|---|---|---|---|---|---|
+| SHL (out-of-fold) | 0.835 | 0.946 | 0.979 | 0.929 | 0.748 | 0.565 | 0.574 | 0.472 |
+| ExtraSensory | 0.273 | 0.430 | 0.087 | 0.579 | 0.367 | 0.245 | 0.352 (1,051 windows / 342 min, 4 users) | – |
+
+| family recall | still | foot | bike | road | rail |
+|---|---|---|---|---|---|
+| SHL | 0.782 | 0.957 | 0.925 | 0.798 | 0.757 |
+| ExtraSensory | 0.188 | 0.420 | 0.569 | 0.611 | 0.660 |
+
+**Confusion matrices:**
+- MLflow figures `cm_{shl,es}_{class,family}.png`; counts in `tables.json`.
+- SHL: rail ↔ road (19k rail → road, 31k road → rail) and rail ↔ still (19k rail → still, 15k still → rail).
+- SHL within-family errors: bus is recalled at 0.57 (rest mostly → car); train ↔ subway.
+- **Rail false positives on ExtraSensory are the main failure:**
+  - 64.8% of still windows and 23.7% of road windows are predicted rail.
+  - Family confusion of ES still (1.17M windows): rail 760k, road 164k, still 220k, foot 22k, bike 7k.
+
+**Why ExtraSensory still fails (diagnosis, not tuned).** Units and resampling look right:
+- ES train and car feature medians match SHL train and car (acc std 0.172 vs 0.175 for train, 0.386 vs 0.509 for
+  car; |a| mean ≈ 9.81 everywhere).
+- ExtraSensory still is a different physical state. 42% of its still windows have the phone on a table, and those
+  are far quieter than any SHL still window: median acc std 0.015 vs 0.029 m/s², |ω| 0.003 vs 0.024 rad/s, jerk 0.39
+  vs 1.15. SHL's phones are always on the body, so a resting phone is outside the training range, and the trees send
+  it to rail or road.
+- ES still in a pocket is close to SHL still (acc std 0.056, |ω| 0.046), and its family F1 is the best (0.40). Still
+  recall there is only 0.40, though: pocket still in ES is livelier than SHL still.
+- This is the cross-dataset gap R2 (step 4) is meant to measure. It also shows that SHL alone doesn't cover a phone
+  resting on a surface.
+
+**Motorbike check** (86 minutes, 416 windows, one user, never trained on):
+- Family: road 269, rail 71, foot 41, bike 28, still 7.
+- Classes: car 180, bus 91, subway 48, walk 41, bike 34, train 13, still 9.
+- So R1 mostly calls it road (65%). This is one model and one user, and that user's still is also misread, so it's
+  only a first hint that motorbike folds into road.
+
+**Size and latency** (fold models; ONNX in step 5):
+- Model size: LightGBM text model 6.5 MB on average (3.1–12.9 MB), 1,851 trees on average (8 classes × 111–458
+  rounds). **This is over the 2 MB ceiling** (DECISIONS 2026-10-23).
+- Latency per window, single thread, after 50 warm-up calls, 500 calls (Apple Silicon, Python):
+  - features: median 2.10 ms, p95 2.14 ms (numpy/scipy per-call overhead; 0.04 ms per window in batch);
+  - model: median 0.045 ms, p95 0.048 ms.
+
+#### Deviations (step 2)
+- **Extra ExtraSensory snippet drops**, besides the approved ones (time not increasing: 759; span over 40 s: 122):
+  - hole over 0.5 s inside a snippet: 1,482;
+  - acc ∩ gyro overlap under 5 s: 418;
+  - acc or gyro file missing: 16,261 (mostly the 3 no-gyro users).
+
+  Of the 246,170 labelled dev minutes, 227,128 remain (`resample.es_snippet_to_25hz`).
+- **The top band is 6–12.5 Hz**, not 6–12, so it runs to Nyquist.
+- **One seed** (0). The fold spread (± 0.02) is reported instead of a seed spread.
+- **Fixed LightGBM hyperparameters** (no search). Only the number of rounds comes from the inner fold.
+- **PHONE_ON_TABLE is not subsampled**: R1 doesn't train on ExtraSensory, and evaluation keeps every minute. The cap
+  applies from step 4 (R2).
+
+#### Open questions (step 2)
+1. **Model size.** The 2 MB ceiling is missed by 1.5–6×. Should step 3 already use a smaller configuration (e.g. 15
+   leaves, learning rate 0.2, a round cap), or leave size to step 5 and compare at equal size there?
+2. **Python feature latency** (2.1 ms) is mostly call overhead. The on-phone number needs a native implementation;
+   step 5 will measure the ONNX model, and the features separately.
+3. **SHL Hand is weak** (family 0.59). It has only 3 days, in folds 1, 2 and 4, so each held-out Hand day is predicted by a model trained on the other 2 Hand days. Step 3 keeps
+   reporting it separately.
+
 ## Conclusion
 
 *(not yet)*

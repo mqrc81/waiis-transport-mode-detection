@@ -1,0 +1,30 @@
+{
+ "shl": {
+  "recording_positions": 99,
+  "windows": 635987,
+  "pure": 632869,
+  "stretches_under_5s": 0,
+  "windows_per_position": {
+   "Hips": 562925,
+   "Bag": 24356,
+   "Hand": 24354,
+   "Torso": 24352
+  }
+ },
+ "es_dev": {
+  "users": 48,
+  "windows": 1364126,
+  "minutes_by_outcome": {
+   "ok": 227128,
+   "hole_over_0.5s": 1482,
+   "span_over_40s": 122,
+   "overlap_under_5s": 418,
+   "time_not_increasing": 759,
+   "missing_acc_or_gyro": 16261
+  },
+  "windows_by_reason": {
+   "ok": 1363710,
+   "check:MOTORBIKE": 416
+  }
+ }
+}
