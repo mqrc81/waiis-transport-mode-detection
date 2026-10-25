@@ -422,12 +422,80 @@ The single fold models on ExtraSensory give family 0.320 ± 0.017, the same as t
   applies from step 4 (R2).
 
 #### Open questions (step 2)
-1. **Model size.** The 2 MB ceiling is missed by 1.5–6×. Should step 3 already use a smaller configuration (e.g. 15
-   leaves, learning rate 0.2, a round cap), or leave size to step 5 and compare at equal size there?
-2. **Python feature latency** (2.1 ms) is mostly call overhead. The on-phone number needs a native implementation;
-   step 5 will measure the ONNX model, and the features separately.
-3. **SHL Hand is weak** (family 0.59). It has only 3 days, in folds 1, 2 and 4, so each held-out Hand day is predicted by a model trained on the other 2 Hand days. Step 3 keeps
-   reporting it separately.
+1. ~~Model size~~ **Answered 2026-10-25 (Marc):** the model runs on an **edge server**, so 6.5 MB is well within
+   bounds. No shrinking; size and latency are still reported. CLAUDE.md, the block-1 brief ("phone model") and the
+   draft DECISIONS entry of 2026-10-23 (UniMTS "too large" against a 2 MB ceiling) predate this and are not yet
+   updated.
+2. **Python feature latency** (2.1 ms) is mostly call overhead. Step 5 measures it again (features and model
+   separately).
+3. **SHL Hand is weak** (family 0.59). It has only 3 days, in folds 1, 2 and 4, so each held-out Hand day is predicted
+   by a model trained on the other 2 Hand days. Step 3 keeps reporting it separately.
+
+### Step 2b: ExtraSensory label review per class (2026-10-25) — **proposal, awaits approval**
+
+Asked by Marc: a phone lying on a table should not make up 42% of still. Commands (from this folder):
+
+```
+uv run python es_label_review.py      # results/audit/es_label_review.csv: class x source label x position x label_source
+uv run python rescore_es_labels.py    # rules v2: results/audit/es_label_rules_v2_counts.csv; MLflow eval-only run
+```
+
+**What each class is made of** (all 60 users, `ok` minutes under the rules of step 1; `es_label_review.csv`).
+"Resting" = `PHONE_ON_TABLE` or original `PHONE_AWAY_FROM_ME`: the phone is not carried.
+
+| class | minutes | resting | position not reported | notes |
+|---|---|---|---|---|
+| still | 264,158 | 44% | 41% | SLEEPING 83,055 (31%): 93% of them on a table or unknown position, 5% away (a nightstand) |
+| walk | 22,173 | 932 | 51% | resting walk = the person walks, the phone stays behind |
+| run | 908 | 146 (16%) | 75% | same |
+| bike | 4,878 | 0 | 70% | |
+| car | 11,166 | 15.5% | 54% | phone on a seat or dashboard still rides along |
+| bus | 1,793 | 0 | 39% | |
+| train | 342 | 33% (112 on a table) | 12% | |
+
+`label_source` = 2 (history interface, labelled afterwards) for 86% of still and 54–82% of the moving classes (train 54%, the rest 69–82%).
+
+**Rules v2** (implemented in `tmd.extrasensory`):
+- `SLEEPING` still minutes → `drop:SLEEPING`.
+- Walk / run / bike with a resting phone → `drop:not_carried`.
+- Vehicles keep resting minutes.
+- Still: resting minutes are capped per user at 20% of that user's still minutes (`cap_resting_still`, seed 0), in
+  training and in evaluation. Uncapped resting still is kept as a diagnostic row.
+
+Counts, all users (`es_label_rules_v2_counts.csv`):
+- still 264,158 → 181,103 minutes after dropping SLEEPING → 118,604 after the cap. The resting share is 13.9% (the
+  cap is per user, so users with few carried still minutes lose more).
+- walk −932 and run −146 (not carried).
+- Other classes unchanged.
+
+**R1 rescored on the ExtraSensory dev users under v2** (MLflow `32b5199f1bed4fb7bf62ea7493ac9799`, eval-only, same
+predictions as `c615aedd…`, dirty):
+
+| ES dev | macro-F1 8 classes | macro-F1 family | still recall (family) | rail FP on still | rail FP on road |
+|---|---|---|---|---|---|
+| step 1 rules | 0.259 | 0.320 (0.286–0.350) | 0.188 | 64.8% | 23.7% |
+| rules v2 | 0.295 (0.254–0.353) | 0.366 (0.328–0.395) | 0.236 | 57.6% | 23.7% |
+| v2 + still only with a reported carried position (variant B) | – | 0.418 | 0.283 | – | – |
+
+**What v2 does not fix.** Still is still mostly predicted rail. Two reasons, both in the dev windows:
+- **Unknown position is often a resting phone too.** 49% of still windows with no position label are as quiet as a
+  phone on a table (median |ω| < 0.006 rad/s). For bag it's 57%. In SHL only 6.8% of still windows are that quiet
+  (≤ 1.8% for any other class). Quiet still windows are predicted rail 77% of the time.
+- **Even carried still differs from SHL still.** With the phone in a pocket (not resting), only 40% are predicted
+  still and 40% rail. That is a cross-dataset gap no label rule removes. R2 (step 4) adds ExtraSensory to training.
+
+**Variant B** (not implemented, for decision): still only when a carried position (pocket / hand / bag) is reported,
+plus resting minutes capped at 20%. Still minutes with no position label are left out of training and reported as
+their own row.
+- Dev still drops to 31,207 minutes, which is still more than walk.
+- Family F1 rises to 0.418 (still recall 0.283).
+- Cost: 72% of still minutes, and a still class built only from users who report positions.
+
+**Questions:**
+1. Approve v2 (drop sleeping, drop not-carried foot/bike, cap resting still at 20%)? Is 20% the right cap?
+2. Also take variant B (still needs a reported carried position)?
+
+The splits are not affected: they were chosen on bus / car / bike / train / platform, which v2 leaves unchanged.
 
 ## Conclusion
 

@@ -42,6 +42,12 @@ DROP = ["ELEVATOR", "ON_A_PLANE", "ON_A_BOAT", "RIDING_AN_ANIMAL", "SKATEBOARDIN
 # Kept out of training but labelled, as a separate check of what models call them (reason 'check:<label>').
 CHECK = ["MOTORBIKE"]
 POSITION_LABELS = ["PHONE_IN_POCKET", "PHONE_IN_HAND", "PHONE_IN_BAG", "PHONE_ON_TABLE"]
+# Phone not carried: on a table or away from the user (02 label review, 2026-10-25). For walk / run / bike the
+# label then describes the person, not the phone, so those minutes are dropped ('drop:not_carried'). Vehicles keep
+# them (the phone still rides along). In still they are capped per user, see `cap_resting_still`.
+RESTING_LABELS = ["PHONE_ON_TABLE", "orig:PHONE_AWAY_FROM_ME"]
+FOOT_BIKE = ["walk", "run", "bike"]
+RESTING_STILL_MAX_SHARE = 0.2
 
 
 def uuids() -> list[str]:
@@ -104,10 +110,15 @@ def minute_classes(clean: pd.DataFrame, orig: pd.DataFrame) -> pd.DataFrame:
     reason[n_moving > 1] = "conflict"
     for d, m in drop.items():
         reason[m] = "drop:" + d
+    resting = np.any([pos(c) for c in RESTING_LABELS], axis=0)
+    ok = reason == "ok"
+    reason[ok & (cls == "still") & pos("SLEEPING")] = "drop:SLEEPING"          # phone on the nightstand
+    reason[ok & np.isin(cls, FOOT_BIKE) & resting] = "drop:not_carried"
     for d in CHECK:
         reason[pos("orig:" + d)] = "check:" + d
     out = pd.DataFrame({"cls": cls, "reason": reason, "label_source": clean["label_source"].to_numpy()},
                        index=clean.index)
+    out["resting"] = resting
     out["moving"] = ["+".join(c for c in MOVING if hit[c][i]) for i in range(len(clean))]
     for p in POSITION_LABELS:
         out[p] = pos(p) | pos("orig:" + p)
@@ -115,6 +126,25 @@ def minute_classes(clean: pd.DataFrame, orig: pd.DataFrame) -> pd.DataFrame:
                        for i in range(len(out))]
     out["y"] = [CLASS_ID.get(c, 0) if r == "ok" else 0 for c, r in zip(cls, reason)]
     return out
+
+
+def cap_resting_still(minutes: pd.DataFrame, max_share: float = RESTING_STILL_MAX_SHARE,
+                      seed: int = 0) -> np.ndarray:
+    """Keep-mask over minutes (columns user, ts, cls, resting): per user, resting-phone still minutes are subsampled
+    so that they are at most `max_share` of that user's still minutes. Other minutes are always kept."""
+    keep = np.ones(len(minutes), bool)
+    rng = np.random.default_rng(seed)
+    still = (minutes.cls == "still").to_numpy()
+    resting = minutes.resting.to_numpy(bool)
+    users = minutes.user.to_numpy()
+    for u in np.unique(users[still]):
+        mine = still & (users == u)
+        r = np.flatnonzero(mine & resting)
+        n_keep = min(len(r), int(max_share / (1 - max_share) * (mine & ~resting).sum()))
+        keep[r] = False
+        if n_keep:
+            keep[rng.choice(r, n_keep, replace=False)] = True
+    return keep
 
 
 def snippet_path(uuid: str, ts: int, sensor: str = "acc") -> Path:
@@ -131,3 +161,14 @@ def read_snippet(path: Path) -> np.ndarray | None:
         return None
     a = a.reshape(-1, 4)
     return None if np.isnan(a[:, 1:]).all() else a
+
+
+def minutes_table(users) -> pd.DataFrame:
+    """minute_classes for several users, with columns user and ts (one row per user-minute)."""
+    parts = []
+    for u in users:
+        m = minute_classes(read_cleaned_labels(u), read_original_labels(u))
+        parts.append(m.rename_axis("ts").reset_index().assign(user=u))
+    out = pd.concat(parts, ignore_index=True)
+    out["ts"] = out.ts.astype(int)
+    return out
