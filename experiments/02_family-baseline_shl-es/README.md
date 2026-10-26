@@ -821,6 +821,92 @@ The other configs are in the MLflow runs (`tables.json`, `cm_*.png`).
 3. ES-only stopped early at 7–31 rounds (see above). Is a rerun with a fixed number of rounds wanted, for a fairer
    ES-only line?
 
+### Status: parked (2026-10-26)
+
+Marc's decision: the next experiment is a label-efficiency study (LightGBM label curve with and without the
+gyroscope; LIMU-BERT pre-training + fine-tuning on a new day split). 02 is parked at this point.
+
+**Current candidate: base + HMM Viterbi on R2.** R2 window-only LightGBM (features v1), Viterbi with SHL-estimated
+transitions:
+- SHL User 1: 8-class 0.853 / family 0.890 (day folds, one user).
+- ExtraSensory dev users: 8-class 0.494 / family 0.583 (CI over users 0.541–0.620).
+- ES rail recall 0.37, ES still → rail 1.7%; SHL still → rail 32%.
+- Inference ~2.2 ms per window (Python), model 6.95 MB.
+
+**The context model's ExtraSensory numbers are invalid** (step 3, ctx / ctx + forward / ctx + Viterbi). The models
+use `ctx_n` (rank 1 of 277) as a dataset shortcut: always 24 windows on SHL, ~6 on ES. Their SHL numbers stand as
+within-dataset results. Their ES numbers must not be compared with the base configurations or used to choose a model.
+
+**Code added after step 3, not yet used in any run:**
+- `tmd.hmm.fixed_lag`: fixed-lag smoothing, P(state_t | windows up to t + lag). Checked on a synthetic sequence:
+  - lag 0 equals `forward` exactly;
+  - an unbounded lag equals full forward-backward exactly;
+  - a gap over 60 s splits the sequence into independent segments.
+- `derive_step2_tables.py`: rebuilds the two step-2 feature tables from the `*_all` tables. `--check` found them
+  identical: same rows and metadata, features equal with NaN = NaN.
+  - The step-2 tables were then deleted (approved 2026-10-26).
+  - `r1_cv.py`, `r2_cv.py` and `rescore_es_labels.py` read those tables, so run
+    `uv run python derive_step2_tables.py` before re-running them.
+- **Known issue in features v1:** `gyro_norm__skew` / `gyro_norm__kurt` are NaN on 1,996 of 1,716,072 ES windows
+  with an exactly constant gyroscope. `skew * (std > 1e-9)` keeps NaN, since NaN × 0 is NaN. LightGBM treats it as
+  missing. Not changed, to keep features v1 fixed.
+
+**Open items (not done):**
+1. **Step 3b, context fix:**
+   - remove `ctx_n` / `ctx_span_s`;
+   - train with ES-like duty-cycled context (≈ 20 s on / 40 s off) on part of the SHL sequences;
+   - check for remaining leaks with a dataset classifier on context features only (report its AUC);
+   - score SHL with continuous context and with ES-like gaps;
+   - compare forward filtering, fixed lag ~60 s and full Viterbi (a delay is acceptable on the server; use fixed lag
+     as default if it gets close to Viterbi).
+   - The fixed context model replaces the candidate only if it beats base + Viterbi on both datasets and stays honest
+     on ES rail and bus recall.
+2. **ExtraSensory-only rerun** with a fixed number of rounds (about R2's). Early stopping stopped it at 7–31 rounds.
+3. **Majority-vote comparison** (as a simpler smoother than the HMM).
+4. **Plan step 5:** ONNX export, and inference time and size measured on it. The numbers so far are Python
+   (LightGBM text model, numpy/scipy features).
+5. **MLflow export:** `results/runs.csv` is not exported yet (CLAUDE.md: once, when the experiment finishes). Until
+   then MLflow is the only record. All 02 runs are tagged dirty.
+
 ## Conclusion
 
-*(not yet)*
+**Draft — not approved**
+
+*Written from the Results section only; `runs.csv` is not exported yet (02 is parked, not finished).*
+
+**Answer to the question.** Hand-crafted orientation-independent features + LightGBM at 25 Hz, smoothed by an HMM,
+classify transport mode well within one SHL user, but much less well across users and datasets:
+
+| | 8 classes | family |
+|---|---|---|
+| SHL User 1, held-out days (R2 + Viterbi) | 0.853 | 0.890 |
+| ExtraSensory dev users, held-out users (R2 + Viterbi) | 0.494 | 0.583 (CI 0.541–0.620) |
+
+- **Across datasets, training data matter more than the model.**
+  - SHL alone does not transfer to ExtraSensory: family 0.362. ExtraSensory still is quieter than anything in SHL,
+    and is read as rail 55% of the time.
+  - Adding ExtraSensory users (R2) fixes this on ExtraSensory (family 0.489, still → rail 7%). It costs SHL still:
+    48% → rail without HMM, 32% with Viterbi.
+  - ExtraSensory alone is worse on ExtraSensory (family 0.403) and almost never predicts rail. Its early stopping
+    may have underfit it.
+- **The HMM is the cheapest gain.** Viterbi adds +0.11 family F1 on SHL and +0.09 on ExtraSensory over the
+  window-only model, at no per-window cost. It raises SHL bus recall 0.56 → 0.85 and train 0.58 → 0.77.
+- **60 s context helps within SHL** (family 0.930 with Viterbi; SHL still → rail 16%). As built, though, it encodes
+  the dataset through the context length, so its cross-dataset value is unknown until step 3b.
+- **Label rules matter for ExtraSensory still.** Without v2, a phone lying on a table made up 44% of still and
+  sleeping 31%.
+- **Car vs bus and train vs subway stay weak across datasets.** ES bus recall is 0.24 and ES rail recall 0.37 with
+  Viterbi. This supports the brief's plan to resolve them per leg with GPS (05). Rail on ExtraSensory rests on 4
+  self-reported users, so SHL is the reference for still vs rail.
+- **Cost:** about 2.2 ms per window in Python, almost all feature extraction; the model takes 0.03 ms. The
+  LightGBM model is 6.95 MB (edge server: no size limit).
+
+**Limits.**
+- SHL is one user (split by day).
+- ExtraSensory rail comes from 4 self-reported users.
+- One seed, no hyperparameter search.
+- Inference times are from Python, not ONNX.
+- All runs are dirty.
+- The context-model ES numbers are invalid.
+
+No `DECISIONS.md` entry: choosing the candidate doesn't change the project's direction.
