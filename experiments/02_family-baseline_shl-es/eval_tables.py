@@ -62,6 +62,9 @@ def evaluate(shl: pd.DataFrame | None, shl_p: np.ndarray | None, es_w: pd.DataFr
                  [(f"shl_{p.lower()}", (shl.position == p).to_numpy()) for p in ["Hips", "Hand", "Torso", "Bag"]]
         for name, sel in groups:
             block(name, y[sel], p8[sel], pf[sel], fig=(name == "shl"))
+        fam = to_family(y)
+        metrics["shl_still_to_rail"] = float((pf[fam == 1] == 5).mean())    # family level
+        metrics["shl_rail_to_still"] = float((pf[fam == 5] == 1).mean())
 
     if es_w is not None:
         y = es_w.y.to_numpy()
@@ -93,6 +96,8 @@ def evaluate(shl: pd.DataFrame | None, shl_p: np.ndarray | None, es_w: pd.DataFr
             sel = main & (fam == fid)
             metrics[f"es_rail_fp_rate_on_{src}"] = float((pf[sel] == 5).mean())
         metrics["es_train_windows"] = int((main & (y == 7)).sum())
+        metrics["es_still_to_rail"] = float((pf[main & still] == 5).mean())
+        metrics["es_rail_to_still"] = float((pf[main & (fam == 5)] == 1).mean())
         moto = (es_w.reason == "check:MOTORBIKE").to_numpy()
         tables["es_motorbike_pred_family"] = pd.Series(pf[moto]).map(dict(enumerate(FAMILIES, 1))).value_counts().to_dict()
         tables["es_motorbike_pred_class"] = pd.Series(p8[moto]).map(dict(enumerate(CLASSES, 1))).value_counts().to_dict()

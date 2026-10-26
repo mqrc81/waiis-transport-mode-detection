@@ -1,6 +1,9 @@
 """Step 2: 25 Hz windows (5 s, stride 2.5 s) and features v1 for the dev partitions only.
 
-Usage: uv run python make_features.py [--workers 6] [--only shl|es]
+Usage: uv run python make_features.py [--workers 6] [--only shl|es] [--all]
+--all (step 3, 2026-10-26): keep every window the phone would have produced, also SHL Null-majority windows and
+ExtraSensory minutes that are unlabelled or dropped (y = 0), so 60 s context is not filtered by labels. Output names
+get the suffix _all.
 Writes <data>/processed/{shl_u1_25hz_w5s_s2.5s_feat-v1, es_dev_25hz_w5s_s2.5s_feat-v1}.parquet (one row per window:
 metadata + features) and results/features_counts.json. Test days/users (splits/) are never read.
 """
@@ -37,7 +40,7 @@ def shl_jobs() -> list[tuple[shl.Recording, str, int]]:
     return [(r, p, fold[r.day]) for r in recs for p in r.positions]
 
 
-def shl_one(rec: shl.Recording, pos: str, fold: int) -> tuple[pd.DataFrame, dict]:
+def shl_one(rec: shl.Recording, pos: str, fold: int, keep_null: bool = False) -> tuple[pd.DataFrame, dict]:
     t, x = shl.read_motion(rec, pos, ("acc", "gyro"))
     _, y = shl.read_labels(rec)
     ok = ~np.isnan(x).any(1)
@@ -50,7 +53,7 @@ def shl_one(rec: shl.Recording, pos: str, fold: int) -> tuple[pd.DataFrame, dict
         x25, y25, t25 = decimate_100_to_25(x[lo:hi]), y[lo:hi:DOWN], t[lo:hi:DOWN]
         s = starts(len(x25))
         maj, pure = majority(y25, s)
-        keep = maj != 0
+        keep = np.ones(len(s), bool) if keep_null else maj != 0
         s, maj, pure = s[keep], maj[keep], pure[keep]
         if len(s) == 0:
             continue
@@ -62,9 +65,10 @@ def shl_one(rec: shl.Recording, pos: str, fold: int) -> tuple[pd.DataFrame, dict
     return df, {"stretches_under_5s": n_short}
 
 
-def es_one(uuid: str, fold: int, platform: str) -> tuple[pd.DataFrame, dict]:
+def es_one(uuid: str, fold: int, platform: str, keep_all: bool = False) -> tuple[pd.DataFrame, dict]:
     m = es.minute_classes(es.read_cleaned_labels(uuid), es.read_original_labels(uuid))
-    m = m[(m.reason == "ok") | m.reason.str.startswith("check:")]
+    if not keep_all:
+        m = m[(m.reason == "ok") | m.reason.str.startswith("check:")]
     parts, cnt = [], Counter()
     for ts, row in m.iterrows():
         acc = es.read_snippet(es.snippet_path(uuid, int(ts), "acc"))
@@ -94,7 +98,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--only", choices=["shl", "es"])
+    ap.add_argument("--all", action="store_true")
     a = ap.parse_args()
+    suffix = "_all" if a.all else ""
+    out_shl, out_es = (OUT_SHL.with_name(OUT_SHL.stem + suffix + ".parquet"),
+                       OUT_ES.with_name(OUT_ES.stem + suffix + ".parquet"))
     logging.basicConfig(filename=HERE / "logs" / "make_features.log", filemode="a", level=logging.INFO,
                         format="%(asctime)s %(message)s")
     log = logging.getLogger()
@@ -104,28 +112,28 @@ def main():
     if a.only in (None, "shl"):
         jobs = shl_jobs()
         with ProcessPoolExecutor(a.workers) as ex:
-            res = list(ex.map(shl_one, *zip(*jobs)))
+            res = list(ex.map(shl_one, *zip(*jobs), [a.all] * len(jobs)))
         for (r, p, _), (df, c) in zip(jobs, res):
             log.info("shl %s %s %s: %d windows %s", r.session, r.rec, p, len(df), c)
         df = pd.concat([d for d, _ in res], ignore_index=True)
-        df.to_parquet(OUT_SHL)
-        counts["shl"] = {"recording_positions": len(jobs), "windows": len(df), "pure": int(df.pure.sum()),
+        df.to_parquet(out_shl)
+        counts["shl" + suffix] = {"recording_positions": len(jobs), "windows": len(df), "pure": int(df.pure.sum()),
                          "stretches_under_5s": sum(c["stretches_under_5s"] for _, c in res),
                          "windows_per_position": df.position.value_counts().to_dict()}
-        print(f"SHL: {len(df)} windows ({df.pure.mean():.1%} pure) -> {OUT_SHL.name}")
+        print(f"SHL: {len(df)} windows ({df.pure.mean():.1%} pure) -> {out_shl.name}")
 
     if a.only in (None, "es"):
         u = es_users()
         dev = u[u.partition == "dev"]
         with ProcessPoolExecutor(a.workers) as ex:
-            res = list(ex.map(es_one, dev.uuid, dev.fold, dev.platform))
+            res = list(ex.map(es_one, dev.uuid, dev.fold, dev.platform, [a.all] * len(dev)))
         tot = Counter()
         for uid, (df, c) in zip(dev.uuid, res):
             log.info("es %s: %d windows %s", uid, len(df), c)
             tot.update(c)
         df = pd.concat([d for d, _ in res], ignore_index=True)
-        df.to_parquet(OUT_ES)
-        counts["es_dev"] = {"users": len(dev), "windows": len(df), "minutes_by_outcome": dict(tot),
+        df.to_parquet(out_es)
+        counts["es_dev" + suffix] = {"users": len(dev), "windows": len(df), "minutes_by_outcome": dict(tot),
                             "windows_by_reason": df.reason.value_counts().to_dict()}
         print(f"ES dev: {len(df)} windows from {df.groupby(['user', 'ts']).ngroups} minutes; snippets {dict(tot)}")
 

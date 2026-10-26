@@ -643,6 +643,184 @@ updated, and `tmd.evaluate.inference_latency` / `model_size_bytes` compute (c) a
    `SITTING` / `OR_standing` → still. `LYING_DOWN` is gone, which v2 keeps. Which is right? It affects about 23k
    non-sleeping lying minutes (all users).
 
+### ExtraSensory-only model (before step 3, asked 2026-10-26) — reported with step 3
+
+**Command:** `uv run python r2_cv.py --seed 0 --setup ES`
+- MLflow `c3800bfa1eb240c0b46e336ec8621668` (commit `30aeaeb`, dirty: the `--setup` option and the new still/rail
+  metrics in `eval_tables.py` were not yet committed).
+- Same paired folds and tables as R2, but trained on ES dev user-folds only (labels v2 + cap). SHL day-fold k is
+  scored by the fold-k model, so for this model SHL is an unseen dataset.
+
+| | R1 (SHL only) | ES only | R2 (SHL + ES) |
+|---|---|---|---|
+| **SHL macro-F1, 8 classes / family** | 0.755 / 0.842 | 0.480 / 0.602 | 0.723 / 0.784 |
+| **ES macro-F1, 8 classes / family (v2, main)** | 0.288 / 0.362 | 0.331 / 0.403 (CI 0.361–0.438) | 0.400 / 0.489 (CI 0.447–0.521) |
+| ES, still carried only, family | 0.425 | 0.443 | 0.513 |
+| SHL still recall (family) | 0.782 | 0.554 | 0.429 |
+| SHL rail recall (family) | 0.757 | 0.172 | 0.792 |
+| **SHL still → rail** | 16.6% | 6.3% | 48.2% |
+| SHL rail → still | 11.7% | 11.3% | 6.1% |
+| ES still (v2) recall (family) | 0.249 | 0.583 | 0.754 |
+| ES still, carried only, recall (family) | 0.334 | 0.423 | 0.662 |
+| ES rail recall (family; 1,051 windows, 4 users) | 0.616 | **0.009** | 0.414 |
+| **ES still → rail** | 54.8% | 2.9% | 7.3% |
+| ES rail → still | 6.8% | 21.0% | 22.7% |
+| model size (mean of folds) | 6.55 MB | 0.35 MB | 6.95 MB |
+| inference per window, median / p95 | 2.11 / 2.30 ms | 2.04 / 2.11 ms | 2.15 / 2.75 ms |
+
+R1 and R2 ES columns are the fold-matched / paired-fold numbers of step 4.
+
+ES-only, more detail:
+- Per class (ES recall): still 0.674, walk 0.528, run 0.242, bike 0.592, car 0.507, bus 0.270, train 0.029.
+- On SHL: still 0.697, walk 0.733, run 0.981, bike 0.677, car 0.432, bus 0.417, train 0.285, subway 0.000.
+- By carry state (ES family F1): carried 0.397, not carried 0.447, unknown 0.401.
+- ES still → rail: carried 3.8%, not carried 3.5%, unknown 2.3%.
+- Motorbike: road 335, foot 45, still 16, rail 12, bike 8.
+
+**Reading:**
+- **ES alone is not enough, even on ES.** ES family F1 is 0.403 (CI 0.361–0.438), below R2 (0.489, CI 0.447–0.521).
+  It barely learns rail: train comes from 4 dev users, and in each fold 1–2 of them are held out.
+- **Without SHL, still is rarely called rail on either dataset** (SHL 6%, ES 3%). Rail is almost never predicted.
+  The high still → rail of R2 on SHL (48%) therefore comes from combining the two still definitions with SHL's rail.
+- **SHL as an unseen dataset for the ES model:** 0.602 family. Train and subway are almost never recognised (SHL rail
+  recall 0.17).
+- **Caveat: early stopping stopped ES-only very early**, at 7–31 rounds (56–248 trees; R2: 94–599 rounds). The inner
+  fold is a handful of held-out users with balanced class weights, so the validation loss turns up after a few rounds.
+  ES-only may be underfit by this rule. This was not tuned further: no test-informed change.
+
+### Step 3 (on R2): 60 s context features + HMM (2026-10-26) — **stop-point**
+
+**Commands** (from this folder):
+
+```
+uv run python make_features.py --workers 4 --all   # all-window tables *_all.parquet (incl. SHL Null, ES unlabelled/dropped minutes)
+uv run python step3_context_hmm.py --seed 0          # 6 MLflow runs step3_{base,base+fwd,base+vit,ctx,ctx+fwd,ctx+vit}_feat-v1_seed0
+```
+
+- MLflow runs: base `7db74d8c822b453f9120a17b60cb9d27`, base+fwd `cfdf3eb45283465fbe7b5de25b62ac17`, base+vit
+  `3b5fdbda11ef49ddac5f30521b75c715`, ctx `3a47f096d01a4b078c4590fd73870fe9`, ctx+fwd
+  `4de65e9be527484f8928d0a15f8272e9`, ctx+vit `adc06318617746a7860aac50db377029`.
+- All runs are at commit `30aeaeb` and **dirty** (step-3 code uncommitted when run).
+- Outputs: `<data>/processed/02_family-baseline_shl-es/step3_25hz_w5s_s2.5s_feat-v1_seed0/`.
+
+**Protocol** (shared code: `tmd.context`, `tmd.hmm`):
+- **All windows.** Context and HMM run over **every window the phone would have produced**, so the context is not
+  filtered by labels. Evaluation uses exactly the R2 windows.
+  - SHL: 1,027,556 windows including Null.
+  - ES dev: 1,716,072 windows from 284,996 minutes, labelled or not.
+  - `make_features.py --all` drops the same broken snippets as before.
+- **Context.** For each window, the mean and std over (t − 60 s, t] (causal) of 65 window features: 13 per channel
+  (mean, std, p50, p95, mean-crossing rate, ACF peak, Hjorth mobility, dominant frequency, spectral entropy, 4 band
+  log-energies). Plus `ctx_n` (windows in the context) and `ctx_span_s`. That's 132 extra features, 277 in total.
+  - Sequences: SHL = recording × position; ES = user, with minutes chained by time.
+  - ES window time = minute timestamp + 2.5 s × window index. The snippet's offset within the minute is unknown.
+- **Context coverage.** SHL: every evaluated window has a full 60 s context (24 windows). ES: on average **6.4
+  windows** in context, and **77.5%** of evaluated windows reach back into the previous minute (chained minutes).
+  The rest only see the earlier windows of their own snippet.
+- **ctx model.** LightGBM retrained on 277 features. Same training rows (SHL pure + ES v2 capped), paired folds,
+  inner early stopping and class weights as R2. Rounds: 42–205.
+- **HMM.**
+  - States = 8 classes. Emissions = classifier posteriors (balanced class weights, so treated as scaled likelihoods
+    under a uniform prior).
+  - Transition matrix per 2.5 s step, per fold, from **SHL training days only**: consecutive labelled windows,
+    +1 pseudo-count. ES labels are one per minute, so within a minute all ES transitions are self-transitions.
+  - A gap of k steps uses A^k; a gap over 60 s restarts the chain. ES's ~40 s gaps between snippets are bridged with
+    A^16.
+  - Two decoders: **forward filtering** (causal, per window, deployable as a stream) and **Viterbi** (offline,
+    whole sequence).
+- **Inference time (metric c).** Features + streaming 60 s context (`StreamingContext`) + model, plus one forward
+  step for +fwd. Single thread, after warm-up, fold-0 model. Viterbi is offline and has no per-window cost of its own.
+
+#### Results (paired folds; ES = labels v2, main)
+
+| config | SHL macro-F1 (8 / family) | ES macro-F1 (8 / family) [95% CI over users, family] | ES still carried only (family F1) | inference p50 / p95 | size |
+|---|---|---|---|---|---|
+| base (= R2) | 0.723 / 0.784 | 0.400 / 0.489 [0.447–0.521] | 0.513 | 2.22 / 2.46 ms | 6.95 MB |
+| base + forward | 0.837 / 0.879 | 0.476 / 0.566 [0.523–0.602] | 0.589 | 2.15 / 2.20 ms | 6.95 MB |
+| base + Viterbi | 0.853 / 0.890 | 0.494 / 0.583 [0.541–0.620] | 0.605 | (offline) | 6.95 MB |
+| ctx | 0.851 / 0.898 | 0.430 / 0.553 [0.506–0.604] | 0.569 | 2.14 / 2.18 ms | 3.03 MB |
+| ctx + forward | 0.875 / 0.917 | 0.447 / 0.582 [0.530–0.654] | 0.590 | 2.14 / 2.21 ms | 3.03 MB |
+| ctx + Viterbi | **0.891 / 0.930** | 0.459 / **0.599** [0.549–0.673] | 0.603 | (offline) | 3.03 MB |
+
+Inference time is dominated by Python feature extraction (≈ 2.1 ms). Streaming context and one forward step add
+< 0.1 ms (the differences between rows are timing noise).
+
+**Still and rail, separately per dataset** (family level). SHL is the main reference for still vs rail; ES rail is
+1,051 windows from 4 self-reported users.
+
+| config | SHL still recall | SHL rail recall | SHL still → rail | SHL rail → still | ES still recall (v2 / carried) | ES rail recall | ES still → rail (carried / not / unknown) | ES rail → still |
+|---|---|---|---|---|---|---|---|---|
+| base (= R2) | 0.429 | 0.792 | 48.2% | 6.1% | 0.754 / 0.662 | 0.414 | 7.3% (9.8 / 3.9 / 7.0) | 22.7% |
+| base + forward | 0.633 | 0.863 | 32.5% | 5.9% | 0.852 / 0.801 | 0.366 | 2.1% (2.0 / 1.0 / 2.4) | 24.7% |
+| base + Viterbi | 0.649 | 0.876 | 32.0% | 5.9% | 0.863 / 0.813 | 0.368 | 1.7% (1.5 / 0.8 / 1.9) | 24.6% |
+| ctx | 0.698 | 0.901 | 26.0% | 2.9% | 0.850 / 0.778 | **0.041** | 0.0% | 39.5% |
+| ctx + forward | 0.774 | 0.907 | 17.7% | 2.9% | 0.871 / 0.803 | **0.059** | 0.0% | 42.7% |
+| ctx + Viterbi | **0.804** | **0.917** | **15.8%** | 2.8% | 0.880 / 0.812 | **0.055** | 0.0% | 39.3% |
+
+For reference: R1 (SHL only, no context) had SHL still 0.782, rail 0.757, still → rail 16.6%.
+
+**Per-class recall (8 classes):**
+
+| config | data | still | walk | run | bike | car | bus | train | subway |
+|---|---|---|---|---|---|---|---|---|---|
+| base | SHL | 0.556 | 0.950 | 0.982 | 0.925 | 0.719 | 0.563 | 0.582 | 0.508 |
+| base + Viterbi | SHL | 0.649 | 0.988 | 0.991 | 0.975 | 0.900 | 0.845 | 0.768 | 0.718 |
+| ctx + Viterbi | SHL | 0.804 | 0.982 | 0.996 | 0.988 | 0.900 | 0.841 | 0.862 | 0.766 |
+| base | ES | 0.787 | 0.564 | 0.190 | 0.603 | 0.515 | 0.184 | 0.221 | – |
+| base + Viterbi | ES | 0.863 | 0.633 | 0.175 | 0.674 | 0.660 | 0.242 | 0.195 | – |
+| ctx + Viterbi | ES | 0.880 | 0.668 | 0.101 | 0.661 | 0.666 | **0.061** | **0.055** | – |
+
+The other configs are in the MLflow runs (`tables.json`, `cm_*.png`).
+
+**Per position (family F1):**
+- ctx + Viterbi on SHL: Hips 0.946, Hand 0.618, Torso 0.856, Bag 0.930.
+- ctx + Viterbi on ES: carried 0.616, not carried 0.594, unknown 0.565; iPhone 0.603, Android 0.531.
+- base + Viterbi on SHL: Hips 0.904, Hand 0.722, Torso 0.777, Bag 0.856.
+
+**Motorbike** (fold 4, user unseen): road 222–246 of 416 windows in every config (53–59%), then foot, still.
+
+#### Reading
+
+1. **The HMM helps everywhere and costs nothing per window.**
+   - Forward filtering, which is causal, gives +0.10 family F1 on SHL and +0.08 on ES over base. Viterbi adds another
+     ~0.01–0.02.
+   - SHL bus recall 0.56 → 0.85 and train 0.58 → 0.77 (base → base + Viterbi).
+   - ES still → rail 7% → 2%.
+2. **60 s context helps SHL most, and reduces the still/rail confusion there:**
+   - SHL still → rail falls from 48% (base) to 26% (ctx) and 16% (ctx + Viterbi), back to R1's level (17%). SHL
+     still recall is 0.80 and rail 0.92 for ctx + Viterbi.
+3. **But on ES the context model has learned a dataset shortcut.**
+   - `ctx_n`, the number of windows in the context, is the **most important feature** of the ctx models (11% of
+     the gain, rank 1 of 277).
+   - It is always 24 on SHL and ~6 on ES, so it tells the model which dataset a window comes from. ES has almost no
+     rail and little bus.
+   - So under ctx, ES rail recall drops 0.41 → 0.04–0.06 (mostly → still and road), ES bus 0.18–0.24 → 0.06–0.10,
+     and ES still → rail goes to exactly 0%.
+   - ES macro-F1 still rises (still, walk and car improve), but **ctx's ES numbers are not trustworthy as a
+     cross-user result**: part of the gain is "this is ES, so not rail".
+   - Production records continuously, so it would look like SHL (full context). ES's gappy context is the odd one
+     out.
+4. **Without context** (base + Viterbi), ES rail stays at 0.37 and ES still → rail at 1.7%. SHL still → rail is
+   32%, though.
+
+**Deviations (step 3):**
+- Step 3 ran on R2 after step 4.
+- Context and HMM use all windows (also unlabelled), so the feature tables were rebuilt with `--all`. The labelled
+  rows are identical; base reproduces R2 exactly.
+- HMM transitions come from SHL training days only, not from ES.
+- No HMM or context hyperparameters were tuned: horizon 60 s, +1 smoothing, restart after 60 s.
+- One seed.
+
+**Open questions (step 3):**
+1. **Context shortcut.** Proposal: remove `ctx_n` / `ctx_span_s`, and when training, compute SHL context on an
+   ES-like duty cycle (~20 s on / 40 s off) for part of the SHL sequences. Then the context's shape doesn't reveal
+   the dataset. Evaluate SHL with both full and duty-cycled context. Or report base + HMM as the 02 candidate and
+   leave context for later?
+2. **Which decoder is the candidate?** Forward filtering is causal and per window. Viterbi needs the whole sequence
+   (or a fixed delay). The edge server could run Viterbi with a delay; is a delay acceptable in production?
+3. ES-only stopped early at 7–31 rounds (see above). Is a rerun with a fixed number of rounds wanted, for a fairer
+   ES-only line?
+
 ## Conclusion
 
 *(not yet)*

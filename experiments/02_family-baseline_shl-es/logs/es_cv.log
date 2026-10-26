@@ -1,0 +1,6 @@
+2026-10-26 11:13:36,063 SHL 635987, ES 1364126 windows, ES trainable (v2 + cap) 726038
+2026-10-26 11:13:45,767 fold {'fold': 0, 'rounds': 7, 'n_trees': 56, 'model_bytes': 184499, 'train_shl': 0, 'train_es': 582605}
+2026-10-26 11:14:00,032 fold {'fold': 1, 'rounds': 10, 'n_trees': 80, 'model_bytes': 258978, 'train_shl': 0, 'train_es': 539754}
+2026-10-26 11:14:23,231 fold {'fold': 2, 'rounds': 8, 'n_trees': 64, 'model_bytes': 209396, 'train_shl': 0, 'train_es': 585318}
+2026-10-26 11:14:53,245 fold {'fold': 3, 'rounds': 13, 'n_trees': 104, 'model_bytes': 334296, 'train_shl': 0, 'train_es': 638238}
+2026-10-26 11:15:34,029 fold {'fold': 4, 'rounds': 31, 'n_trees': 248, 'model_bytes': 783158, 'train_shl': 0, 'train_es': 558237}

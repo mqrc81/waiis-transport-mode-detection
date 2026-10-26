@@ -1,0 +1,15 @@
+/Users/ms/Projects/waiis/transport-mode-detection/src/tmd/evaluate.py:59: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`). Consider using `matplotlib.pyplot.close()`.
+  fig, ax = plt.subplots(figsize=(1 + 0.7 * len(names), 0.8 + 0.6 * len(names)))
+coverage {'es_eval_windows': 726038, 'es_eval_frac_ctx_prev_minute': 0.775, 'es_eval_ctx_n_mean': 6.363, 'shl_eval_frac_ctx_full': 1.0, 'shl_eval_ctx_n_mean': 24.0, 'es_all_windows': 1716072, 'shl_all_windows': 1027556}
+{'fold': 0, 'rounds_ctx': 42, 'n_trees_ctx': 336, 'model_bytes_ctx': 1214034, 'train_rows': 1094946}
+{'fold': 1, 'rounds_ctx': 57, 'n_trees_ctx': 456, 'model_bytes_ctx': 1641168, 'train_rows': 1040616}
+{'fold': 2, 'rounds_ctx': 163, 'n_trees_ctx': 1304, 'model_bytes_ctx': 4670368, 'train_rows': 1096532}
+{'fold': 3, 'rounds_ctx': 62, 'n_trees_ctx': 496, 'model_bytes_ctx': 1786431, 'train_rows': 1168219}
+{'fold': 4, 'rounds_ctx': 205, 'n_trees_ctx': 1640, 'model_bytes_ctx': 5862581, 'train_rows': 1035315}
+          shl_class_macro_f1  shl_family_macro_f1  es_class_macro_f1  es_family_macro_f1  shl_family_recall_still  shl_family_recall_rail  shl_still_to_rail  es_still_v2_recall_family  es_family_recall_rail  es_still_to_rail  lat_inference_ms_p50
+base                   0.723                0.784              0.400               0.489                    0.429                   0.792              0.482                      0.754                  0.414             0.073                 2.223
+ctx                    0.851                0.898              0.430               0.553                    0.698                   0.901              0.260                      0.850                  0.041             0.000                 2.143
+base+fwd               0.837                0.879              0.476               0.566                    0.633                   0.863              0.325                      0.852                  0.366             0.021                 2.146
+base+vit               0.853                0.890              0.494               0.583                    0.649                   0.876              0.320                      0.863                  0.368             0.017                 2.223
+ctx+fwd                0.875                0.917              0.447               0.582                    0.774                   0.907              0.177                      0.871                  0.059             0.000                 2.144
+ctx+vit                0.891                0.930              0.459               0.599                    0.804                   0.917              0.158                      0.880                  0.055             0.000                 2.143

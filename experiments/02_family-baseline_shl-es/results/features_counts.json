@@ -26,5 +26,44 @@
    "ok": 1363710,
    "check:MOTORBIKE": 416
   }
+ },
+ "shl_all": {
+  "recording_positions": 99,
+  "windows": 1027556,
+  "pure": 1021425,
+  "stretches_under_5s": 0,
+  "windows_per_position": {
+   "Hips": 884330,
+   "Hand": 47752,
+   "Torso": 47745,
+   "Bag": 47729
+  }
+ },
+ "es_dev_all": {
+  "users": 48,
+  "windows": 1716072,
+  "minutes_by_outcome": {
+   "ok": 284996,
+   "hole_over_0.5s": 1879,
+   "span_over_40s": 135,
+   "overlap_under_5s": 549,
+   "missing_acc_or_gyro": 17066,
+   "time_not_increasing": 1043
+  },
+  "windows_by_reason": {
+   "ok": 988768,
+   "drop:SLEEPING": 369045,
+   "unlabelled": 344973,
+   "drop:not_carried": 5897,
+   "drop:ON_A_PLANE": 4022,
+   "drop:ELEVATOR": 1111,
+   "drop:SKATEBOARDING": 582,
+   "drop:STATIONARY_BIKE": 554,
+   "check:MOTORBIKE": 416,
+   "drop:TREADMILL": 286,
+   "drop:ELLIPTICAL_MACHINE": 252,
+   "conflict": 112,
+   "drop:WHEELCHAIR": 54
+  }
  }
 }

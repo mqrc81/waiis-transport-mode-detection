@@ -1,7 +1,9 @@
 """Step 4 (run before step 3, approved 2026-10-26): R2 = SHL User 1 + ExtraSensory dev users, LightGBM on features
 v1, cross-validated with paired folds: fold k holds out SHL day-fold k and ExtraSensory user-fold k.
 
-Usage: uv run python r2_cv.py [--seed 0]
+Usage: uv run python r2_cv.py [--seed 0] [--setup R2|ES]
+--setup ES (added 2026-10-26): ExtraSensory-only model, trained on ES user-folds only, same paired evaluation (SHL
+day-fold k is then cross-dataset). No R1 reference run for ES.
 Training: SHL pure windows + ExtraSensory windows labelled under rules v2 with resting still capped at 20% per user
 (motorbike minutes never). Rounds by early stopping on inner fold (k+1) % 5 (SHL days + ES users), then refit.
 Also logs an eval-only reference run, R1 fold-matched: the saved R1 fold-k model scored on ES user-fold k, so R1 and
@@ -54,10 +56,12 @@ def common_params(seed):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--setup", choices=["R2", "ES"], default="R2")
     a = ap.parse_args()
-    logging.basicConfig(filename=HERE / "logs" / "r2_cv.log", filemode="w", level=logging.INFO,
+    use_shl = a.setup == "R2"
+    logging.basicConfig(filename=HERE / "logs" / f"{a.setup.lower()}_cv.log", filemode="w", level=logging.INFO,
                         format="%(asctime)s %(message)s")
-    out_dir = PROCESSED / EXP / f"r2_{TAG}_seed{a.seed}"
+    out_dir = PROCESSED / EXP / f"{a.setup.lower()}_{TAG}_seed{a.seed}"
     out_dir.mkdir(parents=True, exist_ok=True)
     r1_dir = PROCESSED / EXP / f"r1_{TAG}_seed{a.seed}"
 
@@ -73,7 +77,7 @@ def main():
     fold_rows, models = [], []
     for k in range(K):
         inner = (k + 1) % K
-        s_tr = shl[(shl.fold != k) & shl.pure]
+        s_tr = shl[(shl.fold != k) & shl.pure] if use_shl else shl.iloc[:0]
         e_tr = es[es_train_ok & (es.fold != k).to_numpy()]
         tr = pd.concat([s_tr[NAMES + ["y", "fold"]], e_tr[NAMES + ["y", "fold"]]], ignore_index=True)
         d_in = dataset(tr[tr.fold != inner])
@@ -87,8 +91,9 @@ def main():
         ts, te = (shl.fold == k).to_numpy(), (es.fold == k).to_numpy()
         shl_p[ts] = m.predict(shl.loc[ts, NAMES].to_numpy())
         es_p[te] = m.predict(es.loc[te, NAMES].to_numpy())
-        r1 = lgb.Booster(model_file=str(r1_dir / f"model_fold{k}.txt"))
-        es_p_r1[te] = r1.predict(es.loc[te, NAMES].to_numpy())
+        if use_shl:
+            r1 = lgb.Booster(model_file=str(r1_dir / f"model_fold{k}.txt"))
+            es_p_r1[te] = r1.predict(es.loc[te, NAMES].to_numpy())
         row = {"fold": k, "rounds": rounds, "n_trees": m.num_trees(), "model_bytes": model_size_bytes(m),
                "train_shl": len(s_tr), "train_es": len(e_tr)}
         fold_rows.append(row)
@@ -96,25 +101,33 @@ def main():
         print(row)
     np.save(out_dir / "shl_oof_proba.npy", shl_p)
     np.save(out_dir / "es_oof_proba.npy", es_p)
-    np.save(out_dir / "es_oof_proba_r1_foldmatched.npy", es_p_r1)
+    if use_shl:
+        np.save(out_dir / "es_oof_proba_r1_foldmatched.npy", es_p_r1)
     folds = pd.DataFrame(fold_rows)
 
-    # R2
-    metrics, tables, figs = evaluate(shl, shl_p, es, es_p, "R2")
+    metrics, tables, figs = evaluate(shl, shl_p, es, es_p, a.setup)
     metrics.update(inference_latency(lambda x: models[0].predict(x, num_threads=1), window_features))
     metrics.update({"model_bytes_mean": float(folds.model_bytes.mean()), "n_trees_mean": float(folds.n_trees.mean()),
                     "rounds_mean": float(folds.rounds.mean())})
     tables["folds"] = fold_rows
-    params = {**common_params(a.seed), "dataset": "shl_u1+es_dev", "setup": "R2", "train_windows": "shl pure + es v2 capped",
+    params = {**common_params(a.seed), "dataset": "shl_u1+es_dev" if use_shl else "es_dev", "setup": a.setup,
+              "train_windows": "shl pure + es v2 capped" if use_shl else "es v2 capped",
               "class_weight": "balanced", "early_stop": "inner paired fold", **{f"lgb_{k}": v for k, v in PARAMS.items()},
               "max_rounds": MAX_ROUNDS, "patience": PATIENCE}
-    with run(EXP, params, run_name=f"R2_lgbm_feat-{FEATURES_VERSION}_seed{a.seed}"):
+    name = "R2" if use_shl else "ESonly"
+    with run(EXP, params, run_name=f"{name}_lgbm_feat-{FEATURES_VERSION}_seed{a.seed}"):
         mlflow.log_metrics({k: float(v) for k, v in metrics.items() if v == v})
         for fn, fig in figs.items():
             mlflow.log_figure(fig, fn)
         mlflow.log_dict(tables, "tables.json")
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=1))
     (out_dir / "tables.json").write_text(json.dumps(tables, indent=1, default=int))
+
+    keys = ["shl_class_macro_f1", "shl_family_macro_f1", "es_class_macro_f1", "es_family_macro_f1",
+            "es_still_v2_recall_family", "es_still_carried_recall_family", "es_rail_fp_rate_on_still"]
+    print(name, {k: round(metrics[k], 3) for k in keys})
+    if not use_shl:
+        return
 
     # R1 fold-matched reference on the same ExtraSensory windows (SHL side identical to run c615aedd...)
     m1, t1, f1 = evaluate(None, None, es, es_p_r1, "R1 fold-matched")
@@ -128,9 +141,6 @@ def main():
     (out_dir / "r1_foldmatched_metrics.json").write_text(json.dumps(m1, indent=1))
     (out_dir / "r1_foldmatched_tables.json").write_text(json.dumps(t1, indent=1, default=int))
 
-    keys = ["shl_class_macro_f1", "shl_family_macro_f1", "es_class_macro_f1", "es_family_macro_f1",
-            "es_still_v2_recall_family", "es_still_carried_recall_family", "es_rail_fp_rate_on_still"]
-    print("R2", {k: round(metrics[k], 3) for k in keys})
     print("R1fm", {k: round(m1[k], 3) for k in keys if k in m1})
 
 

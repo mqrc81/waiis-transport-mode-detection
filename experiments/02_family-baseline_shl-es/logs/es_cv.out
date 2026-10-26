@@ -1,0 +1,7 @@
+SHL 635987 windows; ES 1364126 windows, 726038 under v2 + cap
+{'fold': 0, 'rounds': 7, 'n_trees': 56, 'model_bytes': 184499, 'train_shl': 0, 'train_es': 582605}
+{'fold': 1, 'rounds': 10, 'n_trees': 80, 'model_bytes': 258978, 'train_shl': 0, 'train_es': 539754}
+{'fold': 2, 'rounds': 8, 'n_trees': 64, 'model_bytes': 209396, 'train_shl': 0, 'train_es': 585318}
+{'fold': 3, 'rounds': 13, 'n_trees': 104, 'model_bytes': 334296, 'train_shl': 0, 'train_es': 638238}
+{'fold': 4, 'rounds': 31, 'n_trees': 248, 'model_bytes': 783158, 'train_shl': 0, 'train_es': 558237}
+ESonly {'shl_class_macro_f1': 0.48, 'shl_family_macro_f1': 0.602, 'es_class_macro_f1': 0.331, 'es_family_macro_f1': 0.403, 'es_still_v2_recall_family': 0.583, 'es_still_carried_recall_family': 0.423, 'es_rail_fp_rate_on_still': 0.029}
