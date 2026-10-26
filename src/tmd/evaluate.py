@@ -82,3 +82,26 @@ def latency_ms(fn: Callable[[], object], n: int = 500, warmup: int = 50) -> tupl
         fn()
         t[i] = time.perf_counter() - t0
     return float(np.median(t) * 1e3), float(np.percentile(t, 95) * 1e3)
+
+
+def inference_latency(predict: Callable[[np.ndarray], object], featurize: Callable[[np.ndarray], np.ndarray],
+                      n: int = 500, warmup: int = 50, seed: int = 0) -> dict:
+    """Metric (c): inference time per window, single thread, after warm-up, median and p95 [ms].
+
+    End to end (features + model on one 5 s window at 25 Hz) plus both parts. `predict` must run single-threaded
+    (e.g. LightGBM `num_threads=1`).
+    """
+    rng = np.random.default_rng(seed)
+    w = rng.normal(size=(1, 125, 6)).astype(np.float32)
+    w[..., 2] += 9.81
+    x = featurize(w)
+    out = {}
+    for name, fn in [("inference", lambda: predict(featurize(w))), ("features", lambda: featurize(w)),
+                     ("model", lambda: predict(x))]:
+        out[f"lat_{name}_ms_p50"], out[f"lat_{name}_ms_p95"] = latency_ms(fn, n, warmup)
+    return out
+
+
+def model_size_bytes(booster) -> int:
+    """Metric (d): model size = bytes of the saved LightGBM text model."""
+    return len(booster.model_to_string().encode())

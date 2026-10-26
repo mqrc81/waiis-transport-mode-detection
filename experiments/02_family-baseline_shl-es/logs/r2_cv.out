@@ -1,0 +1,8 @@
+SHL 635987 windows; ES 1364126 windows, 726038 under v2 + cap
+{'fold': 0, 'rounds': 104, 'n_trees': 832, 'model_bytes': 2972012, 'train_shl': 512341, 'train_es': 582605}
+{'fold': 1, 'rounds': 94, 'n_trees': 752, 'model_bytes': 2684632, 'train_shl': 500862, 'train_es': 539754}
+{'fold': 2, 'rounds': 298, 'n_trees': 2384, 'model_bytes': 8460425, 'train_shl': 511214, 'train_es': 585318}
+{'fold': 3, 'rounds': 130, 'n_trees': 1040, 'model_bytes': 3712255, 'train_shl': 529981, 'train_es': 638238}
+{'fold': 4, 'rounds': 599, 'n_trees': 4792, 'model_bytes': 16923550, 'train_shl': 477078, 'train_es': 558237}
+R2 {'shl_class_macro_f1': 0.723, 'shl_family_macro_f1': 0.784, 'es_class_macro_f1': 0.4, 'es_family_macro_f1': 0.489, 'es_still_v2_recall_family': 0.754, 'es_still_carried_recall_family': 0.662, 'es_rail_fp_rate_on_still': 0.073}
+R1fm {'es_class_macro_f1': 0.288, 'es_family_macro_f1': 0.362, 'es_still_v2_recall_family': 0.249, 'es_still_carried_recall_family': 0.334, 'es_rail_fp_rate_on_still': 0.548}

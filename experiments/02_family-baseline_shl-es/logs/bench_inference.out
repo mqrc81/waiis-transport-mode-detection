@@ -1,0 +1,2 @@
+r1_25hz_w5s_s2.5s_feat-v1_seed0 {'lat_inference_ms_p50': 2.114, 'lat_inference_ms_p95': 2.304, 'model_bytes_mean': 6545939.8} per fold p50 [2.099, 2.09, 2.122, 2.088, 2.17] trees [1616, 888, 2056, 1032, 3664]
+r2_25hz_w5s_s2.5s_feat-v1_seed0 {'lat_inference_ms_p50': 2.151, 'lat_inference_ms_p95': 2.751, 'model_bytes_mean': 6950574.8} per fold p50 [2.118, 2.114, 2.178, 2.139, 2.206] trees [832, 752, 2384, 1040, 4792]

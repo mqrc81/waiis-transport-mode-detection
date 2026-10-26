@@ -431,7 +431,7 @@ The single fold models on ExtraSensory give family 0.320 ± 0.017, the same as t
 3. **SHL Hand is weak** (family 0.59). It has only 3 days, in folds 1, 2 and 4, so each held-out Hand day is predicted
    by a model trained on the other 2 Hand days. Step 3 keeps reporting it separately.
 
-### Step 2b: ExtraSensory label review per class (2026-10-25) — **proposal, awaits approval**
+### Step 2b: ExtraSensory label review per class (2026-10-25) — **v2 approved 2026-10-26**
 
 Asked by Marc: a phone lying on a table should not make up 42% of still. Commands (from this folder):
 
@@ -491,11 +491,157 @@ their own row.
 - Family F1 rises to 0.418 (still recall 0.283).
 - Cost: 72% of still minutes, and a still class built only from users who report positions.
 
-**Questions:**
-1. Approve v2 (drop sleeping, drop not-carried foot/bike, cap resting still at 20%)? Is 20% the right cap?
-2. Also take variant B (still needs a reported carried position)?
+**Decision (2026-10-26, Marc):**
+- v2 approved with the 20% cap. Training uses v2, not B: resting phones are real still states in production.
+- Every ExtraSensory table reports still twice, "still (v2)" and "still, carried phone only" (B's subset). The main
+  macro-F1 uses v2.
+- Step 4 (R2) runs before step 3.
 
 The splits are not affected: they were chosen on bus / car / bike / train / platform, which v2 leaves unchanged.
+
+### Step 4 (run before step 3, as decided 2026-10-26): R2 = SHL + ExtraSensory dev users (2026-10-26) — **stop-point**
+
+**Commands** (from this folder):
+
+```
+uv run python r2_cv.py --seed 0     # MLflow runs R2_lgbm_feat-v1_seed0 and R1_lgbm_feat-v1_seed0_es-v2-foldmatched (~40 min)
+```
+
+- MLflow: R2 `d668fa2e279d4776a65bc7e8f2f4977a`; R1 fold-matched reference `e37b328555da4c0e8d40b94b1450629c`. Both
+  at commit `cb8a024`, **dirty** (`eval_tables.py` and `r2_cv.py` were not yet committed).
+- Predictions and models: `<data>/processed/02_family-baseline_shl-es/r2_25hz_w5s_s2.5s_feat-v1_seed0/`.
+
+**Protocol.**
+- **Paired folds:** fold k holds out SHL User 1 day-fold k **and** ExtraSensory user-fold k (`splits/`). Every SHL
+  window and every ExtraSensory dev window is predicted once, by a model that saw neither that day nor that user.
+- **Training data:** SHL pure windows, plus ExtraSensory windows under labels v2 with resting still capped at 20% per
+  user (seed 0). Motorbike minutes are never used.
+  - Per fold: about 0.48–0.53M SHL + 0.54–0.64M ES windows.
+  - ES windows usable under v2 + cap: 726,038 of 1,364,126 (sleeping drops 369k).
+- **Model:** the same LightGBM and features as R1. Class weights are balanced over the combined training set.
+  Rounds come from early stopping on the inner paired fold (k+1) mod 5, then a refit on all training folds.
+- **Comparison (R1 fold-matched):** the saved R1 fold-k model is scored on ES user-fold k. Same ES windows, same
+  tables, no retraining. R1's SHL numbers are from run `c615aedd…` (unchanged).
+- **Not-carried / unknown / carried** = the ES position labels: resting (`PHONE_ON_TABLE` or `PHONE_AWAY_FROM_ME`),
+  none reported, or pocket / hand / bag.
+
+#### Macro-F1 (8 classes / family)
+
+| eval set | n windows | R1 | R2 |
+|---|---|---|---|
+| **SHL User 1, out-of-fold, all positions** | 635,987 | 0.755 / **0.842** | 0.723 / **0.784** |
+| SHL Hips | 562,925 | 0.776 / 0.859 | 0.741 / 0.797 |
+| SHL Hand | 24,354 | 0.510 / 0.590 | 0.504 / 0.593 |
+| SHL Torso | 24,352 | 0.597 / 0.726 | 0.587 / 0.677 |
+| SHL Bag | 24,356 | 0.692 / 0.807 | 0.652 / 0.755 |
+| **ES dev, labels v2 (main)** | 726,038 | 0.288 (0.247–0.348) / **0.362** (0.324–0.393) | 0.400 (0.349–0.451) / **0.489** (0.447–0.521) |
+| ES dev, still carried phone only (B subset) | 328,963 | 0.332 / 0.425 (0.390–0.454) | 0.423 / 0.513 (0.478–0.542) |
+| ES carried (pocket / hand / bag) | 219,180 | 0.362 / 0.397 | 0.395 / 0.490 |
+| ES not carried (resting, capped) | 87,081 | 0.224 / 0.262 | 0.523 / 0.531 |
+| ES position unknown | 419,777 | 0.269 / 0.342 | 0.393 / 0.478 |
+| ES in pocket | 106,685 | 0.307 / 0.398 | 0.357 / 0.465 |
+| ES in hand | 63,594 | 0.327 / 0.299 | 0.334 / 0.387 |
+| ES in bag | 52,195 | 0.268 / 0.386 | 0.402 / 0.534 |
+| ES on table | 77,562 | 0.211 / 0.248 | 0.542 / 0.542 |
+| ES iPhone | 517,747 | 0.314 / 0.395 | 0.427 / 0.517 |
+| ES Android | 208,291 | 0.244 / 0.299 | 0.346 / 0.421 |
+
+ES intervals are 95% CIs from resampling the 48 dev users. The R1 column for ES is the fold-matched reference; it is
+close to the ensemble numbers of step 2b (family 0.366).
+
+#### Per-class recall
+
+| | still (v2) | still, carried only | walk | run | bike | car | bus | train | subway |
+|---|---|---|---|---|---|---|---|---|---|
+| SHL, R1 | 0.835 | – | 0.946 | 0.979 | 0.929 | 0.748 | 0.565 | 0.574 | 0.472 |
+| SHL, R2 | **0.556** | – | 0.950 | 0.982 | 0.925 | 0.719 | 0.563 | 0.582 | 0.508 |
+| ES, R1 | 0.305 | 0.396 | 0.441 | 0.107 | 0.579 | 0.368 | 0.247 | 0.328 | – |
+| ES, R2 | **0.787** | **0.706** | 0.564 | 0.190 | 0.603 | 0.515 | 0.184 | 0.221 | – |
+
+| family recall | still (v2) | still, carried only | foot | bike | road | rail |
+|---|---|---|---|---|---|---|
+| SHL, R1 | 0.782 | – | 0.957 | 0.925 | 0.798 | 0.757 |
+| SHL, R2 | **0.429** | – | 0.960 | 0.919 | 0.792 | 0.792 |
+| ES, R1 | 0.249 | 0.334 | 0.433 | 0.569 | 0.608 | 0.616 |
+| ES, R2 | **0.754** | **0.662** | 0.559 | 0.595 | 0.605 | **0.414** |
+
+- Counts: ES still (v2) 541,556 windows, of which carried 144,481.
+- ES rail is 1,051 windows (342 minutes) from 4 dev users, so its recall rests on very little data.
+
+#### ES still predicted as rail, by carry state (family level)
+
+| carry state | windows | R1 → rail | R1 → still | R2 → rail | R2 → still |
+|---|---|---|---|---|---|
+| carried | 144,481 | 43.2% | 33.4% | 9.8% | 66.2% |
+| not carried (capped) | 77,352 | 61.4% | 22.4% | 3.9% | 87.1% |
+| unknown | 319,723 | 58.5% | 21.6% | 7.0% | 76.7% |
+
+Rail false positives over all ES still: 54.8% → 7.3%. On ES road: 23.8% → 9.2%.
+
+#### Confusion matrices (R2, family; counts)
+MLflow figures `cm_{shl,es}_{class,family}.png`; counts in `tables.json`.
+
+| true \ pred | still | foot | bike | road | rail |
+|---|---|---|---|---|---|
+| SHL still | 39,854 | 2,065 | 457 | 5,710 | **44,722** |
+| SHL rail | 9,825 | 2,320 | 602 | 20,707 | 127,415 |
+| ES still | 408,124 | 48,472 | 5,722 | 39,751 | 39,487 |
+| ES rail | **239** | 134 | 11 | 232 | 435 |
+
+In R1, SHL still went 15,381 → rail; in R2 it is 44,722.
+
+#### Reading
+
+- **Adding ExtraSensory fixes ExtraSensory still:**
+  - recall 0.25 → 0.75 (carried only: 0.33 → 0.66);
+  - still → rail 55% → 7%;
+  - ES family macro-F1 0.362 → 0.489, and the user-bootstrap CIs don't overlap (0.324–0.393 vs 0.447–0.521).
+  - Walk, bike and car also gain on ES (recall +0.12, +0.02, +0.15).
+- **It costs SHL still and ES rail:**
+  - SHL still recall falls 0.835 → 0.556. Nearly half of SHL still now goes to rail, and SHL family F1 drops
+    0.842 → 0.784. SHL Hand is unchanged (0.59), Torso and Bag drop.
+  - ES rail recall falls 0.62 → 0.41, mostly to still.
+- **Interpretation (not tested further):** with no context, one 5 s window of a still phone and one of a smooth
+  train look alike. The two datasets put the still / rail boundary in different places: ES still is quieter than SHL
+  still (step 2), and ES has ~1k rail windows against ~550k still. Balanced class weights don't change the fact that
+  ES's quiet still now owns that region of feature space. Step 3's 60 s context and HMM are the natural place for
+  still vs rail (stops, accelerations); per-dataset weighting is another lever.
+- **ES bus gets worse** (0.25 → 0.18): bus goes to still and car. Bus has 1.3k ES dev minutes.
+- **Motorbike** (fold 4 model, user unseen): R1 road 316 / foot 43 / bike 30 / still 16 / rail 11; R2 road 237 /
+  foot 77 / still 68 / bike 34. Road stays the majority (57% under R2; classes car 172, walk 81, still 78, bus 46,
+  bike 39).
+
+**Size and inference time** (R2 fold models):
+- Model size: 6.95 MB on average (2.7–16.9 MB), 1,960 trees on average (rounds 94–599).
+- Single thread, after warm-up, fold-0 model:
+  - features: median 2.14 ms, p95 2.22 ms;
+  - model: median 0.028 ms, p95 0.031 ms.
+- **Inference time per window** (metric c: features + model, single thread, 50 warm-up + 500 timed calls, mean
+  over the 5 fold models; `bench_inference.py`, logged into the R1 and R2 runs on 2026-10-26):
+
+  | | median | p95 | model size (mean) |
+  |---|---|---|---|
+  | R1 | 2.11 ms | 2.30 ms | 6.55 MB |
+  | R2 | 2.15 ms | 2.75 ms | 6.95 MB |
+
+  Python feature extraction is ≈ 2.1 ms of it. The model takes 0.03–0.05 ms, even at 4,792 trees.
+
+**Metrics from now on (2026-10-26, Marc):** (a) macro-F1, (b) confusion matrix and per-class recall, (c) inference
+time per window (features + model, single thread, median and p95), (d) model size. CLAUDE.md and the brief were
+updated, and `tmd.evaluate.inference_latency` / `model_size_bytes` compute (c) and (d).
+
+**Deviations (step 4):**
+- Step 4 ran before step 3, as decided.
+- The ES training data are capped per user, so the not-carried still share stays ≤ 20%.
+- ES and SHL folds are paired by index (fold k with fold k). The pairing is arbitrary but fixed.
+- One seed.
+
+**Open questions (step 4):**
+1. The still ↔ rail trade-off between datasets. Should step 3 (context + HMM) be run on R2 as the base, and be judged
+   on SHL still and ES rail as well as macro-F1? Or should dataset weighting be tried first?
+2. **The brief's still labels conflict with v2.** The current brief (your edit, uncommitted) maps only
+   `SITTING` / `OR_standing` → still. `LYING_DOWN` is gone, which v2 keeps. Which is right? It affects about 23k
+   non-sleeping lying minutes (all users).
 
 ## Conclusion
 

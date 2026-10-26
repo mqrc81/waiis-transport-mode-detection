@@ -17,7 +17,7 @@ import mlflow
 import numpy as np
 import pandas as pd
 
-from tmd.evaluate import bootstrap_users, family_proba, latency_ms, plot_cm, scores
+from tmd.evaluate import bootstrap_users, family_proba, inference_latency, model_size_bytes, plot_cm, scores
 from tmd.features import FEATURES_VERSION, NAMES, window_features
 from tmd.labels import CLASSES, FAMILIES, to_family
 from tmd.paths import PROCESSED
@@ -93,7 +93,7 @@ def main():
         ok = (es.reason == "ok").to_numpy()
         e8, ef = pred(pk[ok])
         ye = es.y.to_numpy()[ok]
-        row = {"fold": k, "rounds": rounds, "n_trees": m.num_trees(), "model_bytes": len(m.model_to_string()),
+        row = {"fold": k, "rounds": rounds, "n_trees": m.num_trees(), "model_bytes": model_size_bytes(m),
                "shl_class_f1": scores(yk, c8, "class")["macro_f1"],
                "shl_family_f1": scores(to_family(yk), cf, "family")["macro_f1"],
                "es_class_f1": scores(ye, e8, "class")["macro_f1"],
@@ -148,12 +148,7 @@ def main():
     # Size and latency (single thread, after warm-up): features for one window, model for one window.
     sizes = folds.model_bytes
     metrics.update({"model_bytes_mean": float(sizes.mean()), "n_trees_mean": float(folds.n_trees.mean())})
-    rng = np.random.default_rng(0)
-    w = rng.normal(size=(1, 125, 6)).astype(np.float32)
-    w[..., 2] += 9.81
-    xf = window_features(w)
-    metrics["lat_features_ms_p50"], metrics["lat_features_ms_p95"] = latency_ms(lambda: window_features(w))
-    metrics["lat_model_ms_p50"], metrics["lat_model_ms_p95"] = latency_ms(lambda: models[0].predict(xf, num_threads=1))
+    metrics.update(inference_latency(lambda x: models[0].predict(x, num_threads=1), window_features))
 
     params = {"model": "lightgbm", "dataset": "shl_u1", "eval": "shl_u1_dayfolds+es_dev", "setup": "R1",
               "rate_hz": 25, "class_set": "8class+family", "seed": a.seed, "features": FEATURES_VERSION,
