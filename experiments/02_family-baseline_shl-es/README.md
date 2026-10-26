@@ -868,6 +868,32 @@ within-dataset results. Their ES numbers must not be compared with the base conf
 5. **MLflow export:** `results/runs.csv` is not exported yet (CLAUDE.md: once, when the experiment finishes). Until
    then MLflow is the only record. All 02 runs are tagged dirty.
 
+**MLflow dataset inputs, backfilled (2026-10-26, asked by Marc).** `tmd.tracking.run()` now takes
+`datasets=[DataInput(...)]` and logs one MLflow dataset input per dataset part (metadata only). The 11 existing runs
+got the same inputs with `MlflowClient.log_inputs`. Metrics, params, tags and artifacts were not touched.
+
+```
+uv run python backfill_dataset_inputs.py           # dry run: run -> inputs
+uv run python backfill_dataset_inputs.py --apply   # logs/backfill_dataset_inputs.log
+```
+
+- Datasets: `shl_user1_dev` (digest `af25db55` = sha256 of `splits/shl_days.csv`) and `extrasensory_dev`
+  (`649c32d5`, `splits/es_users.csv`). The script checked that each split file at the run's commit equals today's.
+- Contexts: R1 → SHL training, ES evaluation (labels v1 = step-1 rules). The two R1 rescoring runs → ES evaluation
+  (v2); SHL training with `trained_in_run=c615…`. R2 and step 3 → both training. ES-only → ES training, SHL
+  evaluation.
+- Input tags: `split`, `label_rules` (`v1` / `v2` / `shl-coarse`), `features` (`feat-v1`, `feat-v1+ctx60s` for the ctx
+  runs), `rate_hz`, `window_s`, `stride_s`. Also `eval=out-of-fold` on cross-validated training data,
+  `trained_in_run` where the run reused models, and `windows=all…` for step 3.
+- MLflow links a dataset to a run only once (a second `log_input` with another context is dropped silently). So
+  cross-validated data are one `training` input tagged `eval=out-of-fold`. `run()` refuses duplicates.
+- Check: `search_runs` with `dataset.digest = 'af25db55'` returns all 11 runs. Dummy run
+  `dataset-inputs-check-2026-10-26` in `00_smoke-test` (`1cc3817a183f40e287644fab8d876391`, dirty) filled both inputs.
+- Search caveat: `dataset.name = 'x' AND dataset.context = 'evaluation'` matches each condition on any input of the run,
+  so ES-only (ES training, SHL evaluation) also matches.
+- Re-running `r1_cv.py`, `r2_cv.py`, `rescore_es_labels.py` or `step3_context_hmm.py` now needs `datasets=` added to
+  their `run()` calls (not done).
+
 ## Conclusion
 
 **Draft — not approved**

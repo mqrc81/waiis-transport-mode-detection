@@ -1,0 +1,34 @@
+c615aedd  R1_lgbm_feat-v1_seed0                       7f435c5  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1  eval=out-of-fold
+    extrasensory_dev  649c32d5  evaluation  label_rules=v1  features=feat-v1
+32b5199f  R1_lgbm_feat-v1_seed0_es-labels-v2          1f52628  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1  trained_in_run=c615aedd62da40159a0b65113820aad1
+    extrasensory_dev  649c32d5  evaluation  label_rules=v2  features=feat-v1
+d668fa2e  R2_lgbm_feat-v1_seed0                       cb8a024  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1  eval=out-of-fold
+    extrasensory_dev  649c32d5  training    label_rules=v2  features=feat-v1  eval=out-of-fold
+e37b3285  R1_lgbm_feat-v1_seed0_es-v2-foldmatched     cb8a024  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1  trained_in_run=c615aedd62da40159a0b65113820aad1
+    extrasensory_dev  649c32d5  evaluation  label_rules=v2  features=feat-v1
+c3800bfa  ESonly_lgbm_feat-v1_seed0                   30aeaeb  logged
+    extrasensory_dev  649c32d5  training    label_rules=v2  features=feat-v1  eval=out-of-fold
+    shl_user1_dev     af25db55  evaluation  label_rules=shl-coarse  features=feat-v1
+7db74d8c  step3_base_feat-v1_seed0                    30aeaeb  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1  eval=out-of-fold  trained_in_run=d668fa2e279d4776a65bc7e8f2f4977a  windows=all, incl. unlabelled (context/HMM)
+    extrasensory_dev  649c32d5  training    label_rules=v2  features=feat-v1  eval=out-of-fold  trained_in_run=d668fa2e279d4776a65bc7e8f2f4977a  windows=all, incl. unlabelled (context/HMM)
+3a47f096  step3_ctx_feat-v1_seed0                     30aeaeb  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1+ctx60s  eval=out-of-fold  windows=all, incl. unlabelled (context/HMM)
+    extrasensory_dev  649c32d5  training    label_rules=v2  features=feat-v1+ctx60s  eval=out-of-fold  windows=all, incl. unlabelled (context/HMM)
+cfdf3eb4  step3_base+fwd_feat-v1_seed0                30aeaeb  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1  eval=out-of-fold  trained_in_run=d668fa2e279d4776a65bc7e8f2f4977a  windows=all, incl. unlabelled (context/HMM)
+    extrasensory_dev  649c32d5  training    label_rules=v2  features=feat-v1  eval=out-of-fold  trained_in_run=d668fa2e279d4776a65bc7e8f2f4977a  windows=all, incl. unlabelled (context/HMM)
+3b5fdbda  step3_base+vit_feat-v1_seed0                30aeaeb  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1  eval=out-of-fold  trained_in_run=d668fa2e279d4776a65bc7e8f2f4977a  windows=all, incl. unlabelled (context/HMM)
+    extrasensory_dev  649c32d5  training    label_rules=v2  features=feat-v1  eval=out-of-fold  trained_in_run=d668fa2e279d4776a65bc7e8f2f4977a  windows=all, incl. unlabelled (context/HMM)
+4de65e9b  step3_ctx+fwd_feat-v1_seed0                 30aeaeb  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1+ctx60s  eval=out-of-fold  trained_in_run=3a47f096d01a4b078c4590fd73870fe9  windows=all, incl. unlabelled (context/HMM)
+    extrasensory_dev  649c32d5  training    label_rules=v2  features=feat-v1+ctx60s  eval=out-of-fold  trained_in_run=3a47f096d01a4b078c4590fd73870fe9  windows=all, incl. unlabelled (context/HMM)
+adc06318  step3_ctx+vit_feat-v1_seed0                 30aeaeb  logged
+    shl_user1_dev     af25db55  training    label_rules=shl-coarse  features=feat-v1+ctx60s  eval=out-of-fold  trained_in_run=3a47f096d01a4b078c4590fd73870fe9  windows=all, incl. unlabelled (context/HMM)
+    extrasensory_dev  649c32d5  training    label_rules=v2  features=feat-v1+ctx60s  eval=out-of-fold  trained_in_run=3a47f096d01a4b078c4590fd73870fe9  windows=all, incl. unlabelled (context/HMM)
+rate 25 Hz, window 5 s, stride 2.5 s and the split path are tagged on every input.

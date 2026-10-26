@@ -5,9 +5,16 @@ Usage in an experiment script:
     import mlflow
     from tmd.tracking import run
 
-    with run("02_family-baseline_shl-es", params):
+    from tmd.tracking import DataInput, run
+
+    data = [DataInput("shl_user1_dev", "training", label_rules="shl-coarse", features="feat-v1"),
+            DataInput("extrasensory_dev", "evaluation", label_rules="v2", features="feat-v1")]
+    with run("02_family-baseline_shl-es", params, datasets=data):
         mlflow.log_metrics({"macro_f1": f1, "size_mb": size, "latency_ms_p50": p50})
         mlflow.log_figure(cm_fig, "confusion_matrix.png")
+
+Each DataInput shows in MLflow's Dataset column as name (digest of the split file) and context. Label rules,
+features, rate and window are input tags (per run). Only metadata is logged, never the data.
 
 Export an experiment's runs (the CSV that goes in git):
 
@@ -16,14 +23,20 @@ Export an experiment's runs (the CSV that goes in git):
 from __future__ import annotations
 
 import argparse
+import hashlib
 import subprocess
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 
 import os
 
 import mlflow
 from dotenv import load_dotenv
+from mlflow.data.dataset_source_registry import get_registered_sources
+from mlflow.data.meta_dataset import MetaDataset
+from mlflow.entities import DatasetInput, InputTag
+from mlflow.utils.mlflow_tags import MLFLOW_DATASET_CONTEXT
 
 _ROOT = Path(__file__).resolve().parents[2]       # src/tmd/tracking.py -> repo root
 load_dotenv(_ROOT / ".env")                       # by path, so scripts can run from any folder
@@ -44,9 +57,68 @@ def _use_experiment(name: str) -> None:
     mlflow.set_experiment(name)
 
 
+# Dataset part -> split file (repo-relative). A new split gets a new name here.
+SPLITS = {
+    "shl_user1_dev": "splits/shl_days.csv",
+    "shl_user23_test": "splits/shl_days.csv",
+    "extrasensory_dev": "splits/es_users.csv",
+    "extrasensory_test": "splits/es_users.csv",
+}
+CONTEXTS = ("training", "evaluation")
+# Registered dynamically by MLflow, so it can't be imported by name.
+_LocalSource = next(s for s in get_registered_sources() if s.__name__ == "LocalArtifactDatasetSource")
+
+
+@dataclass(frozen=True)
+class DataInput:
+    """One dataset part a run used. Metadata only: the data never go into MLflow."""
+    name: str                 # dataset and part, a key of SPLITS
+    context: str              # "training" or "evaluation"
+    label_rules: str          # e.g. "v2" (ExtraSensory), "shl-coarse"
+    features: str             # e.g. "feat-v1"
+    rate_hz: int = 25
+    window_s: float = 5
+    stride_s: float = 2.5
+    oof_eval: bool = False    # training data also scored out-of-fold (CV); MLflow keeps one input per dataset
+    extra: tuple[tuple[str, str], ...] = ()   # further input tags, e.g. (("trained_in_run", run_id),)
+
+    @property
+    def split(self) -> str:
+        return SPLITS[self.name]
+
+    def dataset(self) -> MetaDataset:
+        digest = hashlib.sha256((REPO / self.split).read_bytes()).hexdigest()[:8]
+        return MetaDataset(_LocalSource(self.split), name=self.name, digest=digest)
+
+    def tags(self) -> dict[str, str]:
+        t = {"split": self.split, "label_rules": self.label_rules, "features": self.features,
+             "rate_hz": str(self.rate_hz), "window_s": str(self.window_s), "stride_s": str(self.stride_s)}
+        if self.oof_eval:
+            t["eval"] = "out-of-fold"
+        return {**t, **dict(self.extra)}
+
+    def entity(self) -> DatasetInput:
+        """The input as MlflowClient.log_inputs takes it (what mlflow.log_input builds internally)."""
+        tags = [InputTag(MLFLOW_DATASET_CONTEXT, self.context)] + [InputTag(k, v) for k, v in self.tags().items()]
+        return DatasetInput(dataset=self.dataset()._to_mlflow_entity(), tags=tags)
+
+
+def check_inputs(datasets: list[DataInput]) -> None:
+    names = [d.name for d in datasets]
+    if len(set(names)) != len(names):
+        raise ValueError(f"dataset logged twice in one run (MLflow keeps only the first): {names}")
+    for d in datasets:
+        if d.name not in SPLITS or d.context not in CONTEXTS:
+            raise ValueError(f"unknown dataset or context: {d}")
+
+
 @contextmanager
-def run(experiment: str, params: dict, run_name: str | None = None):
-    """Start a run tagged with the git commit and whether the tree was dirty."""
+def run(experiment: str, params: dict, run_name: str | None = None, *, datasets: list[DataInput]):
+    """Start a run tagged with the git commit and whether the tree was dirty, with its dataset inputs.
+
+    `datasets` is required; pass [] only for runs that use no data (smoke tests).
+    """
+    check_inputs(datasets)
     _use_experiment(experiment)
     with mlflow.start_run(run_name=run_name) as active:
         mlflow.set_tags({
@@ -54,6 +126,8 @@ def run(experiment: str, params: dict, run_name: str | None = None):
             "dirty": str(bool(_git("status", "--porcelain"))).lower(),
         })
         mlflow.log_params(params)
+        for d in datasets:
+            mlflow.log_input(d.dataset(), context=d.context, tags=d.tags())
         yield active
 
 
