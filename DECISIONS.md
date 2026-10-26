@@ -1,6 +1,6 @@
 # Decisions
 
-## 2026-10-23: UniMTS is not adopted as the on-phone model
+## 2026-10-23: UniMTS is not adopted as the production model
 
 **Draft — not approved**
 
@@ -15,11 +15,38 @@ transport-mode model.
 
   The probe's advantage at k ≤ 2 (+0.06 to +0.08) comes from the motion classes. On vehicles it is weaker than
   LightGBM. For example, in set C at k=10 the probe recalls car 0.30, bus 0.29, train 0.24 and subway 0.18.
-- **Too large.** The IMU encoder alone has 5.18M parameters (4.94 Mi), which is about 20 MB in fp32 (≈ 5 MB int8). The
-  ceiling is 2 MB. The released checkpoint also contains the CLIP text encoder (63.1M parameters, 274 MB in total);
-  zero-shot needs it, or text embeddings precomputed from it.
 
 **Limits of the evidence.** There is one user (SHL User 1, hips), the split is by day, and there are 5 seeds per k.
-The paired standard deviations are often as large as the differences against LightGBM. Latency was not measured.
+The paired standard deviations are often as large as the differences against LightGBM. Inference time per window
+was not measured.
 
 **Evidence.** `experiments/01_unimts-fewshot_shl/` (README Results and Conclusion, and `results/shl_fewshot.md`).
+
+## 2026-10-23: Bologna TMD is a minor dataset, not a main training or test set
+
+**Draft — not approved**
+
+**Decision.** We will not build the model or its evaluation mainly on the Bologna TMD dataset (Carpineti et al.
+2018). At most it is an extra held-out check, or a small addition to training. It is never the only evidence for a
+decision.
+
+**Why.**
+- **Little usable data.** Of about 35 h of recordings (16 users), only a small part gives usable 10 s windows. A
+  window is usable when its real rate is at least 10 Hz and it has no gap over 0.5 s.
+
+  | Track | Windows | Users per class | Car windows |
+  |---|---|---|---|
+  | Acc + gyro | 1021 (~2.8 h) | 1 | 33 |
+  | Acc only | 2829 (~7.9 h) | 3–6 | 643 |
+- **No split by user is possible with the gyroscope.** In the acc + gyro track, U12 provides 97% of the windows, and
+  every class comes from a single user. U14–U16 contribute nothing to either track.
+- **Recording varies a lot between users.** The sample rate goes from about 1 Hz (U15) to about 200–250 Hz (U11,
+  U12). The paper's maximum of 20 Hz does not hold for U11 and U12. U1–U3 and U13–U15 record only when the value
+  changes, at a median of 1–6 Hz, so resampling them to 20 Hz would mostly interpolate. Four users have no gyroscope
+  (U4, U6, U8, U16), and U10's gyroscope runs at about 0.6 Hz.
+- **Small format problems.** 9 files are empty. 4 U12 files are length-prefixed (Java `writeUTF`); they decode
+  without guessing but were not in the paper's totals.
+
+**Limits of the evidence.** The timestamps are assumed to be in ms: confirmed by walking cadence for U5, U6, U10
+and U12, and not testable for the low-rate users. This is a quality check, not an experiment. Its numbers are not
+in MLflow.

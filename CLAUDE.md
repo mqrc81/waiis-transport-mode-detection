@@ -2,8 +2,8 @@
 
 ## Project
 Classify transport mode (still, walk, run, bike, car, bus, train, metro) from phone
-accelerometer + gyroscope. Current production rate is 25 Hz; the model must eventually run on a
-phone, so size and latency matter as much as accuracy. Work is in Python, over files.
+accelerometer + gyroscope. Current production rate is 25 Hz. The phone records and uploads the
+sensor data; the model runs on an edge server. Work is in Python, over files.
 
 ## Layout
 - `src/tmd`: shared code. Anything a second experiment would reuse goes here.
@@ -30,7 +30,11 @@ phone, so size and latency matter as much as accuracy. Work is in Python, over f
 ## Evaluation conventions
 - Split by user; by day only when there is a single user, and say so. Never random window splits.
 - Normalisation statistics and hyperparameter choices come from training data only, never from a set reported as test.
-- Report macro-F1, per-class recall, the confusion matrix, model size and latency per window (single thread, after warm-up, median and p95).
+- Report exactly these metrics:
+  1. macro-F1;
+  2. confusion matrix and per-class recall;
+  3. inference time per window: features + model end to end, single thread, after warm-up, median and p95 (`tmd.evaluate.inference_latency`);
+  4. model size (`tmd.evaluate.model_size_bytes`).
 
 ## Logging results
 - Log every run through `src/tmd/tracking.py`: `with run(experiment, params):`, then `mlflow.log_metrics` and `mlflow.log_figure`. The experiment name is the experiment folder name.
