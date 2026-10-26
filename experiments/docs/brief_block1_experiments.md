@@ -65,12 +65,17 @@ Paths: `<data>` is the data root in `CLAUDE.local.md` (`/Users/ms/Projects/waiis
   4. `BICYCLING` → bike
   5. `FIX_running` → run
   6. `FIX_walking` / `STAIRS_*` → walk
-  7. `SITTING` / `OR_standing` → still
+  7. `SITTING` / `OR_standing` / `LYING_DOWN` → still. `SLEEPING` minutes are dropped (phone on the nightstand; 83k minutes) *(labels v2, decided 2026-10-26)*.
 - Drop minutes whose labels conflict (e.g. walking + a vehicle, or car + bus) and `ELEVATOR`. A conflict means two or more of train / bus / car / bike / run / walk in one minute. Car means `IN_A_CAR` or `I'M_THE_DRIVER` (passenger: see above). A still label never conflicts; the moving class wins.
 - Scan the original labels for other transport labels dropped in cleaning (e.g. motorbike, plane, tram). Map one to a class only if it clearly is one of ours; otherwise drop those minutes. List them in the audit.
   *(decided 2026-10-25)* Dropped: `ON_A_PLANE`, `ON_A_BOAT`, `SKATEBOARDING`, `STATIONARY_BIKE`, `TREADMILL`, `ELLIPTICAL_MACHINE`, `WHEELCHAIR` (and `RIDING_AN_ANIMAL`, `USING_CRUTCHES`, which have 0 minutes).
 - **Motorbike** (86 minutes, one user: 33A85C34, a dev user): never trained on, never a 9th class. It is kept as a separate labelled check: train without it, then report what each model predicts on it (bike? road?), from the fold where that user is held out. This decides whether motorbike can be folded into road. LIMU-BERT-X's "riding" class (04) was scooters and motorcycles. **Open with the company:** do motorbikes matter for anti-fraud? If so, they should be labelled in its recordings.
-- Subsample `PHONE_ON_TABLE` still minutes (cap and log the ratio) so they don't flood still. *(verified 02: 43% of usable still minutes are on the table; 47% of usable minutes have no position label.)*
+- *(labels v2, decided 2026-10-26)* **Phone not carried** = `PHONE_ON_TABLE` or original `PHONE_AWAY_FROM_ME`:
+  - walk / run / bike with the phone not carried → dropped (the label describes the person, not the phone);
+  - car / bus / train keep them (the phone rides along);
+  - still: not-carried minutes are capped per user at 20% of that user's still minutes (fixed seed), in training and in evaluation. Resting phones are real still states in production, so they are kept, not removed.
+  *(verified 02: before v2, 44% of still minutes had the phone not carried and 41% had no position label.)*
+- Every ExtraSensory table reports still twice: "still (v2)" (main macro-F1) and "still, carried phone only" (pocket / hand / bag reported, not resting). Still predicted as rail is broken down by carried / not carried / unknown position.
 - ExtraSensory has very little rail (344 `ON_A_TRAIN` minutes). Report its rail recall together with that count, and check rail false positives (rail predicted on road or still minutes) in the confusion matrix.
 
 ## Splits (fixed once, committed as files, never changed)
