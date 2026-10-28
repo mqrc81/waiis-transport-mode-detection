@@ -494,6 +494,22 @@ user).
   manifest.
 - The build prints a pandas `PerformanceWarning` (fragmented frame in `es_user`). It is harmless.
 
+#### Rebuild (2026-10-28): bearing blanked with speed, clean manifest
+- Two changes before the rebuild:
+  - **Bearing is blanked with speed** in SHL (`build.py`, `shl_tracks`).
+  - **The git state is read at the start of the build** (`main`), because the build rewrites its own tracked
+    `results/` and `logs/`.
+- Two fixes along the way:
+  - The count tables moved from `results/build/` to **`results/tables/`**, because `.gitignore:17` (`build/`) hid
+    them from git.
+  - `.DS_Store` was added to `.gitignore`.
+- Built from commit `17a77b0` on a clean tree: **`manifest.json` has `git_dirty: false`**.
+- **Only the 4 SHL GPS files changed**; the other 11 sha256 are identical to the first build.
+  - No blanked fix keeps a bearing.
+  - Bearing −1 is now 30% (`gps_waiis_cadence`) and 47–48% (`gps_per_minute`), up from 7–57% depending on class.
+  - Per class, bearing −1 in `gps_waiis_cadence` (User 1) is 24% (run) to 35% (bus), still 63%.
+  - The other GPS numbers above are unchanged.
+
 #### Output files (sha256 from `manifest.json`)
 
 | file | rows | sha256 |
@@ -504,13 +520,13 @@ user).
 | `extrasensory/location_features.parquet` | 377,346 | `cc8e063862eaa46e331ca5990ed238e4c99cb5ad7a091f39635c262768228bbd` |
 | `extrasensory/sessions.parquet` | 8,729 | `c5c2090161e0aeb3f44f5dbe7677691bc1f0b94372848b68be7bf9e443832b17` |
 | `shl_user1/accelerometer.parquet` | 36,825 | `d1209fc862bd948ec50915121bc30625c36c1478e6e114609d88a1324e47fff1` |
-| `shl_user1/gps_per_minute.parquet` | 23,645 | `9822639040bd2a869fa9e1f385cb2446af2bbf5c8ac80d288d59823faa9ce263` |
-| `shl_user1/gps_waiis_cadence.parquet` | 80,892 | `36eb17667844970e7e76cd3dcc778ae3abc07a5e4549a60429ff18a91706c1be` |
+| `shl_user1/gps_per_minute.parquet` | 23,645 | `6e2e3680a2934276c08bdaf682f4423eab408d3b3b44a0997ba9b82eec516eb6` |
+| `shl_user1/gps_waiis_cadence.parquet` | 80,892 | `e64a8608278de7203ca0a8a7bea23972e160ebd9d22a0f554dc61697edddcada` |
 | `shl_user1/labels.parquet` | 36,968 | `0eaf44ee479d4f9595a4f67d1eb4f0283199fa6b438633e761577977780cbd3b` |
 | `shl_user1/sessions.parquet` | 90 | `22f67e501301acb6aea7372829308cacdd280e3265367f710273c1593f82b35d` |
 | `shl_user23/accelerometer.parquet` | 3,015 | `debe6c6833c52bc5aebcec25ca93dc34bdae2ab21353f9d2579c0d35a3c0c4c7` |
-| `shl_user23/gps_per_minute.parquet` | 1,749 | `a97a97544d1b63edb0c3ab76273f607301134cdc8af70effae1a754f29eb88d5` |
-| `shl_user23/gps_waiis_cadence.parquet` | 5,550 | `eea127e414ec6f56dbb50d1a2a6a8f6e5b2d951f9e95478262f363a77d538631` |
+| `shl_user23/gps_per_minute.parquet` | 1,749 | `f7f1b50d20e0172ab7c79670bf21c521ecada4bc49498408557b65bf9f55c057` |
+| `shl_user23/gps_waiis_cadence.parquet` | 5,550 | `d64d7471b93a922d2f8ee498f2d1324111ce38673d3cdb1faf0a815f366acfea` |
 | `shl_user23/labels.parquet` | 3,024 | `6920d88a6631be40f89278a321fe82f4de8c617c9ee2139f580ff9895e814684` |
 | `shl_user23/sessions.parquet` | 6 | `890c107bf7aa3c7a0e0e908fd1ac1ca7e2bce9c4e7fdaf5419f56de5efeab686` |
 
