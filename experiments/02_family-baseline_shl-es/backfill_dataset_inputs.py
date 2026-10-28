@@ -15,7 +15,8 @@ import subprocess
 import mlflow
 from mlflow import MlflowClient
 
-from tmd.tracking import REPO, TRACKING_URI, DataInput, check_inputs
+from tmd.paths import PROJECT
+from tmd.tracking import TRACKING_URI, DataInput, check_inputs
 
 EXP = "02_family-baseline_shl-es"
 R1 = "c615aedd62da40159a0b65113820aad1"
@@ -62,12 +63,12 @@ for cfg in ("ctx+fwd", "ctx+vit"):
 def split_unchanged(path: str, commit: str) -> bool:
     """The split file at the run's commit equals today's (the digest describes what the run used).
     Before the 2026-10-28 clean-up the 02 split files were in splits/ at the project root."""
-    git = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=REPO, capture_output=True)
+    git = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=PROJECT, capture_output=True)
     if git.returncode:
-        git = subprocess.run(["git", "show", f"{commit}:splits/{path.rsplit('/', 1)[-1]}"], cwd=REPO,
+        git = subprocess.run(["git", "show", f"{commit}:splits/{path.rsplit('/', 1)[-1]}"], cwd=PROJECT,
                              capture_output=True)
     old = git.stdout
-    return hashlib.sha256(old).digest() == hashlib.sha256((REPO / path).read_bytes()).digest()
+    return hashlib.sha256(old).digest() == hashlib.sha256((PROJECT / path).read_bytes()).digest()
 
 
 def main() -> None:

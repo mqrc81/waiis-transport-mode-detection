@@ -29,24 +29,20 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
-import os
-
 import mlflow
-from dotenv import load_dotenv
 from mlflow.data.dataset_source_registry import get_registered_sources
 from mlflow.data.meta_dataset import MetaDataset
 from mlflow.entities import DatasetInput, InputTag
 from mlflow.utils.mlflow_tags import MLFLOW_DATASET_CONTEXT
 
-_ROOT = Path(__file__).resolve().parents[2]       # src/tmd/tracking.py -> repo root
-load_dotenv(_ROOT / ".env")                       # by path, so scripts can run from any folder
-REPO = Path(os.getenv("REPO", _ROOT))
-TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{REPO / 'mlflow.db'}")  # git-ignored
-ARTIFACTS = Path(os.getenv("MLFLOW_ARTIFACTS", REPO / "mlartifacts"))               # git-ignored
+from tmd.paths import MLARTIFACTS as ARTIFACTS
+from tmd.paths import MLFLOW_DB, PROJECT
+
+TRACKING_URI = f"sqlite:///{MLFLOW_DB}"
 
 
 def _git(*args: str) -> str:
-    out = subprocess.run(["git", *args], cwd=REPO, capture_output=True, text=True)
+    out = subprocess.run(["git", *args], cwd=PROJECT, capture_output=True, text=True)
     return out.stdout.strip()
 
 
@@ -59,8 +55,8 @@ def _use_experiment(name: str) -> None:
 
 # Dataset part -> split file (repo-relative). A new split gets a new name here.
 SPLITS = {
-    "shl_user1_dev": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",       # 02's day folds
-    "extrasensory_dev": "experiments/02_family-baseline_shl-es/splits/es_users.csv",    # 02's user folds
+    "shl_user1_dev": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",  # 02's day folds
+    "extrasensory_dev": "experiments/02_family-baseline_shl-es/splits/es_users.csv",  # 02's user folds
     "shl_user23_test": "splits/reserved_test.json",
     "extrasensory_test": "splits/reserved_test.json",
 }
@@ -72,22 +68,22 @@ _LocalSource = next(s for s in get_registered_sources() if s.__name__ == "LocalA
 @dataclass(frozen=True)
 class DataInput:
     """One dataset part a run used. Metadata only: the data never go into MLflow."""
-    name: str                 # dataset and part, a key of SPLITS
-    context: str              # "training" or "evaluation"
-    label_rules: str          # e.g. "v2" (ExtraSensory), "shl-coarse"
-    features: str             # e.g. "feat-v1"
+    name: str  # dataset and part, a key of SPLITS
+    context: str  # "training" or "evaluation"
+    label_rules: str  # e.g. "v2" (ExtraSensory), "shl-coarse"
+    features: str  # e.g. "feat-v1"
     rate_hz: int = 25
     window_s: float = 5
     stride_s: float = 2.5
-    oof_eval: bool = False    # training data also scored out-of-fold (CV); MLflow keeps one input per dataset
-    extra: tuple[tuple[str, str], ...] = ()   # further input tags, e.g. (("trained_in_run", run_id),)
+    oof_eval: bool = False  # training data also scored out-of-fold (CV); MLflow keeps one input per dataset
+    extra: tuple[tuple[str, str], ...] = ()  # further input tags, e.g. (("trained_in_run", run_id),)
 
     @property
     def split(self) -> str:
         return SPLITS[self.name]
 
     def dataset(self) -> MetaDataset:
-        digest = hashlib.sha256((REPO / self.split).read_bytes()).hexdigest()[:8]
+        digest = hashlib.sha256((PROJECT / self.split).read_bytes()).hexdigest()[:8]
         return MetaDataset(_LocalSource(self.split), name=self.name, digest=digest)
 
     def tags(self) -> dict[str, str]:
@@ -138,7 +134,7 @@ def export(experiment: str, out: Path | None = None) -> Path:
     keep = ["run_id", "start_time", "tags.git_commit", "tags.dirty"]
     keep += [c for c in df.columns if c.startswith(("params.", "metrics."))]
     df = df[keep].rename(columns=lambda c: c.split(".", 1)[-1])
-    out = out or REPO / "experiments" / experiment / "results" / "runs.csv"
+    out = out or PROJECT / "experiments" / experiment / "results" / "runs.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out, index=False)
     return out

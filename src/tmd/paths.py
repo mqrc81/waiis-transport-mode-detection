@@ -11,5 +11,8 @@ PROCESSED = DATA / "processed"
 CHECKPOINTS = DATA / "checkpoints"
 EXT = PROJECT.parent / "ext"
 
+MLFLOW_DB = PROJECT / "mlflow.db"                 # git-ignored
+MLARTIFACTS = PROJECT / "mlartifacts"             # git-ignored
+
 SHL_RAW = RAW / "shl" / "release"
 ES_RAW = RAW / "extrasensory"

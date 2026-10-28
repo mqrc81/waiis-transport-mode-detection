@@ -264,6 +264,9 @@ search. Usable minutes:
    - `.env` is not tracked: it is ignored by `.gitignore:159` and has never been in the history.
    - `src/tmd/tracking.py` now loads `.env` by path, not from the cwd (the cwd broke runs started from an experiment
      folder). It also wraps `REPO` / `ARTIFACTS` in `Path`, with the repo-root defaults as fallback.
+   - 2026-10-28: replaced by `src/tmd/paths.py` (`PROJECT`, `MLFLOW_DB`, `MLARTIFACTS`). `.env` is no longer read,
+     `python-dotenv` was removed, and `REPO` became `PROJECT` (also in `backfill_dataset_inputs.py`). The tracking
+     store is the same.
    - Dummy run `tracking-check-2026-10-25` in MLflow experiment `00_smoke-test` (run `95205245c57b4659afc9f957807b32be`,
      started from this folder, dirty tree). Params, metrics, a figure artifact (`mlartifacts/00_smoke-test/...`), and
      the `git_commit` / `dirty` tags were all logged. `tracking.py export 00_smoke-test --out <scratchpad>` worked.
