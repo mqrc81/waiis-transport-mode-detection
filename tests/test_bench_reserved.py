@@ -54,3 +54,14 @@ def test_accessor_never_returns_reserved_users(name, source):
     else:
         got = set(_call(name, source).user)
     assert not got & bench.reserved_users(source)
+
+
+def test_excluded_users_never_official_or_pretraining():
+    from tmd.extrasensory import EXCLUDED_USERS
+    try:
+        bench.path("extrasensory", "labels")
+    except FileNotFoundError:
+        pytest.skip(f"{bench.VERSION} is not built on this machine")
+    assert not set(bench.examples("extrasensory").user) & set(EXCLUDED_USERS)
+    assert not set(bench.pretraining_minutes("extrasensory").user) & set(EXCLUDED_USERS)
+    assert not set(bench.unlabelled_minutes("extrasensory").user) & set(EXCLUDED_USERS)

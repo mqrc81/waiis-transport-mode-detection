@@ -1,18 +1,20 @@
-"""Build the frozen benchmark es_bench_v3 (README, step 4). One command rebuilds everything:
+"""Build the frozen benchmark es_bench_v4 (README, step 5). One command rebuilds everything:
 
     uv run python build.py [--workers 8] [--sources extrasensory shl_user1 shl_user23]
 
-Writes <data>/processed/es_bench_v3/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
+Writes <data>/processed/es_bench_v4/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
 every file; read them with `tmd.bench`). Count tables for the README go to results/tables_v2/, the full log to
-logs/build_v3.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
-es_bench_v1 is built by this file at commit 30550d9, es_bench_v2 at commit b1e2a9c
+logs/build_v4.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
+es_bench_v1 is built by this file at commit 30550d9, es_bench_v2 at b1e2a9c, es_bench_v3 at aef0a4c
 (`git show <commit>:experiments/04_frozen-benchmark_es-shl/build.py`).
 
-v3 = v2 with the ExtraSensory split approved on 2026-10-28 (splits/es_users_v2.csv here, splits/reserved_test_v2.json):
-only the split / fold / session-table columns differ from v2.
+v3 = v2 with the ExtraSensory split approved on 2026-10-28 (splits/es_users_v2.csv here, splits/reserved_test_v2.json).
+v4 = v3 with (Marc, 2026-10-28): acc_implausible upper bound 20 m/s2 (was 13); BEF6C611 excluded at user level
+(user_excluded, tmd.extrasensory.EXCLUDED_USERS); label_implausible = quiet windows in walk / run / bike; and one
+`official` column in every labels table = the official example set.
 
 Changes from v1 (README step 3, decision register):
-1. acc_implausible: window median |acc| outside 7-13 m/s2; out of the official set.
+1. acc_implausible: window median |acc| outside 7-13 m/s2 (v4: 7-20); out of the official set.
 2. SHL speed / bearing blanking driven by the 1 Hz speed at the fix (p = 0.95 exp(-v / v0), v0 calibrated on
    SHL User 1's WAIIS-cadence fixes to ~23% missing), not uniform.
 3. (reader) reserved test users excluded from every pre-training accessor (tmd.bench, tests/test_bench_reserved.py).
@@ -42,17 +44,18 @@ from tmd.paths import PROJECT
 from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_repair_to_25hz, window_stats
 from tmd.splits import reserved_test
 
-VERSION = "es_bench_v3"
+VERSION = "es_bench_v4"
 ROOT = bench.root(VERSION)
 HERE = Path(__file__).resolve().parent
-RES = HERE / "results" / "tables_v3"
+RES = HERE / "results" / "tables_v4"
 SPLITS_02 = PROJECT / "experiments" / "02_family-baseline_shl-es" / "splits"
 ES_SPLIT = HERE / "splits" / "es_users_v2.csv"       # approved 2026-10-28 (step 4)
 WIN, FS = bench.WIN, bench.FS
 SEED = 0
 SPEED_HALF_S = 1.5             # speed / bearing of a kept SHL fix: from the 1 Hz track over ~3 s around it
 CADENCE_HALF_S = 5.0           # cadence choice: speed over ~10 s around the candidate fix
-ACC_PLAUSIBLE = (7.0, 13.0)    # m/s2, window median |acc| (Marc, 2026-10-28)
+ACC_PLAUSIBLE = (7.0, 20.0)    # m/s2, window median |acc| (Marc, 2026-10-28; upper bound 13 until v3)
+LABEL_QUIET_CLASSES = ["walk", "run", "bike"]   # quiet window = phone not moving with the person (v4)
 QUIET_STD = 0.03               # m/s2, std of |acc| over the window (README step 3)
 OTHER_POSITIONS = ["Hand", "Torso", "Bag"]
 COMPRESSION = "zstd"
@@ -111,6 +114,14 @@ def stats_columns(w: np.ndarray) -> dict:
 
 STAT_FIELDS = [pa.field("acc_median", pa.float32()), pa.field("acc_std", pa.float32()),
                pa.field("acc_implausible", pa.bool_()), pa.field("quiet", pa.bool_())]
+
+
+def official_flags(lab: pd.DataFrame, included: str) -> None:
+    """label_implausible (quiet window in walk / run / bike: the label describes the person, not the phone, as for
+    not_carried) and `official` = the official example set, in place."""
+    lab["label_implausible"] = lab.has_acc & lab.quiet & lab.cls.isin(LABEL_QUIET_CLASSES)
+    lab["official"] = (lab[included] & lab.has_acc & ~lab.acc_implausible & ~lab.label_implausible
+                       & ~lab.user_excluded)
 
 
 # ---------------------------------------------------------------- ExtraSensory
@@ -230,8 +241,11 @@ def build_es(workers: int) -> None:
     m = m.drop(columns="latitude")
     src = pd.concat(srcs, ignore_index=True)
     labels = m.merge(src, on=["user", "ts"], how="left", validate="one_to_one")
-    lead = ["user", "ts", "platform", "split", "fold", "session", "cls", "y", "included_v2", "has_acc",
-            "acc_implausible", "acc_status", "has_snippet", "snippet_s", "short", "time_repaired", "hole_trimmed",
+    labels["user_excluded"] = labels.user.isin(es.EXCLUDED_USERS)
+    labels["user_exclusion_reason"] = labels.user.map(es.EXCLUDED_USERS).fillna("")
+    official_flags(labels, "included_v2")
+    lead = ["user", "ts", "platform", "split", "fold", "session", "cls", "y", "official", "included_v2", "has_acc",
+            "acc_implausible", "label_implausible", "user_excluded", "user_exclusion_reason", "acc_status", "has_snippet", "snippet_s", "short", "time_repaired", "hole_trimmed",
             "quiet", "acc_median", "acc_std", "has_location", "location_missing_reason", "not_carried", "capped",
             "motorbike", "reason", "label_source", "position", "resting", "moving"]
     labels = labels[lead + [c for c in labels.columns if c not in lead]]
@@ -474,8 +488,10 @@ def build_shl(source: str, workers: int, v0: float) -> None:
     full = shl_full_track(pd.concat(locs, ignore_index=True))
     waiis, minute, unblanked = shl_tracks(full, lab, v0)
     lab["has_location"] = lab.set_index(["user", "ts"]).index.isin(minute.set_index(["user", "ts"]).index)
-    lead = ["user", "ts", "platform", "position", "split", "fold", "session", "rec", "day", "cls", "y", "included",
-            "has_acc", "acc_implausible", "acc_status", "quiet", "acc_median", "acc_std", "has_location",
+    lab["user_excluded"], lab["user_exclusion_reason"] = False, ""
+    official_flags(lab, "included")
+    lead = ["user", "ts", "platform", "position", "split", "fold", "session", "rec", "day", "cls", "y", "official",
+            "included", "has_acc", "acc_implausible", "label_implausible", "user_excluded", "acc_status", "quiet", "acc_median", "acc_std", "has_location",
             "label_status", "majority_cls", "majority_share", "t_start_ms"]
     lab = lab[lead]
     write(lab, source, "labels")
@@ -496,7 +512,7 @@ def table(df: pd.DataFrame, name: str, title: str) -> None:
 
 
 def es_report(lab: pd.DataFrame, track: pd.DataFrame) -> None:
-    ex = lab[lab.included_v2 & lab.has_acc & ~lab.acc_implausible]
+    ex = lab[lab.official]
     inc = lab[lab.included_v2]
     say(f"minutes {len(lab):,}; included_v2 {len(inc):,}; windows {lab.has_acc.sum():,}; snippets "
         f"{lab.has_snippet.sum():,}; examples (official) {len(ex):,}")
@@ -506,6 +522,8 @@ def es_report(lab: pd.DataFrame, track: pd.DataFrame) -> None:
         "window": inc[inc.has_acc].groupby("cls").size(),
         "of_which_hole_trimmed": inc[inc.acc_status == "hole_trimmed"].groupby("cls").size(),
         "acc_implausible": inc[inc.has_acc & inc.acc_implausible].groupby("cls").size(),
+        "label_implausible": inc[inc.has_acc & inc.label_implausible].groupby("cls").size(),
+        "user_excluded": inc[inc.has_acc & inc.user_excluded].groupby("cls").size(),
         "examples": ex.groupby("cls").size(),
         "examples_iphone": ex[ex.platform == "iphone"].groupby("cls").size(),
         "examples_android": ex[ex.platform == "android"].groupby("cls").size(),
@@ -533,6 +551,16 @@ def es_report(lab: pd.DataFrame, track: pd.DataFrame) -> None:
     ht = inc[inc.acc_status == "hole_trimmed"]
     table(pd.crosstab([ht.user, ht.platform, ht.split], ht.cls, margins=True), "es_hole_trimmed_by_user",
           "hole-trimmed official windows (included_v2) per user x class")
+    wi = inc[inc.has_acc & ~inc.user_excluded]
+    direction = np.where(wi.acc_median < ACC_PLAUSIBLE[0], "below", np.where(wi.acc_median > ACC_PLAUSIBLE[1],
+                                                                               "above", "plausible"))
+    table(pd.crosstab([wi.cls], [direction, wi.platform]), "es_acc_bounds_by_class",
+          f"included windows (excluded users left out) below {ACC_PLAUSIBLE[0]} / above {ACC_PLAUSIBLE[1]} m/s2")
+    li = inc[inc.has_acc & inc.cls.isin(LABEL_QUIET_CLASSES)]
+    table(pd.crosstab(li.cls, [li.platform, li.label_implausible], margins=True), "es_label_implausible",
+          "walk / run / bike windows (included_v2): label_implausible per class x platform")
+    ue = inc[inc.user_excluded]
+    table(pd.crosstab(ue.user, ue.cls, margins=True), "es_user_excluded", "included_v2 minutes of excluded users")
     q = ex.assign(position=ex.position.replace("", "(none)"))
     table(q.pivot_table(index="position", columns=["platform"], values="quiet", aggfunc="mean").round(3),
           "es_quiet_by_position", "quiet share of examples per position x platform")
@@ -550,7 +578,13 @@ def es_report(lab: pd.DataFrame, track: pd.DataFrame) -> None:
 
 
 def shl_report(source: str, lab: pd.DataFrame, full: pd.DataFrame, waiis: pd.DataFrame, minute: pd.DataFrame) -> None:
-    ex = lab[lab.included & lab.has_acc & ~lab.acc_implausible]
+    ex = lab[lab.official]
+    w = lab[lab.included & lab.has_acc]
+    table(pd.DataFrame({"windows": w.groupby("cls").size(),
+                        "acc_implausible": w[w.acc_implausible].groupby("cls").size(),
+                        "label_implausible": w[w.label_implausible].groupby("cls").size(),
+                        "official": ex.groupby("cls").size()}).fillna(0).astype(int), f"{source}_official_by_class",
+          "windows, flags and official examples per class")
     say(f"minutes {len(lab):,}; windows {lab.has_acc.sum():,}; acc_implausible {lab.acc_implausible.sum():,}; "
         f"examples (official) {len(ex):,}; 1 Hz fixes {len(full):,}; gps_waiis_cadence {len(waiis):,}; "
         f"gps_per_minute {len(minute):,}")
@@ -560,6 +594,9 @@ def shl_report(source: str, lab: pd.DataFrame, full: pd.DataFrame, waiis: pd.Dat
     say(t.to_string())
     w = lab[lab.included & lab.has_acc]
     table(pd.crosstab(w.user, [w.cls, w.acc_implausible]), f"{source}_implausible", "acc_implausible x class")
+    table(pd.crosstab(w.cls, np.where(w.acc_median < ACC_PLAUSIBLE[0], "below", np.where(
+        w.acc_median > ACC_PLAUSIBLE[1], "above", "plausible"))), f"{source}_acc_bounds_by_class",
+        f"windows below {ACC_PLAUSIBLE[0]} / above {ACC_PLAUSIBLE[1]} m/s2")
     table(pd.crosstab(lab.label_status, lab.acc_status, margins=True), f"{source}_status",
           "label status x acc status, all minutes")
     table(ex.groupby("cls").quiet.mean().reindex(cls_order).round(3).to_frame(), f"{source}_quiet_by_class",
@@ -599,6 +636,7 @@ def write_manifest(commit: str, dirty: bool, v0: float | None) -> None:
            "params": {"rate_hz": FS, "window_samples": WIN, "window_s": WIN / FS, "seed": SEED,
                       "label_rules": "v2", "still_cap": es.RESTING_STILL_MAX_SHARE,
                       "acc_plausible_median_ms2": ACC_PLAUSIBLE, "quiet_std_ms2": QUIET_STD,
+                      "label_quiet_classes": LABEL_QUIET_CLASSES, "excluded_users": es.EXCLUDED_USERS,
                       "hole_max_s": 0.5, "hole_policy": "longest clean stretch",
                       "session_gap_s": gps.SESSION_GAP_S, "gps_cadence": gps.CADENCE,
                       "speed_missing_share": gps.SPEED_MISSING_SHARE, "blank_p0": gps.BLANK_P0, "blank_v0": v0,
@@ -622,7 +660,7 @@ def main() -> None:
     commit, dirty = git()          # before the build rewrites its own results/ and logs/
     RES.mkdir(parents=True, exist_ok=True)
     (HERE / "logs").mkdir(exist_ok=True)
-    logging.basicConfig(filename=HERE / "logs" / "build_v3.log", filemode="w", level=logging.INFO,
+    logging.basicConfig(filename=HERE / "logs" / "build_v4.log", filemode="w", level=logging.INFO,
                         format="%(message)s")
     v0 = calibrate_blanking(a.workers) if any(s != "extrasensory" for s in a.sources) else None
     for s in a.sources:

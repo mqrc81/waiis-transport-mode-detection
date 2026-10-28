@@ -1,0 +1,167 @@
+{
+ "version": "es_bench_v2",
+ "built": "2026-10-28",
+ "git_commit": "b1e2a9c421dc8fce8bdc75f38939151101c932a1",
+ "git_dirty": true,
+ "builder": "experiments/04_frozen-benchmark_es-shl/build.py",
+ "params": {
+  "rate_hz": 25,
+  "window_samples": 375,
+  "window_s": 15.0,
+  "seed": 0,
+  "label_rules": "v2",
+  "still_cap": 0.2,
+  "acc_plausible_median_ms2": [
+   7.0,
+   13.0
+  ],
+  "quiet_std_ms2": 0.03,
+  "hole_max_s": 0.5,
+  "hole_policy": "longest clean stretch",
+  "session_gap_s": 120,
+  "gps_cadence": [
+   [
+    3.0,
+    10.0
+   ],
+   [
+    0.5,
+    20.0
+   ],
+   [
+    0.0,
+    180.0
+   ]
+  ],
+  "speed_missing_share": 0.23,
+  "blank_p0": 0.95,
+  "blank_v0": 1.9542068977760614,
+  "speed_half_window_s": 1.5,
+  "cadence_half_window_s": 5.0,
+  "es_splits": "experiments/02_family-baseline_shl-es/splits/es_users.csv",
+  "shl_splits": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",
+  "reserved_test": "splits/reserved_test.json"
+ },
+ "versions": {
+  "numpy": "2.4.6",
+  "pandas": "3.0.6",
+  "pyarrow": "25.0.1"
+ },
+ "files": {
+  "extrasensory/accelerometer.parquet": {
+   "sha256": "04f23672d423c5e655060b12c0a808b5ec2a8b915464bdc78135bed3558e08ed",
+   "bytes": 1486312637,
+   "rows": 360064
+  },
+  "extrasensory/gps_per_minute.parquet": {
+   "sha256": "3798bde083f3a42d44c67833dec2ac14d775c09929671ce830339ff66d5b3a07",
+   "bytes": 11257375,
+   "rows": 305747
+  },
+  "extrasensory/labels.parquet": {
+   "sha256": "12fb476fc15d98e7e564e896cb80384c701ec93a9dde6c51670baa4d6738cf6b",
+   "bytes": 5518697,
+   "rows": 377346
+  },
+  "extrasensory/location_features.parquet": {
+   "sha256": "cc8e063862eaa46e331ca5990ed238e4c99cb5ad7a091f39635c262768228bbd",
+   "bytes": 17735466,
+   "rows": 377346
+  },
+  "extrasensory/sessions.parquet": {
+   "sha256": "b88f4b61012d5c190ff790928138c4bf60b723ccf747e0af2a72ee91c7fd2e2c",
+   "bytes": 109555,
+   "rows": 8729
+  },
+  "extrasensory/snippets.parquet": {
+   "sha256": "cab62b8ab8869dff17ec5d7d4384b503f68e2d6e828a365cb726c664530ddcb8",
+   "bytes": 2056455612,
+   "rows": 376952
+  },
+  "shl_user1/accelerometer.parquet": {
+   "sha256": "27ea77b8644ed161947468f434aefd99f11fcdb14d2636ce9d995f2428077ea3",
+   "bytes": 236304002,
+   "rows": 36825
+  },
+  "shl_user1/accelerometer_other_positions.parquet": {
+   "sha256": "30c056a85e0040190c8ef141dc851ca032956366a70f848ca778d38c948051e2",
+   "bytes": 36395492,
+   "rows": 5964
+  },
+  "shl_user1/gps_1hz.parquet": {
+   "sha256": "a2950344ac39b096720ad9b7457773b0ce1962503013116a800ce65978b16a02",
+   "bytes": 62023049,
+   "rows": 1377605
+  },
+  "shl_user1/gps_per_minute.parquet": {
+   "sha256": "de5e3a7ad14b6f801e571ed1d71c7fbc5e55a3fdd216728140467a6ad24b1b17",
+   "bytes": 1674032,
+   "rows": 23645
+  },
+  "shl_user1/gps_unblanked.parquet": {
+   "sha256": "5c22305e76f97e23138aa91caa724abee7e28f8546e58c5e9d3d6ea2c6a5f852",
+   "bytes": 2891087,
+   "rows": 104537
+  },
+  "shl_user1/gps_waiis_cadence.parquet": {
+   "sha256": "04475a0e0e492c42a955eeebb08a0f681afdb101ab6f5a4a3fb4a4f7121fbbb1",
+   "bytes": 6057044,
+   "rows": 80892
+  },
+  "shl_user1/labels.parquet": {
+   "sha256": "acf41e9c4d692a9b7626dc41cadbb9823407068371d7d0fbbf3f8b9d9e4dc30e",
+   "bytes": 770889,
+   "rows": 36968
+  },
+  "shl_user1/sessions.parquet": {
+   "sha256": "22f67e501301acb6aea7372829308cacdd280e3265367f710273c1593f82b35d",
+   "bytes": 8846,
+   "rows": 90
+  },
+  "shl_user1/stream.parquet": {
+   "sha256": "7a15c5eca3b92c2b5e866a02a976b6bea52fcc71d6db355377d3166c420c82d6",
+   "bytes": 791445085,
+   "rows": 55279562
+  },
+  "shl_user23/accelerometer.parquet": {
+   "sha256": "8c2bb9b60463b1019e4e2ae3c4723b2edcb7a18ff1ae35c0edf5abf2950dc257",
+   "bytes": 19145358,
+   "rows": 3015
+  },
+  "shl_user23/gps_1hz.parquet": {
+   "sha256": "b0af0d24addb85ab12ae87cb374d2080940e79d65f6e2dbae92f84d8846297e9",
+   "bytes": 5675197,
+   "rows": 101516
+  },
+  "shl_user23/gps_per_minute.parquet": {
+   "sha256": "266bcd710d3304a070e56001d8b0090e680f501f6a4cc01ec47422972abaabdf",
+   "bytes": 126888,
+   "rows": 1749
+  },
+  "shl_user23/gps_unblanked.parquet": {
+   "sha256": "f91dea51207452013c4aecef268c1414ecf3948334a9aa5b90703d035d482c06",
+   "bytes": 180941,
+   "rows": 7299
+  },
+  "shl_user23/gps_waiis_cadence.parquet": {
+   "sha256": "78be783bc6abbe7b022893ddf09c4bdf5e851180738cd8dca9d4d011064dc04c",
+   "bytes": 395636,
+   "rows": 5550
+  },
+  "shl_user23/labels.parquet": {
+   "sha256": "68cf041b5058fabb9433ed6833fd28a3b29e0114254677dbec524950b1d5d90a",
+   "bytes": 66674,
+   "rows": 3024
+  },
+  "shl_user23/sessions.parquet": {
+   "sha256": "890c107bf7aa3c7a0e0e908fd1ac1ca7e2bce9c4e7fdaf5419f56de5efeab686",
+   "bytes": 6885,
+   "rows": 6
+  },
+  "shl_user23/stream.parquet": {
+   "sha256": "2159878dcd3a101d3d56303b4261632769e717e815e1e2e409d0fd76622fa848",
+   "bytes": 62509109,
+   "rows": 4523608
+  }
+ }
+}

@@ -53,6 +53,23 @@ def bootstrap_users(y, pred, users, level: str, n_boot: int = 1000, seed: int = 
     return float(np.percentile(vals, 2.5)), float(np.percentile(vals, 97.5))
 
 
+def bootstrap_users_recall(y, pred, users, level: str, n_boot: int = 1000, seed: int = 0) -> dict[str, tuple]:
+    """95% CI of each class's recall (and macro-F1) from resampling users with replacement. A class absent from a
+    resample is skipped for that resample; classes with few users (ExtraSensory train, run) get wide intervals."""
+    rng = np.random.default_rng(seed)
+    uniq = np.unique(users)
+    idx = {u: np.flatnonzero(users == u) for u in uniq}
+    vals: dict[str, list] = {}
+    for _ in range(n_boot):
+        sel = np.concatenate([idx[u] for u in rng.choice(uniq, len(uniq))])
+        s = scores(y[sel], pred[sel], level)
+        vals.setdefault("macro_f1", []).append(s["macro_f1"])
+        for k, r in s["recall"].items():
+            if not np.isnan(r):
+                vals.setdefault(k, []).append(r)
+    return {k: (float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))) for k, v in vals.items()}
+
+
 def plot_cm(cm: np.ndarray, level: str, title: str):
     names = CLASSES if level == "class" else FAMILIES
     rown = cm / np.maximum(cm.sum(1, keepdims=True), 1)

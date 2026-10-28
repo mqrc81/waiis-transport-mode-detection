@@ -7,8 +7,9 @@ Tables join on (user, ts): ts is the minute timestamp [unix s]. `labels` has one
 kept, with flags), `accelerometer` one 15 s window (375 x 3, m/s2, 25 Hz) per minute that has one.
 
 Accessors:
-- `examples(source)`: **the official example set** (v1: included minutes with a window; v2: and a plausible
-  accelerometer). Includes the reserved test users, marked by `split`, because evaluation needs them.
+- `examples(source)`: **the official example set** (v4: the `official` column; v1: included minutes with a window;
+  v2 / v3: and a plausible accelerometer). Includes the reserved test users, marked by `split`, because evaluation
+  needs them. Excluded users (EXCLUDED_USERS) are never in it from v4, nor in any pre-training accessor.
 - `pretraining_minutes`, `unlabelled_minutes` and the extras (`snippets`, `shl_stream`, `shl_other_positions`,
   `shl_gps_1hz`, `shl_gps_unblanked`): **exclude the reserved test users by default** (`tmd.splits.reserved_test()`,
   i.e. splits/reserved_test_v2.json: 12 ExtraSensory users, SHL Users 2-3). Pass include_reserved=True only for
@@ -16,7 +17,9 @@ Accessors:
   current set, so the current test users never reach pre-training.
 
 Versions: v1 (2026-10-28, step 2); v2 = v1 + flags, repairs and extras (step 3); v3 = v2 with the approved
-ExtraSensory split (es_users_v2.csv / reserved_test_v2.json; step 4). Use v3.
+ExtraSensory split (es_users_v2.csv / reserved_test_v2.json; step 4); v4 = v3 with the plausibility bound at
+20 m/s2, BEF6C611 excluded (tmd.extrasensory.EXCLUDED_USERS), label_implausible, and an `official` column (step 5).
+Use v4. Only v1 and v4 are kept on disk; v2 and v3 are rebuilt from their commits (04 README).
 - `read(source, table)`: a raw table, no filtering.
 """
 from __future__ import annotations
@@ -29,8 +32,8 @@ import pandas as pd
 
 from tmd.paths import PROCESSED
 
-VERSIONS = ("es_bench_v1", "es_bench_v2", "es_bench_v3")
-VERSION = "es_bench_v3"            # default
+VERSIONS = ("es_bench_v1", "es_bench_v2", "es_bench_v3", "es_bench_v4")
+VERSION = "es_bench_v4"            # default
 ROOT = PROCESSED / VERSION
 FS, WIN = 25, 375
 SOURCES = ("extrasensory", "shl_user1", "shl_user23")
@@ -84,14 +87,21 @@ def drop_reserved(df: pd.DataFrame, source: str) -> pd.DataFrame:
 
 
 def _guard(df: pd.DataFrame, source: str, include_reserved: bool) -> pd.DataFrame:
-    return df if include_reserved else drop_reserved(df, source)
+    """Drop the reserved test users (unless include_reserved) and, always, the excluded users."""
+    from tmd.extrasensory import EXCLUDED_USERS
+    df = df if include_reserved else drop_reserved(df, source)
+    return df[~df.user.isin(EXCLUDED_USERS)].reset_index(drop=True)
 
 
 # ---------------------------------------------------------------- official set
 
 def examples(source: str, columns: list[str] | None = None, version: str = VERSION) -> pd.DataFrame:
-    """Label rows of the official example set: included minutes with a window (v2: and acc_implausible False).
-    The reserved test users are included (column `split`)."""
+    """Label rows of the official example set (v4: `official`; v1: included with a window; v2 / v3: and
+    acc_implausible False). The reserved test users are included (column `split`)."""
+    if version not in ("es_bench_v1", "es_bench_v2", "es_bench_v3"):
+        lab = read(source, "labels", None if columns is None else list(dict.fromkeys(KEY + columns + ["official"])),
+                   version=version)
+        return lab[lab.official].reset_index(drop=True)
     inc = INCLUDED[source]
     flags = [inc, "has_acc"] + (["acc_implausible"] if version != "es_bench_v1" else [])
     lab = read(source, "labels", None if columns is None else list(dict.fromkeys(KEY + columns + flags)),
