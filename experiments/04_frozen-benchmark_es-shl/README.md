@@ -280,7 +280,8 @@ sha256, size and rows of every file. One folder per source:
   - `gps_per_minute`: at most one fix per minute, which is ExtraSensory's native cadence.
     - ExtraSensory: the minute's absolute lat/lon, `speed` = `location:max_speed` and `accuracy` =
       `best_horizontal_accuracy`. `time` is the minute timestamp, because the fix's own time is not published.
-      Bearing is computed from the previous fix.
+      `bearing_from_fixes` is the bearing from the previous fix and is never blanked. `bearing` is that value, but
+      −1 wherever speed is −1 (the production rule; second rebuild below).
     - SHL: inside the minute's 15 s window, the best-accuracy fix, latest on ties (the ExtraSensory rule). `time`
       is the real fix time.
   - `gps_waiis_cadence` (SHL only): the 1 Hz track thinned to the production cadence. A fix is kept when it is at
@@ -422,8 +423,10 @@ user).
     train and subway minutes, against 0–20% for walk, run, bike, car and bus. Indoors and underground mean no fix.
   - A model that uses "has a fix" or the fix interval can learn still and rail from that. Experiments that use GPS
     should report results with and without the location-missing indicator.
-- **Speed** is −1 on 67.5% of ExtraSensory fixes (the CSV has NaN; no negative values occur), and bearing on 29.1%
-  (first fix of a session, or a move under 1 m). Production has ~23% without speed.
+- **Speed** is −1 on 67.5% of ExtraSensory fixes (the CSV has NaN; no negative values occur); production has ~23%
+  without speed.
+  - `bearing_from_fixes` is −1 on 29.1% (first fix of a session, or a move under 1 m).
+  - `bearing` is −1 on 71.0%: it follows speed (second rebuild below).
 
 #### SHL counts
 
@@ -510,12 +513,22 @@ user).
   - Per class, bearing −1 in `gps_waiis_cadence` (User 1) is 24% (run) to 35% (bus), still 63%.
   - The other GPS numbers above are unchanged.
 
-#### Output files (sha256 from `manifest.json`)
+#### Second rebuild (2026-10-28): ExtraSensory bearing follows speed
+- **What changed.** In `extrasensory/gps_per_minute`, `bearing` is now −1 wherever `speed` is −1. The bearing
+  from consecutive fixes is a new column, `bearing_from_fixes`, never blanked (`build.py`, `es_track`; Marc,
+  2026-10-28).
+- **Build.** From commit `30550d9` on a clean tree: `git_dirty: false`, and `bench.verify()` passes.
+- **Result.**
+  - **Only `extrasensory/gps_per_minute.parquet` changed**; the other 14 sha256 are identical to the first rebuild.
+  - `bearing` is −1 on 71.0% of fixes and `bearing_from_fixes` on 29.1%. No fix with speed −1 has a bearing.
+- Also fixed: the output path in 01's `COMMANDS.md` (12 paths, plus a note on the move).
+
+#### Output files (sha256 from `manifest.json`, commit `30550d9`)
 
 | file | rows | sha256 |
 |---|---|---|
 | `extrasensory/accelerometer.parquet` | 359,240 | `148a9f030bd2db44c823f6b4f187778ad1bac5cd835c1e4bd1b19f1970236e6d` |
-| `extrasensory/gps_per_minute.parquet` | 305,747 | `308b2a7dfd04e2599049df9da20e35e640ad0de45ef4f44a559d1622ec6a1e32` |
+| `extrasensory/gps_per_minute.parquet` | 305,747 | `3798bde083f3a42d44c67833dec2ac14d775c09929671ce830339ff66d5b3a07` |
 | `extrasensory/labels.parquet` | 377,346 | `1a6579d6859ce792b77230a6d46b4d883b8fffab2409ace666bad474b9230a04` |
 | `extrasensory/location_features.parquet` | 377,346 | `cc8e063862eaa46e331ca5990ed238e4c99cb5ad7a091f39635c262768228bbd` |
 | `extrasensory/sessions.parquet` | 8,729 | `c5c2090161e0aeb3f44f5dbe7677691bc1f0b94372848b68be7bf9e443832b17` |
@@ -535,6 +548,41 @@ user).
 2. **Fold 3 is thin** in run (9), car (516) and train (15) after the 15 s rule. The folds are 02's and fixed, but
    per-fold metrics for run and train will be noisy there.
 3. ~~Commit, then rebuild for a clean manifest.~~ Answered: yes (see "Rebuild" below).
-4. **ExtraSensory bearing without speed.** ExtraSensory's bearing is computed from consecutive fixes. It is still
-   set on fixes whose speed is −1 (67.5% of fixes have no speed). To match production, it could be blanked there
-   too; not done, because the brief asked for a bearing from consecutive fixes.
+4. ~~ExtraSensory bearing without speed.~~ Answered: `bearing` = −1 where speed = −1, and the bearing from
+   consecutive fixes is kept as `bearing_from_fixes` (second rebuild below).
+
+## Conclusion
+
+**Draft — not approved**
+
+**What it is.** `es_bench_v1` is a frozen benchmark: `<data>/processed/es_bench_v1/`, 15 Parquet files,
+1.77 GB.
+- Its `manifest.json` (commit `30550d9`, clean tree) holds the parameters and the sha256 of every file.
+- One command rebuilds it (`uv run python build.py`), and rebuilds reproduce the hashes.
+- Every model reads it through `tmd.bench`.
+
+**What it contains.**
+- **ExtraSensory**, all 60 users and all 377,346 minutes:
+  - every minute is kept, with flags and the source label columns;
+  - 359,240 accelerometer windows of 15 s (375 × 3, m/s², 25 Hz, one per snippet);
+  - **149,681 official examples** (labels v2), split into 02's 5 dev folds and the 12 reserved test users;
+  - one GPS fix per minute, plus the location features.
+- **SHL hips**, in the same format:
+  - User 1: 23,099 examples, an optional training source with all of the metro and most of the train data;
+  - Users 2–3: 2,366 examples, a rail check set, evaluation only;
+  - GPS in two variants: `gps_waiis_cadence` (the production cadence) and `gps_per_minute` (ExtraSensory's
+    cadence).
+
+**Known limitations.**
+- **The 15 s window costs 7,502 included minutes, 97% of them from 6 Android users** with 80–100 Hz snippets.
+  This removes 29% of train (91 of 100 dropped train minutes, all from 1DBB0F6F) and leaves dev fold 3 thin (run 9,
+  car 516, train 15).
+- **Test bus has 5 users**, not 6. Test user 96A358A0 lost all 63 of their bus minutes to the 15 s rule.
+- **ExtraSensory GPS is one fix per minute**, with no fix time inside the minute. Speed and bearing between fixes
+  span ~60 s, while production has 10–20 s while moving. Speed is missing on 67.5% of fixes, against ~23% in
+  production.
+- **Missing location differs by platform, and on SHL by rail class.**
+  - ExtraSensory: 32% missing on Android, 8% on iPhone; across classes it varies only from 6% to 22%.
+  - SHL: no fix in 54–61% of still minutes and 51–87% of train and subway minutes, against 0–20% for the other
+    classes.
+  - A model can use the presence of a fix as a shortcut, so GPS models should be reported with and without it.
