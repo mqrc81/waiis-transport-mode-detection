@@ -5,7 +5,8 @@ Reads the official v2 examples (tmd.bench.examples). Writes
 - splits/reserved_test_v2.json (project root): proposed reserved test set; SHL Users 2-3 unchanged;
 - splits/es_users_v2.csv (this folder): uuid, platform, partition, fold (dev folds rebuilt from the other users);
 - results/tables_v2/test_pick_{old_vs_new,users}.csv.
-The old files (splits/reserved_test.json, 02's es_users.csv) are not touched; nothing reads the new ones yet.
+The old files (splits/reserved_test.json, 02's es_users.csv) are not touched. Approved 2026-10-28: the new files are
+now the reference, and this script no longer overwrites an approved reserved_test_v2.json.
 
 Rule (Marc, 2026-10-28):
 - eligible: every user except those with implausible accelerometer data (> MAX_IMPLAUSIBLE of their windows);
@@ -29,6 +30,7 @@ from tmd.splits import balanced_folds, reserved_test
 
 HERE = Path(__file__).resolve().parent
 RES = HERE / "results" / "tables_v2"
+V2 = "es_bench_v2"               # the pick was made on v2
 N_TEST, K = 12, 5
 MIN_EX = 5                       # a user "has" a class with >= 5 examples
 MAX_IMPLAUSIBLE = 0.10           # users with more implausible windows are not eligible
@@ -39,10 +41,11 @@ C7 = [c for c in CLASSES if c != "subway"]
 
 
 def user_table() -> tuple[pd.DataFrame, pd.DataFrame]:
-    lab = bench.read("extrasensory", "labels", columns=["user", "ts", "platform", "has_acc", "acc_implausible"])
+    lab = bench.read("extrasensory", "labels", columns=["user", "ts", "platform", "has_acc", "acc_implausible"],
+                     version=V2)
     win = lab[lab.has_acc]
     imp = win.groupby("user").acc_implausible.mean()
-    ex = bench.examples("extrasensory", columns=["platform", "cls", "has_location", "split"])
+    ex = bench.examples("extrasensory", columns=["platform", "cls", "has_location", "split"], version=V2)
     n = ex.groupby(["user", "cls"]).size().unstack(fill_value=0).reindex(columns=C7, fill_value=0)
     u = pd.DataFrame({"platform": lab.groupby("user").platform.first(), "implausible_share": imp,
                       "examples": ex.groupby("user").size(), "with_location": ex.groupby("user").has_location.sum(),
@@ -113,7 +116,7 @@ def main() -> None:
     ineligible = u.index[u.implausible_share > MAX_IMPLAUSIBLE]
     print(f"ineligible (> {MAX_IMPLAUSIBLE:.0%} implausible windows): "
           f"{[(x[:8], round(u.implausible_share[x], 2)) for x in ineligible]}")
-    old = pd.Index(sorted(reserved_test()["extrasensory"].uuid))
+    old = pd.Index(sorted(reserved_test(1)["extrasensory"].uuid))
     new, n_valid = search(u, a.seed, a.draws)
     print(f"{a.draws:,} draws, {n_valid:,} valid subsets")
     allu = u.index
@@ -149,7 +152,11 @@ def main() -> None:
                   "es_users_v2.csv",
         "shl": old_json["shl"],
         "extrasensory": [{"uuid": x, "platform": u.platform[x]} for x in new]}
-    (PROJECT / "splits" / "reserved_test_v2.json").write_text(json.dumps(new_json, indent=1) + "\n")
+    p = PROJECT / "splits" / "reserved_test_v2.json"
+    if p.exists() and json.loads(p.read_text())["description"].startswith("APPROVED"):
+        print(f"{p.name} is approved and not overwritten")
+        return
+    p.write_text(json.dumps(new_json, indent=1) + "\n")
 
 
 if __name__ == "__main__":

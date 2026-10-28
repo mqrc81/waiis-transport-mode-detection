@@ -4,12 +4,12 @@
 Classify transport mode (still, walk, run, bike, car, bus, train, metro) from phone
 accelerometer only (no gyroscope). Current production rate is 25 Hz. The phone records and uploads the
 sensor data; the model runs on an edge server. Work is in Python, over files.
-Final test: the 12 ExtraSensory test users (`splits/reserved_test.json`); SHL Users 2–3 are for rail checks only.
+Final test: the 12 ExtraSensory test users (`splits/reserved_test_v2.json`); SHL Users 2–3 are for rail checks only.
 
 ## Layout
 - `src/tmd`: shared code. Anything a second experiment would reuse goes here.
 - `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion. Add `patches/`, `env/`, `results/` or `splits/` (the experiment's own fold files) only when there is something to put in them.
-- `splits/reserved_test.json`: the reserved set (12 ExtraSensory test users, SHL Users 2–3). Every experiment excludes it (`tmd.splits.reserved_test()`).
+- `splits/reserved_test_v2.json`: the reserved set (12 ExtraSensory test users, SHL Users 2–3). Every experiment excludes it (`tmd.splits.reserved_test()`). `reserved_test.json` is the superseded 2026-10-25 set.
 - `mlflow.db`, `mlartifacts/`: MLflow tracking store and run artifacts (git-ignored).
 - `DECISIONS.md`, `LICENSES.md`: project-wide.
 - `log`: my daily logs. **Do not edit.**

@@ -1,4 +1,4 @@
-"""Reader for the frozen benchmarks es_bench_v1 / es_bench_v2 (built by experiments/04_frozen-benchmark_es-shl).
+"""Reader for the frozen benchmarks es_bench_v1 / v2 / v3 (built by experiments/04_frozen-benchmark_es-shl).
 
     <data>/processed/<version>/manifest.json                 version, parameters, sha256 of every file
     <data>/processed/<version>/<source>/<table>.parquet       source in SOURCES
@@ -10,8 +10,13 @@ Accessors:
 - `examples(source)`: **the official example set** (v1: included minutes with a window; v2: and a plausible
   accelerometer). Includes the reserved test users, marked by `split`, because evaluation needs them.
 - `pretraining_minutes`, `unlabelled_minutes` and the extras (`snippets`, `shl_stream`, `shl_other_positions`,
-  `shl_gps_1hz`, `shl_gps_unblanked`): **exclude the reserved test users by default** (`splits/reserved_test.json`:
-  12 ExtraSensory users, SHL Users 2-3). Pass include_reserved=True only for evaluation.
+  `shl_gps_1hz`, `shl_gps_unblanked`): **exclude the reserved test users by default** (`tmd.splits.reserved_test()`,
+  i.e. splits/reserved_test_v2.json: 12 ExtraSensory users, SHL Users 2-3). Pass include_reserved=True only for
+  evaluation. On v1 / v2, whose `split` column follows the superseded 2026-10-25 set, the filter still uses the
+  current set, so the current test users never reach pre-training.
+
+Versions: v1 (2026-10-28, step 2); v2 = v1 + flags, repairs and extras (step 3); v3 = v2 with the approved
+ExtraSensory split (es_users_v2.csv / reserved_test_v2.json; step 4). Use v3.
 - `read(source, table)`: a raw table, no filtering.
 """
 from __future__ import annotations
@@ -24,8 +29,8 @@ import pandas as pd
 
 from tmd.paths import PROCESSED
 
-VERSIONS = ("es_bench_v1", "es_bench_v2")
-VERSION = "es_bench_v2"            # default
+VERSIONS = ("es_bench_v1", "es_bench_v2", "es_bench_v3")
+VERSION = "es_bench_v3"            # default
 ROOT = PROCESSED / VERSION
 FS, WIN = 25, 375
 SOURCES = ("extrasensory", "shl_user1", "shl_user23")
@@ -66,7 +71,7 @@ def arrays(df: pd.DataFrame) -> list[np.ndarray]:
 # ---------------------------------------------------------------- reserved test users
 
 def reserved_users(source: str) -> set[str]:
-    """Users of `source` in the reserved final test (splits/reserved_test.json)."""
+    """Users of `source` in the reserved final test (the current set, `tmd.splits.reserved_test()`)."""
     from tmd.splits import reserved_test
     r = reserved_test()
     if source == "extrasensory":

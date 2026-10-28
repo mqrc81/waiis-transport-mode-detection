@@ -12,6 +12,8 @@ byte for byte (sha256 `af25db55…` and `649c32d5…`, the digests in 02's MLflo
   - 48 `dev` users in 5 folds by user.
   - 12 `test` users, fold −1.
 
+*(2026-10-28: superseded by `splits/reserved_test_v2.json` and 04's `splits/es_users_v2.csv`; see `splits/README.md`.)*
+
 **The reserved final test is `splits/reserved_test.json` at the project root** (read it with
 `tmd.splits.reserved_test()`). It is the reference from now on. The `test` rows here are the same users and days,
 kept so the files' hashes stay as recorded in MLflow.

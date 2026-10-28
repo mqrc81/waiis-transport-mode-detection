@@ -1,4 +1,4 @@
-"""The reserved final-test users (splits/reserved_test.json) must never reach a pre-training accessor of tmd.bench.
+"""The reserved final-test users (tmd.splits.reserved_test(), the current set) must never reach a pre-training accessor of tmd.bench.
 
 Two layers: a synthetic check of the filter itself (always runs), and a check of every accessor on the built
 es_bench_v2 (skipped when the data are not on this machine).
@@ -26,7 +26,7 @@ def test_every_pretraining_accessor_is_checked():
 @pytest.mark.parametrize("source", bench.SOURCES)
 def test_drop_reserved_removes_every_reserved_user(source):
     reserved = sorted(bench.reserved_users(source))
-    assert reserved, "reserved_test.json lists no users for this source"
+    assert reserved, "the reserved set lists no users for this source"
     df = pd.DataFrame({"user": reserved + ["someone-else"], "ts": range(len(reserved) + 1)})
     assert set(bench.drop_reserved(df, source).user) == {"someone-else"}
 

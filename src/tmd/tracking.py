@@ -62,6 +62,9 @@ SPLITS = {
     "extrasensory_dev": "experiments/02_family-baseline_shl-es/splits/es_users.csv",  # 02's user folds
     "shl_user23_test": "splits/reserved_test.json",
     "extrasensory_test": "splits/reserved_test.json",
+    "extrasensory_dev_v2": "experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",  # approved 2026-10-28
+    "extrasensory_test_v2": "splits/reserved_test_v2.json",                                  # the reference
+    "shl_user23_test_v2": "splits/reserved_test_v2.json",
     "shl_user1_03_training": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",     # 03's day split
     "shl_user1_03_validation": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
     "shl_user1_03_test": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",

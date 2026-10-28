@@ -1,11 +1,15 @@
-"""Build the frozen benchmark es_bench_v2 (README, step 3). One command rebuilds everything:
+"""Build the frozen benchmark es_bench_v3 (README, step 4). One command rebuilds everything:
 
     uv run python build.py [--workers 8] [--sources extrasensory shl_user1 shl_user23]
 
-Writes <data>/processed/es_bench_v2/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
+Writes <data>/processed/es_bench_v3/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
 every file; read them with `tmd.bench`). Count tables for the README go to results/tables_v2/, the full log to
-logs/build_v2.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
-es_bench_v1 is built by this file at commit 30550d9 (`git show 30550d9:experiments/04_frozen-benchmark_es-shl/build.py`).
+logs/build_v3.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
+es_bench_v1 is built by this file at commit 30550d9, es_bench_v2 at commit b1e2a9c
+(`git show <commit>:experiments/04_frozen-benchmark_es-shl/build.py`).
+
+v3 = v2 with the ExtraSensory split approved on 2026-10-28 (splits/es_users_v2.csv here, splits/reserved_test_v2.json):
+only the split / fold / session-table columns differ from v2.
 
 Changes from v1 (README step 3, decision register):
 1. acc_implausible: window median |acc| outside 7-13 m/s2; out of the official set.
@@ -38,11 +42,12 @@ from tmd.paths import PROJECT
 from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_repair_to_25hz, window_stats
 from tmd.splits import reserved_test
 
-VERSION = "es_bench_v2"
+VERSION = "es_bench_v3"
 ROOT = bench.root(VERSION)
 HERE = Path(__file__).resolve().parent
-RES = HERE / "results" / "tables_v2"
+RES = HERE / "results" / "tables_v3"
 SPLITS_02 = PROJECT / "experiments" / "02_family-baseline_shl-es" / "splits"
+ES_SPLIT = HERE / "splits" / "es_users_v2.csv"       # approved 2026-10-28 (step 4)
 WIN, FS = bench.WIN, bench.FS
 SEED = 0
 SPEED_HALF_S = 1.5             # speed / bearing of a kept SHL fix: from the 1 Hz track over ~3 s around it
@@ -111,7 +116,7 @@ STAT_FIELDS = [pa.field("acc_median", pa.float32()), pa.field("acc_std", pa.floa
 # ---------------------------------------------------------------- ExtraSensory
 
 def es_minutes() -> pd.DataFrame:
-    """Rules v2 for every minute of all 60 users, flags, split and fold (02's es_users.csv; test = reserved)."""
+    """Rules v2 for every minute of all 60 users, flags, split and fold (es_users_v2.csv; test = reserved)."""
     m = es.minutes_table(es.uuids())
     ok = m.reason == "ok"
     keep = np.zeros(len(m), bool)
@@ -121,9 +126,9 @@ def es_minutes() -> pd.DataFrame:
     m["not_carried"] = m.reason == "drop:not_carried"
     m["motorbike"] = m.reason == "check:MOTORBIKE"
     m["y"] = np.where(keep, m.y, 0)
-    users = pd.read_csv(SPLITS_02 / "es_users.csv")
+    users = pd.read_csv(ES_SPLIT)
     test = set(reserved_test()["extrasensory"].uuid)
-    assert set(users.uuid[users.partition == "test"]) == test, "02's test rows differ from reserved_test.json"
+    assert set(users.uuid[users.partition == "test"]) == test, "es_users_v2.csv test rows differ from reserved_test()"
     assert set(users.uuid) == set(m.user)
     u = users.set_index("uuid")
     m["platform"] = m.user.map(u.platform)
@@ -598,9 +603,9 @@ def write_manifest(commit: str, dirty: bool, v0: float | None) -> None:
                       "session_gap_s": gps.SESSION_GAP_S, "gps_cadence": gps.CADENCE,
                       "speed_missing_share": gps.SPEED_MISSING_SHARE, "blank_p0": gps.BLANK_P0, "blank_v0": v0,
                       "speed_half_window_s": SPEED_HALF_S, "cadence_half_window_s": CADENCE_HALF_S,
-                      "es_splits": "experiments/02_family-baseline_shl-es/splits/es_users.csv",
+                      "es_splits": "experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
                       "shl_splits": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",
-                      "reserved_test": "splits/reserved_test.json"},
+                      "reserved_test": "splits/reserved_test_v2.json"},
            "versions": {"numpy": np.__version__, "pandas": pd.__version__, "pyarrow": pa.__version__},
            "files": files}
     (ROOT / "manifest.json").write_text(json.dumps(man, indent=1))
@@ -617,7 +622,7 @@ def main() -> None:
     commit, dirty = git()          # before the build rewrites its own results/ and logs/
     RES.mkdir(parents=True, exist_ok=True)
     (HERE / "logs").mkdir(exist_ok=True)
-    logging.basicConfig(filename=HERE / "logs" / "build_v2.log", filemode="w", level=logging.INFO,
+    logging.basicConfig(filename=HERE / "logs" / "build_v3.log", filemode="w", level=logging.INFO,
                         format="%(message)s")
     v0 = calibrate_blanking(a.workers) if any(s != "extrasensory" for s in a.sources) else None
     for s in a.sources:

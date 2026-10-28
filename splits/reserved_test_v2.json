@@ -1,5 +1,5 @@
 {
- "description": "PROPOSED 2026-10-28, NOT IN USE: pending the supervisor's approval. Re-pick of the 12 ExtraSensory test users on es_bench_v2 (experiment 04, step 3, item 6). SHL Users 2-3 unchanged. The reference stays splits/reserved_test.json until this is approved.",
+ "description": "APPROVED 2026-10-28 by the supervisor (relayed by Marc); the reference from then on, superseding reserved_test.json. Re-pick of the 12 ExtraSensory test users on es_bench_v2 (experiment 04, step 3, item 6). SHL Users 2-3 unchanged.",
  "source": "experiments/04_frozen-benchmark_es-shl/propose_test_v2.py --seed 0 --draws 3000000; dev folds in experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
  "shl": [
   {

@@ -66,3 +66,31 @@ in MLflow.
 **Evidence.** Supervisor's decision, relayed by Marc on 2026-10-28. Experiment 03 (`experiments/03_label-curve_shl/`)
 was closed at stop-point 2 because of it; on its one seed the gyroscope added about + 0.01 macro-F1 at k ≥ 50 (not
 tested across seeds).
+
+## 2026-10-28: ExtraSensory test users re-picked on es_bench_v2
+
+**Draft — not approved**
+
+**Decision.**
+- The reserved ExtraSensory test set is **`splits/reserved_test_v2.json`**: 12 users re-picked on `es_bench_v2`.
+  It replaces `splits/reserved_test.json`, which is kept as superseded.
+- The dev folds are `experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv`.
+- SHL Users 2–3 (the rail check) are unchanged.
+- The benchmark with this split is `es_bench_v3`.
+- ExtraSensory test results are always reported overall, per platform, and with and without location.
+
+**Why.**
+- The first pick (2026-10-25) used counts that no longer apply: labels v1, a gyroscope required, and no
+  accelerometer plausibility check. On today's data it had 2 run users, 1 train user, and 95% location coverage
+  against 83% overall.
+- The new pick: run 4, bike 6, bus 6 and train 2 users; iPhone share 62% (overall 62%); location coverage 85%; each
+  class 17–23% of its examples.
+
+**Limits of the evidence.**
+- 11 of the 12 new test users were dev users in experiment 02, used for training and model choices there. The new
+  test set is therefore not untouched by earlier decisions.
+- The run counts depend on `acc_implausible`'s 13 m/s² upper bound, which is still an open question.
+
+**Evidence.** Supervisor's approval, relayed by Marc on 2026-10-28. `experiments/04_frozen-benchmark_es-shl/`:
+README step 3 (old against new) and step 4, `decision_register.md` V10–V11.
+
