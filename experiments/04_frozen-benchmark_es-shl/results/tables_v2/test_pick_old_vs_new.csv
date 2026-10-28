@@ -1,0 +1,27 @@
+,all 60 users,old test (v1 pick),new test (v2 proposal)
+users,60.0,12.0,12.0
+iphone_users,34.0,7.0,6.0
+examples,148701.0,25663.0,26871.0
+iphone_share_examples,0.616,0.664,0.621
+location_coverage,0.829,0.949,0.854
+still: examples,112235.0,18844.0,19286.0
+still: share of class,1.0,0.168,0.172
+still: users >= 5,60.0,12.0,12.0
+walk: examples,19334.0,3615.0,4086.0
+walk: share of class,1.0,0.187,0.211
+walk: users >= 5,58.0,11.0,11.0
+run: examples,613.0,57.0,138.0
+run: share of class,1.0,0.093,0.225
+run: users >= 5,10.0,2.0,4.0
+bike: examples,4392.0,899.0,893.0
+bike: share of class,1.0,0.205,0.203
+bike: users >= 5,21.0,4.0,6.0
+car: examples,10252.0,1906.0,2130.0
+car: share of class,1.0,0.186,0.208
+car: users >= 5,48.0,10.0,10.0
+bus: examples,1634.0,273.0,286.0
+bus: share of class,1.0,0.167,0.175
+bus: users >= 5,26.0,5.0,6.0
+train: examples,241.0,69.0,52.0
+train: share of class,1.0,0.286,0.216
+train: users >= 5,5.0,1.0,2.0

@@ -1,0 +1,80 @@
+{
+ "description": "PROPOSED 2026-10-28, NOT IN USE: pending the supervisor's approval. Re-pick of the 12 ExtraSensory test users on es_bench_v2 (experiment 04, step 3, item 6). SHL Users 2-3 unchanged. The reference stays splits/reserved_test.json until this is approved.",
+ "source": "experiments/04_frozen-benchmark_es-shl/propose_test_v2.py --seed 0 --draws 3000000; dev folds in experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
+ "shl": [
+  {
+   "user": "User2",
+   "day": "140617"
+  },
+  {
+   "user": "User2",
+   "day": "140717"
+  },
+  {
+   "user": "User2",
+   "day": "180717"
+  },
+  {
+   "user": "User3",
+   "day": "030717"
+  },
+  {
+   "user": "User3",
+   "day": "070717"
+  },
+  {
+   "user": "User3",
+   "day": "140617"
+  }
+ ],
+ "extrasensory": [
+  {
+   "uuid": "098A72A5-E3E5-4F54-A152-BBDA0DF7B694",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "0BFC35E2-4817-4865-BFA7-764742302A2D",
+   "platform": "android"
+  },
+  {
+   "uuid": "1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842",
+   "platform": "android"
+  },
+  {
+   "uuid": "24E40C4C-A349-4F9F-93AB-01D00FB994AF",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "27E04243-B138-4F40-A164-F40B60165CF3",
+   "platform": "android"
+  },
+  {
+   "uuid": "33A85C34-CFE4-4732-9E73-0A7AC861B27A",
+   "platform": "android"
+  },
+  {
+   "uuid": "665514DE-49DC-421F-8DCB-145D0B2609AD",
+   "platform": "android"
+  },
+  {
+   "uuid": "8023FE1A-D3B0-4E2C-A57A-9321B7FC755F",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "A5CDF89D-02A2-4EC1-89F8-F534FDABDD96",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "A7599A50-24AE-46A6-8EA6-2576F1011D81",
+   "platform": "android"
+  },
+  {
+   "uuid": "B09E373F-8A54-44C8-895B-0039390B859F",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2",
+   "platform": "iphone"
+  }
+ ]
+}

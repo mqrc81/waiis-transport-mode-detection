@@ -1,0 +1,9 @@
+cls,quiet
+still,0.412
+walk,0.002
+run,0.0
+bike,0.001
+car,0.014
+bus,0.024
+train,0.067
+subway,0.06

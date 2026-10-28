@@ -551,7 +551,168 @@ user).
 4. ~~ExtraSensory bearing without speed.~~ Answered: `bearing` = −1 where speed = −1, and the bearing from
    consecutive fixes is kept as `bearing_from_fixes` (second rebuild below).
 
+### Step 3: `es_bench_v2` and a proposed test re-pick (2026-10-28) — **stop-point: supervisor's OK needed**
+
+*(Brief from Marc, 2026-10-28: items 1–7. v1 stays on disk unchanged; no model has used it.)*
+
+```
+uv run python register_numbers.py > logs/register_numbers.out   # decision_register.md numbers (v1)
+uv run python build.py --workers 8      # ~2 min; <data>/processed/es_bench_v2/, results/tables_v2/, logs/build_v2.out
+uv run pytest tests                     # 18 passed: no reserved test user reaches a pre-training accessor
+uv run python propose_test_v2.py        # ~5 s; splits/reserved_test_v2.json, splits/es_users_v2.csv (PROPOSAL)
+```
+
+- **Build:** from commit `b1e2a9c`. The manifest says `git_dirty: true` only because of uncommitted edits to
+  `DECISIONS.md` and 01–03's READMEs (removed "Draft" markers, not mine).
+- **Checks:**
+  - `bench.verify()` is clean for v1 and v2.
+  - **All 359,240 v1 windows are byte-identical in v2.**
+  - Every SHL window equals a slice of the new stream.
+- **Register:** every change is in `decision_register.md` (section 11 and the **v2:** notes).
+
+#### What changed (official set: included, has a window, `acc_implausible` false)
+
+| | v1 | v2 |
+|---|---|---|
+| ExtraSensory examples | 149,681 | **148,701** (+405 hole-trimmed, −1,385 implausible) |
+| SHL User 1 examples | 23,099 | 22,112 (−987 implausible: run 566, walk 377, bike 44) |
+| SHL Users 2–3 examples | 2,366 | 2,366 |
+| files / size | 15 / 1.77 GB | 23 / 4.80 GB |
+
+1. **`acc_implausible`** (median |acc| of the window outside 7–13 m/s²).
+   - ExtraSensory: 1,408 included windows flagged, 1,192 of them BEF6C611 (79% of its windows). The rest are 216
+     windows from other users, all above 13 m/s²: run 95, walk 108.
+   - SHL: 1,124 windows (User 1), all above 13 m/s².
+   - **Problem: the upper bound removes genuine running.** SHL run's median is 13.2 m/s², so 566 of 1,047 SHL
+     User 1 run windows go. ExtraSensory test run drops from 123 to 57 examples. See the open question below.
+   - Per user × class: `es_implausible_by_user.csv`, `shl_user1_implausible.csv`.
+2. **SHL speed and bearing blanking by speed:** p = 0.95 · exp(−v / 1.954 m/s), calibrated to 23.0% on User 1's
+   WAIIS-cadence fixes; the label is never used. Missing speed per class:
+
+   | | still | walk | run | bike | car | bus | train | subway | all |
+   |---|---|---|---|---|---|---|---|---|---|
+   | SHL U1 `gps_waiis_cadence` | 73.6% | 48.3% | 28.1% | 13.4% | 5.3% | 21.5% | 9.0% | 14.4% | 23.0% |
+   | SHL U1 `gps_per_minute` | 87.4% | 48.2% | 28.6% | 17.9% | 11.5% | 39.9% | 17.8% | 31.1% | 43.3% |
+   | ExtraSensory iPhone | 66.9% | 35.3% | 46.3% | 11.4% | 9.0% | 10.2% | 8.6% | – | – |
+   | ExtraSensory Android | 91.6% | 61.6% | 68.4% | 16.8% | 16.0% | 37.1% | 43.2% | – | – |
+
+   SHL now follows ExtraSensory's pattern (missing when slow); v1's uniform 23% did not.
+3. **Pre-training safety.**
+   - `tmd.bench.pretraining_minutes`, `unlabelled_minutes` and every extras accessor drop the reserved test users
+     (`splits/reserved_test.json`) unless `include_reserved=True`.
+   - `tests/test_bench_reserved.py` fails if one leaks: a synthetic check, plus every accessor on the built data.
+   - `examples()` (the official set) still includes test users, marked by `split`.
+4. **`quiet`** = std of |acc| over the window < **0.03 m/s²**. It is descriptive and never used for inclusion; the
+   20% cap is unchanged.
+   - The threshold catches 78% of still-on-table windows and lies above the noise floor (~0.008–0.010 m/s²).
+   - Share of quiet examples:
+     - ExtraSensory still 54–55%, on a table 64–71%, in a pocket 20–26%;
+     - SHL still 41–53%, moving classes ≤ 8%;
+     - but **70% of iPhone run** (161 of 231) and 12–15% of walk: likely label noise (phone not carried).
+5. **Holes (C3, now approved):** the longest clean stretch is kept if ≥ 15 s.
+   - 824 snippets (Android 610, iPhone 214).
+   - **405 official examples recovered:** still 307, walk 46, car 27, bike 16, bus 9.
+   - Included: dev 340, test 88.
+6. Test re-pick: see below. **Not in use.**
+7. **Stored, never official** (via explicit accessors only, reserved users excluded by default):
+
+   | item | table | rows | size |
+   |---|---|---|---|
+   | a, c: every ES snippet in full at 25 Hz (official window = centre crop; 15,853 `short`, median 9.3 s) | `extrasensory/snippets` | 376,952 | 2,057 MB |
+   | b: time-repaired snippets (sorted, repeated timestamps removed, re-checked; `time_repaired`) | in `snippets` | 1,185 | – |
+   | d: continuous 25 Hz hips stream (NaN-free stretches ≥ 15 s; t_ms, x, y, z, label) | `shl_user1/stream`, `shl_user23/stream` | 55.3 M + 4.5 M | 791 + 63 MB |
+   | e: User 1 hand / torso / bag windows, 4phones days | `shl_user1/accelerometer_other_positions` | 5,964 | 36 MB |
+   | f: 1 Hz track incl. altitude | `gps_1hz` | 1,377,605 + 101,516 | 68 MB |
+   | f: speed and bearing before blanking | `gps_unblanked` | 104,537 + 7,299 | 3 MB |
+
+   **Added size: +3.03 GB** (v2 4.80 GB against v1 1.77 GB). Still not stored: 290 minutes without a file and
+   104 snippets with a span > 40 s.
+
+**Reporting rule for test results (from v2 on):** ExtraSensory test results must always be reported **per
+platform (iPhone, Android)** and **with and without location** (`has_location`), as well as overall. Counts per
+split × platform × location are in `es_split_platform_location.csv`.
+
+#### Proposed re-pick of the 12 ExtraSensory test users (item 6) — NOT IN USE, needs the supervisor's OK
+
+The old pick (02, 2026-10-25) used obsolete counts: labels v1, gyroscope required, no implausibility flag.
+`propose_test_v2.py` re-picks on the v2 official examples.
+
+**Rule:**
+- eligible = every user except BEF6C611 (79% implausible windows; the threshold is 10%);
+- 6–7 iPhone users;
+- iPhone share and location coverage of the test examples within ±3 points of the figures for all users;
+- users with ≥ 5 examples: bus ≥ 5, bike ≥ 4, run ≥ 3, train 1–2, still / walk / car ≥ 5;
+- among the 9,972 subsets that pass (3 M draws, seed 0), class shares closest to 12/59.
+
+**Output:**
+- `splits/reserved_test_v2.json` (marked PROPOSED, SHL Users 2–3 unchanged);
+- `splits/es_users_v2.csv` (this folder), with dev folds rebuilt from the other 48 users;
+- `results/tables_v2/test_pick_*.csv`.
+
+The reserved set stays `splits/reserved_test.json` until approved; the reader and v2's `split` column use it.
+
+| | all 60 users | old test | **new test (proposal)** |
+|---|---|---|---|
+| iPhone users | 34 | 7 | 6 |
+| examples | 148,701 | 25,663 | 26,871 |
+| iPhone share of examples | 61.6% | 66.4% | 62.1% |
+| location coverage | 82.9% | **94.9%** | 85.4% |
+| still: examples (share) / users ≥ 5 | 112,235 | 18,844 (16.8%) / 12 | 19,286 (17.2%) / 12 |
+| walk | 19,334 | 3,615 (18.7%) / 11 | 4,086 (21.1%) / 11 |
+| run | 613 | 57 (9.3%) / **2** | 138 (22.5%) / **4** |
+| bike | 4,392 | 899 (20.5%) / 4 | 893 (20.3%) / 6 |
+| car | 10,252 | 1,906 (18.6%) / 10 | 2,130 (20.8%) / 10 |
+| bus | 1,634 | 273 (16.7%) / 5 | 286 (17.5%) / 6 |
+| train | 241 | 69 (28.6%) / 1 | 52 (21.6%) / 2 |
+
+**Users** (first 8 characters; examples, with location):
+
+| old test | | new test | |
+|---|---|---|---|
+| 098A72A5 iPhone | 3,506 | 098A72A5 iPhone (kept) | 3,506 |
+| 1155FF54 Android | 727 | 0BFC35E2 Android | 1,947 |
+| 1538C99F iPhone | 4,135 | 1DBB0F6F Android (train 15) | 864 |
+| 3600D531 iPhone (train 69) | 1,618 | 24E40C4C iPhone | 2,788 |
+| 481F4DD2 Android | 2,195 | 27E04243 Android | 507 (29% with location) |
+| 59EEFAE0 Android | 2,488 | 33A85C34 Android (train 37) | 2,598 |
+| 5EF64122 iPhone | 737 | 665514DE Android | 2,336 |
+| 74B86067 Android | 3,047 | 8023FE1A iPhone | 5,537 |
+| 96A358A0 Android | 169 | A5CDF89D iPhone | 2,498 |
+| C48CE857 iPhone | 1,377 | A7599A50 Android | 1,929 (20% with location) |
+| CA820D43 iPhone | 3,374 | B09E373F iPhone | 1,900 |
+| D7D20E2E iPhone | 2,290 | ECECC2AB iPhone | 461 |
+
+New dev folds (examples): train is in folds 0, 2 and 3 only, because 3 train users remain in dev.
+
+| fold | users | still | walk | run | bike | car | bus | train |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 9 | 23,745 | 3,385 | 282 | 512 | 1,431 | 174 | 69 |
+| 1 | 10 | 16,872 | 2,769 | 60 | 920 | 1,807 | 277 | 0 |
+| 2 | 10 | 17,078 | 2,835 | 14 | 637 | 1,790 | 207 | 96 |
+| 3 | 10 | 22,462 | 3,446 | 96 | 830 | 1,404 | 279 | 24 |
+| 4 | 9 | 12,792 | 2,813 | 23 | 600 | 1,690 | 411 | 0 |
+
+**For the supervisor's decision:**
+- **The 11 new test users were dev users in experiment 02.** They were used there for training and for model
+  choices (R2, step 3, the ExtraSensory-only model). The old test users have never been used by any experiment.
+  The new set fits the constraints much better (run 2 → 4 users, location coverage close to the overall figure);
+  the old one is untouched data.
+- The run counts depend on item 1's upper bound (open question 1). If the bound changes, the re-pick has to be
+  rerun (5 s).
+
+#### Open questions (step 3)
+1. **The 13 m/s² upper bound of `acc_implausible` removes genuine running and brisk walking:** SHL User 1 run
+   1,047 → 481 examples, ExtraSensory test run 123 → 57. All 721 windows below 7 m/s² are BEF6C611.
+   - Proposal: keep the 7 m/s² lower bound and exclude BEF6C611 at user level (or raise the upper bound to
+     ~20 m/s²).
+   - Then rebuild (2 min) and rerun the re-pick.
+2. **Re-pick vs untouched test users** (above): the supervisor's call.
+3. **Label noise suggested by `quiet`:** 70% of iPhone run and 12–15% of walk examples are as quiet as a phone on
+   a table. Should these be reviewed, like the v2 label review in 02?
+
 ## Conclusion
+
+*(Written for es_bench_v1 at step 2; to be updated once v2 and the test split are settled.)*
 
 **Draft — not approved**
 

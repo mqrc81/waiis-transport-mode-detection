@@ -1,6 +1,11 @@
-# Decision register: `es_bench_v1`
+# Decision register: `es_bench_v1` and `es_bench_v2`
 
 Every decision that affects which examples, labels, values or splits are in `es_bench_v1`, from experiment 02 through 04.
+
+**`es_bench_v2`** (2026-10-28, step 3) keeps every v1 decision except where an entry carries a **v2:** note.
+- Its new decisions are in section 11 (V1–V10).
+- v1 stays on disk unchanged; its numbers below are v1's.
+- v2 numbers are from `results/tables_v2/` and `logs/build_v2.out`.
 
 **Basis.** Numbers from `register_numbers.py` (output `logs/register_numbers.out`).
 - Data: `es_bench_v1` as built from commit `30550d9` (`manifest.json`, clean tree), plus 02's raw-snippet audit
@@ -59,6 +64,7 @@ Every decision that affects which examples, labels, values or splits are in `es_
 - **Risk:** none for WAIIS.
 
 **S3. SHL files used.**
+- **v2:** hand, torso and bag windows of User 1's 4phones days are stored, never official (V8).
 - **Decided:** 02 step 1 (`7f435c5`), 04 brief.
   - Hips only (`Hips_Motion.txt`, acc columns), `Label.txt` coarse label and `Hips_Location.txt`.
   - User 1: `release/User1` without 220617, 260617 and 270617 (byte-identical copies of the `User1_4phones` hips
@@ -78,6 +84,7 @@ Every decision that affects which examples, labels, values or splits are in `es_
 ## 2. Unit detection and resampling
 
 **U1. Units per snippet: median |acc| < 3 → g → × 9.80665.**
+- **v2:** windows with a median |acc| outside 7–13 m/s² after conversion are flagged `acc_implausible` and left out of the official set (V1). That removes 1,192 of BEF6C611's 1,544 windows.
 - **Decided:** 02 step 1 (`7f435c5`), brief line 48.
 - **Code:** `src/tmd/resample.py:39-43`.
 - **Why:** 02's audit found iPhone in g and Android in m/s², except BEF6C611 (Android), which is in g "for 1,713 of
@@ -147,6 +154,7 @@ All four rules are checked in this order; the first failure counts (`src/tmd/res
 `acc_status` set, **no window stored**). They come from 02, `1f52628`.
 
 **C1. Time not increasing** (any dt ≤ 0, including repeated timestamps).
+- **v2:** repaired instead of dropped (sort, drop repeated timestamps, re-check), flagged `time_repaired`, stored in `snippets`, never official (V6).
 - **Decided:** 02 decision 4, 2026-10-25; brief line 53.
 - **Why:** broken device clock.
 - **Effect:**
@@ -167,6 +175,7 @@ All four rules are checked in this order; the first failure counts (`src/tmd/res
 - **Risk:** small.
 
 **C3. Hole > 0.5 s inside a snippet.**
+- **v2:** approved by Marc (2026-10-28). The longest clean stretch is kept, official if ≥ 15 s (`hole_trimmed`, V5).
 - **Decided:** 02 step 2 (`1f52628`). **Never explicitly approved**: 02 lists it under "Extra ExtraSensory snippet
   drops, besides the approved ones" (02, Deviations step 2). 04 kept it as "02's cleaning".
 - **Why:** interpolating across the hole would invent data.
@@ -190,6 +199,7 @@ All four rules are checked in this order; the first failure counts (`src/tmd/res
 ## 4. Windowing (15 s, centre)
 
 **W1. One 15 s window (375 × 3) per snippet; snippets shorter than 15 s are dropped.**
+- **v2:** short snippets are stored with their real length (`short`, in `snippets`), never official (V6).
 - **Decided:** 04 brief; confirmed by Marc after stop-point 1 (04 Decisions 1, 2026-10-28; `a711d65`).
 - **Code:** `build.py:110-116`, `src/tmd/resample.py:80-85`.
 - **Why:** one fixed shape for every model, like the fragments the app sends.
@@ -220,6 +230,7 @@ All four rules are checked in this order; the first failure counts (`src/tmd/res
   - (b) whether WAIIS fragments are ≥ 15 s is unknown.
 
 **W2. The window is cut from the centre of the resampled snippet.**
+- **v2:** every snippet is stored in full at 25 Hz (`snippets`); the official window is its centre crop (`window_start`) (V6).
 - **Decided:** 04 brief (`a711d65`).
 - **Code:** `src/tmd/resample.py:80-85`; offset stored as `accelerometer.start_offset_s`.
 - **Why:** avoids filter edges and start-up effects.
@@ -376,6 +387,7 @@ rules would have given; `y` is 0 (`build.py:82`).
 ## 7. Splits and test-user selection
 
 **P1. 12 reserved ExtraSensory test users.**
+- **v2:** unchanged in `es_bench_v2`. A re-pick is **proposed, not in use** (V10).
 - **Decided:** 02 step 1 (`7f435c5`), approved 2026-10-25, frozen in `splits/reserved_test.json` (`6012aa7`).
   Final test by DECISIONS.md 2026-10-28.
 - **Code:** `experiments/02_family-baseline_shl-es/propose_splits.py:42-62`; `src/tmd/splits.py:49-70`; checked
@@ -516,6 +528,7 @@ rules would have given; `y` is 0 (`build.py:82`).
 ## 9. SHL windows and GPS thinning
 
 **H1. One 15 s window per clock minute, centred (`ts` + 22.5 s … + 37.5 s).**
+- **v2:** the continuous 25 Hz hips stream is stored as well (`stream`, V7).
 - **Decided:** 04 brief and stop-point 1 (Marc, 2026-10-28).
 - **Code:** `build.py:224-253`.
 - **Why:** mimic the fragments.
@@ -545,6 +558,7 @@ rules would have given; `y` is 0 (`build.py:82`).
 - **Risk:** (a) these columns are constant for SHL, so a model must not use them as features.
 
 **H4. Two SHL GPS variants.**
+- **v2:** the 1 Hz track (`gps_1hz`) and the unblanked speed and bearing (`gps_unblanked`) are stored (V9).
 - **Decided:** Marc, 2026-10-28 (`a711d65`).
 - **Code:** `build.py:259-309`; `gps.py:58-95`.
 - **Why:** a single cadence would let a model tell the datasets apart (like `ctx_n` in 02).
@@ -566,6 +580,7 @@ rules would have given; `y` is 0 (`build.py:82`).
   - (a) models that train on both datasets must use `gps_per_minute` (stated in the README).
 
 **H5. Speed and bearing blanked on 23% of kept SHL fixes.**
+- **v2:** replaced. Blanking now depends on the 1 Hz speed at the fix (V2).
 - **Decided:** 04 brief; bearing added by Marc, 2026-10-28 (`9ef9424`).
 - **Code:** `build.py:301-304` (`rng(0)`, separately per table).
 - **Effect:**
@@ -593,6 +608,7 @@ rules would have given; `y` is 0 (`build.py:82`).
 ## 10. Format
 
 **F1. Parquet (zstd) tables per source, join key `user, ts`, version folder `es_bench_v1/`, manifest with sha256.**
+- **v2:** folder `es_bench_v2/`; the reader takes `version=` (default v2).
 - **Decided:** 04 brief, `a711d65`.
 - **Code:** `build.py:47-69`, `:448-475`; reader `src/tmd/bench.py`.
 - **Effect:** 15 files, 1.77 GB; rebuilds reproduce the hashes.
@@ -623,7 +639,150 @@ rules would have given; `y` is 0 (`build.py:82`).
 
 ---
 
+## 11. es_bench_v2 (2026-10-28, step 3)
+
+These decisions are by Marc, 2026-10-28.
+- Code is at commit `b1e2a9c`, built from that commit. The manifest is `git_dirty` only because of uncommitted
+  doc edits outside 04.
+- v1's 359,240 windows are byte-identical in v2.
+- Official ExtraSensory examples: 149,681 (v1) → **148,701** (+405 hole-trimmed, −1,385 implausible among the
+  included windows).
+
+**V1. `acc_implausible`: window median |acc| outside 7–13 m/s² after unit conversion; out of the official set.**
+- **Code:** `build.py:50`, `:101-108`; `resample.py:126-129`; `bench.py:87-99`.
+- **Why:** BEF6C611's units are not a clean g / m/s² mix (U1).
+- **Effect.**
+  - **ExtraSensory**, included windows: 1,408 flagged:
+
+    | | still | walk | car | run | bus | train |
+    |---|---|---|---|---|---|---|
+    | flagged | 1,020 | 182 | 109 | 95 | 1 | 1 |
+
+    - Below 7 m/s²: 721 windows, **all BEF6C611**.
+    - Above 13 m/s²: 687 windows, of which BEF6C611 471 and other users 216 (run 95, walk 108, still 6, car 5,
+      bus 1, train 1).
+    - **BEF6C611 accounts for 1,192** (of its 1,544 windows). Next come 5119D0F8 with 56 (walk 45) and the test
+      users 74B86067 (44, all run) and 098A72A5 (22, all run).
+  - **SHL** (all above 13 m/s²):
+    - User 1: 1,124 windows, of which run 566 of 1,047, walk 377 of 3,015 and bike 44 among labelled windows.
+    - Users 2–3: 0.
+- **Reversible:** yes. `acc_median` and the window are stored; `examples()` applies the flag.
+- **Risk:**
+  - (a) **the upper bound removes genuine running and brisk walking.** Median |acc| for SHL run is 13.2 m/s² and
+    for ExtraSensory run p90 is 13.3 m/s². ExtraSensory test run drops from 123 to 57 examples, SHL User 1 run from
+    1,047 to 481. The flag is then class-dependent.
+  - (c) the same loss hits the test set.
+  - Alternative (open question): keep the 7 m/s² lower bound, and handle BEF6C611 at user level or raise the upper
+    bound (e.g. 20 m/s²). That keeps the run windows; the 471 BEF6C611 windows above 13 m/s² would then need the
+    user-level rule.
+
+**V2. SHL speed and bearing blanking driven by the 1 Hz speed at the fix.**
+- **Rule:** p = 0.95 · exp(−v / v0). v0 = **1.954 m/s**, calibrated once on SHL User 1's 80,892 WAIIS-cadence
+  fixes so that 23% of them have no speed. Fixes already without speed count. The same curve is used for every
+  table, `rng(0)`. The label is never used.
+- **Code:** `gps.py:97-117`; `build.py:368-414`.
+- **Why:** in production (and in ExtraSensory) speed is missing mostly when slow.
+- **Effect:** speed missing per class, against ExtraSensory examples:
+
+  | | still | walk | run | bike | car | bus | train | subway | all |
+  |---|---|---|---|---|---|---|---|---|---|
+  | SHL U1 `gps_waiis_cadence` | 73.6% | 48.3% | 28.1% | 13.4% | 5.3% | 21.5% | 9.0% | 14.4% | **23.0%** |
+  | SHL U1 `gps_per_minute` | 87.4% | 48.2% | 28.6% | 17.9% | 11.5% | 39.9% | 17.8% | 31.1% | 43.3% |
+  | ES, iPhone | 66.9% | 35.3% | 46.3% | 11.4% | 9.0% | 10.2% | 8.6% | – | – |
+  | ES, Android | 91.6% | 61.6% | 68.4% | 16.8% | 16.0% | 37.1% | 43.2% | – | – |
+- **Reversible:** yes (`gps_unblanked`, V9).
+- **Risk:**
+  - (a) missing speed is now class-dependent in both datasets, so it is a still / walk feature in both;
+  - (b) the curve's shape (exponential, p0 = 0.95) is our assumption. Production's per-class rate is unknown.
+
+**V3. Pre-training accessors exclude the reserved test users by default.**
+- **Code:** `bench.py:68-84`, `:102-145`. `tests/test_bench_reserved.py` fails if a reserved user reaches any
+  accessor in `PRETRAINING_ACCESSORS` (18 tests pass on the built data).
+- **Why:** reserved test users never enter pre-training (`splits/README.md`).
+- **Effect:**
+  - `examples()` still includes test users (column `split`), because evaluation needs them.
+  - The reserved set is `splits/reserved_test.json` (the v1 pick) until V10 is approved.
+- **Reversible:** `include_reserved=True` (evaluation only).
+- **Risk:** (a) `read()` is unfiltered by design.
+
+**V4. `quiet`: std of |acc| over the window < 0.03 m/s². Descriptive, never used for inclusion.**
+- **Code:** `build.py:51`, `:101-108`.
+- **Why:** 0.03 m/s² catches 78% of still windows on a table, and stays above the sensor noise (iPhone ≈ 0.008,
+  Android ≈ 0.010; v1 windows).
+- **Effect:** share of quiet examples:
+  - ExtraSensory by class (iPhone / Android): still 55% / 54%; walk 12% / 15%; **run 70% / 0.3%**; bike 12% / 6%;
+    car 6% / 14%; bus 6% / 7%; train 0% / 15%.
+  - ExtraSensory by position: on a table 64–71%, in a pocket 20–26%, none reported 46–50%.
+  - SHL: still 41–53%; moving classes ≤ 8%.
+- **Reversible:** n/a. The 20% cap is unchanged.
+- **Risk:** (a) quiet windows in moving classes are probably label noise. The phone was not carried (e.g. 70% of
+  iPhone run, 161 of 231 examples).
+
+**V5. Holed snippets: the longest clean stretch is kept** (C3 approved).
+- **Code:** `resample.py:88-123`.
+- **Effect:** 824 snippets (Android 610, iPhone 214).
+  - 428 included and 405 official examples recovered: still 307, walk 46, car 27, bike 16, bus 9.
+  - By split (included): dev 340, test 88.
+  - Top users: 4E98F91F 75, 481F4DD2 57 (test), 99B204C0 47.
+- **Reversible:** flag `hole_trimmed`.
+- **Risk:** (b) small. The window comes from the longest stretch, not the centre of the original snippet.
+
+**V6. ExtraSensory snippets stored in full at 25 Hz (`snippets`), incl. short and time-repaired ones; never
+official.**
+- **Code:** `build.py:137-171`; `resample.py:88-123`.
+- **Effect:**
+  - 376,952 snippets, 2.06 GB. Missing: 290 without a file and 104 with a span > 40 s (102 as in v1, plus 2
+    time-repaired snippets whose span is over 40 s after sorting).
+  - **Short:** 15,853 (median 9.3 s, 2.7–15.0 s), including 150 that are also time-repaired. Included short
+    minutes: still 4,982, walk 1,587, car 764, bike 478, bus 153, train 95, run 53.
+  - **Time-repaired:** 1,185.
+- **Reversible:** n/a (adds data).
+- **Risk:** (a) a model trained on short snippets would need padding or another window length; not comparable to
+  the official set.
+
+**V7. SHL continuous 25 Hz hips stream (`stream`).**
+- **Content:** one row per sample: `t_ms`, `x`, `y`, `z`, coarse label, stretch number. Only NaN-free stretches of
+  ≥ 15 s.
+- **Code:** `build.py:329-339`.
+- **Effect:** User 1 55.3 M samples (614 h, 791 MB); Users 2–3 4.5 M (63 MB). Each official window equals a slice of
+  the stream (checked).
+- **Risk:** (a) the stream has no fragment gaps, unlike the app's recordings.
+
+**V8. SHL User 1 hand, torso and bag windows on the 4phones days (`accelerometer_other_positions`).**
+- **Content:** 5,964 windows (36 MB), with label status and flags. Never official.
+- **Risk:** (b) more positions; (a) only 3 days.
+
+**V9. SHL 1 Hz GPS track (`gps_1hz`, incl. altitude) and the speed and bearing before blanking
+(`gps_unblanked`).**
+- **Effect:** `gps_1hz` 1,377,605 + 101,516 rows (68 MB); `gps_unblanked` 104,537 + 7,299.
+- **Risk:** (a) the true speed must not be used as a feature next to blanked tracks.
+
+**V10. Re-pick of the 12 ExtraSensory test users: proposed, NOT in use.**
+- **Code:** `propose_test_v2.py`.
+- **Writes:** `splits/reserved_test_v2.json` and `splits/es_users_v2.csv` in this folder. The old files are
+  untouched.
+- **Rule** (Marc):
+  - eligible = all users except those with > 10% implausible windows (only BEF6C611, 79%);
+  - 6–7 iPhone users;
+  - iPhone share and location coverage of the test examples within ±3 points of the figures for all users;
+  - users with ≥ 5 examples: bus ≥ 5, bike ≥ 4, run ≥ 3, train 1–2, still / walk / car ≥ 5;
+  - among the 9,972 subsets that pass (of 3 M draws, seed 0), class shares closest to 12/59.
+- **Effect:** old against new (comparison in step 3 of the README):
+  - run users 2 → 4, bike 4 → 6, bus 5 → 6, train 1 → 2;
+  - location coverage 94.9% → 85.4% (all users 82.9%);
+  - iPhone share of examples 66.4% → 62.1% (61.6%).
+  - Only 098A72A5 is in both.
+  - Dev folds are rebuilt; 2 folds have no train (3 dev train users).
+- **Risk:**
+  - (c) **the 11 new test users were dev users in 02**, used for training and model choices there (R2, step 3,
+    the ExtraSensory-only model). The old test users were never used;
+  - (a) the run counts depend on V1's upper bound.
+
 ## Where data is dropped rather than flagged
+
+*(v1. In v2, items 1, 5 and 6 are stored, apart from 290 missing files and 104 snippets with a span > 40 s. Item 2
+is partly stored: full snippets are kept, but the raw sample timestamps are not. Item 4 is partly stored: the
+continuous hips stream and the User 1 hand, torso and bag windows of the 4phones days are kept. See V6–V9.)*
 
 1. **ExtraSensory snippets that fail cleaning or the 15 s rule.** The minute row stays with `acc_status`, but no
    window is stored. That is 18,106 minutes: under 15 s 14,581; hole 1,946; time 1,187; no file 290; span 102.

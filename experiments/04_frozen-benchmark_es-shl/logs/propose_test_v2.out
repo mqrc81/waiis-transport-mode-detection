@@ -1,0 +1,60 @@
+ineligible (> 10% implausible windows): [('BEF6C611', np.float64(0.79))]
+3,000,000 draws, 9,972 valid subsets
+                       all 60 users  old test (v1 pick)  new test (v2 proposal)
+users                        60.000              12.000                  12.000
+iphone_users                 34.000               7.000                   6.000
+examples                 148701.000           25663.000               26871.000
+iphone_share_examples         0.616               0.664                   0.621
+location_coverage             0.829               0.949                   0.854
+still: examples          112235.000           18844.000               19286.000
+still: share of class         1.000               0.168                   0.172
+still: users >= 5            60.000              12.000                  12.000
+walk: examples            19334.000            3615.000                4086.000
+walk: share of class          1.000               0.187                   0.211
+walk: users >= 5             58.000              11.000                  11.000
+run: examples               613.000              57.000                 138.000
+run: share of class           1.000               0.093                   0.225
+run: users >= 5              10.000               2.000                   4.000
+bike: examples             4392.000             899.000                 893.000
+bike: share of class          1.000               0.205                   0.203
+bike: users >= 5             21.000               4.000                   6.000
+car: examples             10252.000            1906.000                2130.000
+car: share of class           1.000               0.186                   0.208
+car: users >= 5              48.000              10.000                  10.000
+bus: examples              1634.000             273.000                 286.000
+bus: share of class           1.000               0.167                   0.175
+bus: users >= 5              26.000               5.000                   6.000
+train: examples             241.000              69.000                  52.000
+train: share of class         1.000               0.286                   0.216
+train: users >= 5             5.000               1.000                   2.000
+         platform  examples  with_location  still  walk  run  bike  car  bus  train    old    new
+098A72A5   iphone      3506           3506   3046   187   11   120  142    0      0   True   True
+0BFC35E2  android      1947           1421   1349   336   34   106  113    9      0  False   True
+1155FF54  android       727            720    471   158    1     0   55   42      0   True  False
+1538C99F   iphone      4135           3907   3478   657    0     0    0    0      0   True  False
+1DBB0F6F  android       864            748    681   162    1     0    0    5     15  False   True
+24E40C4C   iphone      2788           2788   1897   383    0    59  420   29      0  False   True
+27E04243  android       507            149    506     0    0     0    0    1      0  False   True
+33A85C34  android      2598           2417   1777   451    0   124  209    0     37  False   True
+3600D531   iphone      1618           1511   1007   132    0     0  410    0     69   True  False
+481F4DD2  android      2195           1564   1239   899    0     0   16   41      0   True  False
+59EEFAE0  android      2488           2426   1640   579    0     0  149  120      0   True  False
+5EF64122   iphone       737            642    361   113    0     0  263    0      0   True  False
+665514DE  android      2336           1131   1016  1153    8     0   20  139      0  False   True
+74B86067  android      3047           3047   2216    15   44   692   80    0      0   True  False
+8023FE1A   iphone      5537           5534   4570   269    0   362  336    0      0  False   True
+96A358A0  android       169             84    167     2    0     0    0    0      0   True  False
+A5CDF89D   iphone      2498           2491   2138   191    0     0  169    0      0  False   True
+A7599A50  android      1929            389    916   504    0     0  423   86      0  False   True
+B09E373F   iphone      1900           1900   1137   294   84   122  263    0      0  False   True
+C48CE857   iphone      1377           1377    988   265    0     0   78   46      0   True  False
+CA820D43   iphone      3374           3365   2715   352    0    27  280    0      0   True  False
+D7D20E2E   iphone      2290           2218   1516   256    1    60  433   24      0   True  False
+ECECC2AB   iphone       461            461    253   156    0     0   35   17      0  False   True
+cls   users  still  walk  run  bike   car  bus  train
+fold                                                 
+0         9  23745  3385  282   512  1431  174     69
+1        10  16872  2769   60   920  1807  277      0
+2        10  17078  2835   14   637  1790  207     96
+3        10  22462  3446   96   830  1404  279     24
+4         9  12792  2813   23   600  1690  411      0
