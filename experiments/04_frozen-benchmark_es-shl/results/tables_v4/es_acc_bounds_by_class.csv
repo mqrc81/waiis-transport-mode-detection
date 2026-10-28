@@ -1,0 +1,10 @@
+col_0,above,above,plausible,plausible
+platform,android,iphone,android,iphone
+cls,,,,
+bike,0,0,1793,2599
+bus,0,0,790,845
+car,0,0,2596,7562
+run,1,1,438,268
+still,0,0,42585,69431
+train,0,0,149,93
+walk,0,0,8430,10984

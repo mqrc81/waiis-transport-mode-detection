@@ -1,0 +1,570 @@
+speed blanking: p = 0.95 * exp(-v / 1.954 m/s), calibrated on 80,892 SHL User 1 WAIIS-cadence fixes (target 23% missing)
+== ExtraSensory ==
+00EABED2-271D-49D8-B599-1D4A09240601: 2285 windows, 2285 snippets of 2287 minutes
+098A72A5-E3E5-4F54-A152-BBDA0DF7B694: 6806 windows, 6808 snippets of 6813 minutes
+0A986513-7828-4D53-AA1F-E02D6DF9561B: 3960 windows, 3960 snippets of 3960 minutes
+0BFC35E2-4817-4865-BFA7-764742302A2D: 2723 windows, 3090 snippets of 3108 minutes
+0E6184E1-90C0-48EE-B25A-F1ECB7B9714E: 7506 windows, 7513 snippets of 7521 minutes
+1155FF54-63D3-4AB2-9863-8385D0BD0A13: 2681 windows, 2685 snippets of 2685 minutes
+11B5EC4D-4133-4289-B475-4E737182A406: 8843 windows, 8844 snippets of 8845 minutes
+136562B6-95B2-483D-88DC-065F28409FD2: 6217 windows, 6218 snippets of 6218 minutes
+1538C99F-BA1E-4EFB-A949-6C7C47701B20: 6549 windows, 6549 snippets of 6549 minutes
+1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842: 3060 windows, 7356 snippets of 7375 minutes
+24E40C4C-A349-4F9F-93AB-01D00FB994AF: 4771 windows, 4771 snippets of 4771 minutes
+27E04243-B138-4F40-A164-F40B60165CF3: 2643 windows, 4923 snippets of 4927 minutes
+2C32C23E-E30C-498A-8DD2-0EFB9150A02E: 8513 windows, 8515 snippets of 8516 minutes
+33A85C34-CFE4-4732-9E73-0A7AC861B27A: 6133 windows, 6164 snippets of 6172 minutes
+3600D531-0C55-44A7-AE95-A7A38519464E: 5202 windows, 5202 snippets of 5203 minutes
+40E170A7-607B-4578-AF04-F021C3B0384A: 7545 windows, 7647 snippets of 7649 minutes
+481F4DD2-7689-43B9-A2AA-C8772227162B: 6390 windows, 6688 snippets of 6691 minutes
+4E98F91F-4654-42EF-B908-A3389443F2E7: 3231 windows, 3244 snippets of 3250 minutes
+4FC32141-E888-4BFF-8804-12559A491D8C: 4979 windows, 4979 snippets of 4979 minutes
+5119D0F8-FCA8-4184-A4EB-19421A40DE0D: 6617 windows, 6617 snippets of 6617 minutes
+5152A2DF-FAF3-4BA8-9CA9-E66B32671A53: 6616 windows, 6617 snippets of 6617 minutes
+59818CD2-24D7-4D32-B133-24C2FE3801E5: 5946 windows, 5946 snippets of 5947 minutes
+59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2: 7443 windows, 7536 snippets of 7542 minutes
+5EF64122-B513-46AE-BCF1-E62AAC285D2C: 3904 windows, 3907 snippets of 3911 minutes
+61359772-D8D8-480D-B623-7C636EAD0C81: 6052 windows, 6072 snippets of 6079 minutes
+61976C24-1C50-4355-9C49-AAE44A7D09F6: 8727 windows, 8728 snippets of 8730 minutes
+665514DE-49DC-421F-8DCB-145D0B2609AD: 9083 windows, 9165 snippets of 9167 minutes
+74B86067-5D4B-43CF-82CF-341B76BEA0F4: 7235 windows, 7267 snippets of 7298 minutes
+78A91A4E-4A51-4065-BDA7-94755F0BB3BB: 11996 windows, 11996 snippets of 11996 minutes
+797D145F-3858-4A7F-A7C2-A4EB721E133C: 3593 windows, 3593 snippets of 3593 minutes
+7CE37510-56D0-4120-A1CF-0E23351428D2: 9760 windows, 9760 snippets of 9761 minutes
+7D9BB102-A612-4E2A-8E22-3159752F55D8: 1600 windows, 1600 snippets of 1600 minutes
+8023FE1A-D3B0-4E2C-A57A-9321B7FC755F: 9185 windows, 9186 snippets of 9189 minutes
+806289BC-AD52-4CC1-806C-0CDB14D65EB6: 9190 windows, 9239 snippets of 9242 minutes
+81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0: 2813 windows, 6326 snippets of 6407 minutes
+83CF687B-7CEC-434B-9FE8-00C3D5799BE6: 9538 windows, 9539 snippets of 9539 minutes
+86A4F379-B305-473D-9D83-FC7D800180EF: 10632 windows, 10714 snippets of 10738 minutes
+96A358A0-FFF2-4239-B93E-C7425B901B47: 4140 windows, 5807 snippets of 5819 minutes
+9759096F-1119-4E19-A0AD-6F16989C7E1C: 9958 windows, 9959 snippets of 9959 minutes
+99B204C0-DD5C-4BB7-83E8-A37281B8D769: 5804 windows, 6027 snippets of 6038 minutes
+9DC38D04-E82E-4F29-AB52-B476535226F2: 9679 windows, 9684 snippets of 9686 minutes
+A5A30F76-581E-4757-97A2-957553A2C6AA: 1624 windows, 1667 snippets of 1667 minutes
+A5CDF89D-02A2-4EC1-89F8-F534FDABDD96: 6040 windows, 6040 snippets of 6040 minutes
+A7599A50-24AE-46A6-8EA6-2576F1011D81: 3890 windows, 3898 snippets of 3898 minutes
+A76A5AF5-5A93-4CF2-A16E-62353BB70E8A: 7520 windows, 7520 snippets of 7520 minutes
+B09E373F-8A54-44C8-895B-0039390B859F: 8133 windows, 8133 snippets of 8134 minutes
+B7F9D634-263E-4A97-87F9-6FFB4DDCB36C: 9380 windows, 9383 snippets of 9383 minutes
+B9724848-C7E2-45F4-9B3F-A1F38D864495: 7625 windows, 7626 snippets of 7626 minutes
+BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC: 8308 windows, 8309 snippets of 8309 minutes
+BEF6C611-50DA-4971-A040-87FB979F3FC1: 2906 windows, 3450 snippets of 3451 minutes
+C48CE857-A0DD-4DDB-BEA5-3A25449B2153: 5074 windows, 5074 snippets of 5092 minutes
+CA820D43-E5E2-42EF-9798-BE56F776370B: 7864 windows, 7864 snippets of 7865 minutes
+CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F: 6437 windows, 8393 snippets of 8472 minutes
+CDA3BBF7-6631-45E8-85BA-EEB416B32A3C: 2859 windows, 2860 snippets of 2860 minutes
+CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC: 3615 windows, 3615 snippets of 3615 minutes
+D7D20E2E-FC78-405D-B346-DBD3FD8FC92B: 6210 windows, 6210 snippets of 6210 minutes
+E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3: 3441 windows, 3441 snippets of 3441 minutes
+ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2: 3529 windows, 3529 snippets of 3530 minutes
+F50235E0-DD67-4F2A-B00B-1F31ADA998B9: 1089 windows, 2242 snippets of 2266 minutes
+FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF: 4972 windows, 4972 snippets of 4973 minutes
+minutes 377,346; included_v2 158,786; windows 360,064; snippets 376,952; examples (official) 145,380
+
+ExtraSensory counts per class (es_class_counts.csv):
+       included_v2  window  of_which_hole_trimmed  acc_implausible  label_implausible  user_excluded  examples  examples_iphone  examples_android  examples_dev  examples_test  users_with_examples  quiet_share
+cls                                                                                                                                                                                                             
+still       118604  113255                  328.0            764.0                0.0         1239.0    112016            69431             42585         92730          19286                   59        0.547
+walk         21241   19516                   48.0             22.0             2623.0          102.0     16791             9629              7162         13109           3682                   58        0.000
+run            762     708                    0.0              2.0              162.0            0.0       544              107               437           463             81                   22        0.000
+bike          4878    4392                   16.0              0.0              398.0            0.0      3994             2300              1694          3118            876                   23        0.000
+car          11166   10361                   27.0             85.0                0.0          203.0     10158             7562              2596          8028           2130                   48        0.084
+bus           1793    1635                    9.0              0.0                0.0            0.0      1635              845               790          1348            287                   28        0.064
+train          342     242                    0.0              0.0                0.0            0.0       242               93               149           190             52                    5        0.091
+       included_v2  window  of_which_hole_trimmed  acc_implausible  label_implausible  user_excluded  examples  examples_iphone  examples_android  examples_dev  examples_test  users_with_examples  quiet_share
+cls                                                                                                                                                                                                             
+still       118604  113255                  328.0            764.0                0.0         1239.0    112016            69431             42585         92730          19286                   59        0.547
+walk         21241   19516                   48.0             22.0             2623.0          102.0     16791             9629              7162         13109           3682                   58        0.000
+run            762     708                    0.0              2.0              162.0            0.0       544              107               437           463             81                   22        0.000
+bike          4878    4392                   16.0              0.0              398.0            0.0      3994             2300              1694          3118            876                   23        0.000
+car          11166   10361                   27.0             85.0                0.0          203.0     10158             7562              2596          8028           2130                   48        0.084
+bus           1793    1635                    9.0              0.0                0.0            0.0      1635              845               790          1348            287                   28        0.064
+train          342     242                    0.0              0.0                0.0            0.0       242               93               149           190             52                    5        0.091
+
+acc status, all minutes (es_acc_status_all.csv):
+platform       android  iphone     All
+acc_status                            
+hole_trimmed       610     214     824
+no_file            282       8     290
+ok              138559  220681  359240
+short            15681      22   15703
+span_over_40s       68      36     104
+time_repaired     1185       0    1185
+All             156385  220961  377346
+
+acc status by class (es_acc_status_by_class.csv):
+acc_status  hole_trimmed  no_file      ok  short  span_over_40s  time_repaired     All
+cls                                                                                   
+bike                  16        0    4376    477              3              6    4878
+bus                    9        0    1626    152              0              6    1793
+car                   27        0   10334    761              4             40   11166
+run                    0        0     708     51              0              3     762
+still                328        8  112927   4950             47            344  118604
+train                  0        0     242     94              5              1     342
+walk                  48        1   19468   1559              3            162   21241
+All                  428        9  149681   8044             62            562  158786
+
+snippet status x short x time_repaired, all minutes (es_snippet_flags.csv):
+short           False         True          All
+time_repaired   False  True  False True        
+acc_status                                     
+hole_trimmed      824     0      0    0     824
+no_file           290     0      0    0     290
+ok             359240     0      0    0  359240
+short               0     0  15703    0   15703
+span_over_40s     102     2      0    0     104
+time_repaired       0  1035      0  150    1185
+All            360456  1037  15703  150  377346
+
+acc_implausible windows (included_v2) per user x class (es_implausible_by_user.csv):
+cls                                   car  run  still  walk  All   windows platform split
+user                                                                                     
+All                                    85    2    764    22  873  150109.0      NaN   NaN
+BEF6C611-50DA-4971-A040-87FB979F3FC1   85    0    764    22  871    1544.0  android   dev
+098A72A5-E3E5-4F54-A152-BBDA0DF7B694    0    1      0     0    1    3528.0   iphone  test
+59818CD2-24D7-4D32-B133-24C2FE3801E5    0    1      0     0    1    2744.0  android   dev
+
+acc_implausible windows, all minutes (es_implausible_by_user_all_minutes.csv):
+platform                              android  iphone   All
+user                                                       
+All                                      1529       8  1537
+BEF6C611-50DA-4971-A040-87FB979F3FC1     1525       0  1525
+59818CD2-24D7-4D32-B133-24C2FE3801E5        4       0     4
+ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2        0       4     4
+098A72A5-E3E5-4F54-A152-BBDA0DF7B694        0       1     1
+2C32C23E-E30C-498A-8DD2-0EFB9150A02E        0       1     1
+5152A2DF-FAF3-4BA8-9CA9-E66B32671A53        0       1     1
+C48CE857-A0DD-4DDB-BEA5-3A25449B2153        0       1     1
+
+hole-trimmed official windows (included_v2) per user x class (es_hole_trimmed_by_user.csv):
+cls                                                  bike  bus  car  still  walk  All
+user                                 platform split                                  
+00EABED2-271D-49D8-B599-1D4A09240601 iphone   dev       0    0    0      1     3    4
+098A72A5-E3E5-4F54-A152-BBDA0DF7B694 iphone   test      0    0    0      2     0    2
+0BFC35E2-4817-4865-BFA7-764742302A2D android  test      0    0    4     15     1   20
+11B5EC4D-4133-4289-B475-4E737182A406 iphone   dev       0    0    0      3     1    4
+136562B6-95B2-483D-88DC-065F28409FD2 iphone   dev       0    0    0      1     1    2
+1538C99F-BA1E-4EFB-A949-6C7C47701B20 iphone   dev       0    0    0      6     0    6
+24E40C4C-A349-4F9F-93AB-01D00FB994AF iphone   test      0    0    0      1     0    1
+27E04243-B138-4F40-A164-F40B60165CF3 android  test      0    0    0      1     0    1
+2C32C23E-E30C-498A-8DD2-0EFB9150A02E iphone   dev       0    0    2      0     0    2
+33A85C34-CFE4-4732-9E73-0A7AC861B27A android  test      0    0    1      3     0    4
+3600D531-0C55-44A7-AE95-A7A38519464E iphone   dev       0    0    0      4     0    4
+481F4DD2-7689-43B9-A2AA-C8772227162B android  dev       0    3    0     42    12   57
+4E98F91F-4654-42EF-B908-A3389443F2E7 android  dev       0    0    0     75     0   75
+5119D0F8-FCA8-4184-A4EB-19421A40DE0D iphone   dev       0    3    3      4     0   10
+59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2 android  dev       0    1    0      2     0    3
+5EF64122-B513-46AE-BCF1-E62AAC285D2C iphone   dev       0    0    3      4     2    9
+61976C24-1C50-4355-9C49-AAE44A7D09F6 iphone   dev       0    0    1      2     3    6
+78A91A4E-4A51-4065-BDA7-94755F0BB3BB iphone   dev       0    0    0      4     0    4
+7CE37510-56D0-4120-A1CF-0E23351428D2 iphone   dev       0    0    0      1     1    2
+7D9BB102-A612-4E2A-8E22-3159752F55D8 iphone   dev       0    0    0      1     3    4
+8023FE1A-D3B0-4E2C-A57A-9321B7FC755F iphone   test      1    0    0     30     0   31
+806289BC-AD52-4CC1-806C-0CDB14D65EB6 android  dev       0    0    1      5     0    6
+81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0 android  dev       3    0    1     10     1   15
+99B204C0-DD5C-4BB7-83E8-A37281B8D769 android  dev       8    1    4     27     7   47
+9DC38D04-E82E-4F29-AB52-B476535226F2 iphone   dev       2    0    0      7     0    9
+A5CDF89D-02A2-4EC1-89F8-F534FDABDD96 iphone   test      0    0    0      2     0    2
+A7599A50-24AE-46A6-8EA6-2576F1011D81 android  test      0    0    1      0     0    1
+B09E373F-8A54-44C8-895B-0039390B859F iphone   test      0    0    3      2     4    9
+B9724848-C7E2-45F4-9B3F-A1F38D864495 iphone   dev       0    1    0      1     0    2
+BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC iphone   dev       2    0    1     17     3   23
+BEF6C611-50DA-4971-A040-87FB979F3FC1 android  dev       0    0    0     24     2   26
+C48CE857-A0DD-4DDB-BEA5-3A25449B2153 iphone   dev       0    0    0      4     1    5
+CA820D43-E5E2-42EF-9798-BE56F776370B iphone   dev       0    0    0      1     0    1
+CDA3BBF7-6631-45E8-85BA-EEB416B32A3C iphone   dev       0    0    0      3     0    3
+CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC iphone   dev       0    0    0      1     1    2
+D7D20E2E-FC78-405D-B346-DBD3FD8FC92B iphone   dev       0    0    1      0     0    1
+F50235E0-DD67-4F2A-B00B-1F31ADA998B9 android  dev       0    0    1     20     1   22
+FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF iphone   dev       0    0    0      2     1    3
+All                                                    16    9   27    328    48  428
+
+included windows (excluded users left out) below 7.0 / above 20.0 m/s2 (es_acc_bounds_by_class.csv):
+col_0      above        plausible       
+platform android iphone   android iphone
+cls                                     
+bike           0      0      1793   2599
+bus            0      0       790    845
+car            0      0      2596   7562
+run            1      1       438    268
+still          0      0     42585  69431
+train          0      0       149     93
+walk           0      0      8430  10984
+
+walk / run / bike windows (included_v2): label_implausible per class x platform (es_label_implausible.csv):
+platform          android       iphone          All
+label_implausible   False  True  False  True       
+cls                                                
+bike                 1694    99   2300   299   4392
+run                   438     1    108   161    708
+walk                 7264  1268   9629  1355  19516
+All                  9396  1368  12037  1815  24616
+
+included_v2 minutes of excluded users (es_user_excluded.csv):
+cls                                   car  still  walk   All
+user                                                        
+BEF6C611-50DA-4971-A040-87FB979F3FC1  213   1505   117  1835
+All                                   213   1505   117  1835
+
+quiet share of examples per position x platform (es_quiet_by_position.csv):
+platform   android  iphone
+position                  
+(none)       0.445   0.492
+in_bag       0.352   0.380
+in_hand      0.233   0.247
+in_pocket    0.238   0.185
+on_table     0.708   0.636
+
+quiet share of examples per class x platform (es_quiet_by_class.csv):
+platform  android  iphone
+cls                      
+still       0.538   0.553
+walk        0.000   0.000
+run         0.000   0.000
+bike        0.000   0.000
+car         0.145   0.063
+bus         0.065   0.063
+train       0.148   0.000
+
+examples per fold x class (es_fold_class_counts.csv):
+cls         users  still  walk  run  bike   car  bus  train
+split fold                                                 
+dev    0        9  23745  2889  288   342  1431  174     69
+       1       10  16873  2405  104   892  1807  277      0
+       2       10  17083  2498   19   600  1791  207     97
+       3       10  22462  2881   23   768  1405  279     24
+       4        8  12567  2436   29   516  1594  411      0
+test  -1       12  19286  3682   81   876  2130  287     52
+
+examples per split x platform x has_location (es_split_platform_location.csv):
+cls                          bike   bus    car  run   still  train   walk     All
+split platform has_location                                                      
+dev   android  False          236   187    433  132   11695      0   1980   14663
+               True          1228   363   1398  262   24645     97   2872   30865
+      iphone   False           15    33    319    0    5293      0    321    5981
+               True          1639   765   5878   69   51097     93   7936   67477
+test  android  False            1   139    486    8    2063     30   1057    3784
+               True           229   101    279   35    4182     22   1253    6101
+      iphone   False            0     0      1    0       5      0      4      10
+               True           646    47   1364   38   13036      0   1368   16499
+All                          3994  1635  10158  544  112016    242  16791  145380
+
+ES gps_per_minute: speed -1 share on examples (es_speed_missing_by_class.csv):
+platform  android  iphone
+cls                      
+still       0.916   0.669
+walk        0.575   0.290
+run         0.579   0.131
+bike        0.132   0.044
+car         0.165   0.090
+bus         0.371   0.102
+train       0.429   0.086
+== shl_user1 ==
+User1/010317/Hips: 259 windows of 260 minutes
+User1/010617/Hips: 788 windows of 790 minutes
+User1/020317/Hips: 636 windows of 637 minutes
+User1/020517/Hips: 441 windows of 442 minutes
+User1/020617/Hips: 577 windows of 581 minutes
+User1/030317/Hips: 266 windows of 267 minutes
+User1/030517/Hips: 430 windows of 431 minutes
+User1/030617/Hips: 505 windows of 507 minutes
+User1/030717/Hips: 537 windows of 539 minutes
+User1/040517/Hips: 477 windows of 478 minutes
+User1/040717/Hips: 521 windows of 524 minutes
+User1/050517/Hips: 539 windows of 541 minutes
+User1/050617/Hips: 53 windows of 54 minutes
+User1/050717/Hips: 424 windows of 427 minutes
+User1/060317/Hips: 162 windows of 162 minutes
+User1/060617/Hips: 505 windows of 507 minutes
+User1/070317/Hips: 587 windows of 590 minutes
+User1/070617/Hips: 519 windows of 521 minutes
+User1/080317/Hips: 516 windows of 518 minutes
+User1/080517/Hips: 315 windows of 316 minutes
+User1/080617/Hips: 847 windows of 849 minutes
+User1/090317/Hips: 48 windows of 50 minutes
+User1/090517/Hips: 525 windows of 527 minutes
+User1/090617/Hips: 52 windows of 54 minutes
+User1/100317/Hips: 141 windows of 142 minutes
+User1/100517/Hips: 757 windows of 758 minutes
+User1/110517/Hips: 698 windows of 700 minutes
+User1/120517/Hips: 506 windows of 507 minutes
+User1/120617/Hips: 462 windows of 465 minutes
+User1/130317/Hips: 532 windows of 533 minutes
+User1/130617/Hips: 522 windows of 523 minutes
+User1/140317/Hips: 635 windows of 637 minutes
+User1/140617/Hips: 612 windows of 614 minutes
+User1/150317/Hips: 730 windows of 732 minutes
+User1/150517/Hips: 97 windows of 99 minutes
+User1/150617/Hips: 107 windows of 108 minutes
+User1/160317/Hips: 602 windows of 603 minutes
+User1/170317/Hips: 42 windows of 43 minutes
+User1/170517/Hips: 551 windows of 552 minutes
+User1/180417/Hips: 346 windows of 347 minutes
+User1/190417/Hips: 646 windows of 648 minutes
+User1/190517/Hips: 834 windows of 835 minutes
+User1/200317/Hips: 551 windows of 553 minutes
+User1/200417/Hips: 722 windows of 723 minutes
+User1/200517/Hips: 376 windows of 377 minutes
+User1/200617/Hips: 759 windows of 761 minutes
+User1/210317/Hips: 544 windows of 546 minutes
+User1/220317/Hips: 763 windows of 764 minutes
+User1/220517/Hips: 90 windows of 92 minutes
+User1/230317/Hips: 535 windows of 535 minutes
+User1/230517/Hips: 512 windows of 514 minutes
+User1/230617/Hips: 508 windows of 510 minutes
+User1/240317/Hips: 103 windows of 104 minutes
+User1/240417/Hips: 213 windows of 215 minutes
+User1/240517/Hips: 458 windows of 459 minutes
+User1/250317/Hips: 556 windows of 558 minutes
+User1/250417/Hips: 585 windows of 588 minutes
+User1/250517/Hips: 854 windows of 856 minutes
+User1/260417/Hips: 527 windows of 527 minutes
+User1/260517/Hips: 480 windows of 482 minutes
+User1/270317/Hips: 619 windows of 621 minutes
+User1/270417/Hips: 770 windows of 771 minutes
+User1/280317/Hips: 558 windows of 560 minutes
+User1/280417/Hips: 137 windows of 139 minutes
+User1/280617/Hips: 627 windows of 628 minutes
+User1/290317/Hips: 416 windows of 418 minutes
+User1/290517/Hips: 162 windows of 163 minutes
+User1/290617/Hips: 381 windows of 382 minutes
+User1/300317/Hips: 37 windows of 38 minutes
+User1/300517/Hips: 262 windows of 264 minutes
+User1/300617/Hips: 527 windows of 529 minutes
+User1/310517/Hips: 651 windows of 653 minutes
+User1/m010317/Hips: 127 windows of 128 minutes
+User1/m030317/Hips: 34 windows of 35 minutes
+User1/m050617/Hips: 142 windows of 144 minutes
+User1/m060717/Hips: 67 windows of 68 minutes
+User1/m080517/Hips: 73 windows of 76 minutes
+User1/m090617/Hips: 52 windows of 53 minutes
+User1/m150517/Hips: 86 windows of 88 minutes
+User1/m170317/Hips: 56 windows of 56 minutes
+User1/m220517/Hips: 81 windows of 84 minutes
+User1/m240317/Hips: 56 windows of 57 minutes
+User1/m240417/Hips: 28 windows of 30 minutes
+User1/m280417/Hips: 42 windows of 44 minutes
+User1/m290317/Hips: 74 windows of 76 minutes
+User1/m290617/Hips: 125 windows of 125 minutes
+User1/m300517/Hips: 162 windows of 163 minutes
+User1_4phones/220617/Hips: 774 windows of 775 minutes
+User1_4phones/260617/Hips: 649 windows of 651 minutes
+User1_4phones/270617/Hips: 565 windows of 567 minutes
+User1_4phones/220617/Hand: 774 windows of 775 minutes
+User1_4phones/220617/Torso: 774 windows of 775 minutes
+User1_4phones/220617/Bag: 774 windows of 775 minutes
+User1_4phones/260617/Hand: 649 windows of 651 minutes
+User1_4phones/260617/Torso: 649 windows of 651 minutes
+User1_4phones/260617/Bag: 649 windows of 651 minutes
+User1_4phones/270617/Hand: 565 windows of 567 minutes
+User1_4phones/270617/Torso: 565 windows of 567 minutes
+User1_4phones/270617/Bag: 565 windows of 567 minutes
+other positions (hand / torso / bag, 4phones days): 5,964 windows
+
+windows, flags and official examples per class (shl_user1_official_by_class.csv):
+        windows  acc_implausible  label_implausible  official
+cls                                                          
+bike       2844                0                  2      2842
+bus        3028                0                  0      3028
+car        4058                0                  0      4058
+run        1047               17                  0      1030
+still      3366                0                  0      3366
+subway     2388                0                  0      2388
+train      3353                0                  0      3353
+walk       3015                0                  4      3011
+minutes 36,968; windows 36,825; acc_implausible 19; examples (official) 23,076; 1 Hz fixes 1,377,605; gps_waiis_cadence 80,892; gps_per_minute 23,645
+
+examples per user x class (shl_user1_user_class_examples.csv):
+cls    still  walk   run  bike   car   bus  train  subway    All
+user                                                            
+User1   3366  3011  1030  2842  4058  3028   3353    2388  23076
+All     3366  3011  1030  2842  4058  3028   3353    2388  23076
+cls    still  walk   run  bike   car   bus  train  subway    All
+user                                                            
+User1   3366  3011  1030  2842  4058  3028   3353    2388  23076
+All     3366  3011  1030  2842  4058  3028   3353    2388  23076
+
+acc_implausible x class (shl_user1_implausible.csv):
+cls              bike   bus   car   run       still subway train  walk
+acc_implausible False False False False True  False  False False False
+user                                                                  
+User1            2844  3028  4058  1030    17  3366   2388  3353  3015
+
+windows below 7.0 / above 20.0 m/s2 (shl_user1_acc_bounds_by_class.csv):
+col_0   above  plausible
+cls                     
+bike        0       2844
+bus         0       3028
+car         0       4058
+run        17       1030
+still       0       3366
+subway      0       2388
+train       0       3353
+walk        0       3015
+
+label status x acc status, all minutes (shl_user1_status.csv):
+acc_status    edge  nan_gap     ok    All
+label_status                             
+edge           118        0      0    118
+mixed            0        0    694    694
+null             0       24  13032  13056
+ok               0        1  23099  23100
+All            118       25  36825  36968
+
+quiet share per class (shl_user1_quiet_by_class.csv):
+        quiet
+cls          
+still   0.412
+walk    0.000
+run     0.000
+bike    0.000
+car     0.014
+bus     0.024
+train   0.067
+subway  0.060
+
+GPS by class (shl_user1_gps_by_class.csv):
+                              fixes  dt_prev_p50_s  speed_missing  speed_blanked  speed_p50  accuracy_p50  bearing_missing
+variant           cls                                                                                                     
+gps_waiis_cadence (no label)  14581         20.068          0.478          0.441      3.092           8.0            0.507
+                  bike        14478         10.032          0.134          0.133      4.823           6.0            0.136
+                  bus         10787         10.032          0.215          0.201      7.292           8.0            0.224
+                  car         18070         10.027          0.053          0.049     15.666           8.0            0.055
+                  run          3424         20.060          0.281          0.280      2.581           6.0            0.281
+                  still         874         71.235          0.736          0.693      0.693           8.0            0.812
+                  subway       3119         10.030          0.144          0.109     13.669          12.0            0.148
+                  train        7994         10.031          0.090          0.055     17.548          16.0            0.093
+                  walk         7565         20.065          0.483          0.476      1.481           6.0            0.491
+                  ALL         80892            NaN          0.230          0.214        NaN           NaN            0.239
+gps_per_minute    (no label)   7395         60.185          0.681          0.676      1.513           6.0            0.746
+                  bike         2824         60.160          0.179          0.179      4.525           6.0            0.182
+                  bus          2716         60.153          0.399          0.389      6.507           6.0            0.420
+                  car          3377         60.141          0.115          0.113     15.173           6.0            0.121
+                  run          1045         60.188          0.286          0.286      2.446           6.0            0.286
+                  still        1325         60.184          0.874          0.873      0.242           6.0            0.968
+                  subway        730         60.156          0.311          0.300     13.059           8.0            0.326
+                  train        1644         60.178          0.178          0.162     17.091          12.0            0.192
+                  walk         2589         60.190          0.482          0.482      1.462           6.0            0.495
+                  ALL         23645            NaN          0.433          0.429        NaN           NaN            0.465
+
+examples with a per-minute fix (shl_user1_location_by_class.csv):
+        has_location
+cls                 
+still          0.394
+walk           0.859
+run            0.998
+bike           0.993
+car            0.832
+bus            0.897
+train          0.490
+subway         0.306
+== shl_user23 ==
+User2_4phones/140617/Hips: 545 windows of 545 minutes
+User2_4phones/140717/Hips: 523 windows of 525 minutes
+User2_4phones/180717/Hips: 488 windows of 490 minutes
+User3_4phones/030717/Hips: 485 windows of 485 minutes
+User3_4phones/070717/Hips: 647 windows of 651 minutes
+User3_4phones/140617/Hips: 327 windows of 328 minutes
+
+windows, flags and official examples per class (shl_user23_official_by_class.csv):
+        windows  acc_implausible  label_implausible  official
+cls                                                          
+bike        199                0                  0       199
+bus         150                0                  0       150
+car         339                0                  0       339
+run          45                0                  0        45
+still       487                0                  0       487
+subway      358                0                  0       358
+train       360                0                  0       360
+walk        428                0                  1       427
+minutes 3,024; windows 3,015; acc_implausible 0; examples (official) 2,365; 1 Hz fixes 101,516; gps_waiis_cadence 5,550; gps_per_minute 1,749
+
+examples per user x class (shl_user23_user_class_examples.csv):
+cls    still  walk  run  bike  car  bus  train  subway   All
+user                                                        
+User2    197   240   14   136  255   68    133     174  1217
+User3    290   187   31    63   84   82    227     184  1148
+All      487   427   45   199  339  150    360     358  2365
+cls    still  walk  run  bike  car  bus  train  subway   All
+user                                                        
+User2    197   240   14   136  255   68    133     174  1217
+User3    290   187   31    63   84   82    227     184  1148
+All      487   427   45   199  339  150    360     358  2365
+
+acc_implausible x class (shl_user23_implausible.csv):
+cls              bike   bus   car   run still subway train  walk
+acc_implausible False False False False False  False False False
+user                                                            
+User2             136    68   255    14   197    174   133   240
+User3              63    82    84    31   290    184   227   188
+
+windows below 7.0 / above 20.0 m/s2 (shl_user23_acc_bounds_by_class.csv):
+col_0   plausible
+cls              
+bike          199
+bus           150
+car           339
+run            45
+still         487
+subway        358
+train         360
+walk          428
+
+label status x acc status, all minutes (shl_user23_status.csv):
+acc_status    edge  nan_gap    ok   All
+label_status                           
+edge             7        0     0     7
+mixed            0        0    65    65
+null             0        2   584   586
+ok               0        0  2366  2366
+All              7        2  3015  3024
+
+quiet share per class (shl_user23_quiet_by_class.csv):
+        quiet
+cls          
+still   0.528
+walk    0.000
+run     0.000
+bike    0.000
+car     0.021
+bus     0.053
+train   0.078
+subway  0.064
+
+GPS by class (shl_user23_gps_by_class.csv):
+                              fixes  dt_prev_p50_s  speed_missing  speed_blanked  speed_p50  accuracy_p50  bearing_missing
+variant           cls                                                                                                     
+gps_waiis_cadence (no label)    472         21.064          0.608          0.564      1.426          16.0            0.650
+                  bike          763         10.058          0.233          0.232      3.185           6.0            0.236
+                  bus           472         10.039          0.242          0.218      6.911          16.0            0.250
+                  car          1679         10.032          0.048          0.045     13.899           6.0            0.050
+                  run           146         20.061          0.329          0.329      2.185          16.0            0.329
+                  still         140         87.297          0.743          0.686      0.702          16.0            0.821
+                  subway        196         10.035          0.158          0.128     13.304          16.0            0.163
+                  train         642         10.034          0.104          0.055     23.253          24.0            0.109
+                  walk         1040         20.068          0.483          0.478      1.366          16.0            0.495
+                  ALL          5550            NaN          0.254          0.238        NaN           NaN            0.265
+gps_per_minute    (no label)    315         60.184          0.752          0.743      0.891          12.0            0.838
+                  bike          179         60.189          0.218          0.218      2.981           6.0            0.223
+                  bus           120         60.172          0.408          0.392      7.338          16.0            0.433
+                  car           311         60.174          0.119          0.119     13.285           6.0            0.122
+                  run            45         60.187          0.133          0.133      2.165          16.0            0.133
+                  still         226         60.194          0.881          0.881      0.245          16.0            0.969
+                  subway         48         60.190          0.333          0.292     13.920          16.0            0.333
+                  train         137         60.202          0.182          0.161     22.997          16.0            0.219
+                  walk          368         60.197          0.470          0.470      1.386          14.0            0.505
+                  ALL          1749            NaN          0.447          0.441        NaN           NaN            0.487
+
+examples with a per-minute fix (shl_user23_location_by_class.csv):
+        has_location
+cls                 
+still          0.464
+walk           0.859
+run            1.000
+bike           0.899
+car            0.917
+bus            0.800
+train          0.381
+subway         0.134
+manifest: 23 files, 4.80 GB, commit cf1085c

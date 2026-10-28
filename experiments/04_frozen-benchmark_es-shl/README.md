@@ -629,7 +629,9 @@ uv run python propose_test_v2.py        # ~5 s; splits/reserved_test_v2.json, sp
    104 snippets with a span > 40 s.
 
 **Reporting rule for test results (from v2 on):** ExtraSensory test results must always be reported **per
-platform (iPhone, Android)** and **with and without location** (`has_location`), as well as overall. Counts per
+platform (iPhone, Android)** and **with and without location** (`has_location`), as well as overall.
+*(Superseded at step 5: per platform, with no separate without-location breakdown, and with user-bootstrap CIs per
+class.)* Counts per
 split × platform × location are in `es_split_platform_location.csv`.
 
 #### Proposed re-pick of the 12 ExtraSensory test users (item 6) — NOT IN USE, needs the supervisor's OK
@@ -749,8 +751,104 @@ New dev folds (examples): train is in folds 0, 2 and 3 only, because 3 train use
 - Test train is Android only (52 examples, 2 users).
 
 #### Open questions (step 4)
-1. Still open from step 3: `acc_implausible`'s 13 m/s² upper bound (genuine running removed).
-2. v2 can be deleted from disk (4.8 GB) now that v3 supersedes it. Deleting needs your OK.
+1. ~~Still open from step 3: `acc_implausible`'s 13 m/s² upper bound.~~ Answered at step 5.
+2. ~~v2 can be deleted from disk.~~ Done at step 5 (v2 and v3 deleted after v4 verified).
+
+### Step 5: `es_bench_v4` (2026-10-28) — **stop-point**
+
+*(Brief from Marc, 2026-10-28.)*
+
+```
+uv run python build.py --workers 8      # ~2 min; <data>/processed/es_bench_v4/, results/tables_v4/, logs/build_v4.out
+uv run pytest tests                     # 19 passed
+```
+
+**Build.** From commit `cf1085c` on a clean tree (`git_dirty: false`).
+- `bench.verify()` is clean.
+- The test users and folds are the approved ones, unchanged.
+- `tmd.bench` defaults to v4. Its labels tables have one `official` column, and `examples()` reads it.
+
+**What changed from v3:**
+1. **The upper plausibility bound is 20 m/s²** (the lower stays 7 m/s²). Left out BEF6C611, it still removes:
+
+   | | ExtraSensory | SHL User 1 | SHL Users 2–3 |
+   |---|---|---|---|
+   | removed | run 2 (iPhone 1, Android 1) | run 17 of 1,047 | 0 |
+
+   Nothing falls below 7 m/s² outside BEF6C611. At 13 m/s² the bound had removed run 95 + walk 108 (ExtraSensory)
+   and run 566 + walk 377 + bike 44 (SHL User 1).
+   (`es_acc_bounds_by_class.csv`, `shl_user1_acc_bounds_by_class.csv`)
+2. **BEF6C611 is excluded entirely** (`user_excluded`, reason "inconsistent accelerometer processing";
+   `tmd.extrasensory.EXCLUDED_USERS`).
+   - Its 1,835 included minutes (still 1,505, car 213, walk 117) are out of the official set and of every
+     pre-training accessor (the test checks this).
+   - It stays a dev user in fold 0 of the approved split file (the split was not changed); it just contributes
+     nothing.
+3. **`label_implausible`** = a quiet window (std |acc| < 0.03 m/s²) in walk, run or bike. It is out of the official
+   set, with the same logic as `not_carried`: the label describes the person, not the phone. Still is unaffected.
+   - ExtraSensory:
+
+     | | iPhone | Android |
+     |---|---|---|
+     | walk | 1,355 of 10,984 (12%) | 1,268 of 8,532 (15%) |
+     | run | **161 of 269 (60%)** | 1 of 439 |
+     | bike | 299 of 2,599 (12%) | 99 of 1,793 (6%) |
+
+     (`es_label_implausible.csv`)
+   - SHL: bike 2 and walk 4 (User 1); walk 1 (Users 2–3).
+4. **Test examples, v3 against v4:**
+
+   | ExtraSensory test | still | walk | run | bike | car | bus | train | all |
+   |---|---|---|---|---|---|---|---|---|
+   | v3 | 19,286 | 4,086 | 138 | 893 | 2,130 | 286 | 52 | 26,871 |
+   | **v4** | 19,286 | 3,682 | **81** | 876 | 2,130 | 287 | 52 | 26,394 |
+   | v4 test users with ≥ 5 | 12 | 11 | 4 | 6 | 10 | 6 | 2 | |
+
+   - Bus gains 1: a window that v3's 13 m/s² bound had removed.
+   - Dev: 121,830 → 118,986 examples.
+   - SHL User 1: 22,112 → 23,076 (run 481 → 1,030). SHL Users 2–3: 2,366 → 2,365.
+   - Details: `results/tables_v4/v3_vs_v4_examples.csv`.
+5. **v4 test examples per platform:**
+
+   | | still | walk | run | bike | car | bus | train |
+   |---|---|---|---|---|---|---|---|
+   | iPhone | 13,041 | 1,372 | 38 | 646 | 1,365 | 47 | 0 |
+   | Android | 6,245 | 2,310 | 43 | 230 | 765 | 240 | 52 |
+
+**Reporting rule for ExtraSensory test results (from v4 on; replaces step 3's).**
+- Report overall and **per platform** (iPhone, Android).
+- **"Without location" is not a separate breakdown.** It is effectively Android-only: 10 iPhone test examples lack
+  location.
+- **Per-class results come with user-bootstrap 95% confidence intervals**: `tmd.evaluate.bootstrap_users_recall`
+  for per-class recall, `bootstrap_users` for macro-F1, 1,000 resamples of test users. This matters most for train
+  (2 users, 52 examples, Android only) and run (4 users, 81 examples).
+
+#### Versions on disk and how to rebuild them
+
+Only **v1** and **v4** are kept in `<data>/processed/`. v2 and v3 were deleted on 2026-10-28 (Marc's OK).
+
+Each version is rebuilt from its own commit in a separate worktree. The builder writes to
+`<data>/processed/<version>/` (the data root is the worktree's parent's `data/`, or `$TMD_DATA`):
+
+```
+git worktree add ../tmd-<version> <commit>
+cd ../tmd-<version> && uv run python experiments/04_frozen-benchmark_es-shl/build.py
+```
+
+Check the result with `tmd.bench.verify("<version>")`, or against `results/manifests/<version>.json` (copied before
+the deletion). Every rebuild so far reproduced the hashes of the files it did not intend to change (steps 2–5);
+a full rebuild of an old version from its commit has not been run.
+
+| version | commit | contents | on disk |
+|---|---|---|---|
+| `es_bench_v1` | `30550d9` | step 2 | yes |
+| `es_bench_v2` | `b1e2a9c` | + flags, repairs, extras (step 3), old split | no (manifest in `results/manifests/`) |
+| `es_bench_v3` | `aef0a4c` | v2 + approved split (step 4) | no (manifest in `results/manifests/`) |
+| `es_bench_v4` | `cf1085c` | v3 + bound 20 m/s², BEF6C611 excluded, `label_implausible`, `official` | **yes, default** |
+
+#### Open questions (step 5)
+- The step-3 question on the 13 m/s² bound is answered (20 m/s² and the user exclusion).
+- `label_implausible` removes 60% of iPhone run. iPhone run in ExtraSensory is now 107 examples (38 in test).
 
 ## Conclusion
 

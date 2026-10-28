@@ -3,6 +3,8 @@
 Every decision that affects which examples, labels, values or splits are in `es_bench_v1`, from experiment 02 through 04.
 
 **`es_bench_v2`** (2026-10-28, step 3) keeps every v1 decision except where an entry carries a **v2:** note.
+**`es_bench_v3`** is v2 with the approved split (V11). **`es_bench_v4`**, the current version, adds V12–V14.
+Only v1 and v4 are on disk; the README (step 5) says how to rebuild the others from their commits.
 - Its new decisions are in section 11 (V1–V10).
 - v1 stays on disk unchanged; its numbers below are v1's.
 - v2 numbers are from `results/tables_v2/` and `logs/build_v2.out`.
@@ -649,6 +651,7 @@ These decisions are by Marc, 2026-10-28.
   included windows).
 
 **V1. `acc_implausible`: window median |acc| outside 7–13 m/s² after unit conversion; out of the official set.**
+- **v4:** the upper bound is 20 m/s² (V12), and BEF6C611 is excluded at user level (V13).
 - **Code:** `build.py:50`, `:101-108`; `resample.py:126-129`; `bench.py:87-99`.
 - **Why:** BEF6C611's units are not a clean g / m/s² mix (U1).
 - **Effect.**
@@ -790,6 +793,58 @@ official.**
   - (c) as V10: 11 test users were 02 dev users;
   - (c) iPhone test examples without location are only 10, so the without-location analysis is effectively
     Android-only, and test train is Android-only.
+
+**V12. v4: `acc_implausible` upper bound raised to 20 m/s² (lower bound 7 m/s² unchanged).**
+- **Decided:** Marc, 2026-10-28; built at `cf1085c`.
+- **Code:** `build.py:56` (`ACC_PLAUSIBLE`).
+- **Why:** 13 m/s² removed genuine running and brisk walking (V1).
+- **Effect.**
+  - BEF6C611 left out, it removes ExtraSensory run 2 (1 iPhone, 1 Android), SHL User 1 run 17 of 1,047, and nothing
+    in SHL Users 2–3.
+  - Nothing outside BEF6C611 is below 7 m/s².
+  - Brought back against v3: SHL User 1 run 481 → 1,030, walk 2,638 → 3,011; ExtraSensory test bus +1, dev
+    train +1.
+- **Reversible:** yes (`acc_median`).
+- **Risk:** (a) small.
+
+**V13. v4: BEF6C611 excluded entirely (`user_excluded`, reason "inconsistent accelerometer processing").**
+- **Code:** `tmd/extrasensory.py` (`EXCLUDED_USERS`); `build.py` (`official_flags`); `bench.py` (`_guard`);
+  `tests/test_bench_reserved.py`.
+- **Why:** its raw |acc| level jumps between g, m/s² and gravity-free scales (U1, V1).
+- **Effect:**
+  - 1,835 included minutes (still 1,505, car 213, walk 117) leave the official set and every pre-training accessor.
+  - It stays a dev user in fold 0 of the approved split file (the split is unchanged).
+- **Reversible:** yes (`user_excluded`; `read()` still returns its rows).
+- **Risk:**
+  - (b) if WAIIS phones also mix processing modes, the benchmark has no such data;
+  - (a) fold 0 has one user fewer in effect.
+
+**V14. v4: `label_implausible` = quiet window (std |acc| < 0.03 m/s²) in walk, run or bike; out of the official
+set.**
+- **Decided:** Marc, 2026-10-28: the same logic as `not_carried`; still is unaffected.
+- **Code:** `build.py` (`LABEL_QUIET_CLASSES`, `official_flags`).
+- **Effect:**
+  - ExtraSensory included windows:
+
+    | | iPhone | Android |
+    |---|---|---|
+    | walk | 1,355 of 10,984 | 1,268 of 8,532 |
+    | run | **161 of 269** | 1 of 439 |
+    | bike | 299 of 2,599 | 99 of 1,793 |
+  - SHL: User 1 bike 2, walk 4; Users 2–3 walk 1.
+  - ExtraSensory test: walk 4,086 → 3,682, run 138 → 81, bike 893 → 876.
+- **Reversible:** yes (`quiet`, `acc_std`).
+- **Risk:**
+  - (b) a quiet walk window could also be a phone lying in a bag on a trolley, etc. The flag removes it from
+    evaluation, so models are never scored on it;
+  - (c) iPhone run in the test set is now 38 examples.
+
+**v4 official set** = included (`included_v2` / `included`), with a window, not `acc_implausible`, not
+`label_implausible`, not `user_excluded`. This is the `official` column, which `tmd.bench.examples` reads.
+
+| v4 | ExtraSensory dev | ExtraSensory test | SHL User 1 | SHL Users 2–3 |
+|---|---|---|---|---|
+| examples | 118,986 | 26,394 | 23,076 | 2,365 |
 
 ## Where data is dropped rather than flagged
 

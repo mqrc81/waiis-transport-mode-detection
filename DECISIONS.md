@@ -77,7 +77,11 @@ tested across seeds).
 - The dev folds are `experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv`.
 - SHL Users 2–3 (the rail check) are unchanged.
 - The benchmark with this split is `es_bench_v3`.
-- ExtraSensory test results are always reported overall, per platform, and with and without location.
+- ExtraSensory test results are always reported overall and per platform. Per-class results come with
+  user-bootstrap 95% CIs (`tmd.evaluate.bootstrap_users_recall`). There is no separate "without location"
+  breakdown: it is effectively Android-only.
+- The benchmark to use is `es_bench_v4`: v3, plus the plausibility bound at 20 m/s², BEF6C611 excluded, and quiet
+  walk / run / bike windows excluded (`label_implausible`).
 
 **Why.**
 - The first pick (2026-10-25) used counts that no longer apply: labels v1, a gyroscope required, and no
@@ -89,8 +93,9 @@ tested across seeds).
 **Limits of the evidence.**
 - 11 of the 12 new test users were dev users in experiment 02, used for training and model choices there. The new
   test set is therefore not untouched by earlier decisions.
-- The run counts depend on `acc_implausible`'s 13 m/s² upper bound, which is still an open question.
+- The test set was picked on v2's counts (13 m/s² bound). On v4 it has run 81 examples from 4 users and train 52
+  from 2 users (Android only).
 
 **Evidence.** Supervisor's approval, relayed by Marc on 2026-10-28. `experiments/04_frozen-benchmark_es-shl/`:
-README step 3 (old against new) and step 4, `decision_register.md` V10–V11.
+README steps 3–5, `decision_register.md` V10–V14.
 
