@@ -710,6 +710,48 @@ New dev folds (examples): train is in folds 0, 2 and 3 only, because 3 train use
 3. **Label noise suggested by `quiet`:** 70% of iPhone run and 12–15% of walk examples are as quiet as a phone on
    a table. Should these be reviewed, like the v2 label review in 02?
 
+### Step 4: the approved test split, `es_bench_v3` (2026-10-28) — **stop-point**
+
+**The supervisor approved the re-pick** (relayed by Marc, 2026-10-28).
+- `splits/reserved_test_v2.json` (marked APPROVED) and `splits/es_users_v2.csv` here are now the reference.
+- `splits/reserved_test.json` and 02's `es_users.csv` are kept unchanged as superseded; 02's MLflow inputs record
+  their hashes.
+
+**Changes** (commit `aef0a4c`):
+- `tmd.splits.reserved_test()` reads the approved set; `reserved_test(1)` reads the old one. The reader's
+  reserved-user filter follows it on every benchmark version.
+- `tracking.SPLITS`: new entries `extrasensory_dev_v2`, `extrasensory_test_v2` and `shl_user23_test_v2`. The old
+  entries stay for 02's runs.
+- `CLAUDE.md`, `splits/README.md` and 02's `splits/README.md` now point to the new file.
+- `DECISIONS.md`: a draft entry.
+- `propose_test_v2.py` is pinned to v2 and no longer overwrites an approved file.
+
+**`es_bench_v3` = v2 with the approved split** (`uv run python build.py`).
+- Built from `aef0a4c` on a clean tree (`git_dirty: false`). `bench.verify()` is clean, and the 18 tests pass.
+- **Only `extrasensory/labels.parquet` and `extrasensory/sessions.parquet` differ from v2** (`split`, `fold`). The
+  other 21 files are byte-identical.
+- The test users and folds equal the approved files. `tmd.bench` now defaults to v3; v1 and v2 stay on disk.
+- Official examples are the same 148,701:
+
+  | | still | walk | run | bike | car | bus | train |
+  |---|---|---|---|---|---|---|---|
+  | dev | 92,949 | 15,248 | 475 | 3,499 | 8,122 | 1,348 | 189 |
+  | test | 19,286 | 4,086 | 138 | 893 | 2,130 | 286 | 52 |
+
+**Reporting per platform and location on the test set** (`es_split_platform_location.csv`):
+
+| test examples | with location | without |
+|---|---|---|
+| iPhone | 16,680 | **10** |
+| Android | 6,255 | 3,926 |
+
+- The "without location" split is only meaningful on Android.
+- Test train is Android only (52 examples, 2 users).
+
+#### Open questions (step 4)
+1. Still open from step 3: `acc_implausible`'s 13 m/s² upper bound (genuine running removed).
+2. v2 can be deleted from disk (4.8 GB) now that v3 supersedes it. Deleting needs your OK.
+
 ## Conclusion
 
 *(Written for es_bench_v1 at step 2; to be updated once v2 and the test split are settled.)*

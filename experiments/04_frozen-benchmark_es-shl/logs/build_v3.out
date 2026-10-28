@@ -1,0 +1,27 @@
+speed blanking: p = 0.95 * exp(-v / 1.954 m/s), calibrated on 80,892 SHL User 1 WAIIS-cadence fixes (target 23% missing)
+== ExtraSensory ==
+minutes 377,346; included_v2 158,786; windows 360,064; snippets 376,952; examples (official) 148,701
+       included_v2  window  of_which_hole_trimmed  acc_implausible  examples  examples_iphone  examples_android  examples_dev  examples_test  users_with_examples  quiet_share
+cls                                                                                                                                                                           
+still       118604  113255                  328.0           1020.0    112235            69427             42808         92949          19286                   60        0.547
+walk         21241   19516                   48.0            182.0     19334            10899              8435         15248           4086                   59        0.136
+run            762     708                    0.0             95.0       613              231               382           475            138                   21        0.264
+bike          4878    4392                   16.0              0.0      4392             2599              1793          3499            893                   23        0.091
+car          11166   10361                   27.0            109.0     10252             7558              2694          8122           2130                   49        0.083
+bus           1793    1635                    9.0              1.0      1634              844               790          1348            286                   28        0.064
+train          342     242                    0.0              1.0       241               93               148           189             52                    5        0.091
+== shl_user1 ==
+other positions (hand / torso / bag, 4phones days): 5,964 windows
+minutes 36,968; windows 36,825; acc_implausible 1,124; examples (official) 22,112; 1 Hz fixes 1,377,605; gps_waiis_cadence 80,892; gps_per_minute 23,645
+cls    still  walk  run  bike   car   bus  train  subway    All
+user                                                           
+User1   3366  2638  481  2800  4058  3028   3353    2388  22112
+All     3366  2638  481  2800  4058  3028   3353    2388  22112
+== shl_user23 ==
+minutes 3,024; windows 3,015; acc_implausible 0; examples (official) 2,366; 1 Hz fixes 101,516; gps_waiis_cadence 5,550; gps_per_minute 1,749
+cls    still  walk  run  bike  car  bus  train  subway   All
+user                                                        
+User2    197   240   14   136  255   68    133     174  1217
+User3    290   188   31    63   84   82    227     184  1149
+All      487   428   45   199  339  150    360     358  2366
+manifest: 23 files, 4.80 GB, commit aef0a4c

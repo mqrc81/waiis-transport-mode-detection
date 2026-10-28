@@ -1,0 +1,10 @@
+split,platform,has_location,bike,bus,car,run,still,train,walk,All
+dev,android,False,266,187,446,127,11817,0,2488,15331
+dev,android,True,1297,363,1483,212,24746,96,3341,31538
+dev,iphone,False,15,33,319,0,5293,0,451,6111
+dev,iphone,True,1921,765,5874,136,51093,93,8968,68850
+test,android,False,1,139,486,8,2063,30,1199,3926
+test,android,True,229,101,279,35,4182,22,1407,6255
+test,iphone,False,0,0,1,0,5,0,4,10
+test,iphone,True,663,46,1364,95,13036,0,1476,16680
+All,,,4392,1634,10252,613,112235,241,19334,148701

@@ -387,7 +387,7 @@ rules would have given; `y` is 0 (`build.py:82`).
 ## 7. Splits and test-user selection
 
 **P1. 12 reserved ExtraSensory test users.**
-- **v2:** unchanged in `es_bench_v2`. A re-pick is **proposed, not in use** (V10).
+- **v2:** unchanged in `es_bench_v2`. **Superseded**: the re-pick (V10) was approved and is used from `es_bench_v3` (V11).
 - **Decided:** 02 step 1 (`7f435c5`), approved 2026-10-25, frozen in `splits/reserved_test.json` (`6012aa7`).
   Final test by DECISIONS.md 2026-10-28.
 - **Code:** `experiments/02_family-baseline_shl-es/propose_splits.py:42-62`; `src/tmd/splits.py:49-70`; checked
@@ -777,6 +777,19 @@ official.**
   - (c) **the 11 new test users were dev users in 02**, used for training and model choices there (R2, step 3,
     the ExtraSensory-only model). The old test users were never used;
   - (a) the run counts depend on V1's upper bound.
+
+**V11. The re-pick is approved; `es_bench_v3` carries it.**
+- **Decided:** supervisor, relayed by Marc, 2026-10-28.
+- **Code:** commit `aef0a4c`: `splits.py:72-89`, `tracking.py` (SPLITS), `build.py` (`ES_SPLIT`).
+- **Effect.**
+  - Reserved set: `splits/reserved_test_v2.json`. The old file is superseded but kept.
+  - v3 differs from v2 only in the ExtraSensory `labels` and `sessions` tables.
+  - Test examples: still 19,286, walk 4,086, car 2,130, bike 893, bus 286, run 138, train 52.
+- **Reversible:** yes (the old files are kept, and v2 is on disk).
+- **Risk:**
+  - (c) as V10: 11 test users were 02 dev users;
+  - (c) iPhone test examples without location are only 10, so the without-location analysis is effectively
+    Android-only, and test train is Android-only.
 
 ## Where data is dropped rather than flagged
 
