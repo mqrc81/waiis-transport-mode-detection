@@ -5,7 +5,7 @@
 How well do hand-crafted features + LightGBM + HMM classify the family and the 8 classes at 25 Hz, across days,
 positions, users and datasets?
 
-*(From `experiments/docs/brief_block1_experiments.md`, which also holds the data, label, split and setup rules
+*(From `docs`, which also holds the data, label, split and setup rules
 (R1/R2/R3) that this experiment follows.)*
 
 ## Plan
@@ -55,7 +55,7 @@ Shared code added in `src/tmd`:
 - `splits.py`: seeded random search for balanced folds and the test pick.
 
 #### Deviations and setup notes
-- The brief is at `experiments/docs/brief_block1_experiments.md`, not `docs/brief_block1.md`. The brief's `~/data/raw/...` is
+- The brief is at `docs`, not `docs/brief_block1.md`. The brief's `~/data/raw/...` is
   `<data>/raw/...`, where `<data>` = `/Users/ms/Projects/waiis/data` (`CLAUDE.local.md`).
 - **The ExtraSensory original labels were missing** from the data root. I downloaded
   `http://extrasensory.ucsd.edu/data/additional_data_files/ExtraSensory.per_uuid_original_labels.zip` (sha256

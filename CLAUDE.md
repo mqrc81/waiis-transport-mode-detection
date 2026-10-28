@@ -8,7 +8,8 @@ Final test: the 12 ExtraSensory test users (`splits/reserved_test.json`); SHL Us
 
 ## Layout
 - `src/tmd`: shared code. Anything a second experiment would reuse goes here.
-- `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion. Add `patches/`, `env/` or `results/` only when there is something to put in them.
+- `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion. Add `patches/`, `env/`, `results/` or `splits/` (the experiment's own fold files) only when there is something to put in them.
+- `splits/reserved_test.json`: the reserved set (12 ExtraSensory test users, SHL Users 2–3). Every experiment excludes it (`tmd.splits.reserved_test()`).
 - `mlflow.db`, `mlartifacts/`: MLflow tracking store and run artifacts (git-ignored).
 - `DECISIONS.md`, `LICENSES.md`: project-wide.
 - `log`: my daily logs. **Do not edit.**

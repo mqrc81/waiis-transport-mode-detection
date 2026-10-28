@@ -1,7 +1,7 @@
 # Splits of experiment 02 (fixed, approved 2026-10-25, never changed)
 
 Made in `experiments/02_family-baseline_shl-es` (Results, step 1) with `propose_splits.py --seed 0`. Rules are in
-`experiments/docs/brief_block1_experiments.md` (Splits). Moved here from `splits/` at the project root on 2026-10-28,
+`../docs` (Splits). Moved here from `splits/` at the project root on 2026-10-28,
 byte for byte (sha256 `af25db55…` and `649c32d5…`, the digests in 02's MLflow dataset inputs).
 
 - `shl_days.csv`: `user, day, partition, fold`.
