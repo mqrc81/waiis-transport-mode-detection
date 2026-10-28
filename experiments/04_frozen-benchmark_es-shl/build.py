@@ -170,7 +170,8 @@ def build_es(workers: int) -> None:
 
 def es_track(loc: pd.DataFrame, labels: pd.DataFrame) -> pd.DataFrame:
     """One fix per minute with coordinates. Time = minute timestamp (the fix time within the ~20 s recording is not
-    published). Speed = location:max_speed, accuracy = best_horizontal_accuracy; -1 when missing."""
+    published). Speed = location:max_speed, accuracy = best_horizontal_accuracy; -1 when missing. bearing = the
+    bearing from the previous fix (bearing_from_fixes), -1 where speed is -1."""
     t = loc[loc.latitude.notna() & loc.longitude.notna()].merge(labels[["user", "ts", "session"]], on=["user", "ts"])
     t = t.sort_values(["user", "ts"]).reset_index(drop=True)
     spd = t["location:max_speed"]
@@ -179,8 +180,13 @@ def es_track(loc: pd.DataFrame, labels: pd.DataFrame) -> pd.DataFrame:
                        "lat": t.latitude, "lon": t.longitude,
                        "speed": np.where(spd.notna() & (spd >= 0), spd, -1.0),
                        "accuracy": np.where(acc.notna() & (acc >= 0), acc, -1.0)})
-    tr["bearing"] = gps.bearing_from_previous(tr, ["user", "session"])
-    return gps.add_consecutive(tr, ["user", "session"])
+    tr = gps.add_consecutive(tr, ["user", "session"])
+    # Production rule (Marc, 2026-10-28): a fix without speed has no bearing. The bearing from consecutive fixes is
+    # kept, never blanked, next to the other between-fix columns.
+    tr["bearing_from_fixes"] = gps.bearing_from_previous(tr, ["user", "session"])
+    tr.insert(tr.columns.get_loc("accuracy") + 1, "bearing",
+              np.where(tr.speed < 0, -1.0, tr.bearing_from_fixes))
+    return tr
 
 
 def sessions_table(labels: pd.DataFrame, keep: list[str]) -> pd.DataFrame:
