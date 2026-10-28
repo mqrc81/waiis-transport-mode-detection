@@ -69,15 +69,13 @@ def pick_test_groups(counts: pd.DataFrame, n: int, valid: Callable[[pd.Index], b
     return best.sort_values()
 
 
-# --- fixed split files (splits/, approved 2026-10-25) ---
+# --- reserved final-test set (splits/reserved_test.json, approved 2026-10-25) ---
 
-def shl_days() -> pd.DataFrame:
-    """user, day (DDMMYY), partition ('dev' | 'test'), fold (0..4, -1 for test)."""
+def reserved_test() -> dict[str, pd.DataFrame]:
+    """The final-test set no experiment may train, tune or pre-train on: {"shl": user, day; "extrasensory": uuid,
+    platform}. SHL Users 2 and 3 are reserved with all their days and positions."""
+    import json
+
     from tmd.paths import PROJECT
-    return pd.read_csv(PROJECT / "splits" / "shl_days.csv", dtype={"day": str})
-
-
-def es_users() -> pd.DataFrame:
-    """uuid, platform, partition ('dev' | 'test'), fold (0..4, -1 for test)."""
-    from tmd.paths import PROJECT
-    return pd.read_csv(PROJECT / "splits" / "es_users.csv")
+    d = json.loads((PROJECT / "splits" / "reserved_test.json").read_text())
+    return {"shl": pd.DataFrame(d["shl"], dtype=str), "extrasensory": pd.DataFrame(d["extrasensory"])}

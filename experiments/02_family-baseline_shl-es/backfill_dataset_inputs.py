@@ -60,8 +60,13 @@ for cfg in ("ctx+fwd", "ctx+vit"):
 
 
 def split_unchanged(path: str, commit: str) -> bool:
-    """The split file at the run's commit equals today's (the digest describes what the run used)."""
-    old = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=REPO, capture_output=True).stdout
+    """The split file at the run's commit equals today's (the digest describes what the run used).
+    Before the 2026-10-28 clean-up the 02 split files were in splits/ at the project root."""
+    git = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=REPO, capture_output=True)
+    if git.returncode:
+        git = subprocess.run(["git", "show", f"{commit}:splits/{path.rsplit('/', 1)[-1]}"], cwd=REPO,
+                             capture_output=True)
+    old = git.stdout
     return hashlib.sha256(old).digest() == hashlib.sha256((REPO / path).read_bytes()).digest()
 
 

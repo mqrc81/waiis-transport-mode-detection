@@ -59,10 +59,10 @@ def _use_experiment(name: str) -> None:
 
 # Dataset part -> split file (repo-relative). A new split gets a new name here.
 SPLITS = {
-    "shl_user1_dev": "splits/shl_days.csv",
-    "shl_user23_test": "splits/shl_days.csv",
-    "extrasensory_dev": "splits/es_users.csv",
-    "extrasensory_test": "splits/es_users.csv",
+    "shl_user1_dev": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",       # 02's day folds
+    "extrasensory_dev": "experiments/02_family-baseline_shl-es/splits/es_users.csv",    # 02's user folds
+    "shl_user23_test": "splits/reserved_test.json",
+    "extrasensory_test": "splits/reserved_test.json",
 }
 CONTEXTS = ("training", "evaluation")
 # Registered dynamically by MLflow, so it can't be imported by name.

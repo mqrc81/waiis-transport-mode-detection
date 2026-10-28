@@ -22,10 +22,19 @@ from tmd import shl
 from tmd.features import FEATURES_VERSION, NAMES, window_features
 from tmd.paths import PROCESSED
 from tmd.resample import DOWN, decimate_100_to_25, es_snippet_to_25hz
-from tmd.splits import es_users, shl_days
 from tmd.windows import WIN, cut, majority, starts
 
 HERE = Path(__file__).resolve().parent
+
+
+def shl_days() -> pd.DataFrame:
+    """02's fixed SHL day folds (splits/README.md): user, day (DDMMYY), partition, fold."""
+    return pd.read_csv(HERE / "splits" / "shl_days.csv", dtype={"day": str})
+
+
+def es_users() -> pd.DataFrame:
+    """02's fixed ExtraSensory user folds (splits/README.md): uuid, platform, partition, fold."""
+    return pd.read_csv(HERE / "splits" / "es_users.csv")
 TAG = f"25hz_w5s_s2.5s_feat-{FEATURES_VERSION}"
 OUT_SHL = PROCESSED / f"shl_u1_{TAG}.parquet"
 OUT_ES = PROCESSED / f"es_dev_{TAG}.parquet"

@@ -1,5 +1,7 @@
 # Brief: block 1 experiments (SHL + ExtraSensory)
 
+> **Parked after experiment 02 (2026-10-28).** The next experiment follows a new plan; 03–06 below are not scheduled.
+
 ## Goal
 Find the best model for transport mode from phone data, input = accelerometer + gyroscope at 25 Hz, arbitrary orientation. The phone records and uploads; the model runs on an edge server (decided 2026-10-25).
 - Production output: the family `still / foot / bike / road / rail`.
@@ -13,7 +15,7 @@ Model size is not a hard limit (edge server; the earlier 2 MB phone ceiling is d
 3. inference time per window: features + model end to end, single thread, after warm-up, median and p95;
 4. model size.
 
-Work as five experiments, in this order: 02 → 03 → 04 → 05 → 06. Each answers one question. Shared code (readers, resampler, windows, label mapping, splits, features, HMM, eval) goes in `../../src/tmd`.
+Work as five experiments, in this order: 02 → 03 → 04 → 05 → 06. Each answers one question. Shared code (readers, resampler, windows, label mapping, split search, features, HMM, eval) goes in `../../src/tmd`. The reserved final test is `../../splits/reserved_test.json`; each experiment's own folds stay in its folder (02: `../02_family-baseline_shl-es/splits/`).
 
 ## Data
 Paths: `<data>` is the data root in `CLAUDE.local.md` (`/Users/ms/Projects/waiis/data`), not `~/data`. Items marked
@@ -84,6 +86,8 @@ Paths: `<data>` is the data root in `CLAUDE.local.md` (`/Users/ms/Projects/waiis
 | Unlabelled pre-training | User 1, all days and positions | 48 dev users |
 | Training + tuning | User 1, folds of whole days (every class in each fold) | 48 dev users, 5 folds split by user |
 | Final test (experiment 06 only) | Users 2 and 3, all 4 positions | 12 test users |
+
+Files: final test in `../../splits/reserved_test.json` (the reference); 02's folds in `../02_family-baseline_shl-es/splits/`.
 
 - Before choosing the 12 ExtraSensory test users, count minutes per user × class and the platform. Then pick: ≥3–4 users with bus, car and bike, and a balance of iOS and Android. If the train minutes come from ≥2 users, put at least one of them in the test set. Fix the seed.
   *(decided 2026-10-25)* This means per class: ≥ 4 test users with ≥ 5 usable minutes for each of bus, car and bike, and about 20% of each class's minutes. One train user in test is enough, because SHL users 2–3 are the real rail test. Only users with a gyroscope are candidates.

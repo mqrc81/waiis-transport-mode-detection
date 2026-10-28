@@ -32,6 +32,8 @@ positions, users and datasets?
 
 Status: **approved 2026-10-25.** Label rules and test criteria: see *Decisions* at the end of this step. The revised
 splits are written to `splits/shl_days.csv` and `splits/es_users.csv` (see `splits/README.md`) and committed.
+*(2026-10-28: both files moved unchanged to this folder's `splits/`. The reserved final test is now
+`splits/reserved_test.json` at the project root, the reference from now on.)*
 
 No model was trained, so nothing from this step is logged to MLflow (one dummy logging run, see Decisions). Everything below comes from the CSVs in `results/audit/`.
 
@@ -266,7 +268,7 @@ search. Usable minutes:
      started from this folder, dirty tree). Params, metrics, a figure artifact (`mlartifacts/00_smoke-test/...`), and
      the `git_commit` / `dirty` tags were all logged. `tracking.py export 00_smoke-test --out <scratchpad>` worked.
 
-Splits approved 2026-10-25 and written to `splits/` (one row per SHL day; one row per ExtraSensory user).
+Splits approved 2026-10-25 and written to `splits/` (one row per SHL day; one row per ExtraSensory user; now in this folder's `splits/`).
 
 ### Step 2: features per 5 s window, R1 with cross-validation (2026-10-25) — **stop-point**
 
@@ -461,6 +463,8 @@ uv run python rescore_es_labels.py    # rules v2: results/audit/es_label_rules_v
 - Vehicles keep resting minutes.
 - Still: resting minutes are capped per user at 20% of that user's still minutes (`cap_resting_still`, seed 0), in
   training and in evaluation. Uncapped resting still is kept as a diagnostic row.
+- **Rules v1 (step 1) are no longer in the current code:** v2 replaced them in place in `tmd.extrasensory`. Rebuild
+  v1 from commit `1f52628` (`git show 1f52628:src/tmd/extrasensory.py`).
 
 Counts, all users (`es_label_rules_v2_counts.csv`):
 - still 264,158 → 181,103 minutes after dropping SLEEPING → 118,604 after the cap. The resting share is 13.9% (the
@@ -639,9 +643,10 @@ updated, and `tmd.evaluate.inference_latency` / `model_size_bytes` compute (c) a
 **Open questions (step 4):**
 1. The still ↔ rail trade-off between datasets. Should step 3 (context + HMM) be run on R2 as the base, and be judged
    on SHL still and ES rail as well as macro-F1? Or should dataset weighting be tried first?
-2. **The brief's still labels conflict with v2.** The current brief (your edit, uncommitted) maps only
+2. ~~**The brief's still labels conflict with v2.** The current brief (your edit, uncommitted) maps only
    `SITTING` / `OR_standing` → still. `LYING_DOWN` is gone, which v2 keeps. Which is right? It affects about 23k
-   non-sleeping lying minutes (all users).
+   non-sleeping lying minutes (all users).~~ **Closed:** decided to keep `LYING_DOWN` in still, as in v2; the brief
+   was updated in commit `02e321a` (its Labels item 7).
 
 ### ExtraSensory-only model (before step 3, asked 2026-10-26) — reported with step 3
 
@@ -703,7 +708,7 @@ uv run python step3_context_hmm.py --seed 0          # 6 MLflow runs step3_{base
 - All runs are at commit `30aeaeb` and **dirty** (step-3 code uncommitted when run).
 - Outputs: `<data>/processed/02_family-baseline_shl-es/step3_25hz_w5s_s2.5s_feat-v1_seed0/`.
 
-**Protocol** (shared code: `tmd.context`, `tmd.hmm`):
+**Protocol** (code: `context.py` in this folder, moved from `tmd.context` on 2026-10-28; `tmd.hmm`):
 - **All windows.** Context and HMM run over **every window the phone would have produced**, so the context is not
   filtered by labels. Evaluation uses exactly the R2 windows.
   - SHL: 1,027,556 windows including Null.
@@ -868,6 +873,15 @@ within-dataset results. Their ES numbers must not be compared with the base conf
 5. **MLflow export:** `results/runs.csv` is not exported yet (CLAUDE.md: once, when the experiment finishes). Until
    then MLflow is the only record. All 02 runs are tagged dirty.
 
+**Clean-up before the next experiment (2026-10-28).** 02-specific files moved out of the project-wide folders
+(`git mv`, history kept); no behaviour or feature definition changed.
+- `splits/shl_days.csv`, `splits/es_users.csv`, `splits/README.md` → this folder's `splits/` (unchanged bytes).
+  The reserved final test is now `splits/reserved_test.json` (`tmd.splits.reserved_test()`), the reference from now on.
+- `src/tmd/context.py` → `context.py` here (`step3_context_hmm.py` imports it locally).
+- `tmd.splits.shl_days()` / `es_users()` → `make_features.py` (their only user), reading this folder's `splits/`.
+- `tmd.tracking.SPLITS` points `*_dev` to this folder's files and `*_test` to `splits/reserved_test.json`.
+- `backfill_dataset_inputs.py` reads the split file from `splits/` at commits before the move.
+
 **MLflow dataset inputs, backfilled (2026-10-26, asked by Marc).** `tmd.tracking.run()` now takes
 `datasets=[DataInput(...)]` and logs one MLflow dataset input per dataset part (metadata only). The 11 existing runs
 got the same inputs with `MlflowClient.log_inputs`. Metrics, params, tags and artifacts were not touched.
@@ -878,7 +892,8 @@ uv run python backfill_dataset_inputs.py --apply   # logs/backfill_dataset_input
 ```
 
 - Datasets: `shl_user1_dev` (digest `af25db55` = sha256 of `splits/shl_days.csv`) and `extrasensory_dev`
-  (`649c32d5`, `splits/es_users.csv`). The script checked that each split file at the run's commit equals today's.
+  (`649c32d5`, `splits/es_users.csv`). Since 2026-10-28 the files are in this folder's `splits/`; the inputs
+  in MLflow keep the old source path (MLflow can't change it), and the digests still match. The script checked that each split file at the run's commit equals today's.
 - Contexts: R1 → SHL training, ES evaluation (labels v1 = step-1 rules). The two R1 rescoring runs → ES evaluation
   (v2); SHL training with `trained_in_run=c615…`. R2 and step 3 → both training. ES-only → ES training, SHL
   evaluation.

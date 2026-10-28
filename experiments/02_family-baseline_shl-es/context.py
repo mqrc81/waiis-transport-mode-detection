@@ -1,4 +1,4 @@
-"""60 s context features: stats of window features over the previous 60 s (experiment 02, step 3).
+"""60 s context features: stats of window features over the previous 60 s (experiment 02, step 3; moved here from src/tmd).
 
 Causal: window i's context is every window of the same sequence with start time in (t_i - 60 s, t_i], itself
 included. Sequences: SHL = one recording x position; ExtraSensory = one user, minutes chained by time (each minute is
