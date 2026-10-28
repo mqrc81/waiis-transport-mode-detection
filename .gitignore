@@ -232,4 +232,3 @@ __marimo__/
 !experiments/*/results/**/*.log
 # Machine-specific settings (data root)
 CLAUDE.local.md
-.DS_Store
