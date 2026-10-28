@@ -1,10 +1,22 @@
-"""Build the frozen benchmark es_bench_v1 (README, step 2). One command rebuilds everything:
+"""Build the frozen benchmark es_bench_v2 (README, step 3). One command rebuilds everything:
 
     uv run python build.py [--workers 8] [--sources extrasensory shl_user1 shl_user23]
 
-Writes <data>/processed/es_bench_v1/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
-every file; read them with `tmd.bench`). Count tables for the README go to results/tables/, the full log to
-logs/build.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
+Writes <data>/processed/es_bench_v2/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
+every file; read them with `tmd.bench`). Count tables for the README go to results/tables_v2/, the full log to
+logs/build_v2.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
+es_bench_v1 is built by this file at commit 30550d9 (`git show 30550d9:experiments/04_frozen-benchmark_es-shl/build.py`).
+
+Changes from v1 (README step 3, decision register):
+1. acc_implausible: window median |acc| outside 7-13 m/s2; out of the official set.
+2. SHL speed / bearing blanking driven by the 1 Hz speed at the fix (p = 0.95 exp(-v / v0), v0 calibrated on
+   SHL User 1's WAIIS-cadence fixes to ~23% missing), not uniform.
+3. (reader) reserved test users excluded from every pre-training accessor (tmd.bench, tests/test_bench_reserved.py).
+4. quiet: std of |acc| over the window < 0.03 m/s2, descriptive only.
+5. Holed snippets keep their longest clean stretch (official if >= 15 s, flag hole_trimmed).
+7. Stored but never official: short snippets, time-repaired snippets, every ES snippet in full (`snippets`), the
+   continuous SHL hips stream (`stream`), SHL User 1 hand / torso / bag windows (`accelerometer_other_positions`),
+   the SHL 1 Hz track (`gps_1hz`) and the true speed / bearing before blanking (`gps_unblanked`).
 """
 import argparse
 import json
@@ -23,18 +35,24 @@ from tmd import bench, gps, shl
 from tmd import extrasensory as es
 from tmd.labels import CLASSES, CLASS_ID
 from tmd.paths import PROJECT
-from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_to_25hz
+from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_repair_to_25hz, window_stats
 from tmd.splits import reserved_test
 
+VERSION = "es_bench_v2"
+ROOT = bench.root(VERSION)
 HERE = Path(__file__).resolve().parent
-RES = HERE / "results" / "tables"
+RES = HERE / "results" / "tables_v2"
 SPLITS_02 = PROJECT / "experiments" / "02_family-baseline_shl-es" / "splits"
 WIN, FS = bench.WIN, bench.FS
 SEED = 0
 SPEED_HALF_S = 1.5             # speed / bearing of a kept SHL fix: from the 1 Hz track over ~3 s around it
 CADENCE_HALF_S = 5.0           # cadence choice: speed over ~10 s around the candidate fix
+ACC_PLAUSIBLE = (7.0, 13.0)    # m/s2, window median |acc| (Marc, 2026-10-28)
+QUIET_STD = 0.03               # m/s2, std of |acc| over the window (README step 3)
+OTHER_POSITIONS = ["Hand", "Torso", "Bag"]
 COMPRESSION = "zstd"
 CLS_NAME = {v: k for k, v in CLASS_ID.items()}
+OFFICIAL_ACC = ("ok", "hole_trimmed")
 
 log = logging.getLogger("build")
 
@@ -44,27 +62,50 @@ def say(msg: str = "") -> None:
     log.info(msg)
 
 
-def acc_schema(extra: list[pa.Field]) -> pa.Schema:
-    win = pa.list_(pa.float32(), WIN)
-    return pa.schema([("user", pa.string()), ("ts", pa.int64()), ("x", win), ("y", win), ("z", win)] + extra)
+def out_path(source: str, table: str) -> Path:
+    p = ROOT / source / f"{table}.parquet"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    return p
 
 
-def acc_batch(schema: pa.Schema, meta: pd.DataFrame, w: np.ndarray) -> pa.RecordBatch:
-    """meta: one row per window with the schema's non-array columns; w: (n, 375, 3) float32."""
+def write(df: pd.DataFrame, source: str, table: str) -> None:
+    df.to_parquet(out_path(source, table), index=False, compression=COMPRESSION)
+
+
+def acc_schema(extra: list[pa.Field], fixed: bool = True) -> pa.Schema:
+    arr = pa.list_(pa.float32(), WIN) if fixed else pa.list_(pa.float32())
+    return pa.schema([("user", pa.string()), ("ts", pa.int64()), ("x", arr), ("y", arr), ("z", arr)] + extra)
+
+
+def acc_batch(schema: pa.Schema, meta: pd.DataFrame, w) -> pa.RecordBatch:
+    """meta: one row per window with the schema's non-array columns; w: (n, 375, 3) array (fixed schema) or a list
+    of (n_i, 3) arrays (variable schema)."""
     cols = {}
     for f in schema:
         if f.name in ("x", "y", "z"):
-            flat = pa.array(np.ascontiguousarray(w[:, :, "xyz".index(f.name)]).ravel(), pa.float32())
-            cols[f.name] = pa.FixedSizeListArray.from_arrays(flat, WIN)
+            i = "xyz".index(f.name)
+            if isinstance(f.type, pa.FixedSizeListType):
+                flat = pa.array(np.ascontiguousarray(w[:, :, i]).ravel(), pa.float32())
+                cols[f.name] = pa.FixedSizeListArray.from_arrays(flat, WIN)
+            else:
+                lens = np.array([len(a) for a in w], np.int32)
+                off = pa.array(np.concatenate([[0], np.cumsum(lens)]).astype(np.int32))
+                vals = pa.array(np.concatenate([a[:, i] for a in w]).astype(np.float32) if len(w) else
+                                np.zeros(0, np.float32))
+                cols[f.name] = pa.ListArray.from_arrays(off, vals)
         else:
             cols[f.name] = pa.array(meta[f.name].to_numpy(), f.type)
     return pa.RecordBatch.from_pydict(cols, schema=schema)
 
 
-def write(df: pd.DataFrame, source: str, table: str) -> None:
-    p = bench.path(source, table)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(p, index=False, compression=COMPRESSION)
+def stats_columns(w: np.ndarray) -> dict:
+    med, std = window_stats(w) if len(w) else (np.zeros(0), np.zeros(0))
+    return {"acc_median": med.astype(np.float32), "acc_std": std.astype(np.float32),
+            "acc_implausible": (med < ACC_PLAUSIBLE[0]) | (med > ACC_PLAUSIBLE[1]), "quiet": std < QUIET_STD}
+
+
+STAT_FIELDS = [pa.field("acc_median", pa.float32()), pa.field("acc_std", pa.float32()),
+               pa.field("acc_implausible", pa.bool_()), pa.field("quiet", pa.bool_())]
 
 
 # ---------------------------------------------------------------- ExtraSensory
@@ -93,62 +134,91 @@ def es_minutes() -> pd.DataFrame:
     return m
 
 
-def es_user(uuid: str) -> tuple[pd.DataFrame, np.ndarray, pd.DataFrame, pd.DataFrame]:
-    """One user: per-minute acc status, windows of the 'ok' minutes, source label columns, location columns."""
+def es_user(uuid: str):
+    """One user: per-minute snippet status, the official windows, every resampled snippet, source label columns,
+    location columns."""
     clean = es.read_cleaned_labels(uuid)
     orig = es.read_original_labels(uuid).reindex(clean.index)
     src = pd.concat([clean.drop(columns="label_source").add_prefix("label:"),
                      orig.drop(columns="label_source", errors="ignore").add_prefix("orig:")], axis=1)
-    rows, wins = [], []
+    rows, wins, snips = [], [], []
     for ts in clean.index.astype(int):
         a = es.read_snippet(es.snippet_path(uuid, ts, "acc"))
-        r = {"ts": ts, "acc_status": "no_file", "raw_n": 0, "span_s": np.nan, "raw_rate_hz": np.nan, "unit": ""}
+        r = {"ts": ts, "acc_status": "no_file", "unit": "", "raw_n": 0, "raw_rate_hz": np.nan, "span_s": np.nan,
+             "n25": 0, "time_repaired": False, "hole_trimmed": False, "start_offset_s": np.nan, "window_start": -1}
         if a is not None:
-            span = float(a[-1, 0] - a[0, 0])
-            r.update(raw_n=len(a), span_s=span, raw_rate_hz=(len(a) - 1) / span if span > 0 else np.nan)
-            x, unit, status = es_acc_to_25hz(a)
-            r.update(unit=unit, acc_status=status)
+            x, unit, info = es_acc_repair_to_25hz(a)
+            r.update(unit=unit, acc_status=info["status"], time_repaired=info["time_repaired"],
+                     hole_trimmed=info["hole_trimmed"])
             if x is not None:
+                r.update(raw_n=info["n_raw"], raw_rate_hz=info["raw_rate_hz"], span_s=info["span_s"], n25=len(x))
+                snips.append(x)
                 w, s = centre(x, WIN)
-                if w is None:
-                    r["acc_status"] = "under_15s"
+                if r["time_repaired"]:
+                    r["acc_status"] = "time_repaired"
+                elif w is None:
+                    r["acc_status"] = "short"
                 else:
-                    r["start_offset_s"] = s / FS
-                    wins.append(w)
+                    r["acc_status"] = "hole_trimmed" if r["hole_trimmed"] else "ok"
+                if w is not None:
+                    r.update(window_start=s, start_offset_s=s / FS)
+                    if r["acc_status"] in OFFICIAL_ACC:
+                        wins.append(w)
         rows.append(r)
     st = pd.DataFrame(rows)
     st["user"] = uuid
+    st["has_snippet"] = st.n25 > 0
+    st["short"] = st.has_snippet & (st.n25 < WIN)
     w = np.stack(wins) if wins else np.zeros((0, WIN, 3), np.float32)
     loc = es.read_location(uuid)
     loc["location_missing_reason"] = es.location_missing_reason(loc)
-    return st, w, src.rename_axis("ts").reset_index().assign(user=uuid), loc.rename_axis("ts").reset_index().assign(
-        user=uuid)
+    return (st, w, snips, src.rename_axis("ts").reset_index().assign(user=uuid),
+            loc.rename_axis("ts").reset_index().assign(user=uuid))
 
 
 def build_es(workers: int) -> None:
     say("== ExtraSensory ==")
     m = es_minutes()
-    schema = acc_schema([pa.field("unit", pa.string()), pa.field("raw_n", pa.int32()),
+    acc_s = acc_schema([pa.field("unit", pa.string()), pa.field("raw_n", pa.int32()),
+                        pa.field("raw_rate_hz", pa.float32()), pa.field("span_s", pa.float32()),
+                        pa.field("start_offset_s", pa.float32()), pa.field("hole_trimmed", pa.bool_())]
+                       + STAT_FIELDS)
+    snip_s = acc_schema([pa.field("n25", pa.int32()), pa.field("unit", pa.string()), pa.field("raw_n", pa.int32()),
                          pa.field("raw_rate_hz", pa.float32()), pa.field("span_s", pa.float32()),
-                         pa.field("start_offset_s", pa.float32())])
-    p = bench.path("extrasensory", "accelerometer")
-    p.parent.mkdir(parents=True, exist_ok=True)
+                         pa.field("acc_status", pa.string()), pa.field("time_repaired", pa.bool_()),
+                         pa.field("hole_trimmed", pa.bool_()), pa.field("short", pa.bool_()),
+                         pa.field("window_start", pa.int32())], fixed=False)
     users = sorted(m.user.unique())
     status, srcs, locs = [], [], []
-    with pq.ParquetWriter(p, schema, compression=COMPRESSION) as wr, ProcessPoolExecutor(workers) as ex:
-        for uuid, (st, w, src, loc) in zip(users, ex.map(es_user, users)):
-            ok = st[st.acc_status == "ok"]
+    with pq.ParquetWriter(out_path("extrasensory", "accelerometer"), acc_s, compression=COMPRESSION) as wa, \
+            pq.ParquetWriter(out_path("extrasensory", "snippets"), snip_s, compression=COMPRESSION) as wsn, \
+            ProcessPoolExecutor(workers) as ex:
+        for uuid, (st, w, snips, src, loc) in zip(users, ex.map(es_user, users)):
+            ok = st[st.acc_status.isin(OFFICIAL_ACC)].copy()
             assert len(ok) == len(w)
+            for k, v in stats_columns(w).items():
+                ok[k] = v
+            st = st.merge(ok[["ts", "acc_median", "acc_std", "acc_implausible", "quiet"]], on="ts", how="left")
             if len(w):
-                wr.write_batch(acc_batch(schema, ok, w))
+                wa.write_batch(acc_batch(acc_s, ok, w))
+            sn = st[st.has_snippet]
+            assert len(sn) == len(snips)
+            if len(snips):
+                wsn.write_batch(acc_batch(snip_s, sn, snips))
             status.append(st)
             srcs.append(src)
             locs.append(loc)
-            log.info(f"{uuid}: {len(w)} windows of {len(st)} minutes")
+            log.info(f"{uuid}: {len(w)} windows, {len(snips)} snippets of {len(st)} minutes")
     st = pd.concat(status, ignore_index=True)
     loc = pd.concat(locs, ignore_index=True)
-    m = m.merge(st[["user", "ts", "acc_status"]], on=["user", "ts"], how="left", validate="one_to_one")
-    m["has_acc"] = m.acc_status == "ok"
+    cols = ["user", "ts", "acc_status", "has_snippet", "n25", "short", "time_repaired", "hole_trimmed",
+            "acc_median", "acc_std", "acc_implausible", "quiet"]
+    m = m.merge(st[cols], on=["user", "ts"], how="left", validate="one_to_one")
+    m["has_acc"] = m.acc_status.isin(OFFICIAL_ACC)
+    m["acc_implausible"] = m.acc_implausible.fillna(False).astype(bool)
+    m["quiet"] = m.quiet.fillna(False).astype(bool)
+    m["snippet_s"] = (m.n25 / FS).astype(np.float32)
+    m = m.drop(columns="n25")
     lm = loc[["user", "ts", "latitude", "location_missing_reason"]]
     m = m.merge(lm, on=["user", "ts"], how="left", validate="one_to_one")
     m["has_location"] = m.latitude.notna()
@@ -156,22 +226,24 @@ def build_es(workers: int) -> None:
     src = pd.concat(srcs, ignore_index=True)
     labels = m.merge(src, on=["user", "ts"], how="left", validate="one_to_one")
     lead = ["user", "ts", "platform", "split", "fold", "session", "cls", "y", "included_v2", "has_acc",
-            "acc_status", "has_location", "location_missing_reason", "not_carried", "capped", "motorbike", "reason",
-            "label_source", "position", "resting", "moving"]
+            "acc_implausible", "acc_status", "has_snippet", "snippet_s", "short", "time_repaired", "hole_trimmed",
+            "quiet", "acc_median", "acc_std", "has_location", "location_missing_reason", "not_carried", "capped",
+            "motorbike", "reason", "label_source", "position", "resting", "moving"]
     labels = labels[lead + [c for c in labels.columns if c not in lead]]
     write(labels, "extrasensory", "labels")
     write(sessions_table(labels, ["platform", "split", "fold"]), "extrasensory", "sessions")
     write(loc.drop(columns="location_missing_reason")[["user", "ts"] + [c for c in loc.columns if c not in
                                                                        ("user", "ts", "location_missing_reason")]],
           "extrasensory", "location_features")
-    write(es_track(loc, labels), "extrasensory", "gps_per_minute")
-    es_report(labels, st, loc)
+    track = es_track(loc, labels)
+    write(track, "extrasensory", "gps_per_minute")
+    es_report(labels, track)
 
 
 def es_track(loc: pd.DataFrame, labels: pd.DataFrame) -> pd.DataFrame:
     """One fix per minute with coordinates. Time = minute timestamp (the fix time within the ~20 s recording is not
     published). Speed = location:max_speed, accuracy = best_horizontal_accuracy; -1 when missing. bearing = the
-    bearing from the previous fix (bearing_from_fixes), -1 where speed is -1."""
+    bearing from the previous fix (bearing_from_fixes), -1 where speed is -1. Unchanged from v1."""
     t = loc[loc.latitude.notna() & loc.longitude.notna()].merge(labels[["user", "ts", "session"]], on=["user", "ts"])
     t = t.sort_values(["user", "ts"]).reset_index(drop=True)
     spd = t["location:max_speed"]
@@ -212,11 +284,12 @@ def shl_recordings(source: str) -> list[tuple[shl.Recording, str, int]]:
     return [(r, "rail_check", -1) for r in recs]
 
 
-def shl_rec(job) -> tuple[pd.DataFrame, np.ndarray, pd.DataFrame]:
-    """One recording, hips: per clock minute one 15 s window centred in the minute (inside a NaN-free stretch,
-    resampled 100 -> 25 Hz over the stretch as in 02), its labels, and the 1 Hz location track."""
-    rec, split, fold = job
-    t, x = shl.read_motion(rec, "Hips", ("acc",))
+def shl_rec(job):
+    """One recording and position: per clock minute one 15 s window centred in the minute (inside a NaN-free
+    stretch, resampled 100 -> 25 Hz over the stretch as in 02), its labels; for the hips also the continuous 25 Hz
+    stream (every stretch long enough for a window) and the 1 Hz location track."""
+    rec, split, fold, position = job
+    t, x = shl.read_motion(rec, position, ("acc",))
     _, y = shl.read_labels(rec)
     good = ~np.isnan(x).any(1)
     d = np.diff(np.concatenate([[0], good.astype(np.int8), [0]]))
@@ -224,7 +297,6 @@ def shl_rec(job) -> tuple[pd.DataFrame, np.ndarray, pd.DataFrame]:
     minutes = np.arange(t[0] // 60_000, t[-1] // 60_000 + 1)
     centre_ms = minutes * 60_000 + 30_000
     rows, wins = [], []
-    # 25 Hz version of every stretch long enough for a window
     dec = [(lo, hi, decimate_100_to_25(x[lo:hi]), t[lo:hi:DOWN]) for lo, hi in stretches if hi - lo >= WIN * DOWN]
     for mi, c in zip(minutes, centre_ms):
         r = {"ts": int(mi * 60), "acc_status": "edge", "label_status": "edge", "cls": "", "majority_cls": "",
@@ -250,194 +322,254 @@ def shl_rec(job) -> tuple[pd.DataFrame, np.ndarray, pd.DataFrame]:
                         wins.append(x25[s:s + WIN])
                     break
         rows.append(r)
-    st = pd.DataFrame(rows).assign(user=rec.user, rec=rec.rec, day=rec.day, split=split, fold=fold)
+    st = pd.DataFrame(rows).assign(user=rec.user, rec=rec.rec, day=rec.day, split=split, fold=fold,
+                                   position=position.lower())
     w = np.stack(wins) if wins else np.zeros((0, WIN, 3), np.float32)
-    loc = shl.read_location(rec, "Hips").assign(user=rec.user, rec=rec.rec)
-    return st, w, loc
+    stream = loc = None
+    if position == "Hips":
+        stream = pd.DataFrame({
+            "t_ms": np.concatenate([t25 for _, _, _, t25 in dec]) if dec else np.zeros(0, np.int64),
+            "stretch": np.concatenate([np.full(len(t25), i, np.int32) for i, (_, _, _, t25) in enumerate(dec)])
+            if dec else np.zeros(0, np.int32),
+            "label": np.concatenate([y[lo:hi:DOWN] for lo, hi, _, _ in dec]).astype(np.int8) if dec else
+            np.zeros(0, np.int8)})
+        xs = np.concatenate([x25 for _, _, x25, _ in dec]) if dec else np.zeros((0, 3), np.float32)
+        stream["x"], stream["y"], stream["z"] = xs[:, 0], xs[:, 1], xs[:, 2]
+        stream = stream.assign(user=rec.user, rec=rec.rec)[["user", "rec", "stretch", "t_ms", "x", "y", "z", "label"]]
+        loc = shl.read_location(rec, "Hips").assign(user=rec.user, rec=rec.rec)
+    return st, w, stream, loc
 
 
-def shl_tracks(loc: pd.DataFrame, labels: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Two GPS variants from the 1 Hz track of each recording.
-    gps_waiis_cadence: thinned by the speed over ~10 s at the candidate fix (CADENCE: >= 3 m/s every 10 s,
-      >= 0.5 m/s every 20 s, else 180 s); natural gaps stay gaps.
-    gps_per_minute: one fix per window minute, as ExtraSensory: among the fixes inside the 15 s window, the best
-      accuracy, latest on ties.
-    In both, speed and bearing come from the 1 Hz track over ~3 s around the fix; speed and bearing are then set to
-    -1 on 23% of the kept fixes (seed 0), as phones record a fix without speed."""
-    waiis, minute = [], []
+def shl_full_track(loc: pd.DataFrame) -> pd.DataFrame:
+    """The 1 Hz track of every recording with speed / bearing over ~3 s and speed over ~10 s."""
+    parts = []
     for (user, rec), g in loc.groupby(["user", "rec"], sort=False):
         tt = g.time_ms.to_numpy() / 1e3
         lat, lon = g.lat.to_numpy(), g.lon.to_numpy()
         v3, b3 = gps.local_speed_bearing(tt, lat, lon, SPEED_HALF_S)
         v10, _ = gps.local_speed_bearing(tt, lat, lon, CADENCE_HALF_S)
-        full = pd.DataFrame({"user": user, "rec": rec, "time": tt, "lat": lat, "lon": lon, "speed": v3,
-                             "accuracy": g.accuracy.to_numpy(), "bearing": b3, "speed_10s": v10})
-        k = gps.thin(tt, gps.cadence_interval(v10))
-        waiis.append(full.iloc[k])
-        lw = labels[(labels.user == user) & (labels.rec == rec) & (labels.acc_status != "edge")]
-        c = lw.ts.to_numpy() + 30.0
-        lo = np.searchsorted(tt, c - 7.5, "left")
-        hi = np.searchsorted(tt, c + 7.5, "right")
-        pick = []
-        for ts, a, b in zip(lw.ts.to_numpy(), lo, hi):
+        parts.append(pd.DataFrame({"user": user, "rec": rec, "time": tt, "lat": lat, "lon": lon,
+                                   "accuracy": g.accuracy.to_numpy(), "altitude": g.altitude.to_numpy(),
+                                   "speed": v3, "bearing": b3, "speed_10s": v10}))
+    full = pd.concat(parts, ignore_index=True)
+    full["ts"] = (full.time // 60 * 60).astype(np.int64)
+    return full
+
+
+def waiis_fixes(full: pd.DataFrame) -> np.ndarray:
+    """Row indices of `full` kept at the WAIIS cadence (thinned per recording)."""
+    idx = []
+    for _, g in full.groupby(["user", "rec"], sort=False):
+        k = gps.thin(g.time.to_numpy(), gps.cadence_interval(g.speed_10s.to_numpy()))
+        idx.append(g.index.to_numpy()[k])
+    return np.concatenate(idx)
+
+
+def calibrate_blanking(workers: int) -> float:
+    """v0 of the blanking curve, calibrated on SHL User 1's WAIIS-cadence fixes (computed the same way whichever
+    sources are built, so every table uses the same curve)."""
+    recs = shl_recordings("shl_user1")
+    loc = pd.concat([shl.read_location(r, "Hips").assign(user=r.user, rec=r.rec) for r, _, _ in recs],
+                    ignore_index=True)
+    full = shl_full_track(loc)
+    v = full.speed.to_numpy()[waiis_fixes(full)]
+    v0 = gps.calibrate_v0(v)
+    say(f"speed blanking: p = {gps.BLANK_P0} * exp(-v / {v0:.3f} m/s), calibrated on {len(v):,} SHL User 1 "
+        f"WAIIS-cadence fixes (target {gps.SPEED_MISSING_SHARE:.0%} missing)")
+    return v0
+
+
+def shl_tracks(full: pd.DataFrame, labels: pd.DataFrame, v0: float):
+    """Two GPS variants from the 1 Hz track; blanking driven by the true speed at the fix (never the label).
+    Returns (gps_waiis_cadence, gps_per_minute, gps_unblanked)."""
+    waiis = full.loc[waiis_fixes(full)]
+    lw = labels[labels.acc_status != "edge"]
+    pick_ts, pick_i = [], []
+    for (user, rec), g in full.groupby(["user", "rec"], sort=False):
+        tt = g.time.to_numpy()
+        acc = g.accuracy.to_numpy()
+        mins = lw[(lw.user == user) & (lw.rec == rec)].ts.to_numpy()
+        lo = np.searchsorted(tt, mins + 30.0 - 7.5, "left")
+        hi = np.searchsorted(tt, mins + 30.0 + 7.5, "right")
+        for ts, a, b in zip(mins, lo, hi):
             if b > a:
-                acc = full.accuracy.to_numpy()[a:b]
-                i = a + np.flatnonzero(acc == acc.min())[-1]
-                pick.append((ts, i))
-        if pick:
-            ts_, i_ = map(np.array, zip(*pick))
-            minute.append(full.iloc[i_].assign(ts=ts_))
-    out = []
-    for name, parts in (("waiis", waiis), ("minute", minute)):
-        tr = pd.concat(parts, ignore_index=True)
-        if name == "waiis":
-            tr["ts"] = (tr.time // 60 * 60).astype(np.int64)
+                pick_ts.append(ts)
+                pick_i.append(g.index[a + np.flatnonzero(acc[a:b] == acc[a:b].min())[-1]])
+    minute = full.loc[pick_i].assign(ts=np.array(pick_ts, np.int64))
+    out, unblanked = [], []
+    for name, tr in (("gps_waiis_cadence", waiis), ("gps_per_minute", minute)):
         tr = tr.merge(labels[["user", "ts", "session"]], on=["user", "ts"], how="left", validate="many_to_one")
         out_of_table = tr.session.isna()
         if out_of_table.any():
             say(f"  {name}: {out_of_table.sum()} fixes outside the recording's minutes dropped")
         tr = tr[~out_of_table].astype({"session": np.int32})
         tr = tr.sort_values(["user", "time"]).reset_index(drop=True)
+        unblanked.append(tr[["user", "ts", "time", "speed", "bearing"]].assign(variant=name))
         rng = np.random.default_rng(SEED)
-        blank = rng.random(len(tr)) < gps.SPEED_MISSING_SHARE
+        p = gps.blank_probability(tr.speed.to_numpy(), v0)
+        blank = (rng.random(len(tr)) < p) & (tr.speed.to_numpy() >= 0)
         tr["speed_blanked"] = blank
         tr.loc[blank, ["speed", "bearing"]] = -1.0      # a fix without speed has no bearing (Marc, 2026-10-28)
         tr = gps.add_consecutive(tr, ["user", "session"])
         lead = ["user", "ts", "session", "rec", "time", "lat", "lon", "speed", "accuracy", "bearing"]
-        out.append(tr[lead + [c for c in tr.columns if c not in lead]])
-    return out[0], out[1]
+        out.append(tr[lead + [c for c in tr.columns if c not in lead + ["altitude"]]])
+    ub = pd.concat(unblanked, ignore_index=True)[["user", "ts", "time", "variant", "speed", "bearing"]]
+    return out[0], out[1], ub
 
 
-def build_shl(source: str, workers: int) -> None:
+def build_shl(source: str, workers: int, v0: float) -> None:
     say(f"== {source} ==")
-    jobs = shl_recordings(source)
-    schema = acc_schema([pa.field("t_start_ms", pa.int64())])
-    p = bench.path(source, "accelerometer")
-    p.parent.mkdir(parents=True, exist_ok=True)
-    status, locs = [], []
-    with pq.ParquetWriter(p, schema, compression=COMPRESSION) as wr, ProcessPoolExecutor(workers) as ex:
-        for job, (st, w, loc) in zip(jobs, ex.map(shl_rec, jobs)):
-            ok = st[st.acc_status == "ok"]
+    recs = shl_recordings(source)
+    jobs = [(r, s, f, "Hips") for r, s, f in recs]
+    if source == "shl_user1":
+        jobs += [(r, s, f, p) for r, s, f in recs if r.session == "User1_4phones" for p in OTHER_POSITIONS
+                 if p in r.positions]
+    hips_s = acc_schema([pa.field("t_start_ms", pa.int64())] + STAT_FIELDS)
+    other_s = acc_schema([pa.field("position", pa.string()), pa.field("t_start_ms", pa.int64()),
+                          pa.field("label_status", pa.string()), pa.field("cls", pa.string()),
+                          pa.field("majority_cls", pa.string()), pa.field("majority_share", pa.float64())]
+                         + STAT_FIELDS)
+    stream_s = pa.schema([("user", pa.string()), ("rec", pa.string()), ("stretch", pa.int32()), ("t_ms", pa.int64()),
+                          ("x", pa.float32()), ("y", pa.float32()), ("z", pa.float32()), ("label", pa.int8())])
+    status, locs, n_other = [], [], 0
+    wo = (pq.ParquetWriter(out_path(source, "accelerometer_other_positions"), other_s, compression=COMPRESSION)
+          if source == "shl_user1" else None)
+    with pq.ParquetWriter(out_path(source, "accelerometer"), hips_s, compression=COMPRESSION) as wh, \
+            pq.ParquetWriter(out_path(source, "stream"), stream_s, compression=COMPRESSION) as wst, \
+            ProcessPoolExecutor(workers) as ex:
+        for job, (st, w, stream, loc) in zip(jobs, ex.map(shl_rec, jobs)):
+            ok = st[st.acc_status == "ok"].copy()
             assert len(ok) == len(w)
-            if len(w):
-                wr.write_batch(acc_batch(schema, ok, w))
-            status.append(st)
-            locs.append(loc)
-            log.info(f"{job[0].session}/{job[0].rec}: {len(w)} windows of {len(st)} minutes, {len(loc)} fixes")
+            for k, v in stats_columns(w).items():
+                ok[k] = v
+            if job[3] == "Hips":
+                st = st.merge(ok[["ts", "acc_median", "acc_std", "acc_implausible", "quiet"]], on="ts", how="left")
+                if len(w):
+                    wh.write_batch(acc_batch(hips_s, ok, w))
+                wst.write_table(pa.Table.from_pandas(stream, schema=stream_s, preserve_index=False))
+                status.append(st)
+                locs.append(loc)
+            elif len(w):
+                wo.write_batch(acc_batch(other_s, ok, w))
+                n_other += len(w)
+            log.info(f"{job[0].session}/{job[0].rec}/{job[3]}: {len(w)} windows of {len(st)} minutes")
+    if wo is not None:
+        wo.close()
+        say(f"other positions (hand / torso / bag, 4phones days): {n_other:,} windows")
     lab = pd.concat(status, ignore_index=True)
     assert not lab.duplicated(["user", "ts"]).any()
     lab = lab.sort_values(["user", "ts"]).reset_index(drop=True)
     lab["session"] = lab.groupby("user").ts.transform(lambda t: gps.session_ids(t.to_numpy())).astype(np.int32)
-    lab["platform"], lab["position"] = "android", "hips"
+    lab["platform"] = "android"
     lab["included"] = lab.label_status == "ok"
     lab["has_acc"] = lab.acc_status == "ok"
+    lab["acc_implausible"] = lab.acc_implausible.fillna(False).astype(bool)
+    lab["quiet"] = lab.quiet.fillna(False).astype(bool)
     lab["y"] = np.where(lab.included, lab.cls.map(CLASS_ID).fillna(0), 0).astype(np.int8)
-    loc = pd.concat(locs, ignore_index=True)
-    waiis, minute = shl_tracks(loc, lab)
+    full = shl_full_track(pd.concat(locs, ignore_index=True))
+    waiis, minute, unblanked = shl_tracks(full, lab, v0)
     lab["has_location"] = lab.set_index(["user", "ts"]).index.isin(minute.set_index(["user", "ts"]).index)
     lead = ["user", "ts", "platform", "position", "split", "fold", "session", "rec", "day", "cls", "y", "included",
-            "has_acc", "acc_status", "has_location", "label_status", "majority_cls", "majority_share", "t_start_ms"]
+            "has_acc", "acc_implausible", "acc_status", "quiet", "acc_median", "acc_std", "has_location",
+            "label_status", "majority_cls", "majority_share", "t_start_ms"]
     lab = lab[lead]
     write(lab, source, "labels")
     write(sessions_table(lab, ["platform", "split", "fold", "rec"]), source, "sessions")
     write(waiis, source, "gps_waiis_cadence")
     write(minute, source, "gps_per_minute")
-    shl_report(source, lab, loc, waiis, minute)
+    write(full[["user", "rec", "ts", "time", "lat", "lon", "accuracy", "altitude", "speed", "bearing", "speed_10s"]],
+          source, "gps_1hz")
+    write(unblanked, source, "gps_unblanked")
+    shl_report(source, lab, full, waiis, minute)
 
 
-# ---------------------------------------------------------------- reports (results/tables/*.csv)
-
-ORDER = CLASSES + ["", "null"]
-
+# ---------------------------------------------------------------- reports (results/tables_v2/*.csv)
 
 def table(df: pd.DataFrame, name: str, title: str) -> None:
     df.to_csv(RES / f"{name}.csv")
     log.info(f"\n{title} ({name}.csv):\n{df.to_string()}")
 
 
-def es_report(lab: pd.DataFrame, st: pd.DataFrame, loc: pd.DataFrame) -> None:
-    ex = lab[lab.included_v2 & lab.has_acc]
-    say(f"minutes {len(lab):,}; included_v2 {lab.included_v2.sum():,}; examples (included_v2 + window) {len(ex):,}; "
-        f"windows {lab.has_acc.sum():,}")
-    moving = ex.cls != "still"
+def es_report(lab: pd.DataFrame, track: pd.DataFrame) -> None:
+    ex = lab[lab.included_v2 & lab.has_acc & ~lab.acc_implausible]
+    inc = lab[lab.included_v2]
+    say(f"minutes {len(lab):,}; included_v2 {len(inc):,}; windows {lab.has_acc.sum():,}; snippets "
+        f"{lab.has_snippet.sum():,}; examples (official) {len(ex):,}")
     cls_order = [c for c in CLASSES if c in set(lab.cls)]
     t = pd.DataFrame({
-        "minutes_labelled": lab[lab.cls != ""].groupby("cls").size(),
-        "included_v2": lab[lab.included_v2].groupby("cls").size(),
+        "included_v2": inc.groupby("cls").size(),
+        "window": inc[inc.has_acc].groupby("cls").size(),
+        "of_which_hole_trimmed": inc[inc.acc_status == "hole_trimmed"].groupby("cls").size(),
+        "acc_implausible": inc[inc.has_acc & inc.acc_implausible].groupby("cls").size(),
         "examples": ex.groupby("cls").size(),
         "examples_iphone": ex[ex.platform == "iphone"].groupby("cls").size(),
         "examples_android": ex[ex.platform == "android"].groupby("cls").size(),
         "examples_dev": ex[ex.split == "dev"].groupby("cls").size(),
         "examples_test": ex[ex.split == "test"].groupby("cls").size(),
-        "users_with_examples": ex.groupby("cls").user.nunique()}).reindex(cls_order).fillna(0).astype(int)
+        "users_with_examples": ex.groupby("cls").user.nunique(),
+        "quiet_share": ex.groupby("cls").quiet.mean().round(3)}).reindex(cls_order).fillna(0)
     table(t, "es_class_counts", "ExtraSensory counts per class")
     say(t.to_string())
-    table(pd.crosstab(lab.user, lab.cls.replace("", "(unlabelled)"), margins=True), "es_user_class_all_minutes",
-          "all minutes per user x class")
-    table(pd.crosstab(ex.user, ex.cls, margins=True).assign(platform=lambda d: d.index.map(
-        lab.groupby("user").platform.first()), split=lambda d: d.index.map(lab.groupby("user").split.first())),
-        "es_user_class_examples", "examples per user x class")
-    table(pd.crosstab(ex[moving].user, ex[moving].cls, margins=True), "es_user_class_examples_moving",
-          "examples per user x moving class")
-    table(pd.crosstab([ex.platform, ex.position.replace("", "(none)")], ex.cls, margins=True),
-          "es_platform_position_class", "examples per platform x position x class")
-    # drops
     table(pd.crosstab(lab.acc_status, lab.platform, margins=True), "es_acc_status_all", "acc status, all minutes")
-    inc = lab[lab.included_v2]
-    table(pd.crosstab(inc.acc_status, inc.platform, margins=True), "es_acc_status_included",
-          "acc status, included_v2")
     table(pd.crosstab(inc.cls, inc.acc_status, margins=True), "es_acc_status_by_class", "acc status by class")
-    table(pd.crosstab(lab.reason, lab.platform, margins=True), "es_label_reason", "label rule outcome per minute")
-    u = inc.groupby(["user", "platform", "split"]).agg(
-        included=("ts", "size"), under_15s=("acc_status", lambda s: (s == "under_15s").sum()),
-        other_drop=("acc_status", lambda s: (~s.isin(["ok", "under_15s"])).sum()))
-    ut = pd.crosstab(inc[inc.acc_status == "under_15s"].user, inc[inc.acc_status == "under_15s"].cls)
-    u = u.join(ut).fillna(0)
-    u = u[u.under_15s > 0].sort_values("under_15s", ascending=False)
-    rate = st.groupby("user").raw_rate_hz.median().round(1).rename("raw_rate_p50_hz")
-    u = u.join(rate, on="user")
-    table(u, "es_15s_loss_by_user", "15 s rule losses per user (included_v2)")
-    # folds
+    table(pd.crosstab([lab.acc_status], [lab.short, lab.time_repaired], margins=True), "es_snippet_flags",
+          "snippet status x short x time_repaired, all minutes")
+    w = inc[inc.has_acc]
+    imp = pd.crosstab(w[w.acc_implausible].user, w[w.acc_implausible].cls, margins=True)
+    imp["windows"] = imp.index.map(w.groupby("user").size()).fillna(len(w))
+    imp["platform"] = imp.index.map(lab.groupby("user").platform.first())
+    imp["split"] = imp.index.map(lab.groupby("user").split.first())
+    table(imp.sort_values("All", ascending=False), "es_implausible_by_user",
+          "acc_implausible windows (included_v2) per user x class")
+    allw = lab[lab.has_acc]
+    table(pd.crosstab(allw[allw.acc_implausible].user, allw[allw.acc_implausible].platform, margins=True)
+          .sort_values("All", ascending=False), "es_implausible_by_user_all_minutes",
+          "acc_implausible windows, all minutes")
+    ht = inc[inc.acc_status == "hole_trimmed"]
+    table(pd.crosstab([ht.user, ht.platform, ht.split], ht.cls, margins=True), "es_hole_trimmed_by_user",
+          "hole-trimmed official windows (included_v2) per user x class")
+    q = ex.assign(position=ex.position.replace("", "(none)"))
+    table(q.pivot_table(index="position", columns=["platform"], values="quiet", aggfunc="mean").round(3),
+          "es_quiet_by_position", "quiet share of examples per position x platform")
+    table(ex.pivot_table(index="cls", columns="platform", values="quiet", aggfunc="mean").reindex(cls_order).round(3),
+          "es_quiet_by_class", "quiet share of examples per class x platform")
     f = ex.groupby(["split", "fold", "cls"]).size().unstack(fill_value=0)[cls_order]
-    share = (f / f.sum()).round(3)
     f.insert(0, "users", ex.groupby(["split", "fold"]).user.nunique())
     table(f, "es_fold_class_counts", "examples per fold x class")
-    table(share, "es_fold_class_share", "share of each class's examples per fold")
-    # location
-    cov = ex.groupby("cls").agg(examples=("ts", "size"), has_location=("has_location", "mean")).reindex(cls_order)
-    for p in ("iphone", "android"):
-        cov[f"has_location_{p}"] = ex[ex.platform == p].groupby("cls").has_location.mean()
-    mr = pd.crosstab(ex.cls, ex.location_missing_reason.replace("", "present"), normalize="index").reindex(
-        cls_order)
-    table(cov.join(mr).round(3), "es_location_by_class", "location coverage and missing reason by class")
-    w = lab[lab.location_missing_reason == "withheld"]
-    say(f"location_missing_reason over all minutes: "
-        f"{lab.location_missing_reason.replace('', 'present').value_counts().to_dict()}; "
-        f"withheld by class {w.cls.replace('', '(unlabelled)').value_counts().to_dict()}")
-    say(f"examples with a 15 s window lost per platform: "
-        f"{inc[inc.acc_status == 'under_15s'].platform.value_counts().to_dict()}")
+    # test reporting: per platform, with / without location
+    table(pd.crosstab([ex.split, ex.platform, ex.has_location], ex.cls, margins=True), "es_split_platform_location",
+          "examples per split x platform x has_location")
+    g = track.merge(ex[["user", "ts", "cls", "platform"]], on=["user", "ts"])
+    table(g.pivot_table(index="cls", columns="platform", values="speed", aggfunc=lambda s: (s < 0).mean())
+          .reindex(cls_order).round(3), "es_speed_missing_by_class", "ES gps_per_minute: speed -1 share on examples")
 
 
-def shl_report(source: str, lab: pd.DataFrame, loc: pd.DataFrame, waiis: pd.DataFrame, minute: pd.DataFrame) -> None:
-    ex = lab[lab.included & lab.has_acc]
-    say(f"minutes {len(lab):,}; windows {lab.has_acc.sum():,}; examples (one label + window) {len(ex):,}; "
-        f"1 Hz fixes {len(loc):,}; gps_waiis_cadence {len(waiis):,}; gps_per_minute {len(minute):,}")
+def shl_report(source: str, lab: pd.DataFrame, full: pd.DataFrame, waiis: pd.DataFrame, minute: pd.DataFrame) -> None:
+    ex = lab[lab.included & lab.has_acc & ~lab.acc_implausible]
+    say(f"minutes {len(lab):,}; windows {lab.has_acc.sum():,}; acc_implausible {lab.acc_implausible.sum():,}; "
+        f"examples (official) {len(ex):,}; 1 Hz fixes {len(full):,}; gps_waiis_cadence {len(waiis):,}; "
+        f"gps_per_minute {len(minute):,}")
     cls_order = [c for c in CLASSES if c in set(ex.cls)]
     t = pd.crosstab(ex.user, ex.cls, margins=True)[cls_order + ["All"]]
     table(t, f"{source}_user_class_examples", "examples per user x class")
     say(t.to_string())
+    w = lab[lab.included & lab.has_acc]
+    table(pd.crosstab(w.user, [w.cls, w.acc_implausible]), f"{source}_implausible", "acc_implausible x class")
     table(pd.crosstab(lab.label_status, lab.acc_status, margins=True), f"{source}_status",
           "label status x acc status, all minutes")
-    # GPS: cadence per class (interval to previous kept fix inside a session) and speed / accuracy
+    table(ex.groupby("cls").quiet.mean().reindex(cls_order).round(3).to_frame(), f"{source}_quiet_by_class",
+          "quiet share per class")
     rows = []
     cls_of = lab.set_index(["user", "ts"]).cls
     for name, tr in (("gps_waiis_cadence", waiis), ("gps_per_minute", minute)):
         c = tr.join(cls_of, on=["user", "ts"]).cls.replace("", "(no label)")
         for k, g in tr.groupby(c):
             rows.append({"variant": name, "cls": k, "fixes": len(g), "dt_prev_p50_s": g.dt_prev_s.median(),
-                         "dt_prev_p90_s": g.dt_prev_s.quantile(.9), "speed_missing": (g.speed < 0).mean(),
+                         "speed_missing": (g.speed < 0).mean(), "speed_blanked": g.speed_blanked.mean(),
                          "speed_p50": g.speed[g.speed >= 0].median(), "accuracy_p50": g.accuracy.median(),
                          "bearing_missing": (g.bearing < 0).mean()})
+        rows.append({"variant": name, "cls": "ALL", "fixes": len(tr), "speed_missing": (tr.speed < 0).mean(),
+                     "speed_blanked": tr.speed_blanked.mean(), "bearing_missing": (tr.bearing < 0).mean()})
     table(pd.DataFrame(rows).set_index(["variant", "cls"]).round(3), f"{source}_gps_by_class", "GPS by class")
     cov = ex.groupby("cls").has_location.mean().reindex(cls_order).round(3)
     table(cov.to_frame(), f"{source}_location_by_class", "examples with a per-minute fix")
@@ -452,24 +584,26 @@ def git() -> tuple[str, bool]:
     return c, dirty
 
 
-def write_manifest(commit: str, dirty: bool) -> None:
+def write_manifest(commit: str, dirty: bool, v0: float | None) -> None:
     files = {}
-    for p in sorted(bench.ROOT.rglob("*.parquet")):
-        rel = str(p.relative_to(bench.ROOT))
+    for p in sorted(ROOT.rglob("*.parquet")):
+        rel = str(p.relative_to(ROOT))
         files[rel] = {"sha256": bench.sha256(p), "bytes": p.stat().st_size, "rows": pq.ParquetFile(p).metadata.num_rows}
-    man = {"version": bench.VERSION, "built": date.today().isoformat(), "git_commit": commit, "git_dirty": dirty,
+    man = {"version": VERSION, "built": date.today().isoformat(), "git_commit": commit, "git_dirty": dirty,
            "builder": "experiments/04_frozen-benchmark_es-shl/build.py",
            "params": {"rate_hz": FS, "window_samples": WIN, "window_s": WIN / FS, "seed": SEED,
                       "label_rules": "v2", "still_cap": es.RESTING_STILL_MAX_SHARE,
+                      "acc_plausible_median_ms2": ACC_PLAUSIBLE, "quiet_std_ms2": QUIET_STD,
+                      "hole_max_s": 0.5, "hole_policy": "longest clean stretch",
                       "session_gap_s": gps.SESSION_GAP_S, "gps_cadence": gps.CADENCE,
-                      "speed_missing_share": gps.SPEED_MISSING_SHARE, "speed_half_window_s": SPEED_HALF_S,
-                      "cadence_half_window_s": CADENCE_HALF_S,
+                      "speed_missing_share": gps.SPEED_MISSING_SHARE, "blank_p0": gps.BLANK_P0, "blank_v0": v0,
+                      "speed_half_window_s": SPEED_HALF_S, "cadence_half_window_s": CADENCE_HALF_S,
                       "es_splits": "experiments/02_family-baseline_shl-es/splits/es_users.csv",
                       "shl_splits": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",
                       "reserved_test": "splits/reserved_test.json"},
            "versions": {"numpy": np.__version__, "pandas": pd.__version__, "pyarrow": pa.__version__},
            "files": files}
-    (bench.ROOT / "manifest.json").write_text(json.dumps(man, indent=1))
+    (ROOT / "manifest.json").write_text(json.dumps(man, indent=1))
     pd.DataFrame(files).T.to_csv(RES / "manifest_files.csv")
     say(f"manifest: {len(files)} files, {sum(f['bytes'] for f in files.values()) / 1e9:.2f} GB, commit {commit[:7]}"
         f"{' (dirty)' if dirty else ''}")
@@ -483,10 +617,12 @@ def main() -> None:
     commit, dirty = git()          # before the build rewrites its own results/ and logs/
     RES.mkdir(parents=True, exist_ok=True)
     (HERE / "logs").mkdir(exist_ok=True)
-    logging.basicConfig(filename=HERE / "logs" / "build.log", filemode="w", level=logging.INFO, format="%(message)s")
+    logging.basicConfig(filename=HERE / "logs" / "build_v2.log", filemode="w", level=logging.INFO,
+                        format="%(message)s")
+    v0 = calibrate_blanking(a.workers) if any(s != "extrasensory" for s in a.sources) else None
     for s in a.sources:
-        build_es(a.workers) if s == "extrasensory" else build_shl(s, a.workers)
-    write_manifest(commit, dirty)
+        build_es(a.workers) if s == "extrasensory" else build_shl(s, a.workers, v0)
+    write_manifest(commit, dirty, v0)
 
 
 if __name__ == "__main__":

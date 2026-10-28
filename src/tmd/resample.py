@@ -83,3 +83,47 @@ def centre(x: np.ndarray, n: int) -> tuple[np.ndarray | None, int]:
         return None, -1
     s = (len(x) - n) // 2
     return x[s:s + n], s
+
+
+def es_acc_repair_to_25hz(acc: np.ndarray) -> tuple[np.ndarray | None, str, dict]:
+    """es_bench_v2 (experiment 04): like `es_acc_to_25hz`, but repairs instead of dropping where possible.
+
+    - Time not increasing: sort by time, drop repeated timestamps (first kept), then re-run the checks;
+      flag `time_repaired`.
+    - Holes > 0.5 s: keep the longest hole-free stretch (by duration); flag `hole_trimmed`.
+    - Span > 40 s or NaN: dropped (None).
+    Units are decided on the whole snippet (`to_ms2`). Returns ((m, 3) float32 m/s2 at 25 Hz or None, unit,
+    {'status': 'ok' | 'span_over_40s' | 'nan' | 'too_few_samples', 'time_repaired', 'hole_trimmed', 'n_raw',
+    'span_s' (of the resampled part), 'raw_rate_hz'}). For a snippet that `es_acc_to_25hz` accepts, the output is
+    identical."""
+    info = {"status": "ok", "time_repaired": False, "hole_trimmed": False}
+    a = acc
+    if (np.diff(a[:, 0]) <= 0).any():
+        a = a[np.argsort(a[:, 0], kind="stable")]
+        a = a[np.concatenate([[True], np.diff(a[:, 0]) > 0])]
+        info["time_repaired"] = True
+    if a[-1, 0] - a[0, 0] > MAX_SPAN_S:
+        return None, "", {**info, "status": "span_over_40s"}
+    if np.isnan(a[:, 1:]).any():
+        return None, "", {**info, "status": "nan"}
+    xyz, unit = to_ms2(a[:, 1:])
+    t = a[:, 0]
+    dt = np.diff(t)
+    if (dt > MAX_DT_S).any():
+        cut = np.concatenate([[0], np.flatnonzero(dt > MAX_DT_S) + 1, [len(t)]])
+        lo, hi = max(zip(cut[:-1], cut[1:]), key=lambda s: t[s[1] - 1] - t[s[0]])
+        t, xyz = t[lo:hi], xyz[lo:hi]
+        info["hole_trimmed"] = True
+    if len(t) < 2:
+        return None, unit, {**info, "status": "too_few_samples"}
+    span = t[-1] - t[0]
+    info.update(n_raw=len(t), span_s=float(span), raw_rate_hz=(len(t) - 1) / span)
+    grid = t[0] + np.arange(int(span * FS_IN) + 1) / FS_IN
+    x = np.column_stack([np.interp(grid, t, xyz[:, i]) for i in range(3)])
+    return decimate_100_to_25(x), unit, info
+
+
+def window_stats(w: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Median and standard deviation of |acc| per window; w is (n, m, 3)."""
+    n = np.linalg.norm(w, axis=-1)
+    return np.median(n, axis=-1), n.std(axis=-1)

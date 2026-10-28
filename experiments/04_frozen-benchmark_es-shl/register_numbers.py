@@ -6,9 +6,14 @@ import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
+from functools import partial
+
 from tmd import bench
 from tmd.paths import PROCESSED, PROJECT
 
+V1 = "es_bench_v1"                 # the register describes v1
+read = partial(bench.read, version=V1)
+path = partial(bench.path, version=V1)
 pd.set_option("display.width", 250)
 pd.set_option("display.max_columns", 40)
 C7 = ["still", "walk", "run", "bike", "car", "bus", "train"]
@@ -18,8 +23,8 @@ def h(t):
     print(f"\n######## {t}")
 
 
-L = bench.read("extrasensory", "labels")
-A = pq.read_table(bench.path("extrasensory", "accelerometer"),
+L = read("extrasensory", "labels")
+A = pq.read_table(path("extrasensory", "accelerometer"),
                   columns=["user", "ts", "unit", "raw_n", "raw_rate_hz", "span_s", "start_offset_s"]).to_pandas()
 AUD = pd.read_parquet(PROCESSED / "es_minutes_audit.parquet", columns=["uuid", "timestamp", "acc_norm_med", "acc_file",
                                                                        "acc_dur_s", "acc_dt_med_ms"])
@@ -150,8 +155,8 @@ print("pick-time test share", (nn.loc[nn.index.isin(tu)].sum() / nn.sum()).round
 print("pick-time total", nn.sum().to_dict())
 
 h("GPS ES")
-G = bench.read("extrasensory", "gps_per_minute")
-F = bench.read("extrasensory", "location_features")
+G = read("extrasensory", "gps_per_minute")
+F = read("extrasensory", "location_features")
 ex = L[L.included_v2 & L.has_acc]
 print("has_location by cls x platform\n", ex.pivot_table(index="cls", columns="platform", values="has_location", aggfunc="mean").round(3).reindex(C7))
 print("by split", ex.groupby("split").has_location.mean().round(3).to_dict())
@@ -161,17 +166,17 @@ print("speed -1 by cls x platform\n", ge.pivot_table(index="cls", columns="platf
 print("accuracy p50 by platform", ge[ge.accuracy >= 0].groupby("platform").accuracy.median().to_dict())
 print("min_speed available but max_speed NaN:", int((F["location:min_speed"].notna() & F["location:max_speed"].isna()).sum()))
 print("max_speed > 60 m/s:", int((F["location:max_speed"] > 60).sum()), "> 45:", int((F["location:max_speed"] > 45).sum()))
-print("ES sessions", bench.read("extrasensory", "sessions").minutes.describe().round(1).to_dict())
+print("ES sessions", read("extrasensory", "sessions").minutes.describe().round(1).to_dict())
 print("missing reason by cls\n", pd.crosstab(L.cls.replace("", "(none)"), L.location_missing_reason.replace("", "present")))
 
 h("SHL")
 for s in ["shl_user1", "shl_user23"]:
-    S = bench.read(s, "labels")
+    S = read(s, "labels")
     print(s, pd.crosstab(S.label_status, S.acc_status, margins=True))
     mx = S[S.label_status == "mixed"]
     print(" mixed majority cls", mx.majority_cls.value_counts().to_dict(), "majority_share p50", round(mx.majority_share.median(), 2))
     print(" mixed with majority >= 0.8:", int((mx.majority_share >= .8).sum()))
-    W = bench.read(s, "gps_waiis_cadence"); M = bench.read(s, "gps_per_minute")
+    W = read(s, "gps_waiis_cadence"); M = read(s, "gps_per_minute")
     print(" waiis fixes", len(W), "blanked", int(W.speed_blanked.sum()), "speed -1 natural", int(((W.speed < 0) & ~W.speed_blanked).sum()),
           "| per-minute", len(M), "blanked", int(M.speed_blanked.sum()))
     e = S[S.included & S.has_acc]

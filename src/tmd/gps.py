@@ -93,3 +93,26 @@ def thin(t: np.ndarray, interval: np.ndarray) -> np.ndarray:
             keep.append(i)
             last = t[i]
     return np.array(keep, dtype=np.int64)
+
+
+# es_bench_v2: speed (and bearing) are missing more often when slow. p(v) = BLANK_P0 * exp(-v / v0) at the 1 Hz speed
+# v of the fix; v0 is calibrated once so that ~23% of the fixes of the calibration track have no speed (fixes whose
+# speed is already unknown count as missing). The label is never used.
+BLANK_P0 = 0.95
+
+
+def blank_probability(speed: np.ndarray, v0: float, p0: float = BLANK_P0) -> np.ndarray:
+    """Probability of a fix without speed; 1 where the speed is already unknown (< 0)."""
+    return np.where(speed < 0, 1.0, p0 * np.exp(-np.clip(speed, 0, None) / v0))
+
+
+def calibrate_v0(speed: np.ndarray, target: float = SPEED_MISSING_SHARE, p0: float = BLANK_P0) -> float:
+    """v0 such that the mean blank probability over these fixes equals `target` (bisection on log v0)."""
+    lo, hi = np.log(1e-3), np.log(1e3)
+    for _ in range(100):
+        mid = (lo + hi) / 2
+        if blank_probability(speed, np.exp(mid), p0).mean() < target:
+            lo = mid
+        else:
+            hi = mid
+    return float(np.exp((lo + hi) / 2))
