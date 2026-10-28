@@ -299,8 +299,6 @@ Conclusion).
 
 ## Conclusion
 
-**Draft — not approved**
-
 - Stopped at stop-point 2: the direction changed (accelerometer only, final test = the 12 ExtraSensory test users,
   label curve to be redone on unseen ExtraSensory users; see `DECISIONS.md`, 2026-10-28).
 - Seed 0, validation days only: the curve does not flatten by k = 1000 (validation macro-F1 0.735 vs 0.779 at

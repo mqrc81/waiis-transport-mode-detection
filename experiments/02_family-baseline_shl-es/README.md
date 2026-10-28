@@ -914,8 +914,6 @@ uv run python backfill_dataset_inputs.py --apply   # logs/backfill_dataset_input
 
 ## Conclusion
 
-**Draft — not approved**
-
 *Written from the Results section only; `runs.csv` is not exported yet (02 is parked, not finished).*
 
 **Answer to the question.** Hand-crafted orientation-independent features + LightGBM at 25 Hz, smoothed by an HMM,

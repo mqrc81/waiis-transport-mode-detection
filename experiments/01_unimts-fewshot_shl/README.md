@@ -323,8 +323,6 @@ Further observations:
 
 ## Conclusion
 
-**Draft — not approved** (copied from `results/conclusion.md`, written before the migration)
-
 Pretrained UniMTS clearly beats the same architecture trained from random init. The linear probe was the best
 pretrained variant at every k in both sets. Paired by seed, it scores +0.15 to +0.24 macro-F1 above random in set B
 and +0.16 to +0.17 in set C. Adding gyro to random init (random_gyro) closes at most about a third of that gap, and

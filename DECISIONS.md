@@ -2,8 +2,6 @@
 
 ## 2026-10-23: UniMTS is not adopted as the production model
 
-**Draft — not approved**
-
 **Decision.** We will not use pretrained UniMTS (zero-shot, linear probe or fine-tuned) as the production
 transport-mode model.
 
