@@ -237,7 +237,7 @@ indoors (to check per class at step 2).
 ### Step 2: build of `es_bench_v1` (2026-10-28) — **stop-point**
 
 ```
-uv run python build.py --workers 8      # ~2 min; <data>/processed/es_bench_v1/, results/build/*.csv, logs/build.log
+uv run python build.py --workers 8      # ~2 min; <data>/processed/es_bench_v1/, results/tables/*.csv, logs/build.log
 uv run python build.py --sources shl_user23   # rebuild check: all 15 sha256 identical to the full build
 ```
 

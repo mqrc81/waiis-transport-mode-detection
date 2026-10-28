@@ -3,7 +3,7 @@
     uv run python build.py [--workers 8] [--sources extrasensory shl_user1 shl_user23]
 
 Writes <data>/processed/es_bench_v1/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
-every file; read them with `tmd.bench`). Count tables for the README go to results/build/, the full log to
+every file; read them with `tmd.bench`). Count tables for the README go to results/tables/, the full log to
 logs/build.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
 """
 import argparse
@@ -27,7 +27,7 @@ from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_to_25hz
 from tmd.splits import reserved_test
 
 HERE = Path(__file__).resolve().parent
-RES = HERE / "results" / "build"
+RES = HERE / "results" / "tables"
 SPLITS_02 = PROJECT / "experiments" / "02_family-baseline_shl-es" / "splits"
 WIN, FS = bench.WIN, bench.FS
 SEED = 0
@@ -339,7 +339,7 @@ def build_shl(source: str, workers: int) -> None:
     shl_report(source, lab, loc, waiis, minute)
 
 
-# ---------------------------------------------------------------- reports (results/build/*.csv)
+# ---------------------------------------------------------------- reports (results/tables/*.csv)
 
 ORDER = CLASSES + ["", "null"]
 
