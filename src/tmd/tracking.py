@@ -16,6 +16,9 @@ Usage in an experiment script:
 Each DataInput shows in MLflow's Dataset column as name (digest of the split file) and context. Label rules,
 features, rate and window are input tags (per run). Only metadata is logged, never the data.
 
+Label-budget runs (a param `k`, labelled windows per class) also get the metric `k_per_class`, so the MLflow UI can
+plot against k as a number. A non-numeric k (e.g. "all") needs the number in params as `k_per_class`.
+
 Export an experiment's runs (the CSV that goes in git):
 
     uv run python -m tmd.tracking export 02_family-baseline_shl-es
@@ -118,16 +121,32 @@ def run(experiment: str, params: dict, run_name: str | None = None, *, datasets:
     `datasets` is required; pass [] only for runs that use no data (smoke tests).
     """
     check_inputs(datasets)
+    k_num = k_per_class(params)
     _use_experiment(experiment)
     with mlflow.start_run(run_name=run_name) as active:
         mlflow.set_tags({
             "git_commit": _git("rev-parse", "--short", "HEAD") or "none",
             "dirty": str(bool(_git("status", "--porcelain"))).lower(),
         })
-        mlflow.log_params(params)
+        mlflow.log_params({p: v for p, v in params.items() if p != "k_per_class"})   # metric only (export columns)
+        if k_num is not None:
+            mlflow.log_metric("k_per_class", k_num)
         for d in datasets:
             mlflow.log_input(d.dataset(), context=d.context, tags=d.tags())
         yield active
+
+
+def k_per_class(params: dict) -> float | None:
+    """Labelled windows per class as a number: params["k_per_class"], else a numeric params["k"], else None
+    (no k). A non-numeric k without k_per_class is an error, so label curves can always be plotted in MLflow."""
+    if "k_per_class" in params:
+        return float(params["k_per_class"])
+    if "k" not in params:
+        return None
+    try:
+        return float(params["k"])
+    except (TypeError, ValueError):
+        raise ValueError(f"k = {params['k']!r} is not a number: pass k_per_class in params") from None
 
 
 def export(experiment: str, out: Path | None = None) -> Path:

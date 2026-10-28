@@ -234,7 +234,10 @@ run, car, train and subway use all their trips.
 (884,330, Null included) with `day, rec, t_start_ms, y, pure, partition, trip`.
 
 **MLflow:** 16 runs `sp2_<sensor>_k<k>_seed0` (param `stage = sp2`), exported to `results/runs.csv`. They are
-tagged commit `4c77f14`, **dirty**: they ran before the 03 code was committed. Each holds validation metrics, model size and the grid's validation table (`grid_val.json`).
+tagged commit `4c77f14`, **dirty**: they ran before the 03 code was committed. On 2026-10-28 (after the export of `63121a8`) the
+metric `k_per_class` (= n_train / 8; 41,611.75 for k = all) was added to all 16 runs with `backfill_k_metric.py
+--apply`, so the MLflow UI can plot against k as a number, and `runs.csv` was exported again. Future runs with a
+`k` param get it from `tmd.tracking.run()`. Each holds validation metrics, model size and the grid's validation table (`grid_val.json`).
 Models: `<data>/checkpoints/03_label-curve_shl/sp2/`; validation probabilities (rec, t_start_ms, day, y, pure,
 p_<class>, time order): `<data>/processed/03_label-curve_shl/sp2/*_val_probs.parquet`. Test probabilities are not
 computed yet: they come from the saved models once, at stop-point 3.

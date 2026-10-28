@@ -165,7 +165,7 @@ def final(sensor: str, k, seed: int, seeds, stage: str) -> dict:
     run_params = {"model": "lightgbm", "dataset": "shl_u1_hips", "rate_hz": 25, "class_set": "shl8", "seed": seed,
                   "k": k, "sensors": sensor, "n_features": len(cols), "stage": stage,
                   "selection": "02 params" if k == "all" else f"grid, mean val macro-F1 over seeds {list(seeds)}",
-                  "n_train": len(rows), "n_val": len(val), **{f"lgb_{kk}": v for kk, v in params.items()}}
+                  "k_per_class": len(rows) / 8, "n_train": len(rows), "n_val": len(val), **{f"lgb_{kk}": v for kk, v in params.items()}}
     samples = "all training-day pure windows" if k == "all" else "splits/samples_k.csv"
     data = [DataInput("shl_user1_03_training", "training", "shl-coarse", f"feat-{FEATURES_VERSION}-{sensor}",
                       extra=(("samples", samples), ("k", str(k)), ("seed", str(seed)))),
