@@ -50,3 +50,21 @@ decision.
 **Limits of the evidence.** The timestamps are assumed to be in ms: confirmed by walking cadence for U5, U6, U10
 and U12, and not testable for the low-rate users. This is a quality check, not an experiment. Its numbers are not
 in MLflow.
+
+## 2026-10-28: Accelerometer only; final test on the 12 ExtraSensory test users
+
+**Draft — not approved**
+
+**Decision.**
+- The model uses the **accelerometer only**, no gyroscope.
+- The **final test is the 12 ExtraSensory test users** (`splits/reserved_test.json`).
+- **SHL Users 2–3 are a separate rail check only**, not the final test.
+- **Prediction runs in batches** over uploaded recordings, so smoothing may use the whole sequence (e.g. Viterbi),
+  not only past windows.
+
+**Why.** The supervisor changed direction: the WAIIS app does not collect the gyroscope, and same-person day splits
+(SHL User 1) are considered optimistic. The label curve will be redone on unseen ExtraSensory users.
+
+**Evidence.** Supervisor's decision, relayed by Marc on 2026-10-28. Experiment 03 (`experiments/03_label-curve_shl/`)
+was closed at stop-point 2 because of it; on its one seed the gyroscope added about + 0.01 macro-F1 at k ≥ 50 (not
+tested across seeds).

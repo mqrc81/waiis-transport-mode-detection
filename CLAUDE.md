@@ -2,8 +2,9 @@
 
 ## Project
 Classify transport mode (still, walk, run, bike, car, bus, train, metro) from phone
-accelerometer + gyroscope. Current production rate is 25 Hz. The phone records and uploads the
+accelerometer only (no gyroscope). Current production rate is 25 Hz. The phone records and uploads the
 sensor data; the model runs on an edge server. Work is in Python, over files.
+Final test: the 12 ExtraSensory test users (`splits/reserved_test.json`); SHL Users 2–3 are for rail checks only.
 
 ## Layout
 - `src/tmd`: shared code. Anything a second experiment would reuse goes here.

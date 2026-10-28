@@ -1,3 +1,5 @@
+> **Superseded (2026-10-28); see `DECISIONS.md`.**
+
 # Brief: block 1 experiments (SHL + ExtraSensory)
 
 > **Parked after experiment 02 (2026-10-28).** The next experiment follows a new plan; 03–06 below are not scheduled.
