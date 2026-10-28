@@ -1,0 +1,132 @@
+== ExtraSensory ==
+users 60 ({'android': 26, 'iphone': 34}), minutes 377,346, included_v2 158,786, capped 62,499
+
+Samples per clean acc snippet at 25 Hz (375 needed):
+             count   mean   std    min     1%     5%    10%    25%    50%    75%    90%    max
+platform                                                                                      
+android   153140.0  391.0  58.0   86.0  168.0  233.0  394.0  399.0  400.0  403.0  413.0  995.0
+iphone    220681.0  595.0  22.0  519.0  572.0  573.0  574.0  578.0  586.0  604.0  630.0  724.0
+
+platform     android  iphone
+n25                         
+[0, 100)          40       0
+[100, 200)      3788       0
+[200, 300)      8211       0
+[300, 350)      2397       0
+[350, 375)       145       0
+[375, 400)     41491       0
+[400, 450)     86594       0
+[450, 500)      9367       0
+[500, 600)      1014  155086
+[600, 1001)       93   65595
+
+acc status, all minutes:
+platform             android  iphone     All
+acc_status                                  
+hole_over_0.5s          1710     236    1946
+no_file                  282       8     290
+ok                    138559  220681  359240
+span_over_40s             66      36     102
+time_not_increasing     1187       0    1187
+under_15s              14581       0   14581
+All                   156385  220961  377346
+
+acc status, included_v2:
+platform             android  iphone     All
+acc_status                                  
+hole_over_0.5s           804     166     970
+no_file                    9       0       9
+ok                     58049   91632  149681
+span_over_40s             46      16      62
+time_not_increasing      562       0     562
+under_15s               7502       0    7502
+All                    66972   91814  158786
+
+acc status by class (included_v2):
+acc_status  hole_over_0.5s  no_file      ok  span_over_40s  time_not_increasing  under_15s  kept_share
+cls                                                                                                   
+still                  716        8  112927             47                  344       4562       0.952
+walk                   129        1   19468              3                  162       1478       0.917
+run                      2        0     708              0                    3         49       0.929
+bike                    36        0    4376              3                    6        457       0.897
+car                     74        0   10334              4                   40        714       0.925
+bus                     10        0    1626              0                    6        151       0.907
+train                    3        0     242              5                    1         91       0.708
+
+Users with most snippets under 15 s:
+                                               clean  under_15s  dt_med_ms  share_under
+user                                 platform                                          
+1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842 android    7107       4055  12.573000        0.571
+81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0 android    6179       3395  20.019530        0.549
+27E04243-B138-4F40-A164-F40B60165CF3 android    4764       2135  20.111084        0.448
+CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F android    8390       1954  20.007000        0.233
+96A358A0-FFF2-4239-B93E-C7425B901B47 android    5748       1612  20.111084        0.280
+F50235E0-DD67-4F2A-B00B-1F31ADA998B9 android    2183       1117  19.964000        0.512
+40E170A7-607B-4578-AF04-F021C3B0384A android    7645        100  20.000000        0.013
+0BFC35E2-4817-4865-BFA7-764742302A2D android    2769         78  20.141602        0.028
+806289BC-AD52-4CC1-806C-0CDB14D65EB6 android    9217         38  25.305677        0.004
+74B86067-5D4B-43CF-82CF-341B76BEA0F4 android    7260         25  19.953854        0.003
+A5A30F76-581E-4757-97A2-957553A2C6AA android    1645         21  19.872904        0.013
+BEF6C611-50DA-4971-A040-87FB979F3FC1 android    2876         20  19.958496        0.007
+
+Gyro-less users, included_v2 minutes with a usable 15 s acc window, by class:
+cls       bike  bus  car  run  still  walk
+user                                      
+61359772   227   60    0    0   2682   231
+CCAF77F0     0    0   28    0   1254    20
+F50235E0    19   13   12    5    847    44
+
+== ExtraSensory location ==
+absolute-location rows: 377,346 of 377,346 minutes; lat/lon present 305,747; location features with num_valid_updates > 0: 305,338
+lat present but no location features: 410; features but no lat: 1
+
+Location coverage, included_v2 minutes:
+                    minutes  has_latlon  has_loc_features  latlon_iphone  latlon_android
+cls                                                                                     
+still              118604.0       0.828             0.827          0.924           0.693
+walk                21241.0       0.789             0.788          0.959           0.607
+run                   762.0       0.807             0.807          1.000           0.702
+bike                 4878.0       0.937             0.937          0.994           0.873
+car                 11166.0       0.880             0.878          0.958           0.716
+bus                  1793.0       0.772             0.769          0.961           0.603
+train                 342.0       0.912             0.909          1.000           0.880
+motorbike (check)      86.0       1.000             1.000            NaN           1.000
+all minutes        377346.0       0.810             0.809          0.921           0.654
+
+Location feature values (minutes with updates):
+platform                            column      n   nan  neg  eq_-1    p50    p95    max
+ android                location:min_speed 102220 0.838  0.0    0.0  0.750 21.976  41.25
+ android                location:max_speed 102220 0.838  0.0    0.0  1.530 26.000  56.00
+ android location:best_horizontal_accuracy 102220 0.000  0.0    0.0 12.393 35.603 199.27
+ android        location:num_valid_updates 102220 0.000  0.0    0.0  7.000 33.000 236.00
+  iphone                location:min_speed 203118 0.592  0.0    0.0  0.420  7.890  39.50
+  iphone                location:max_speed 203118 0.592  0.0    0.0  0.890 18.134 101.37
+  iphone location:best_horizontal_accuracy 203118 0.000  0.0    0.0 10.000 65.000 198.35
+  iphone        location:num_valid_updates 203118 0.000  0.0    0.0 26.000 36.000  60.00
+
+Speed / accuracy by class and platform (included_v2 minutes with updates):
+                    n  speed_valid  max_speed_p50  max_speed_p90  acc_p50  updates_p50
+cls   platform                                                                        
+bike  android    1989         0.79           6.50          11.00     4.00         16.0
+      iphone     2582         0.89           6.44          10.74     5.00         30.0
+bus   android     572         0.58           6.18          16.52     8.00         13.0
+      iphone      807         0.90           7.54          18.53     5.00         26.0
+car   android    2575         0.79          14.07          33.30     4.00         17.0
+      iphone     7228         0.91          14.22          32.81     5.00         30.0
+run   android     346         0.42           3.08           4.05     6.00         17.0
+      iphone      269         0.60           1.48           3.88     5.00         26.0
+still android   34081         0.09           1.09           4.02    14.04          5.0
+      iphone    63977         0.33           0.74           2.36    10.00         24.0
+train android     219         0.72          20.72          35.20     6.00         16.0
+      iphone       92         0.92          22.51          38.87     5.00         32.0
+walk  android    6226         0.40           1.47           3.75    13.00          7.0
+      iphone    10507         0.65           1.57           3.49     5.00         26.0
+
+Gap between consecutive lat/lon minutes [s]: p50 60, p90 72; share > 120 s (new session): 0.024
+
+== SHL Hips_Location.txt (cols: time ms, -, -, accuracy m, lat, lon, altitude; no speed/bearing) ==
+               recs    fixes   dur_h  dt_p50_s  gaps_over_60s  acc_p50_m  latlon_nan  ncol
+session                                                                                   
+User1            90  1377679  591.78       1.0           1012        8.0           0     7
+User2_4phones     3    64709   25.93       1.0             51        8.0           0     7
+User3_4phones     3    36815   17.24       1.0             21       16.0           0     7

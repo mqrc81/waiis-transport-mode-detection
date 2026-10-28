@@ -3,9 +3,11 @@
     per_uuid_features_labels/<uuid>.features_labels.csv/<uuid>.features_labels.csv   cleaned labels
     per_uuid_original_labels/<uuid>.original_labels.csv.gz                            original labels
     raw_acc/<uuid>/<timestamp>.m_raw_acc.dat, proc_gyro/..., raw_magnet/...           one snippet per minute
+    per_uuid_absolute_location/<uuid>.absolute_locations.csv                          lat / lon per minute
     cv_5_folds/fold_*_{train,test}_{iphone,android}_uuids.txt                         platform per user
 
-The motion summary features in the cleaned CSV are never read: only timestamp, label:* and label_source.
+The motion summary features in the cleaned CSV are never read: only timestamp, label:*, label_source and (for
+experiment 04's GPS) location:* / location_quick_features:*.
 """
 from __future__ import annotations
 
@@ -63,9 +65,12 @@ def platforms() -> dict[str, str]:
     return out
 
 
-def _cleaned_path(uuid: str) -> Path:
-    p = ES_RAW / "per_uuid_features_labels" / f"{uuid}.features_labels.csv"
+def _unzipped(p: Path) -> Path:
     return p / p.name if p.is_dir() else p      # the local unzip left one folder per file
+
+
+def _cleaned_path(uuid: str) -> Path:
+    return _unzipped(ES_RAW / "per_uuid_features_labels" / f"{uuid}.features_labels.csv")
 
 
 def read_cleaned_labels(uuid: str) -> pd.DataFrame:
@@ -171,4 +176,32 @@ def minutes_table(users) -> pd.DataFrame:
         parts.append(m.rename_axis("ts").reset_index().assign(user=u))
     out = pd.concat(parts, ignore_index=True)
     out["ts"] = out.ts.astype(int)
+    return out
+
+
+# Website: lat/lon is NaN when the minute had no location update or all updates were worse than 200 m.
+MAX_ACCURACY_M = 200.0
+
+
+def read_location(uuid: str) -> pd.DataFrame:
+    """Index timestamp [s]; all location:* and location_quick_features:* columns of the cleaned CSV (names as in the
+    CSV) plus latitude, longitude from the absolute-location file (NaN = no coordinates)."""
+    loc = pd.read_csv(_cleaned_path(uuid), usecols=lambda c: c == "timestamp" or c.startswith("location"))
+    ab = pd.read_csv(_unzipped(ES_RAW / "per_uuid_absolute_location" / f"{uuid}.absolute_locations.csv"))
+    return loc.merge(ab, on="timestamp", how="left", validate="one_to_one").set_index("timestamp")
+
+
+def location_missing_reason(loc: pd.DataFrame) -> np.ndarray:
+    """Per minute: '' (coordinates present), 'no_updates' (num_valid_updates 0 / NaN), 'poor_accuracy' (updates, no
+    coordinates, best accuracy > 200 m), 'withheld' (updates within 200 m, i.e. relative location present, but no
+    absolute coordinates), 'unknown'. Location only updates on a significant change, so 'no_updates' also covers a
+    phone that did not move; nothing is imputed."""
+    has = loc.latitude.notna().to_numpy() & loc.longitude.notna().to_numpy()
+    n = loc["location:num_valid_updates"].fillna(0).to_numpy()
+    acc = loc["location:best_horizontal_accuracy"].to_numpy()
+    out = np.full(len(loc), "unknown", dtype=object)
+    out[n <= 0] = "no_updates"
+    out[(n > 0) & (acc > MAX_ACCURACY_M)] = "poor_accuracy"
+    out[(n > 0) & (acc <= MAX_ACCURACY_M)] = "withheld"
+    out[has] = ""
     return out

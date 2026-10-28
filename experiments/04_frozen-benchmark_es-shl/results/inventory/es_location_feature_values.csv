@@ -1,0 +1,9 @@
+platform,column,n,nan,neg,eq_-1,p50,p95,max
+android,location:min_speed,102220,0.838,0.0,0.0,0.75,21.976,41.25
+android,location:max_speed,102220,0.838,0.0,0.0,1.53,26.0,56.0
+android,location:best_horizontal_accuracy,102220,0.0,0.0,0.0,12.393,35.603,199.27
+android,location:num_valid_updates,102220,0.0,0.0,0.0,7.0,33.0,236.0
+iphone,location:min_speed,203118,0.592,0.0,0.0,0.42,7.89,39.5
+iphone,location:max_speed,203118,0.592,0.0,0.0,0.89,18.134,101.37
+iphone,location:best_horizontal_accuracy,203118,0.0,0.0,0.0,10.0,65.0,198.35
+iphone,location:num_valid_updates,203118,0.0,0.0,0.0,26.0,36.0,60.0

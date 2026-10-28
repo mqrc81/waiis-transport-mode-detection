@@ -72,6 +72,15 @@ def read_motion(rec: Recording, position: str, sensors=("acc", "gyro")) -> tuple
     return a[:, 0].astype(np.int64), a[:, 1:].astype(np.float32)
 
 
+def read_location(rec: Recording, position: str) -> pd.DataFrame:
+    """<Pos>_Location.txt (doc 3.10): time_ms, accuracy [m, 68% radius], lat, lon, altitude, sorted by time with
+    duplicate times dropped. There is no speed or bearing column."""
+    df = pd.read_csv(rec.path / f"{position}_Location.txt", sep=" ", header=None, usecols=[0, 3, 4, 5, 6],
+                     names=["time_ms", "_a", "_b", "accuracy", "lat", "lon", "altitude"])
+    df["time_ms"] = df.time_ms.astype(np.int64)
+    return df.sort_values("time_ms").drop_duplicates("time_ms").reset_index(drop=True)
+
+
 def read_labels(rec: Recording) -> tuple[np.ndarray, np.ndarray]:
     """Time [ms] and coarse label (int8, 0 = Null) per 100 Hz row."""
     df = pd.read_csv(rec.path / "Label.txt", sep=" ", header=None, usecols=[0, 1], dtype=np.int64)

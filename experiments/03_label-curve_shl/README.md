@@ -3,9 +3,9 @@
 ## Question
 
 How many labelled windows per class does LightGBM need before macro-F1 stops improving, and does the gyroscope help?
-Labels are expensive and unlabelled data is free; this is the label-curve baseline. Experiment 04 will pre-train
+Labels are expensive and unlabelled data is free; this is the label-curve baseline. A later experiment will pre-train
 LIMU-BERT on unlabelled windows and fine-tune it with the **same** split, k values, seeds and sampled windows, so
-everything 04 needs is saved as files. Model size is not a criterion.
+everything that experiment needs is saved as files. Model size is not a criterion.
 
 ## Plan
 
@@ -28,7 +28,7 @@ point, feature subsets) looks at them.
 - k ∈ {1, 2, 5, 10, 50, 200, 1000, all}; seeds 0–4.
 - Round-robin over training days (and separate trips within a day), random within. If a class has fewer than k
   windows, use all and record it.
-- Nested per seed (the k = 5 set contains the k = 2 set, …). Window IDs per (k, seed) saved to a file for 04.
+- Nested per seed (the k = 5 set contains the k = 2 set, …). Window IDs per (k, seed) saved to a file for the later LIMU-BERT experiment.
 - "all" = all training-day windows of that class.
 
 **Sensor sets** (paired: identical sampled windows). acc + gyro = all features v1; acc only = the features v1 that
@@ -78,7 +78,7 @@ subway's day count is reported next to its numbers. The plan of step 1 below hol
 4. **Reduced-validation check:** at the flattening k, draw k windows per class from validation days with the same
    trip sampler; use only those for the grid choice and early stopping; report test macro-F1 as a separate row.
 5. Validation and test macro-F1 are reported side by side per k, so the selection bias is visible.
-6. For 04: the unlabelled pre-training pool comes from training days only.
+6. For the later LIMU-BERT experiment: the unlabelled pre-training pool comes from training days only.
 
 ## Results
 
@@ -149,7 +149,7 @@ windows (78.8 h). Training: 334,586 windows, 332,894 pure.
   3. the class order takes one window from each day's queue in turn (day 1, day 2, …, day 1, …).
 - The (k, seed) set is the first k of each class's order, so the sets are nested by construction.
 - File: one row per (seed, class, rank) for rank < 1000, with `day, rec, t_start_ms`. k = all is every pool window
-  (no file needed; 04 gets it from the split and the window ID).
+  (no file needed; the later experiment gets it from the split and the window ID).
 - Pool per class (training days): every class has ≥ 1000 windows, so no class falls short below k = all.
 
   | | still | walk | run | bike | car | bus | train | subway |
@@ -200,7 +200,7 @@ windows (78.8 h). Training: 334,586 windows, 332,894 pure.
 4. **HMM transitions from all training-day labels** use far more labels than k. I'll do as briefed and say so next
    to the numbers. (Transitions are cheap to get from trip diaries, so this is a fair read.)
 5. **k = all is the same sample for every seed**, so its spread only reflects LightGBM's feature sampling.
-6. **For 04 (not done here):** 04 re-cuts the raw windows from the window IDs with the same shared code. Its
+6. **For the later LIMU-BERT experiment (not done here):** it re-cuts the raw windows from the window IDs with the same shared code. Its
    unlabelled pre-training pool should come from training days only (validation and test days are not "free" here).
 
 ### Step 2: one seed of the curve, validation days only (2026-10-28) — **stop-point; experiment closed here**
@@ -222,7 +222,7 @@ uv run python make_samples.py                        # splits/samples_k.csv, res
 uv run python curve.py --seeds 0 --stage sp2         # results/grid/*.csv, results/curve_sp2.csv (~5 min)
 ```
 
-**Shared code added:** `src/tmd/sampling.py` (trip sampler; reused for the reduced-validation check and by 04).
+**Shared code added:** `src/tmd/sampling.py` (trip sampler; reused for the reduced-validation check and by the later LIMU-BERT experiment).
 `src/tmd/tracking.py`: `SPLITS` entries `shl_user1_03_{training,validation,test}` → `splits/shl_u1_days.csv`.
 
 **Samples** (`samples_k.csv`, 40,000 rows = 5 seeds × 8 classes × 1000 ranks). No class is short of k at any
@@ -230,7 +230,7 @@ k ≤ 1000. Coverage, seed 0 (`results/samples_coverage.csv`): up to k = 10 ever
 different trips; at k = 50 every class has windows from all its training days (subway: 10 days, 50 trips); at k = 1000
 run, car, train and subway use all their trips.
 
-**Window manifest for 04:** `<data>/processed/shl_u1_hips_25hz_w5s_s2.5s_windows.parquet`, every hips window
+**Window manifest for the later LIMU-BERT experiment:** `<data>/processed/shl_u1_hips_25hz_w5s_s2.5s_windows.parquet`, every hips window
 (884,330, Null included) with `day, rec, t_start_ms, y, pure, partition, trip`.
 
 **MLflow:** 16 runs `sp2_<sensor>_k<k>_seed0` (param `stage = sp2`), exported to `results/runs.csv`. They are
