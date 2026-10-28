@@ -1,0 +1,31 @@
+2026-10-28 11:14:34,003 start {'seeds': [0], 'stage': 'sp2', 'workers': 5}
+2026-10-28 11:16:48,736 grid acc k=1 seed=0 best 0.2338
+2026-10-28 11:16:48,737 grid acc k=2 seed=0 best 0.4567
+2026-10-28 11:16:48,737 grid acc k=5 seed=0 best 0.5479
+2026-10-28 11:16:48,737 grid acc k=10 seed=0 best 0.5697
+2026-10-28 11:16:48,737 grid acc k=50 seed=0 best 0.6432
+2026-10-28 11:16:48,738 grid acc k=200 seed=0 best 0.6903
+2026-10-28 11:16:48,738 grid acc k=1000 seed=0 best 0.7254
+2026-10-28 11:16:48,738 grid acc_gyro k=1 seed=0 best 0.2928
+2026-10-28 11:16:48,739 grid acc_gyro k=2 seed=0 best 0.4707
+2026-10-28 11:16:48,739 grid acc_gyro k=5 seed=0 best 0.5282
+2026-10-28 11:16:48,739 grid acc_gyro k=10 seed=0 best 0.5587
+2026-10-28 11:16:48,739 grid acc_gyro k=50 seed=0 best 0.6492
+2026-10-28 11:16:48,739 grid acc_gyro k=200 seed=0 best 0.6983
+2026-10-28 11:16:48,740 grid acc_gyro k=1000 seed=0 best 0.7348
+2026-10-28 11:16:50,000 final acc_gyro k=1 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 1, 'num_leaves': 7, 'learning_rate': 0.05} val 0.2928 fam 0.3301 iter 35
+2026-10-28 11:16:50,867 final acc_gyro k=2 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 1, 'num_leaves': 7, 'learning_rate': 0.05} val 0.4707 fam 0.5670 iter 40
+2026-10-28 11:16:52,036 final acc_gyro k=5 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 5, 'num_leaves': 7, 'learning_rate': 0.05} val 0.5282 fam 0.6975 iter 59
+2026-10-28 11:16:53,213 final acc_gyro k=10 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 5, 'num_leaves': 7, 'learning_rate': 0.1} val 0.5587 fam 0.6886 iter 37
+2026-10-28 11:16:55,447 final acc_gyro k=50 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 1, 'num_leaves': 7, 'learning_rate': 0.05} val 0.6492 fam 0.7737 iter 74
+2026-10-28 11:17:00,396 final acc_gyro k=200 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 20, 'num_leaves': 31, 'learning_rate': 0.05} val 0.6983 fam 0.8094 iter 80
+2026-10-28 11:17:09,342 final acc_gyro k=1000 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 1, 'num_leaves': 31, 'learning_rate': 0.05} val 0.7348 fam 0.8345 iter 104
+2026-10-28 11:18:12,110 final acc_gyro k=all seed=0 {'objective': 'multiclass', 'num_class': 8, 'learning_rate': 0.1, 'num_leaves': 31, 'min_child_samples': 50, 'feature_fraction': 0.8, 'bagging_fraction': 0.8, 'bagging_freq': 1, 'lambda_l2': 1.0, 'verbose': -1} val 0.7785 fam 0.8572 iter 378
+2026-10-28 11:18:12,736 final acc k=1 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 1, 'num_leaves': 7, 'learning_rate': 0.1} val 0.2338 fam 0.2815 iter 17
+2026-10-28 11:18:13,406 final acc k=2 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 1, 'num_leaves': 7, 'learning_rate': 0.1} val 0.4567 fam 0.5750 iter 21
+2026-10-28 11:18:14,246 final acc k=5 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 5, 'num_leaves': 7, 'learning_rate': 0.1} val 0.5479 fam 0.7076 iter 26
+2026-10-28 11:18:15,338 final acc k=10 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 5, 'num_leaves': 7, 'learning_rate': 0.1} val 0.5697 fam 0.7019 iter 33
+2026-10-28 11:18:16,752 final acc k=50 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 50, 'num_leaves': 31, 'learning_rate': 0.1} val 0.6432 fam 0.7681 iter 42
+2026-10-28 11:18:19,511 final acc k=200 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 5, 'num_leaves': 7, 'learning_rate': 0.05} val 0.6903 fam 0.8023 iter 97
+2026-10-28 11:18:27,898 final acc k=1000 seed=0 {'objective': 'multiclass', 'num_class': 8, 'feature_fraction': 0.8, 'lambda_l2': 1.0, 'min_data_in_bin': 1, 'feature_pre_filter': False, 'verbose': -1, 'min_data_in_leaf': 1, 'num_leaves': 31, 'learning_rate': 0.05} val 0.7254 fam 0.8258 iter 102
+2026-10-28 11:19:30,999 final acc k=all seed=0 {'objective': 'multiclass', 'num_class': 8, 'learning_rate': 0.1, 'num_leaves': 31, 'min_child_samples': 50, 'feature_fraction': 0.8, 'bagging_fraction': 0.8, 'bagging_freq': 1, 'lambda_l2': 1.0, 'verbose': -1} val 0.7687 fam 0.8494 iter 428

@@ -59,6 +59,9 @@ SPLITS = {
     "extrasensory_dev": "experiments/02_family-baseline_shl-es/splits/es_users.csv",  # 02's user folds
     "shl_user23_test": "splits/reserved_test.json",
     "extrasensory_test": "splits/reserved_test.json",
+    "shl_user1_03_training": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",     # 03's day split
+    "shl_user1_03_validation": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
+    "shl_user1_03_test": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
 }
 CONTEXTS = ("training", "evaluation")
 # Registered dynamically by MLflow, so it can't be imported by name.

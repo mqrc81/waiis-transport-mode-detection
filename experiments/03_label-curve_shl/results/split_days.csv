@@ -1,0 +1,4 @@
+partition,still,walk,run,bike,car,bus,train,subway
+training,40,39,22,25,14,23,17,10
+validation,12,14,8,7,6,8,5,3
+test,15,12,7,10,7,9,5,3

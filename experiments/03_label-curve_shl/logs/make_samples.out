@@ -1,0 +1,22 @@
+samples_k.csv: 40000 rows; manifest: 884330 hips windows -> shl_u1_hips_25hz_w5s_s2.5s_windows.parquet
+short classes (n < k): none
+days covered (seed 0):
+cls   still  walk  run  bike  car  bus  train  subway
+k                                                    
+1         1     1    1     1    1    1      1       1
+2         2     2    2     2    2    2      2       2
+5         5     5    5     5    5    5      5       5
+10       10    10   10    10   10   10     10      10
+50       42    40   22    25   14   23     17      10
+200      42    40   22    25   14   23     17      10
+1000     42    40   22    25   14   23     17      10
+trips covered (seed 0):
+cls   still  walk  run  bike  car  bus  train  subway
+k                                                    
+1         1     1    1     1    1    1      1       1
+2         2     2    2     2    2    2      2       2
+5         5     5    5     5    5    5      5       5
+10       10    10   10    10   10   10     10      10
+50       48    46   37    46   43   44     45      50
+200     141   152   43   107   86   79     64      71
+1000    173   199   43   137   86   82     64      71

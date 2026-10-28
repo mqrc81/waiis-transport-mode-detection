@@ -1,0 +1,19 @@
+seed 0; 4-phone days: [['220617', 'training'], ['260617', 'test'], ['270617', 'test']]
+hips hours
+            days  still  walk   run  bike   car   bus  train  subway  total
+partition                                                                  
+training      44   33.7  30.0  10.4  28.6  40.9  30.4   33.5    24.8  232.4
+validation    15   12.0  10.7   3.8  10.3  13.9   9.8   11.1     8.1   79.8
+test          15   11.5  11.1   3.5   9.4  13.4  10.9   11.6     7.5   78.8
+share of hours
+            still   walk    run   bike    car    bus  train  subway  total
+partition                                                                 
+training    0.589  0.580  0.589  0.593  0.599  0.596  0.596   0.613  0.594
+validation  0.210  0.207  0.216  0.212  0.204  0.191  0.198   0.201  0.204
+test        0.201  0.214  0.196  0.195  0.197  0.213  0.206   0.186  0.202
+days with > 3 min
+            still  walk  run  bike  car  bus  train  subway
+partition                                                  
+training       40    39   22    25   14   23     17      10
+validation     12    14    8     7    6    8      5       3
+test           15    12    7    10    7    9      5       3
