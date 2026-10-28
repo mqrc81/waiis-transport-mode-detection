@@ -1,0 +1,299 @@
+
+######## labels: reason x platform x cls
+cls                      (none)  bike   bus    car   run   still  train   walk     All
+reason                                                                                
+check:MOTORBIKE               0     0     0     86     0       0      0      0      86
+conflict                      0     0     1      0    15       0      2      0      18
+drop:ELEVATOR                 0     0     0      0     0      83      0    117     200
+drop:ELLIPTICAL_MACHINE       0     0     0      0    36     197      0      0     233
+drop:ON_A_BOAT                0     0     0      0     0      18      0      0      18
+drop:ON_A_PLANE               0     0     0      0     0     630      0      0     630
+drop:SKATEBOARDING           16    56     0      0     0      59      0      0     131
+drop:SLEEPING                 0     0     0      0     0   83055      0      0   83055
+drop:STATIONARY_BIKE          0    86     0      0     0       0      0      0      86
+drop:TREADMILL                0     0     0      0   131       0      0     33     164
+drop:WHEELCHAIR               0     0     0      0     0       9      0      0       9
+drop:not_carried              0     0     0      0   146       0      0    932    1078
+ok                            0  4878  1793  11166   762  181103    342  21241  221285
+unlabelled                70353     0     0      0     0       0      0      0   70353
+All                       70369  5020  1794  11252  1090  265154    344  22323  377346
+platform                 android  iphone
+reason                                  
+check:MOTORBIKE               86       0
+conflict                       3      15
+drop:ELEVATOR                 71     129
+drop:ELLIPTICAL_MACHINE        0     233
+drop:ON_A_BOAT                 0      18
+drop:ON_A_PLANE              194     436
+drop:SKATEBOARDING            75      56
+drop:SLEEPING              30360   52695
+drop:STATIONARY_BIKE          24      62
+drop:TREADMILL                51     113
+drop:WHEELCHAIR                0       9
+drop:not_carried             281     797
+ok                         97407  123878
+unlabelled                 27833   42520
+
+######## users affected per reason
+reason
+check:MOTORBIKE             1
+conflict                    3
+drop:ELEVATOR              12
+drop:ELLIPTICAL_MACHINE     2
+drop:ON_A_BOAT              1
+drop:ON_A_PLANE             4
+drop:SKATEBOARDING          3
+drop:SLEEPING              53
+drop:STATIONARY_BIKE        2
+drop:TREADMILL              2
+drop:WHEELCHAIR             1
+drop:not_carried           27
+ok                         60
+unlabelled                 60
+Name: user, dtype: int64
+
+######## top users per reason (minutes)
+drop:SLEEPING users 53 top3 {'9759096F': 3714, '83CF687B': 3470, 'CCAF77F0': 3433} top3 share 0.13
+drop:not_carried users 27 top3 {'2C32C23E': 279, '481F4DD2': 155, '9DC38D04': 89} top3 share 0.49
+conflict users 3 top3 {'CF722AA9': 15, '1DBB0F6F': 2, 'A5A30F76': 1} top3 share 1.0
+drop:ON_A_PLANE users 4 top3 {'9759096F': 307, '33A85C34': 194, 'A76A5AF5': 99} top3 share 0.95
+drop:ELEVATOR users 12 top3 {'CF722AA9': 45, '2C32C23E': 35, 'A5A30F76': 35} top3 share 0.57
+unlabelled users 60 top3 {'86A4F379': 6224, '96A358A0': 4032, '78A91A4E': 3681} top3 share 0.2
+
+######## conflicts: moving sets
+moving      platform
+bus+car     iphone       1
+run+walk    android      1
+            iphone      14
+train+walk  android      2
+dtype: int64
+
+######## not_carried by cls x platform
+platform  android  iphone   All
+cls                            
+run            31     115   146
+walk          250     682   932
+All           281     797  1078
+
+######## cap: still ok minutes, resting share, capped per platform
+still ok 181103 resting 78932 capped 62499
+resting   False  True        
+capped    False  False  True 
+platform                     
+android   43224   5928  30435
+iphone    58947  10505  32064
+             n  resting  capped split     plat  share_capped
+user                                                        
+665514DE  6052     5235    5031   dev  android          0.83
+B7F9D634  5196     3949    3638   dev  android          0.70
+1DBB0F6F  5002     3563    3204   dev  android          0.64
+83CF687B  4579     3283    2959   dev   iphone          0.65
+59EEFAE0  4544     3207    2873  test  android          0.63
+61976C24  3598     2925    2757   dev   iphone          0.77
+9DC38D04  5423     3153    2586   dev   iphone          0.48
+481F4DD2  3763     2719    2458  test  android          0.65
+users with >50% of still capped: 19 of 60
+examples: still resting share 0.141 unknown position share 0.62 carried (pocket/hand/bag) 0.248
+still examples by position x platform
+ platform   android  iphone
+position                  
+(none)       29732   40296
+in_bag        1378    3106
+in_hand       2466    7175
+in_pocket     5068    8868
+on_table      4956    9882
+test vs dev still resting share {'dev': 0.138, 'test': 0.16}
+
+######## label composition per class (included_v2)
+car: IN_A_CAR               6082 of 11166
+car: DRIVER                 7889 of 11166
+car: PASSENGER              2051 of 11166
+bus: +PASSENGER              475 of 1793
+walk: FIX_walking          21098 of 21241
+walk: STAIRS                 747 of 21241
+still: SITTING             74029 of 118604
+still: OR_standing         28872 of 118604
+still: LYING_DOWN          15703 of 118604
+train: clean SITTING         338 of 342
+walk via STAIRS only (no FIX_walking): 143
+car via PASSENGER only: 839
+still minutes where a moving class also... n/a (moving wins)
+label_source by class (included_v2)
+ label_source     0     1     2    3     4     5     6
+cls                                                  
+bike          0.00  0.13  0.78  0.0  0.03  0.02  0.03
+bus           0.01  0.22  0.71  0.0  0.01  0.02  0.03
+car           0.01  0.14  0.79  0.0  0.02  0.01  0.04
+run           0.00  0.29  0.65  0.0  0.07  0.00  0.00
+still         0.00  0.09  0.80  0.0  0.03  0.01  0.06
+train         0.00  0.35  0.54  0.0  0.01  0.05  0.06
+walk          0.00  0.11  0.81  0.0  0.02  0.02  0.03
+cleaned ELEVATOR not in orig: 0
+ELEVATOR minutes 200 users 12 would-be cls {'walk': 117, 'still': 83} plat {'iphone': 129, 'android': 71}
+ON_A_PLANE minutes 630 users 4 would-be cls {'still': 630} plat {'iphone': 436, 'android': 194}
+SKATEBOARDING minutes 131 users 3 would-be cls {'still': 59, 'bike': 56, '(none)': 16} plat {'android': 75, 'iphone': 56}
+STATIONARY_BIKE minutes 86 users 2 would-be cls {'bike': 86} plat {'iphone': 62, 'android': 24}
+TREADMILL minutes 164 users 2 would-be cls {'run': 131, 'walk': 33} plat {'iphone': 113, 'android': 51}
+ELLIPTICAL_MACHINE minutes 233 users 2 would-be cls {'still': 197, 'run': 36} plat {'iphone': 233}
+ON_A_BOAT minutes 18 users 1 would-be cls {'still': 18} plat {'iphone': 18}
+WHEELCHAIR minutes 9 users 1 would-be cls {'still': 9} plat {'iphone': 9}
+MOTORBIKE minutes 86 users 1 would-be cls {'car': 86} plat {'android': 86}
+cleaned-only labels for orig STROLLING etc not dropped: STROLLING-> {'walk': 574, 'car': 193, 'still': 39}
+unlabelled by platform {'iphone': 42520, 'android': 27833} with window 66711
+orig labels that might be transport, minutes: {'orig:WASHING_CAR': 0, 'orig:ON_A_BUS': 1794, 'orig:ON_A_TRAIN': 344, 'orig:MOTORBIKE': 86, 'orig:DRIVE_-_I_M_THE_DRIVER': 7975, 'orig:DRIVE_-_I_M_A_PASSENGER': 2526, 'orig:IN_A_CAR': 6083, 'orig:TAKING_CARE_OF_KIDS': 0}
+
+######## units
+unit           g    m/s2
+platform                
+android     1352  137207
+iphone    220681       0
+android g by user {'BEF6C611': 1352}
+raw median |acc| in [1.5, 6] (ambiguous zone): 987 of 377056 | in [2.5, 3.5]: 154
+raw |acc| median quantiles per platform
+           0.001  0.010  0.500  0.990  0.999
+platform                                   
+android    0.31   2.33    9.8  11.32  18.67
+iphone     0.94   0.97    1.0   1.07   1.27
+
+######## rate / edge margin (windows)
+             count  mean  std   min    1%    5%   50%   95%   99%   max
+platform                                                               
+android   138559.0  49.2  2.2  20.1  40.4  42.7  49.9  50.5  50.7  53.4
+iphone    220681.0  33.6  1.2  27.6  30.9  31.4  34.1  34.9  34.9  38.5
+rate < 30 Hz: 440
+margin < 10 samples (0.4 s, inside FIR edge): platform  android  iphone
+margin                   
+False      137554  220681
+True         1005       0
+examples with margin<10 by cls {'still': 180, 'car': 90, 'walk': 24, 'bike': 12, 'run': 1, 'train': 1}
+discarded seconds per window (span-15):               count  mean  std  min  25%  50%  75%   max
+platform                                               
+android   138559.0   1.3  0.9 -0.0  0.9  1.0  1.1  24.8
+iphone    220681.0   8.8  0.9  5.7  8.1  8.4  9.2  13.9
+
+######## cleaning & 15s per class x platform (included_v2), and all minutes
+platform            android                                    iphone                                    
+cls                    bike  bus   car  run  still train  walk   bike  bus   car  run  still train   walk
+acc_status                                                                                               
+hole_over_0.5s           31    6    57    2    601     3   104      5    4    17    0    115     0     25
+no_file                   0    0     0    0      8     0     1      0    0     0    0      0     0      0
+ok                     1782  785  2786  439  43600   149  8508   2594  841  7548  269  69327    93  10960
+span_over_40s             3    0     1    0     37     5     0      0    0     3    0     10     0      3
+time_not_increasing       6    6    40    3    344     1   162      0    0     0    0      0     0      0
+under_15s               457  151   714   49   4562    91  1478      0    0     0    0      0     0      0
+platform             android  iphone     All
+acc_status                                  
+hole_over_0.5s          1710     236    1946
+no_file                  282       8     290
+ok                    138559  220681  359240
+span_over_40s             66      36     102
+time_not_increasing     1187       0    1187
+under_15s              14581       0   14581
+All                   156385  220961  377346
+time_not_increasing users 17 top3 {'481F4DD2': 234, 'BEF6C611': 217, '99B204C0': 160}
+hole_over_0.5s users 52 top3 {'BEF6C611': 357, '481F4DD2': 301, '99B204C0': 173}
+span_over_40s users 25 top3 {'81536B0A': 17, 'C48CE857': 17, 'F50235E0': 17}
+no_file users 24 top3 {'CCAF77F0': 77, '81536B0A': 64, '74B86067': 31}
+15 s loss by split x cls cls    bike  bus  car  run  still  train  walk
+split                                         
+dev     457   88  714   49   4233     91  1452
+test      0   63    0    0    329      0    26
+unlabelled minutes lost to 15s 2696
+
+######## splits
+cls    still   walk  run  bike   car   bus  train
+split                                            
+dev    94148  15862  585  3477  8432  1357    173
+test   18779   3606  123   899  1902   269     69 
+ cls    still   walk    run   bike    car    bus  train
+split                                                 
+dev    0.834  0.815  0.826  0.795  0.816  0.835  0.715
+test   0.166  0.185  0.174  0.205  0.184  0.165  0.285
+test users with >=5 examples per class: {'still': 12, 'walk': 11, 'run': 2, 'bike': 4, 'car': 10, 'bus': 5, 'train': 1}
+dev users with >=5 per class: {'still': 48, 'walk': 47, 'run': 11, 'bike': 17, 'car': 38, 'bus': 21, 'train': 4}
+platform users per split split
+dev     {'iphone': 27, 'android': 21}
+test      {'iphone': 7, 'android': 5}
+dtype: object
+examples per split x platform platform  android  iphone
+split                    
+dev         49438   74596
+test         8611   17036
+gyro-less users' examples cls       bike  bus  car  run  still  walk
+user                                      
+61359772   227   60    0    0   2682   231
+CCAF77F0     0    0   28    0   1254    20
+F50235E0    19   13   12    5    847    44 {'61359772-D8D8-480D-B623-7C636EAD0C81': 1, 'CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F': 3, 'F50235E0-DD67-4F2A-B00B-1F31ADA998B9': 2}
+high-rate users in test: ['96A358A0']
+pick-time counts (es_users.csv in 02 audit?) ['uuid', 'platform', 'partition', 'fold']
+pick-time test share {'still': 0.208, 'walk': 0.184, 'run': 0.177, 'bike': 0.195, 'car': 0.176, 'bus': 0.199, 'train': 0.202}
+pick-time total {'still': 249171, 'walk': 21430, 'run': 896, 'bike': 4599, 'car': 10882, 'bus': 1699, 'train': 342}
+
+######## GPS ES
+has_location by cls x platform
+ platform  android  iphone
+cls                      
+still       0.676   0.924
+walk        0.564   0.959
+run         0.679   1.000
+bike        0.850   0.995
+car         0.663   0.958
+bus         0.586   0.961
+train       0.799   1.000
+by split {'dev': 0.804, 'test': 0.95}
+speed -1 by cls x platform
+ platform  android  iphone
+cls                      
+still       0.914   0.669
+walk        0.614   0.351
+run         0.581   0.398
+bike        0.166   0.114
+car         0.153   0.090
+bus         0.367   0.103
+train       0.429   0.086
+accuracy p50 by platform {'android': 12.667, 'iphone': 10.0}
+min_speed available but max_speed NaN: 0
+max_speed > 60 m/s: 1 > 45: 3
+ES sessions {'count': 8729.0, 'mean': 43.2, 'std': 235.1, 'min': 1.0, '25%': 1.0, '50%': 4.0, '75%': 16.0, 'max': 7875.0}
+missing reason by cls
+ location_missing_reason  no_updates  present  withheld
+cls                                                   
+(none)                        18990    51378         1
+bike                            305     4715         0
+bus                             409     1385         0
+car                            1343     9909         0
+run                             147      943         0
+still                         45642   219512         0
+train                            30      314         0
+walk                           4732    17591         0
+
+######## SHL
+shl_user1 acc_status    edge  nan_gap     ok    All
+label_status                             
+edge           118        0      0    118
+mixed            0        0    694    694
+null             0       24  13032  13056
+ok               0        1  23099  23100
+All            118       25  36825  36968
+ mixed majority cls {'null': 349, 'walk': 86, 'still': 59, 'bike': 56, 'bus': 41, 'subway': 32, 'car': 29, 'train': 28, 'run': 14} majority_share p50 0.71
+ mixed with majority >= 0.8: 219
+ waiis fixes 80892 blanked 18551 speed -1 natural 987 | per-minute 23645 blanked 5340
+ examples with per-minute fix by cls {'bike': 0.993, 'bus': 0.897, 'car': 0.832, 'run': 0.998, 'still': 0.394, 'subway': 0.306, 'train': 0.49, 'walk': 0.859}
+shl_user23 acc_status    edge  nan_gap    ok   All
+label_status                           
+edge             7        0     0     7
+mixed            0        0    65    65
+null             0        2   584   586
+ok               0        0  2366  2366
+All              7        2  3015  3024
+ mixed majority cls {'null': 31, 'walk': 13, 'still': 8, 'bus': 3, 'subway': 3, 'train': 3, 'car': 3, 'run': 1} majority_share p50 0.81
+ mixed with majority >= 0.8: 38
+ waiis fixes 5550 blanked 1295 speed -1 natural 64 | per-minute 1749 blanked 395
+ examples with per-minute fix by cls {'bike': 0.899, 'bus': 0.8, 'car': 0.917, 'run': 1.0, 'still': 0.464, 'subway': 0.134, 'train': 0.381, 'walk': 0.86}
+SHL user1 duplicates removed (3 days, hips) - see 02 audit
+    user     day        session     rec      timemsmin  hips_motion_bytes hips_motion_head_sha1  label_bytes
+0  User1  220617          User1  220617  1498120298406         1089418936          2286b47a1be2    134769745
+1  User1  220617  User1_4phones  220617  1498120298406         1089418936          2286b47a1be2    134769745
+2  User1  260617          User1  260617  1498469934125          912687056          b9065977b448    113958113
+3  User1  260617  User1_4phones  260617  1498469934125          912687056          b9065977b448    113958113
+4  User1  270617          User1  270617  1498554207904          788658306          6d529ed886a1    100307596
