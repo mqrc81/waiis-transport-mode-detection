@@ -1,7 +1,7 @@
 {
- "version": "es_bench_v3",
- "built": "2026-10-28",
- "git_commit": "aef0a4cf97f036064490fc1b01bc4ea81bb906b4",
+ "version": "waiis_bench_v1",
+ "built": "2026-10-29",
+ "git_commit": "35257b486cbbd20a8cbf778f8474ba5eb17c09cf",
  "git_dirty": false,
  "builder": "experiments/04_frozen-benchmark_es-shl/build.py",
  "params": {
@@ -13,9 +13,17 @@
   "still_cap": 0.2,
   "acc_plausible_median_ms2": [
    7.0,
-   13.0
+   20.0
   ],
   "quiet_std_ms2": 0.03,
+  "label_quiet_classes": [
+   "walk",
+   "run",
+   "bike"
+  ],
+  "excluded_users": {
+   "BEF6C611-50DA-4971-A040-87FB979F3FC1": "inconsistent accelerometer processing"
+  },
   "hole_max_s": 0.5,
   "hole_policy": "longest clean stretch",
   "session_gap_s": 120,
@@ -49,8 +57,8 @@
  },
  "files": {
   "extrasensory/accelerometer.parquet": {
-   "sha256": "04f23672d423c5e655060b12c0a808b5ec2a8b915464bdc78135bed3558e08ed",
-   "bytes": 1486312637,
+   "sha256": "85d8e15531bc5f7f38c706a3a17616a5b7554b2c9ffe46669d4edae51bf7979e",
+   "bytes": 1486312328,
    "rows": 360064
   },
   "extrasensory/gps_per_minute.parquet": {
@@ -59,8 +67,8 @@
    "rows": 305747
   },
   "extrasensory/labels.parquet": {
-   "sha256": "b0e8a716063d54935190bcca8744f4a3b0b858e00a9eb5d89e6281ca90abca15",
-   "bytes": 5518687,
+   "sha256": "a9f385155d698b98dcd5b246c8897ac85d1a44f09cfb03dbfe60998234388552",
+   "bytes": 5544261,
    "rows": 377346
   },
   "extrasensory/location_features.parquet": {
@@ -79,13 +87,13 @@
    "rows": 376952
   },
   "shl_user1/accelerometer.parquet": {
-   "sha256": "27ea77b8644ed161947468f434aefd99f11fcdb14d2636ce9d995f2428077ea3",
-   "bytes": 236304002,
+   "sha256": "c54a21cc690bc43fcf0ad006326878b1a1b600c0a715c2e6cfdf85470e239e61",
+   "bytes": 236303109,
    "rows": 36825
   },
   "shl_user1/accelerometer_other_positions.parquet": {
-   "sha256": "30c056a85e0040190c8ef141dc851ca032956366a70f848ca778d38c948051e2",
-   "bytes": 36395492,
+   "sha256": "5f2725e2a9229e6e73d133658cb4dcfb023b4db7d185ba650e239139baaa3c33",
+   "bytes": 36395477,
    "rows": 5964
   },
   "shl_user1/gps_1hz.parquet": {
@@ -109,8 +117,8 @@
    "rows": 80892
   },
   "shl_user1/labels.parquet": {
-   "sha256": "acf41e9c4d692a9b7626dc41cadbb9823407068371d7d0fbbf3f8b9d9e4dc30e",
-   "bytes": 770889,
+   "sha256": "5cc4650ff7551620e7283c8c242e238fb092f66c6b6aa0d959fcadc4e716a2d8",
+   "bytes": 774060,
    "rows": 36968
   },
   "shl_user1/sessions.parquet": {
@@ -149,8 +157,8 @@
    "rows": 5550
   },
   "shl_user23/labels.parquet": {
-   "sha256": "68cf041b5058fabb9433ed6833fd28a3b29e0114254677dbec524950b1d5d90a",
-   "bytes": 66674,
+   "sha256": "cce2894ee0540bc4a70964cd48766c2b9e95dcf23ec59b8be8ce12fb92cb19aa",
+   "bytes": 68409,
    "rows": 3024
   },
   "shl_user23/sessions.parquet": {

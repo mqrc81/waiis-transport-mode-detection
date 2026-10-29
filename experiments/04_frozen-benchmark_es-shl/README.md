@@ -136,7 +136,8 @@ Per user, per position and per fold: `results/tables/` (`es_class_counts.csv`, `
 
 ### Verification and rebuilding
 
-- `tmd.bench.verify()` compares every file with `manifest.json`.
+- **Reference:** `results/manifests/waiis_bench_v1.json`, a committed copy of the build's `manifest.json`.
+  `tmd.bench.verify()` checks every data file on disk (missing, extra, sha256) and the on-disk manifest against it.
 - To rebuild from the build commit in a clean worktree (data root = the worktree's parent's `data/`, or `$TMD_DATA`):
 
   ```
@@ -145,7 +146,7 @@ Per user, per position and per fold: `results/tables/` (`es_class_counts.csv`, `
   ```
 
 - **Rebuild check (2026-10-29):** the full rebuild from `35257b4` in a separate worktree gave 23 data files whose
-  sha256 and row counts all equal the development build's manifest (in `results/manifests/`), with
+  sha256 and row counts all equal the manifest of the build at commit `cf1085c` (in `results/manifests/`), with
   identical build parameters. Only `manifest.json` itself differs (version, commit, date). The count tables in
   `results/tables/` are identical too.
 - `waiis_bench_v1` is the only benchmark on disk.

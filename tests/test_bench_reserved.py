@@ -65,3 +65,11 @@ def test_excluded_users_never_official_or_pretraining():
     assert not set(bench.examples("extrasensory").user) & set(EXCLUDED_USERS)
     assert not set(bench.pretraining_minutes("extrasensory").user) & set(EXCLUDED_USERS)
     assert not set(bench.unlabelled_minutes("extrasensory").user) & set(EXCLUDED_USERS)
+
+
+def test_on_disk_manifest_equals_committed_reference():
+    try:
+        bench.path("extrasensory", "labels")
+    except FileNotFoundError:
+        pytest.skip(f"{bench.VERSION} is not built on this machine")
+    assert bench.manifest() == bench.reference_manifest()

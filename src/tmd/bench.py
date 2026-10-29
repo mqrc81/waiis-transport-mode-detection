@@ -148,6 +148,13 @@ def manifest(version: str = VERSION) -> dict:
     return json.loads((root(version) / "manifest.json").read_text())
 
 
+def reference_manifest(version: str = VERSION) -> dict:
+    """The committed copy of the manifest: the reference for verifying the data on disk."""
+    from tmd.paths import PROJECT
+    return json.loads((PROJECT / "experiments" / "04_frozen-benchmark_es-shl" / "results" / "manifests"
+                       / f"{version}.json").read_text())
+
+
 def sha256(p) -> str:
     h = hashlib.sha256()
     with open(p, "rb") as f:
@@ -157,5 +164,12 @@ def sha256(p) -> str:
 
 
 def verify(version: str = VERSION) -> list[str]:
-    """Files whose sha256 differs from the manifest (empty list = intact)."""
-    return [f for f, m in manifest(version)["files"].items() if sha256(root(version) / f) != m["sha256"]]
+    """Problems against the committed reference manifest (empty list = intact): data files that are missing, extra
+    or have another sha256, and an on-disk manifest.json that differs from the reference."""
+    ref = reference_manifest(version)["files"]
+    on_disk = {str(p.relative_to(root(version))) for p in root(version).rglob("*.parquet")}
+    bad = [f"missing: {f}" for f in sorted(set(ref) - on_disk)] + [f"extra: {f}" for f in sorted(on_disk - set(ref))]
+    bad += [f for f in sorted(set(ref) & on_disk) if sha256(root(version) / f) != ref[f]["sha256"]]
+    if manifest(version) != reference_manifest(version):
+        bad.append("manifest.json differs from the committed reference")
+    return bad
