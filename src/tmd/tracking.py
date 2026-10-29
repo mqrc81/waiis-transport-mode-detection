@@ -121,6 +121,15 @@ def check_inputs(datasets: list[DataInput]) -> None:
             raise ValueError(f"unknown dataset or context: {d}")
 
 
+# Run outputs that scripts write into the repo while running; they don't make a run's code differ from its commit.
+DIRTY_IGNORE = (":(exclude,glob)experiments/*/logs/**",)
+
+
+def is_dirty() -> bool:
+    """Uncommitted changes in the repo, ignoring the experiments' log folders (DIRTY_IGNORE; since experiment 05)."""
+    return bool(_git("status", "--porcelain", "--", ".", *DIRTY_IGNORE))
+
+
 @contextmanager
 def run(experiment: str, params: dict, run_name: str | None = None, *, datasets: list[DataInput]):
     """Start a run tagged with the git commit and whether the tree was dirty, with its dataset inputs.
@@ -138,7 +147,7 @@ def run(experiment: str, params: dict, run_name: str | None = None, *, datasets:
     with mlflow.start_run(run_name=run_name) as active:
         mlflow.set_tags({
             "git_commit": _git("rev-parse", "--short", "HEAD") or "none",
-            "dirty": str(bool(_git("status", "--porcelain"))).lower(),
+            "dirty": str(is_dirty()).lower(),
         })
         mlflow.log_params({p: v for p, v in params.items() if p != "k_per_class"})   # metric only (export columns)
         if k_num is not None:
