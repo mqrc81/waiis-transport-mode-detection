@@ -49,8 +49,6 @@ in MLflow.
 
 ## 2026-10-25: The model runs on an edge server, not on the phone
 
-**Draft — not approved**
-
 **Decision.**
 - The phone only records and uploads; the transport-mode model runs on an edge server.
 - Model size is not a hard limit; it is only reported.
@@ -59,7 +57,7 @@ in MLflow.
 **Why.** The WAIIS app only records and uploads the sensor data, so the model doesn't have to fit on the phone. The
 earlier 2 MB on-phone ceiling no longer applies.
 
-**Evidence.** Marc, 2026-10-25. `CLAUDE.md` (Project, Evaluation conventions). Experiment 02's LightGBM (6.5 MB on
+**Evidence.** 2026-10-25. `CLAUDE.md` (Project, Evaluation conventions). Experiment 02's LightGBM (6.5 MB on
 average) was over the old ceiling (`experiments/02_family-baseline_shl-es/README.md`, step 2).
 
 ## 2026-10-28: Accelerometer only; final test on the 12 ExtraSensory test users
@@ -110,8 +108,6 @@ tested across seeds).
 
 ## 2026-10-28: GPS is part of the model
 
-**Draft — not approved**
-
 **Decision.**
 - GPS features, including OpenStreetMap way types, are part of the model: an accelerometer model fused with a
   GPS-feature model.
@@ -129,8 +125,6 @@ tested across seeds).
 
 ## 2026-10-28: No pre-trained LIMU-BERT or LIMU-BERT-X weights
 
-**Draft — not approved**
-
 **Decision.**
 - The public LIMU-BERT and LIMU-BERT-X weights are not used.
 - If LIMU-BERT is used, it is pre-trained from scratch with `feature_num = 3` (accelerometer only) on unlabelled
@@ -146,8 +140,6 @@ tested across seeds).
 
 ## 2026-10-28: Labelling is on demand
 
-**Draft — not approved**
-
 **Decision.**
 - The model is trained on the labelled data, then predicts new trips in batches, with smoothing.
 - The least certain segments go to the labelling tool, and the model is retrained.
@@ -157,5 +149,5 @@ tested across seeds).
 **Why.** Labels are expensive and unlabelled data is plentiful, so labelling effort goes where the model is least
 certain. Human labels on the test set keep the evaluation independent of the model's own predictions.
 
-**Evidence.** Marc, 2026-10-28. Batch prediction with whole-sequence smoothing: entry 2026-10-28 "Accelerometer
+**Evidence.** 2026-10-28. Batch prediction with whole-sequence smoothing: entry 2026-10-28 "Accelerometer
 only".
