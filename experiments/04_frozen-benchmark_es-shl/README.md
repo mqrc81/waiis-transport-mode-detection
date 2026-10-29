@@ -169,23 +169,148 @@ Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were 
 
 ## Conclusion
 
-**`waiis_bench_v1`** is the frozen benchmark that every transport-mode model in this project reads (`tmd.bench`).
-- **Build:** commit `e51ea79`, `<data>/processed/waiis_bench_v1/`, 23 files, 4.8 GB.
-- **Verified:** a full rebuild from that commit in a clean worktree gave the same sha256 for every data file
-  (2026-10-29). It is the only benchmark on disk.
-- **ExtraSensory:** 145,380 official examples (59 users, accelerometer only, 15 s windows at 25 Hz, labels v2),
-  split into 5 dev folds (118,986) and 12 reserved test users (26,394).
-- **SHL hips:** User 1 is an optional training source (23,076 examples, including all metro); Users 2–3 are the
-  rail check (2,365).
-- **GPS:** per minute for ExtraSensory; two cadences for SHL.
+*Approved by the supervisor, 2026-10-29 (relayed by Marc).*
 
-**Known limitations.**
-- **Thin classes:** ExtraSensory has train from only 5 users (2 in test, Android only, 52 examples) and run from 22
-  (4 in test, 81 examples). Per-class test results need user-bootstrap intervals.
+**The deliverable is `waiis_bench_v1`**: the prepared files, the split, the counts and location coverage below.
+Every decision taken is in [`decision_register.md`](decision_register.md); the numbers behind it are in
+`results/tables/decision_details.csv`.
+
+### Prepared files
+
+- **Location:** `<data>/processed/waiis_bench_v1/`, 23 Parquet files, 4.8 GB.
+- **Build:** from commit `e51ea79` with one command (`build.py`). A full rebuild reproduces every data file's
+  sha256.
+- **Reference:** `results/manifests/waiis_bench_v1.json`, a committed copy of the manifest. `tmd.bench.verify()`
+  checks the files on disk against it.
+- **Reading:** `tmd.bench.examples(source)` returns the official example set (the `official` column). The other
+  tables are listed under Results → Contents.
+
+| source | official examples | role |
+|---|---|---|
+| `extrasensory` | 145,380 (59 users) | main benchmark: 5 dev folds + 12 reserved test users |
+| `shl_user1` | 23,076 | optional training source (all metro, most train) |
+| `shl_user23` | 2,365 | rail check, evaluation only |
+
+### Split
+
+| split | file | `tracking.SPLITS` name |
+|---|---|---|
+| test users: 12 ExtraSensory users, SHL Users 2–3 | `splits/reserved_test_v2.json` (project root) | `extrasensory_test_v2`, `shl_user23_test_v2` |
+| ExtraSensory dev: 5 folds by user | `splits/es_users_v2.csv` (here) | `extrasensory_dev_v2` |
+| SHL User 1 dev: 5 folds of whole days | `splits/shl_days.csv` (here) | `shl_user1_dev` |
+
+How the test users were picked: `splits/README.md`.
+
+### Counts per class (official examples)
+
+| ExtraSensory | still | walk | run | bike | car | bus | train | all |
+|---|---|---|---|---|---|---|---|---|
+| dev, iPhone | 56,390 | 8,257 | 69 | 1,654 | 6,197 | 798 | 93 | 73,458 |
+| dev, Android | 36,340 | 4,852 | 394 | 1,464 | 1,831 | 550 | 97 | 45,528 |
+| test, iPhone | 13,041 | 1,372 | 38 | 646 | 1,365 | 47 | 0 | 16,509 |
+| test, Android | 6,245 | 2,310 | 43 | 230 | 765 | 240 | 52 | 9,885 |
+| **all** | **112,016** | **16,791** | **544** | **3,994** | **10,158** | **1,635** | **242** | **145,380** |
+| users with examples | 59 | 58 | 22 | 23 | 48 | 28 | 5 | |
+
+| SHL | still | walk | run | bike | car | bus | train | subway | all |
+|---|---|---|---|---|---|---|---|---|---|
+| User 1 | 3,366 | 3,011 | 1,030 | 2,842 | 4,058 | 3,028 | 3,353 | 2,388 | 23,076 |
+| User 2 | 197 | 240 | 14 | 136 | 255 | 68 | 133 | 174 | 1,217 |
+| User 3 | 290 | 187 | 31 | 63 | 84 | 82 | 227 | 184 | 1,148 |
+
+### Counts per user (ExtraSensory, official examples)
+
+"With location" is the share of the user's examples that have a GPS fix. BEF6C611 is excluded for inconsistent
+accelerometer processing (`decision_register.md`, X8).
+
+| user | platform | split | still | walk | run | bike | car | bus | train | all | with location |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 481F4DD2 | Android | dev 0 | 1,239 | 779 | 0 | 0 | 16 | 41 | 0 | 2,075 | 71% |
+| 59EEFAE0 | Android | dev 0 | 1,640 | 520 | 0 | 0 | 149 | 120 | 0 | 2,429 | 97% |
+| 797D145F | Android | dev 0 | 2,157 | 397 | 283 | 2 | 0 | 0 | 0 | 2,839 | 90% |
+| F50235E0 | Android | dev 0 | 867 | 45 | 5 | 19 | 13 | 13 | 0 | 962 | 91% |
+| 1538C99F | iPhone | dev 0 | 3,478 | 416 | 0 | 0 | 0 | 0 | 0 | 3,894 | 96% |
+| 3600D531 | iPhone | dev 0 | 1,007 | 127 | 0 | 0 | 410 | 0 | 69 | 1,613 | 93% |
+| 78A91A4E | iPhone | dev 0 | 4,905 | 175 | 0 | 120 | 528 | 0 | 0 | 5,728 | 100% |
+| 9759096F | iPhone | dev 0 | 3,089 | 184 | 0 | 109 | 157 | 0 | 0 | 3,539 | 100% |
+| BE3CA5A6 | iPhone | dev 0 | 5,363 | 246 | 0 | 92 | 158 | 0 | 0 | 5,859 | 52% |
+| 1155FF54 | Android | dev 1 | 471 | 154 | 1 | 0 | 55 | 42 | 0 | 723 | 99% |
+| 61359772 | Android | dev 1 | 2,682 | 140 | 0 | 199 | 0 | 60 | 0 | 3,081 | 0% |
+| 74B86067 | Android | dev 1 | 2,216 | 15 | 88 | 692 | 80 | 0 | 0 | 3,091 | 100% |
+| 806289BC | Android | dev 1 | 3,276 | 428 | 1 | 0 | 94 | 61 | 0 | 3,860 | 99% |
+| 00EABED2 | iPhone | dev 1 | 361 | 122 | 0 | 0 | 0 | 49 | 0 | 532 | 100% |
+| 2C32C23E | iPhone | dev 1 | 1,217 | 300 | 0 | 1 | 1,011 | 0 | 0 | 2,529 | 79% |
+| 61976C24 | iPhone | dev 1 | 840 | 313 | 1 | 0 | 298 | 0 | 0 | 1,452 | 80% |
+| B9724848 | iPhone | dev 1 | 3,819 | 537 | 13 | 0 | 217 | 65 | 0 | 4,651 | 100% |
+| CDA3BBF7 | iPhone | dev 1 | 1,418 | 76 | 0 | 0 | 48 | 0 | 0 | 1,542 | 0% |
+| CF722AA9 | iPhone | dev 1 | 573 | 320 | 0 | 0 | 4 | 0 | 0 | 897 | 100% |
+| 59818CD2 | Android | dev 2 | 2,052 | 226 | 8 | 335 | 76 | 2 | 0 | 2,699 | 55% |
+| 86A4F379 | Android | dev 2 | 1,838 | 76 | 0 | 0 | 531 | 0 | 0 | 2,445 | 58% |
+| A5A30F76 | Android | dev 2 | 753 | 82 | 3 | 0 | 143 | 0 | 0 | 981 | 90% |
+| B7F9D634 | Android | dev 2 | 1,556 | 244 | 2 | 0 | 239 | 35 | 97 | 2,173 | 100% |
+| 0A986513 | iPhone | dev 2 | 2,462 | 189 | 6 | 0 | 0 | 0 | 0 | 2,657 | 95% |
+| 11B5EC4D | iPhone | dev 2 | 677 | 158 | 0 | 0 | 432 | 0 | 0 | 1,267 | 100% |
+| 136562B6 | iPhone | dev 2 | 3,960 | 742 | 0 | 0 | 165 | 0 | 0 | 4,867 | 100% |
+| 83CF687B | iPhone | dev 2 | 1,620 | 483 | 0 | 0 | 13 | 170 | 0 | 2,286 | 98% |
+| E65577C1 | iPhone | dev 2 | 1,088 | 75 | 0 | 265 | 45 | 0 | 0 | 1,473 | 100% |
+| FDAA70A1 | iPhone | dev 2 | 1,077 | 223 | 0 | 0 | 147 | 0 | 0 | 1,447 | 100% |
+| 40E170A7 | Android | dev 3 | 6,085 | 112 | 3 | 0 | 0 | 43 | 0 | 6,243 | 85% |
+| 4E98F91F | Android | dev 3 | 1,118 | 16 | 0 | 0 | 57 | 37 | 0 | 1,228 | 0% |
+| 81536B0A | Android | dev 3 | 1,058 | 12 | 0 | 99 | 130 | 0 | 0 | 1,299 | 97% |
+| 99B204C0 | Android | dev 3 | 1,378 | 372 | 0 | 118 | 178 | 42 | 0 | 2,088 | 96% |
+| 4FC32141 | iPhone | dev 3 | 1,711 | 255 | 10 | 409 | 115 | 0 | 0 | 2,500 | 100% |
+| 5152A2DF | iPhone | dev 3 | 2,172 | 275 | 0 | 115 | 0 | 0 | 0 | 2,562 | 100% |
+| 7CE37510 | iPhone | dev 3 | 2,685 | 600 | 2 | 0 | 302 | 95 | 0 | 3,684 | 100% |
+| A76A5AF5 | iPhone | dev 3 | 2,552 | 707 | 8 | 0 | 265 | 16 | 24 | 3,572 | 100% |
+| C48CE857 | iPhone | dev 3 | 988 | 199 | 0 | 0 | 78 | 46 | 0 | 1,311 | 100% |
+| CA820D43 | iPhone | dev 3 | 2,715 | 333 | 0 | 27 | 280 | 0 | 0 | 3,355 | 100% |
+| 0E6184E1 | Android | dev 4 | 4,533 | 1,214 | 0 | 0 | 42 | 54 | 0 | 5,843 | 1% |
+| 96A358A0 | Android | dev 4 | 167 | 2 | 0 | 0 | 0 | 0 | 0 | 169 | 50% |
+| BEF6C611 | android | dev 4 | – | – | – | – | – | – | – | 0 (excluded) | – |
+| CCAF77F0 | Android | dev 4 | 1,254 | 18 | 0 | 0 | 28 | 0 | 0 | 1,300 | 100% |
+| 5119D0F8 | iPhone | dev 4 | 1,816 | 357 | 28 | 0 | 537 | 307 | 0 | 3,045 | 100% |
+| 5EF64122 | iPhone | dev 4 | 361 | 93 | 0 | 0 | 263 | 0 | 0 | 717 | 87% |
+| 7D9BB102 | iPhone | dev 4 | 85 | 57 | 0 | 0 | 0 | 0 | 0 | 142 | 11% |
+| 9DC38D04 | iPhone | dev 4 | 2,835 | 446 | 0 | 456 | 291 | 26 | 0 | 4,054 | 100% |
+| D7D20E2E | iPhone | dev 4 | 1,516 | 249 | 1 | 60 | 433 | 24 | 0 | 2,283 | 97% |
+| 0BFC35E2 | Android | test | 1,349 | 308 | 34 | 106 | 113 | 9 | 0 | 1,919 | 73% |
+| 1DBB0F6F | Android | test | 681 | 66 | 1 | 0 | 0 | 5 | 15 | 768 | 87% |
+| 27E04243 | Android | test | 506 | 0 | 0 | 0 | 0 | 1 | 0 | 507 | 29% |
+| 33A85C34 | Android | test | 1,777 | 437 | 0 | 124 | 209 | 0 | 37 | 2,584 | 93% |
+| 665514DE | Android | test | 1,016 | 1,056 | 8 | 0 | 20 | 139 | 0 | 2,239 | 49% |
+| A7599A50 | Android | test | 916 | 443 | 0 | 0 | 423 | 86 | 0 | 1,868 | 21% |
+| 098A72A5 | iPhone | test | 3,046 | 187 | 32 | 114 | 142 | 0 | 0 | 3,521 | 100% |
+| 24E40C4C | iPhone | test | 1,897 | 373 | 0 | 56 | 420 | 30 | 0 | 2,776 | 100% |
+| 8023FE1A | iPhone | test | 4,570 | 236 | 0 | 354 | 336 | 0 | 0 | 5,496 | 100% |
+| A5CDF89D | iPhone | test | 2,138 | 189 | 0 | 0 | 169 | 0 | 0 | 2,496 | 100% |
+| B09E373F | iPhone | test | 1,137 | 249 | 6 | 122 | 263 | 0 | 0 | 1,777 | 100% |
+| ECECC2AB | iPhone | test | 253 | 138 | 0 | 0 | 35 | 17 | 0 | 443 | 100% |
+
+### Location coverage (official examples with a fix)
+
+| ExtraSensory | still | walk | run | bike | car | bus | train | all |
+|---|---|---|---|---|---|---|---|---|
+| iPhone | 92% | 97% | 100% | 99% | 96% | 96% | 100% | 93% |
+| Android | 68% | 58% | 68% | 86% | 65% | 59% | 80% | 67% |
+
+| ExtraSensory | iPhone | Android | all |
+|---|---|---|---|
+| dev | 92% | 68% | 83% |
+| test | 100% | 62% | 86% |
+
+| SHL (one fix per minute) | still | walk | run | bike | car | bus | train | subway | all |
+|---|---|---|---|---|---|---|---|---|---|
+| User 1 | 39% | 86% | 100% | 99% | 83% | 90% | 49% | 31% | 70% |
+| Users 2–3 | 46% | 86% | 100% | 90% | 92% | 80% | 38% | 13% | 61% |
+
+Missing location is mainly a platform effect in ExtraSensory, and a still / rail effect in SHL (indoors,
+underground).
+
+### Known limitations
+
+- **Thin classes:** ExtraSensory train comes from only 5 users (2 in test, Android only, 52 examples), run from 22
+  (4 in test, 81 examples). Per-class test results are reported with user-bootstrap intervals.
 - **The test set isn't untouched:** 11 of its 12 users were dev users in experiment 02.
-- **GPS is sparser than production and has shortcuts:** ExtraSensory has one fix per minute. Missing location
-  depends on platform (and in SHL on rail class), and missing speed signals "slow" in both datasets.
-- **The WAIIS conditions the benchmark imitates are assumed, not measured:** recording schedule, units, cadence
-  trigger and per-mode missing rates.
-
-The full list, with numbers and risks, is in [`decision_register.md`](decision_register.md).
+- **GPS is sparser than production and has shortcuts:** ExtraSensory has one fix per minute, and missing speed
+  signals "slow" in both datasets.
+- **The WAIIS conditions are assumed, not measured** (open questions in the register).
