@@ -31,7 +31,7 @@ def main():
     logging.basicConfig(filename=pl.HERE / "logs" / "rescore.log", filemode="w", level=logging.INFO,
                         format="%(asctime)s %(message)s")
     mlflow.set_tracking_uri(TRACKING_URI)
-    orig = mlflow.search_runs(experiment_names=[pl.EXP], filter_string="tags.dirty = 'true'")
+    orig = mlflow.search_runs(experiment_names=[pl.EXP], filter_string="tags.git_commit = '5852704'")
     df = pl.load(pl.Cfg("keys"))
     oof = {}
     for row in ROWS:
