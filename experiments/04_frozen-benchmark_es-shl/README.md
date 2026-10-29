@@ -138,6 +138,15 @@ All current splits (also listed in `splits/README.md` at the project root):
   examples, Android only) and run (4 users, 81 examples) are tiny.
 - SHL Users 2–3 are reported separately, as the rail check.
 
+### Cross-validation rule (all future experiments)
+
+- **ExtraSensory cross-validation metrics are computed on the pooled out-of-fold predictions:** macro-F1 and
+  per-class recall over all 5 dev folds at once, with a user-bootstrap 95% CI (`tmd.evaluate.bootstrap_users`,
+  `bootstrap_users_recall`). They are not a mean of per-fold scores.
+- **Per-fold scores are reported only as spread**, e.g. min–max over folds.
+- **Why:** the folds differ in size (17,553–28,938 examples). Folds 1 and 4 have no train, so a per-fold macro-F1
+  there is computed over a different set of classes.
+
 ### Verification and rebuilding
 
 - **Reference:** `results/manifests/waiis_bench_v1.json`, a committed copy of the build's `manifest.json`.

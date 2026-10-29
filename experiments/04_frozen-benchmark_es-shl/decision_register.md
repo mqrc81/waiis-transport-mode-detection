@@ -62,7 +62,7 @@ built at commit `e51ea79`.
 | X5 | Drop minutes with two moving classes | contradictory labels | −18 min | yes (`reason`) | – |
 | X6 | Motorbike kept as a labelled check, never trained | one user only | 86 min | yes (`motorbike`) | b: relevance to WAIIS unknown |
 | X7 | Drop plane, boat, elevator, treadmill, skateboard and similar | not one of our classes | −1,471 min | yes (`reason`) | b: production will contain these |
-| X8 | Exclude user BEF6C611 entirely | inconsistent accelerometer processing | −1,835 min | yes (`user_excluded`) | – |
+| X8 | Exclude user BEF6C611 (Android, dev fold 4) entirely | inconsistent accelerometer processing | −1,835 min | yes (`user_excluded`) | – |
 
 ## Splits
 
