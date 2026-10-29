@@ -1,7 +1,7 @@
 {
  "version": "waiis_bench_v1",
  "built": "2026-10-29",
- "git_commit": "35257b486cbbd20a8cbf778f8474ba5eb17c09cf",
+ "git_commit": "e51ea796abedefa9df79ea1e67d78fc406c5f662",
  "git_dirty": false,
  "builder": "experiments/04_frozen-benchmark_es-shl/build.py",
  "params": {
@@ -47,7 +47,7 @@
   "speed_half_window_s": 1.5,
   "cadence_half_window_s": 5.0,
   "es_splits": "experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
-  "shl_splits": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",
+  "shl_splits": "experiments/04_frozen-benchmark_es-shl/splits/shl_days.csv",
   "reserved_test": "splits/reserved_test_v2.json"
  },
  "versions": {

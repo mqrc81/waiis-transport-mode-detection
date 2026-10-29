@@ -1,7 +1,7 @@
 # Decision register: `waiis_bench_v1`
 
 `waiis_bench_v1` is the frozen ExtraSensory + SHL transport-mode benchmark (accelerometer at 25 Hz, labels, GPS),
-built at commit `35257b4`.
+built at commit `e51ea79`.
 
 - Full numbers per class, user and platform, code locations and commits:
   [`results/tables/decision_details.csv`](results/tables/decision_details.csv), keyed by ID

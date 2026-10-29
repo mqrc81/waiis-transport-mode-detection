@@ -23,7 +23,7 @@ possible like what the WAIIS app sends, as measured in production:
 ## Results
 
 **The dataset is `waiis_bench_v1`**: `<data>/processed/waiis_bench_v1/`, 23 Parquet files, 4.8 GB.
-- Built from commit `35257b4` in a clean git worktree; `manifest.json` holds the parameters and the sha256 of
+- Built from commit `e51ea79` in a clean git worktree; `manifest.json` holds the parameters and the sha256 of
   every file.
 - Read it with `tmd.bench`.
 - Every decision that shaped it, with its effect, is in **`decision_register.md`**.
@@ -146,7 +146,7 @@ All current splits (also listed in `splits/README.md` at the project root):
 - To rebuild from the build commit in a clean worktree (data root = the worktree's parent's `data/`, or `$TMD_DATA`):
 
   ```
-  git worktree add ../tmd-waiis-bench 35257b4
+  git worktree add ../tmd-waiis-bench e51ea79
   cd ../tmd-waiis-bench && uv run python experiments/04_frozen-benchmark_es-shl/build.py
   ```
 
@@ -154,6 +154,7 @@ All current splits (also listed in `splits/README.md` at the project root):
   sha256 and row counts all equal the manifest of the build at commit `cf1085c` (in `results/manifests/`), with
   identical build parameters. Only `manifest.json` itself differs (version, commit, date). The count tables in
   `results/tables/` are identical too.
+- **Rebuilt from `e51ea79` (2026-10-29)**, so the manifest records the SHL split's new path (04's copy of `shl_days.csv`): all 23 data files keep their sha256, and only the commit and the `shl_splits` path changed in the manifest.
 - `waiis_bench_v1` is the only benchmark on disk.
 
 ### Version
@@ -171,7 +172,7 @@ Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were 
 **Draft — not approved**
 
 **`waiis_bench_v1`** is the frozen benchmark that every transport-mode model in this project reads (`tmd.bench`).
-- **Build:** commit `35257b4`, `<data>/processed/waiis_bench_v1/`, 23 files, 4.8 GB.
+- **Build:** commit `e51ea79`, `<data>/processed/waiis_bench_v1/`, 23 files, 4.8 GB.
 - **Verified:** a full rebuild from that commit in a clean worktree gave the same sha256 for every data file
   (2026-10-29). It is the only benchmark on disk.
 - **ExtraSensory:** 145,380 official examples (59 users, accelerometer only, 15 s windows at 25 Hz, labels v2),
