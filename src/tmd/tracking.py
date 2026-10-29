@@ -8,7 +8,7 @@ Usage in an experiment script:
     from tmd.tracking import DataInput, run
 
     data = [DataInput("shl_user1_dev", "training", label_rules="shl-coarse", features="feat-v1"),
-            DataInput("extrasensory_dev", "evaluation", label_rules="v2", features="feat-v1")]
+            DataInput("extrasensory_dev_v2", "evaluation", label_rules="bench-v1", features="feat-v1")]
     with run("02_family-baseline_shl-es", params, datasets=data):
         mlflow.log_metrics({"macro_f1": f1, "size_mb": size, "latency_ms_p50": p50})
         mlflow.log_figure(cm_fig, "confusion_matrix.png")
