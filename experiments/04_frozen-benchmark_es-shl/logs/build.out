@@ -1,0 +1,33 @@
+warning: `VIRTUAL_ENV=/Users/ms/Projects/waiis/transport-mode-detection/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+Using CPython 3.11.17
+Creating virtual environment at: .venv
+   Building transport-mode-detection @ file:///Users/ms/Projects/waiis/tmd-waiis-bench
+      Built transport-mode-detection @ file:///Users/ms/Projects/waiis/tmd-waiis-bench
+Installed 97 packages in 561ms
+speed blanking: p = 0.95 * exp(-v / 1.954 m/s), calibrated on 80,892 SHL User 1 WAIIS-cadence fixes (target 23% missing)
+== ExtraSensory ==
+minutes 377,346; included_v2 158,786; windows 360,064; snippets 376,952; examples (official) 145,380
+       included_v2  window  of_which_hole_trimmed  acc_implausible  label_implausible  user_excluded  examples  examples_iphone  examples_android  examples_dev  examples_test  users_with_examples  quiet_share
+cls                                                                                                                                                                                                             
+still       118604  113255                  328.0            764.0                0.0         1239.0    112016            69431             42585         92730          19286                   59        0.547
+walk         21241   19516                   48.0             22.0             2623.0          102.0     16791             9629              7162         13109           3682                   58        0.000
+run            762     708                    0.0              2.0              162.0            0.0       544              107               437           463             81                   22        0.000
+bike          4878    4392                   16.0              0.0              398.0            0.0      3994             2300              1694          3118            876                   23        0.000
+car          11166   10361                   27.0             85.0                0.0          203.0     10158             7562              2596          8028           2130                   48        0.084
+bus           1793    1635                    9.0              0.0                0.0            0.0      1635              845               790          1348            287                   28        0.064
+train          342     242                    0.0              0.0                0.0            0.0       242               93               149           190             52                    5        0.091
+== shl_user1 ==
+other positions (hand / torso / bag, 4phones days): 5,964 windows
+minutes 36,968; windows 36,825; acc_implausible 19; examples (official) 23,076; 1 Hz fixes 1,377,605; gps_waiis_cadence 80,892; gps_per_minute 23,645
+cls    still  walk   run  bike   car   bus  train  subway    All
+user                                                            
+User1   3366  3011  1030  2842  4058  3028   3353    2388  23076
+All     3366  3011  1030  2842  4058  3028   3353    2388  23076
+== shl_user23 ==
+minutes 3,024; windows 3,015; acc_implausible 0; examples (official) 2,365; 1 Hz fixes 101,516; gps_waiis_cadence 5,550; gps_per_minute 1,749
+cls    still  walk  run  bike  car  bus  train  subway   All
+user                                                        
+User2    197   240   14   136  255   68    133     174  1217
+User3    290   187   31    63   84   82    227     184  1148
+All      487   427   45   199  339  150    360     358  2365
+manifest: 23 files, 4.80 GB, commit 35257b4

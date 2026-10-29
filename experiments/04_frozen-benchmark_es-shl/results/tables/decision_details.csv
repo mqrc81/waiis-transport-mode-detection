@@ -1,0 +1,1762 @@
+id,measure,breakdown,key,value
+S1,minutes,total,,377346
+S1,minutes,class,(none),70369
+S1,minutes,class,bike,5020
+S1,minutes,class,bus,1794
+S1,minutes,class,car,11252
+S1,minutes,class,run,1090
+S1,minutes,class,still,265154
+S1,minutes,class,train,344
+S1,minutes,class,walk,22323
+S1,minutes,platform,android,156385
+S1,minutes,platform,iphone,220961
+S1,minutes,split,dev,304222
+S1,minutes,split,test,73124
+S1,minutes,user,00EABED2-271D-49D8-B599-1D4A09240601,2287
+S1,minutes,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,6813
+S1,minutes,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,3960
+S1,minutes,user,0BFC35E2-4817-4865-BFA7-764742302A2D,3108
+S1,minutes,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,7521
+S1,minutes,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,2685
+S1,minutes,user,11B5EC4D-4133-4289-B475-4E737182A406,8845
+S1,minutes,user,136562B6-95B2-483D-88DC-065F28409FD2,6218
+S1,minutes,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,6549
+S1,minutes,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,7375
+S1,minutes,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,4771
+S1,minutes,user,27E04243-B138-4F40-A164-F40B60165CF3,4927
+S1,minutes,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,8516
+S1,minutes,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,6172
+S1,minutes,user,3600D531-0C55-44A7-AE95-A7A38519464E,5203
+S1,minutes,user,40E170A7-607B-4578-AF04-F021C3B0384A,7649
+S1,minutes,user,481F4DD2-7689-43B9-A2AA-C8772227162B,6691
+S1,minutes,user,4E98F91F-4654-42EF-B908-A3389443F2E7,3250
+S1,minutes,user,4FC32141-E888-4BFF-8804-12559A491D8C,4979
+S1,minutes,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,6617
+S1,minutes,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,6617
+S1,minutes,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,5947
+S1,minutes,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,7542
+S1,minutes,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,3911
+S1,minutes,user,61359772-D8D8-480D-B623-7C636EAD0C81,6079
+S1,minutes,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,8730
+S1,minutes,user,665514DE-49DC-421F-8DCB-145D0B2609AD,9167
+S1,minutes,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,7298
+S1,minutes,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,11996
+S1,minutes,user,797D145F-3858-4A7F-A7C2-A4EB721E133C,3593
+S1,minutes,user,7CE37510-56D0-4120-A1CF-0E23351428D2,9761
+S1,minutes,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,1600
+S1,minutes,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,9189
+S1,minutes,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,9242
+S1,minutes,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,6407
+S1,minutes,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,9539
+S1,minutes,user,86A4F379-B305-473D-9D83-FC7D800180EF,10738
+S1,minutes,user,96A358A0-FFF2-4239-B93E-C7425B901B47,5819
+S1,minutes,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,9959
+S1,minutes,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,6038
+S1,minutes,user,9DC38D04-E82E-4F29-AB52-B476535226F2,9686
+S1,minutes,user,A5A30F76-581E-4757-97A2-957553A2C6AA,1667
+S1,minutes,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,6040
+S1,minutes,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,3898
+S1,minutes,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,7520
+S1,minutes,user,B09E373F-8A54-44C8-895B-0039390B859F,8134
+S1,minutes,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,9383
+S1,minutes,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,7626
+S1,minutes,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,8309
+S1,minutes,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,3451
+S1,minutes,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,5092
+S1,minutes,user,CA820D43-E5E2-42EF-9798-BE56F776370B,7865
+S1,minutes,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,8472
+S1,minutes,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,2860
+S1,minutes,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,3615
+S1,minutes,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,6210
+S1,minutes,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,3441
+S1,minutes,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,3530
+S1,minutes,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,2266
+S1,minutes,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,4973
+S1,code,,,src/tmd/extrasensory.py:58
+S1,commit,,,7f435c5
+S2,official examples of the users without gyroscope,total,,5343
+S2,official examples of the users without gyroscope,class,bike,218
+S2,official examples of the users without gyroscope,class,bus,73
+S2,official examples of the users without gyroscope,class,car,41
+S2,official examples of the users without gyroscope,class,run,5
+S2,official examples of the users without gyroscope,class,still,4803
+S2,official examples of the users without gyroscope,class,walk,203
+S2,official examples of the users without gyroscope,platform,android,5343
+S2,official examples of the users without gyroscope,split,dev,5343
+S2,official examples of the users without gyroscope,user,61359772-D8D8-480D-B623-7C636EAD0C81,3081
+S2,official examples of the users without gyroscope,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,1300
+S2,official examples of the users without gyroscope,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,962
+S2,code,,,experiments/04_frozen-benchmark_es-shl/build.py:147
+S2,commit,,,9ae5d9c
+S3,shl_user1 official examples,total,,23076
+S3,shl_user1 official examples,class,bike,2842
+S3,shl_user1 official examples,class,bus,3028
+S3,shl_user1 official examples,class,car,4058
+S3,shl_user1 official examples,class,run,1030
+S3,shl_user1 official examples,class,still,3366
+S3,shl_user1 official examples,class,subway,2388
+S3,shl_user1 official examples,class,train,3353
+S3,shl_user1 official examples,class,walk,3011
+S3,shl_user1 official examples,platform,android,23076
+S3,shl_user1 official examples,split,dev,23076
+S3,shl_user1 official examples,user,User1,23076
+S3,shl_user23 official examples,total,,2365
+S3,shl_user23 official examples,class,bike,199
+S3,shl_user23 official examples,class,bus,150
+S3,shl_user23 official examples,class,car,339
+S3,shl_user23 official examples,class,run,45
+S3,shl_user23 official examples,class,still,487
+S3,shl_user23 official examples,class,subway,358
+S3,shl_user23 official examples,class,train,360
+S3,shl_user23 official examples,class,walk,427
+S3,shl_user23 official examples,platform,android,2365
+S3,shl_user23 official examples,split,rail_check,2365
+S3,shl_user23 official examples,user,User2,1217
+S3,shl_user23 official examples,user,User3,1148
+S3,code,,,experiments/04_frozen-benchmark_es-shl/build.py:285
+S3,commit,,,a711d65
+S4,duplicate days kept once,total,,3
+S4,duplicate days kept once,day,220617,1
+S4,duplicate days kept once,day,260617,1
+S4,duplicate days kept once,day,270617,1
+S4,code,,,experiments/04_frozen-benchmark_es-shl/build.py:292
+S4,commit,,,7f435c5
+U1,snippets converted from g,total,,222630
+U1,snippets converted from g,class,(none),43294
+U1,snippets converted from g,class,bike,2717
+U1,snippets converted from g,class,bus,846
+U1,snippets converted from g,class,car,7577
+U1,snippets converted from g,class,run,547
+U1,snippets converted from g,class,still,155774
+U1,snippets converted from g,class,train,93
+U1,snippets converted from g,class,walk,11782
+U1,snippets converted from g,platform,android,1713
+U1,snippets converted from g,platform,iphone,220917
+U1,snippets converted from g,split,dev,184163
+U1,snippets converted from g,split,test,38467
+U1,snippets converted from g,user,00EABED2-271D-49D8-B599-1D4A09240601,2285
+U1,snippets converted from g,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,6808
+U1,snippets converted from g,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,3960
+U1,snippets converted from g,user,11B5EC4D-4133-4289-B475-4E737182A406,8844
+U1,snippets converted from g,user,136562B6-95B2-483D-88DC-065F28409FD2,6218
+U1,snippets converted from g,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,6549
+U1,snippets converted from g,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,4771
+U1,snippets converted from g,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,8515
+U1,snippets converted from g,user,3600D531-0C55-44A7-AE95-A7A38519464E,5202
+U1,snippets converted from g,user,4FC32141-E888-4BFF-8804-12559A491D8C,4979
+U1,snippets converted from g,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,6617
+U1,snippets converted from g,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,6617
+U1,snippets converted from g,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,3907
+U1,snippets converted from g,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,8728
+U1,snippets converted from g,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,11996
+U1,snippets converted from g,user,7CE37510-56D0-4120-A1CF-0E23351428D2,9760
+U1,snippets converted from g,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,1600
+U1,snippets converted from g,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,9186
+U1,snippets converted from g,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,9539
+U1,snippets converted from g,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,9959
+U1,snippets converted from g,user,9DC38D04-E82E-4F29-AB52-B476535226F2,9684
+U1,snippets converted from g,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,6040
+U1,snippets converted from g,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,7520
+U1,snippets converted from g,user,B09E373F-8A54-44C8-895B-0039390B859F,8133
+U1,snippets converted from g,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,7626
+U1,snippets converted from g,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,8309
+U1,snippets converted from g,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,1713
+U1,snippets converted from g,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,5074
+U1,snippets converted from g,user,CA820D43-E5E2-42EF-9798-BE56F776370B,7864
+U1,snippets converted from g,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,2860
+U1,snippets converted from g,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,3615
+U1,snippets converted from g,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,6210
+U1,snippets converted from g,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,3441
+U1,snippets converted from g,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,3529
+U1,snippets converted from g,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,4972
+U1,code,,,src/tmd/resample.py:39
+U1,commit,,,1f52628
+U2,15 s windows at 25 Hz,total,,360064
+U2,15 s windows at 25 Hz,class,(none),66798
+U2,15 s windows at 25 Hz,class,bike,4534
+U2,15 s windows at 25 Hz,class,bus,1636
+U2,15 s windows at 25 Hz,class,car,10444
+U2,15 s windows at 25 Hz,class,run,1036
+U2,15 s windows at 25 Hz,class,still,254791
+U2,15 s windows at 25 Hz,class,train,242
+U2,15 s windows at 25 Hz,class,walk,20583
+U2,15 s windows at 25 Hz,platform,android,139169
+U2,15 s windows at 25 Hz,platform,iphone,220895
+U2,15 s windows at 25 Hz,split,dev,294068
+U2,15 s windows at 25 Hz,split,test,65996
+U2,15 s windows at 25 Hz,user,00EABED2-271D-49D8-B599-1D4A09240601,2285
+U2,15 s windows at 25 Hz,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,6806
+U2,15 s windows at 25 Hz,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,3960
+U2,15 s windows at 25 Hz,user,0BFC35E2-4817-4865-BFA7-764742302A2D,2723
+U2,15 s windows at 25 Hz,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,7506
+U2,15 s windows at 25 Hz,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,2681
+U2,15 s windows at 25 Hz,user,11B5EC4D-4133-4289-B475-4E737182A406,8843
+U2,15 s windows at 25 Hz,user,136562B6-95B2-483D-88DC-065F28409FD2,6217
+U2,15 s windows at 25 Hz,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,6549
+U2,15 s windows at 25 Hz,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,3060
+U2,15 s windows at 25 Hz,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,4771
+U2,15 s windows at 25 Hz,user,27E04243-B138-4F40-A164-F40B60165CF3,2643
+U2,15 s windows at 25 Hz,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,8513
+U2,15 s windows at 25 Hz,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,6133
+U2,15 s windows at 25 Hz,user,3600D531-0C55-44A7-AE95-A7A38519464E,5202
+U2,15 s windows at 25 Hz,user,40E170A7-607B-4578-AF04-F021C3B0384A,7545
+U2,15 s windows at 25 Hz,user,481F4DD2-7689-43B9-A2AA-C8772227162B,6390
+U2,15 s windows at 25 Hz,user,4E98F91F-4654-42EF-B908-A3389443F2E7,3231
+U2,15 s windows at 25 Hz,user,4FC32141-E888-4BFF-8804-12559A491D8C,4979
+U2,15 s windows at 25 Hz,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,6617
+U2,15 s windows at 25 Hz,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,6616
+U2,15 s windows at 25 Hz,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,5946
+U2,15 s windows at 25 Hz,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,7443
+U2,15 s windows at 25 Hz,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,3904
+U2,15 s windows at 25 Hz,user,61359772-D8D8-480D-B623-7C636EAD0C81,6052
+U2,15 s windows at 25 Hz,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,8727
+U2,15 s windows at 25 Hz,user,665514DE-49DC-421F-8DCB-145D0B2609AD,9083
+U2,15 s windows at 25 Hz,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,7235
+U2,15 s windows at 25 Hz,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,11996
+U2,15 s windows at 25 Hz,user,797D145F-3858-4A7F-A7C2-A4EB721E133C,3593
+U2,15 s windows at 25 Hz,user,7CE37510-56D0-4120-A1CF-0E23351428D2,9760
+U2,15 s windows at 25 Hz,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,1600
+U2,15 s windows at 25 Hz,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,9185
+U2,15 s windows at 25 Hz,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,9190
+U2,15 s windows at 25 Hz,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,2813
+U2,15 s windows at 25 Hz,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,9538
+U2,15 s windows at 25 Hz,user,86A4F379-B305-473D-9D83-FC7D800180EF,10632
+U2,15 s windows at 25 Hz,user,96A358A0-FFF2-4239-B93E-C7425B901B47,4140
+U2,15 s windows at 25 Hz,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,9958
+U2,15 s windows at 25 Hz,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,5804
+U2,15 s windows at 25 Hz,user,9DC38D04-E82E-4F29-AB52-B476535226F2,9679
+U2,15 s windows at 25 Hz,user,A5A30F76-581E-4757-97A2-957553A2C6AA,1624
+U2,15 s windows at 25 Hz,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,6040
+U2,15 s windows at 25 Hz,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,3890
+U2,15 s windows at 25 Hz,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,7520
+U2,15 s windows at 25 Hz,user,B09E373F-8A54-44C8-895B-0039390B859F,8133
+U2,15 s windows at 25 Hz,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,9380
+U2,15 s windows at 25 Hz,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,7625
+U2,15 s windows at 25 Hz,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,8308
+U2,15 s windows at 25 Hz,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,2906
+U2,15 s windows at 25 Hz,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,5074
+U2,15 s windows at 25 Hz,user,CA820D43-E5E2-42EF-9798-BE56F776370B,7864
+U2,15 s windows at 25 Hz,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,6437
+U2,15 s windows at 25 Hz,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,2859
+U2,15 s windows at 25 Hz,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,3615
+U2,15 s windows at 25 Hz,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,6210
+U2,15 s windows at 25 Hz,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,3441
+U2,15 s windows at 25 Hz,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,3529
+U2,15 s windows at 25 Hz,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,1089
+U2,15 s windows at 25 Hz,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,4972
+U2,raw rate [Hz],platform p1,android,40.5
+U2,raw rate [Hz],platform p50,android,50.0
+U2,raw rate [Hz],platform p99,android,119.2
+U2,raw rate [Hz],platform p1,iphone,30.9
+U2,raw rate [Hz],platform p50,iphone,34.1
+U2,raw rate [Hz],platform p99,iphone,34.9
+U2,windows within 0.4 s of the filter edge,total,,1222
+U2,windows within 0.4 s of the filter edge,class,(none),495
+U2,windows within 0.4 s of the filter edge,class,bike,20
+U2,windows within 0.4 s of the filter edge,class,bus,2
+U2,windows within 0.4 s of the filter edge,class,car,99
+U2,windows within 0.4 s of the filter edge,class,run,1
+U2,windows within 0.4 s of the filter edge,class,still,563
+U2,windows within 0.4 s of the filter edge,class,train,1
+U2,windows within 0.4 s of the filter edge,class,walk,41
+U2,windows within 0.4 s of the filter edge,platform,android,1214
+U2,windows within 0.4 s of the filter edge,platform,iphone,8
+U2,windows within 0.4 s of the filter edge,user,0BFC35E2-4817-4865-BFA7-764742302A2D,18
+U2,windows within 0.4 s of the filter edge,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,34
+U2,windows within 0.4 s of the filter edge,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,1
+U2,windows within 0.4 s of the filter edge,user,27E04243-B138-4F40-A164-F40B60165CF3,10
+U2,windows within 0.4 s of the filter edge,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,4
+U2,windows within 0.4 s of the filter edge,user,481F4DD2-7689-43B9-A2AA-C8772227162B,61
+U2,windows within 0.4 s of the filter edge,user,4E98F91F-4654-42EF-B908-A3389443F2E7,4
+U2,windows within 0.4 s of the filter edge,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,1
+U2,windows within 0.4 s of the filter edge,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,2
+U2,windows within 0.4 s of the filter edge,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,1
+U2,windows within 0.4 s of the filter edge,user,665514DE-49DC-421F-8DCB-145D0B2609AD,1
+U2,windows within 0.4 s of the filter edge,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,2
+U2,windows within 0.4 s of the filter edge,user,7CE37510-56D0-4120-A1CF-0E23351428D2,1
+U2,windows within 0.4 s of the filter edge,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,4
+U2,windows within 0.4 s of the filter edge,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,83
+U2,windows within 0.4 s of the filter edge,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,1
+U2,windows within 0.4 s of the filter edge,user,86A4F379-B305-473D-9D83-FC7D800180EF,845
+U2,windows within 0.4 s of the filter edge,user,96A358A0-FFF2-4239-B93E-C7425B901B47,8
+U2,windows within 0.4 s of the filter edge,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,62
+U2,windows within 0.4 s of the filter edge,user,9DC38D04-E82E-4F29-AB52-B476535226F2,1
+U2,windows within 0.4 s of the filter edge,user,A5A30F76-581E-4757-97A2-957553A2C6AA,1
+U2,windows within 0.4 s of the filter edge,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,1
+U2,windows within 0.4 s of the filter edge,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,38
+U2,windows within 0.4 s of the filter edge,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,1
+U2,windows within 0.4 s of the filter edge,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,21
+U2,windows within 0.4 s of the filter edge,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,2
+U2,windows within 0.4 s of the filter edge,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,14
+U2,code,,,src/tmd/resample.py:20
+U2,commit,,,1f52628
+U3,included windows outside 7-20 m/s2 (excluded user left out),total,,2
+U3,included windows outside 7-20 m/s2 (excluded user left out),class,run,2
+U3,included windows outside 7-20 m/s2 (excluded user left out),platform,android,1
+U3,included windows outside 7-20 m/s2 (excluded user left out),platform,iphone,1
+U3,included windows outside 7-20 m/s2 (excluded user left out),split,dev,1
+U3,included windows outside 7-20 m/s2 (excluded user left out),split,test,1
+U3,included windows outside 7-20 m/s2 (excluded user left out),user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,1
+U3,included windows outside 7-20 m/s2 (excluded user left out),user,59818CD2-24D7-4D32-B133-24C2FE3801E5,1
+U3,shl_user1 windows outside 7-20 m/s2,total,,17
+U3,shl_user1 windows outside 7-20 m/s2,class,run,17
+U3,shl_user1 windows outside 7-20 m/s2,platform,android,17
+U3,shl_user1 windows outside 7-20 m/s2,split,dev,17
+U3,shl_user1 windows outside 7-20 m/s2,user,User1,17
+U3,shl_user23 windows outside 7-20 m/s2,total,,0
+U3,code,,,experiments/04_frozen-benchmark_es-shl/build.py:51
+U3,commit,,,cf1085c
+C1,"minutes without a snippet (no file, span > 40 s)",total,,394
+C1,"minutes without a snippet (no file, span > 40 s)",class,(none),289
+C1,"minutes without a snippet (no file, span > 40 s)",class,bike,3
+C1,"minutes without a snippet (no file, span > 40 s)",class,car,4
+C1,"minutes without a snippet (no file, span > 40 s)",class,still,89
+C1,"minutes without a snippet (no file, span > 40 s)",class,train,5
+C1,"minutes without a snippet (no file, span > 40 s)",class,walk,4
+C1,"minutes without a snippet (no file, span > 40 s)",platform,android,350
+C1,"minutes without a snippet (no file, span > 40 s)",platform,iphone,44
+C1,"minutes without a snippet (no file, span > 40 s)",split,dev,333
+C1,"minutes without a snippet (no file, span > 40 s)",split,test,61
+C1,"minutes without a snippet (no file, span > 40 s)",user,00EABED2-271D-49D8-B599-1D4A09240601,2
+C1,"minutes without a snippet (no file, span > 40 s)",user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,5
+C1,"minutes without a snippet (no file, span > 40 s)",user,0BFC35E2-4817-4865-BFA7-764742302A2D,18
+C1,"minutes without a snippet (no file, span > 40 s)",user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,8
+C1,"minutes without a snippet (no file, span > 40 s)",user,11B5EC4D-4133-4289-B475-4E737182A406,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,19
+C1,"minutes without a snippet (no file, span > 40 s)",user,27E04243-B138-4F40-A164-F40B60165CF3,4
+C1,"minutes without a snippet (no file, span > 40 s)",user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,8
+C1,"minutes without a snippet (no file, span > 40 s)",user,3600D531-0C55-44A7-AE95-A7A38519464E,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,40E170A7-607B-4578-AF04-F021C3B0384A,2
+C1,"minutes without a snippet (no file, span > 40 s)",user,481F4DD2-7689-43B9-A2AA-C8772227162B,3
+C1,"minutes without a snippet (no file, span > 40 s)",user,4E98F91F-4654-42EF-B908-A3389443F2E7,6
+C1,"minutes without a snippet (no file, span > 40 s)",user,59818CD2-24D7-4D32-B133-24C2FE3801E5,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,6
+C1,"minutes without a snippet (no file, span > 40 s)",user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,4
+C1,"minutes without a snippet (no file, span > 40 s)",user,61359772-D8D8-480D-B623-7C636EAD0C81,7
+C1,"minutes without a snippet (no file, span > 40 s)",user,61976C24-1C50-4355-9C49-AAE44A7D09F6,2
+C1,"minutes without a snippet (no file, span > 40 s)",user,665514DE-49DC-421F-8DCB-145D0B2609AD,2
+C1,"minutes without a snippet (no file, span > 40 s)",user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,31
+C1,"minutes without a snippet (no file, span > 40 s)",user,7CE37510-56D0-4120-A1CF-0E23351428D2,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,3
+C1,"minutes without a snippet (no file, span > 40 s)",user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,3
+C1,"minutes without a snippet (no file, span > 40 s)",user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,81
+C1,"minutes without a snippet (no file, span > 40 s)",user,86A4F379-B305-473D-9D83-FC7D800180EF,24
+C1,"minutes without a snippet (no file, span > 40 s)",user,96A358A0-FFF2-4239-B93E-C7425B901B47,12
+C1,"minutes without a snippet (no file, span > 40 s)",user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,11
+C1,"minutes without a snippet (no file, span > 40 s)",user,9DC38D04-E82E-4F29-AB52-B476535226F2,2
+C1,"minutes without a snippet (no file, span > 40 s)",user,B09E373F-8A54-44C8-895B-0039390B859F,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,BEF6C611-50DA-4971-A040-87FB979F3FC1,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,18
+C1,"minutes without a snippet (no file, span > 40 s)",user,CA820D43-E5E2-42EF-9798-BE56F776370B,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,79
+C1,"minutes without a snippet (no file, span > 40 s)",user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,1
+C1,"minutes without a snippet (no file, span > 40 s)",user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,24
+C1,"minutes without a snippet (no file, span > 40 s)",user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,1
+C1,minutes without a snippet,reason,no_file,290
+C1,minutes without a snippet,reason,span_over_40s,104
+C1,code,,,src/tmd/resample.py:16
+C1,commit,,,1f52628
+C2,snippets trimmed to the longest clean stretch,total,,1978
+C2,snippets trimmed to the longest clean stretch,class,(none),406
+C2,snippets trimmed to the longest clean stretch,class,bike,36
+C2,snippets trimmed to the longest clean stretch,class,bus,10
+C2,snippets trimmed to the longest clean stretch,class,car,79
+C2,snippets trimmed to the longest clean stretch,class,run,3
+C2,snippets trimmed to the longest clean stretch,class,still,1294
+C2,snippets trimmed to the longest clean stretch,class,train,4
+C2,snippets trimmed to the longest clean stretch,class,walk,146
+C2,snippets trimmed to the longest clean stretch,platform,android,1742
+C2,snippets trimmed to the longest clean stretch,platform,iphone,236
+C2,snippets trimmed to the longest clean stretch,split,dev,1417
+C2,snippets trimmed to the longest clean stretch,split,test,561
+C2,snippets trimmed to the longest clean stretch,user,00EABED2-271D-49D8-B599-1D4A09240601,9
+C2,snippets trimmed to the longest clean stretch,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,5
+C2,snippets trimmed to the longest clean stretch,user,0BFC35E2-4817-4865-BFA7-764742302A2D,163
+C2,snippets trimmed to the longest clean stretch,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,3
+C2,snippets trimmed to the longest clean stretch,user,11B5EC4D-4133-4289-B475-4E737182A406,7
+C2,snippets trimmed to the longest clean stretch,user,136562B6-95B2-483D-88DC-065F28409FD2,3
+C2,snippets trimmed to the longest clean stretch,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,10
+C2,snippets trimmed to the longest clean stretch,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,119
+C2,snippets trimmed to the longest clean stretch,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,3
+C2,snippets trimmed to the longest clean stretch,user,27E04243-B138-4F40-A164-F40B60165CF3,159
+C2,snippets trimmed to the longest clean stretch,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,4
+C2,snippets trimmed to the longest clean stretch,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,36
+C2,snippets trimmed to the longest clean stretch,user,3600D531-0C55-44A7-AE95-A7A38519464E,4
+C2,snippets trimmed to the longest clean stretch,user,40E170A7-607B-4578-AF04-F021C3B0384A,1
+C2,snippets trimmed to the longest clean stretch,user,481F4DD2-7689-43B9-A2AA-C8772227162B,312
+C2,snippets trimmed to the longest clean stretch,user,4E98F91F-4654-42EF-B908-A3389443F2E7,86
+C2,snippets trimmed to the longest clean stretch,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,13
+C2,snippets trimmed to the longest clean stretch,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,1
+C2,snippets trimmed to the longest clean stretch,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,1
+C2,snippets trimmed to the longest clean stretch,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,8
+C2,snippets trimmed to the longest clean stretch,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,19
+C2,snippets trimmed to the longest clean stretch,user,61359772-D8D8-480D-B623-7C636EAD0C81,4
+C2,snippets trimmed to the longest clean stretch,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,16
+C2,snippets trimmed to the longest clean stretch,user,665514DE-49DC-421F-8DCB-145D0B2609AD,17
+C2,snippets trimmed to the longest clean stretch,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,6
+C2,snippets trimmed to the longest clean stretch,user,7CE37510-56D0-4120-A1CF-0E23351428D2,4
+C2,snippets trimmed to the longest clean stretch,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,4
+C2,snippets trimmed to the longest clean stretch,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,35
+C2,snippets trimmed to the longest clean stretch,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,14
+C2,snippets trimmed to the longest clean stretch,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,146
+C2,snippets trimmed to the longest clean stretch,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,3
+C2,snippets trimmed to the longest clean stretch,user,86A4F379-B305-473D-9D83-FC7D800180EF,8
+C2,snippets trimmed to the longest clean stretch,user,96A358A0-FFF2-4239-B93E-C7425B901B47,59
+C2,snippets trimmed to the longest clean stretch,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,1
+C2,snippets trimmed to the longest clean stretch,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,174
+C2,snippets trimmed to the longest clean stretch,user,9DC38D04-E82E-4F29-AB52-B476535226F2,21
+C2,snippets trimmed to the longest clean stretch,user,A5A30F76-581E-4757-97A2-957553A2C6AA,1
+C2,snippets trimmed to the longest clean stretch,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,4
+C2,snippets trimmed to the longest clean stretch,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,9
+C2,snippets trimmed to the longest clean stretch,user,B09E373F-8A54-44C8-895B-0039390B859F,11
+C2,snippets trimmed to the longest clean stretch,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,3
+C2,snippets trimmed to the longest clean stretch,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,3
+C2,snippets trimmed to the longest clean stretch,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,24
+C2,snippets trimmed to the longest clean stretch,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,357
+C2,snippets trimmed to the longest clean stretch,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,8
+C2,snippets trimmed to the longest clean stretch,user,CA820D43-E5E2-42EF-9798-BE56F776370B,1
+C2,snippets trimmed to the longest clean stretch,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,3
+C2,snippets trimmed to the longest clean stretch,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,4
+C2,snippets trimmed to the longest clean stretch,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,7
+C2,snippets trimmed to the longest clean stretch,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,1
+C2,snippets trimmed to the longest clean stretch,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,59
+C2,snippets trimmed to the longest clean stretch,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,5
+C2,official examples from trimmed snippets,total,,399
+C2,official examples from trimmed snippets,class,bike,14
+C2,official examples from trimmed snippets,class,bus,9
+C2,official examples from trimmed snippets,class,car,27
+C2,official examples from trimmed snippets,class,still,304
+C2,official examples from trimmed snippets,class,walk,45
+C2,official examples from trimmed snippets,platform,android,248
+C2,official examples from trimmed snippets,platform,iphone,151
+C2,official examples from trimmed snippets,split,dev,328
+C2,official examples from trimmed snippets,split,test,71
+C2,official examples from trimmed snippets,user,00EABED2-271D-49D8-B599-1D4A09240601,4
+C2,official examples from trimmed snippets,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,2
+C2,official examples from trimmed snippets,user,0BFC35E2-4817-4865-BFA7-764742302A2D,20
+C2,official examples from trimmed snippets,user,11B5EC4D-4133-4289-B475-4E737182A406,4
+C2,official examples from trimmed snippets,user,136562B6-95B2-483D-88DC-065F28409FD2,2
+C2,official examples from trimmed snippets,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,6
+C2,official examples from trimmed snippets,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,1
+C2,official examples from trimmed snippets,user,27E04243-B138-4F40-A164-F40B60165CF3,1
+C2,official examples from trimmed snippets,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,2
+C2,official examples from trimmed snippets,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,4
+C2,official examples from trimmed snippets,user,3600D531-0C55-44A7-AE95-A7A38519464E,4
+C2,official examples from trimmed snippets,user,481F4DD2-7689-43B9-A2AA-C8772227162B,57
+C2,official examples from trimmed snippets,user,4E98F91F-4654-42EF-B908-A3389443F2E7,75
+C2,official examples from trimmed snippets,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,10
+C2,official examples from trimmed snippets,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,3
+C2,official examples from trimmed snippets,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,9
+C2,official examples from trimmed snippets,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,6
+C2,official examples from trimmed snippets,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,4
+C2,official examples from trimmed snippets,user,7CE37510-56D0-4120-A1CF-0E23351428D2,2
+C2,official examples from trimmed snippets,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,4
+C2,official examples from trimmed snippets,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,31
+C2,official examples from trimmed snippets,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,6
+C2,official examples from trimmed snippets,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,14
+C2,official examples from trimmed snippets,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,45
+C2,official examples from trimmed snippets,user,9DC38D04-E82E-4F29-AB52-B476535226F2,9
+C2,official examples from trimmed snippets,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,2
+C2,official examples from trimmed snippets,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,1
+C2,official examples from trimmed snippets,user,B09E373F-8A54-44C8-895B-0039390B859F,9
+C2,official examples from trimmed snippets,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,2
+C2,official examples from trimmed snippets,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,23
+C2,official examples from trimmed snippets,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,5
+C2,official examples from trimmed snippets,user,CA820D43-E5E2-42EF-9798-BE56F776370B,1
+C2,official examples from trimmed snippets,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,3
+C2,official examples from trimmed snippets,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,2
+C2,official examples from trimmed snippets,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,1
+C2,official examples from trimmed snippets,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,22
+C2,official examples from trimmed snippets,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,3
+C2,code,,,src/tmd/resample.py:116
+C2,commit,,,b1e2a9c
+C3,time-repaired snippets (never official),total,,1185
+C3,time-repaired snippets (never official),class,(none),257
+C3,time-repaired snippets (never official),class,bike,6
+C3,time-repaired snippets (never official),class,bus,6
+C3,time-repaired snippets (never official),class,car,40
+C3,time-repaired snippets (never official),class,run,3
+C3,time-repaired snippets (never official),class,still,704
+C3,time-repaired snippets (never official),class,train,1
+C3,time-repaired snippets (never official),class,walk,168
+C3,time-repaired snippets (never official),platform,android,1185
+C3,time-repaired snippets (never official),split,dev,825
+C3,time-repaired snippets (never official),split,test,360
+C3,time-repaired snippets (never official),user,0BFC35E2-4817-4865-BFA7-764742302A2D,158
+C3,time-repaired snippets (never official),user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,4
+C3,time-repaired snippets (never official),user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,4
+C3,time-repaired snippets (never official),user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,135
+C3,time-repaired snippets (never official),user,40E170A7-607B-4578-AF04-F021C3B0384A,1
+C3,time-repaired snippets (never official),user,481F4DD2-7689-43B9-A2AA-C8772227162B,233
+C3,time-repaired snippets (never official),user,4E98F91F-4654-42EF-B908-A3389443F2E7,12
+C3,time-repaired snippets (never official),user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,81
+C3,time-repaired snippets (never official),user,61359772-D8D8-480D-B623-7C636EAD0C81,4
+C3,time-repaired snippets (never official),user,665514DE-49DC-421F-8DCB-145D0B2609AD,67
+C3,time-repaired snippets (never official),user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,7
+C3,time-repaired snippets (never official),user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,8
+C3,time-repaired snippets (never official),user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,1
+C3,time-repaired snippets (never official),user,86A4F379-B305-473D-9D83-FC7D800180EF,72
+C3,time-repaired snippets (never official),user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,160
+C3,time-repaired snippets (never official),user,A5A30F76-581E-4757-97A2-957553A2C6AA,21
+C3,time-repaired snippets (never official),user,BEF6C611-50DA-4971-A040-87FB979F3FC1,217
+C3,included minutes time-repaired,total,,562
+C3,included minutes time-repaired,class,bike,6
+C3,included minutes time-repaired,class,bus,6
+C3,included minutes time-repaired,class,car,40
+C3,included minutes time-repaired,class,run,3
+C3,included minutes time-repaired,class,still,344
+C3,included minutes time-repaired,class,train,1
+C3,included minutes time-repaired,class,walk,162
+C3,included minutes time-repaired,platform,android,562
+C3,included minutes time-repaired,split,dev,391
+C3,included minutes time-repaired,split,test,171
+C3,included minutes time-repaired,user,0BFC35E2-4817-4865-BFA7-764742302A2D,92
+C3,included minutes time-repaired,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,3
+C3,included minutes time-repaired,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,1
+C3,included minutes time-repaired,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,51
+C3,included minutes time-repaired,user,40E170A7-607B-4578-AF04-F021C3B0384A,1
+C3,included minutes time-repaired,user,481F4DD2-7689-43B9-A2AA-C8772227162B,120
+C3,included minutes time-repaired,user,4E98F91F-4654-42EF-B908-A3389443F2E7,3
+C3,included minutes time-repaired,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,46
+C3,included minutes time-repaired,user,61359772-D8D8-480D-B623-7C636EAD0C81,4
+C3,included minutes time-repaired,user,665514DE-49DC-421F-8DCB-145D0B2609AD,28
+C3,included minutes time-repaired,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,2
+C3,included minutes time-repaired,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,6
+C3,included minutes time-repaired,user,86A4F379-B305-473D-9D83-FC7D800180EF,20
+C3,included minutes time-repaired,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,53
+C3,included minutes time-repaired,user,A5A30F76-581E-4757-97A2-957553A2C6AA,18
+C3,included minutes time-repaired,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,114
+C3,code,,,src/tmd/resample.py:102
+C3,commit,,,b1e2a9c
+W1,official windows,total,,360064
+W1,official windows,class,(none),66798
+W1,official windows,class,bike,4534
+W1,official windows,class,bus,1636
+W1,official windows,class,car,10444
+W1,official windows,class,run,1036
+W1,official windows,class,still,254791
+W1,official windows,class,train,242
+W1,official windows,class,walk,20583
+W1,official windows,platform,android,139169
+W1,official windows,platform,iphone,220895
+W1,official windows,split,dev,294068
+W1,official windows,split,test,65996
+W1,official windows,user,00EABED2-271D-49D8-B599-1D4A09240601,2285
+W1,official windows,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,6806
+W1,official windows,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,3960
+W1,official windows,user,0BFC35E2-4817-4865-BFA7-764742302A2D,2723
+W1,official windows,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,7506
+W1,official windows,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,2681
+W1,official windows,user,11B5EC4D-4133-4289-B475-4E737182A406,8843
+W1,official windows,user,136562B6-95B2-483D-88DC-065F28409FD2,6217
+W1,official windows,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,6549
+W1,official windows,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,3060
+W1,official windows,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,4771
+W1,official windows,user,27E04243-B138-4F40-A164-F40B60165CF3,2643
+W1,official windows,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,8513
+W1,official windows,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,6133
+W1,official windows,user,3600D531-0C55-44A7-AE95-A7A38519464E,5202
+W1,official windows,user,40E170A7-607B-4578-AF04-F021C3B0384A,7545
+W1,official windows,user,481F4DD2-7689-43B9-A2AA-C8772227162B,6390
+W1,official windows,user,4E98F91F-4654-42EF-B908-A3389443F2E7,3231
+W1,official windows,user,4FC32141-E888-4BFF-8804-12559A491D8C,4979
+W1,official windows,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,6617
+W1,official windows,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,6616
+W1,official windows,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,5946
+W1,official windows,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,7443
+W1,official windows,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,3904
+W1,official windows,user,61359772-D8D8-480D-B623-7C636EAD0C81,6052
+W1,official windows,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,8727
+W1,official windows,user,665514DE-49DC-421F-8DCB-145D0B2609AD,9083
+W1,official windows,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,7235
+W1,official windows,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,11996
+W1,official windows,user,797D145F-3858-4A7F-A7C2-A4EB721E133C,3593
+W1,official windows,user,7CE37510-56D0-4120-A1CF-0E23351428D2,9760
+W1,official windows,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,1600
+W1,official windows,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,9185
+W1,official windows,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,9190
+W1,official windows,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,2813
+W1,official windows,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,9538
+W1,official windows,user,86A4F379-B305-473D-9D83-FC7D800180EF,10632
+W1,official windows,user,96A358A0-FFF2-4239-B93E-C7425B901B47,4140
+W1,official windows,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,9958
+W1,official windows,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,5804
+W1,official windows,user,9DC38D04-E82E-4F29-AB52-B476535226F2,9679
+W1,official windows,user,A5A30F76-581E-4757-97A2-957553A2C6AA,1624
+W1,official windows,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,6040
+W1,official windows,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,3890
+W1,official windows,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,7520
+W1,official windows,user,B09E373F-8A54-44C8-895B-0039390B859F,8133
+W1,official windows,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,9380
+W1,official windows,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,7625
+W1,official windows,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,8308
+W1,official windows,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,2906
+W1,official windows,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,5074
+W1,official windows,user,CA820D43-E5E2-42EF-9798-BE56F776370B,7864
+W1,official windows,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,6437
+W1,official windows,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,2859
+W1,official windows,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,3615
+W1,official windows,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,6210
+W1,official windows,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,3441
+W1,official windows,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,3529
+W1,official windows,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,1089
+W1,official windows,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,4972
+W1,snippet seconds outside the window (mean),platform,android,1.3
+W1,snippet seconds outside the window (mean),platform,iphone,8.8
+W1,code,,,src/tmd/resample.py:80
+W1,commit,,,a711d65
+W2,"short snippets (< 15 s), all minutes",total,,15853
+W2,"short snippets (< 15 s), all minutes",class,(none),3042
+W2,"short snippets (< 15 s), all minutes",class,bike,478
+W2,"short snippets (< 15 s), all minutes",class,bus,153
+W2,"short snippets (< 15 s), all minutes",class,car,767
+W2,"short snippets (< 15 s), all minutes",class,run,53
+W2,"short snippets (< 15 s), all minutes",class,still,9665
+W2,"short snippets (< 15 s), all minutes",class,train,97
+W2,"short snippets (< 15 s), all minutes",class,walk,1598
+W2,"short snippets (< 15 s), all minutes",platform,android,15831
+W2,"short snippets (< 15 s), all minutes",platform,iphone,22
+W2,"short snippets (< 15 s), all minutes",split,dev,9026
+W2,"short snippets (< 15 s), all minutes",split,test,6827
+W2,"short snippets (< 15 s), all minutes",user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,2
+W2,"short snippets (< 15 s), all minutes",user,0BFC35E2-4817-4865-BFA7-764742302A2D,213
+W2,"short snippets (< 15 s), all minutes",user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,3
+W2,"short snippets (< 15 s), all minutes",user,11B5EC4D-4133-4289-B475-4E737182A406,1
+W2,"short snippets (< 15 s), all minutes",user,136562B6-95B2-483D-88DC-065F28409FD2,1
+W2,"short snippets (< 15 s), all minutes",user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,4264
+W2,"short snippets (< 15 s), all minutes",user,27E04243-B138-4F40-A164-F40B60165CF3,2280
+W2,"short snippets (< 15 s), all minutes",user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,2
+W2,"short snippets (< 15 s), all minutes",user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,31
+W2,"short snippets (< 15 s), all minutes",user,40E170A7-607B-4578-AF04-F021C3B0384A,101
+W2,"short snippets (< 15 s), all minutes",user,481F4DD2-7689-43B9-A2AA-C8772227162B,79
+W2,"short snippets (< 15 s), all minutes",user,4E98F91F-4654-42EF-B908-A3389443F2E7,2
+W2,"short snippets (< 15 s), all minutes",user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,1
+W2,"short snippets (< 15 s), all minutes",user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,12
+W2,"short snippets (< 15 s), all minutes",user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,3
+W2,"short snippets (< 15 s), all minutes",user,61359772-D8D8-480D-B623-7C636EAD0C81,18
+W2,"short snippets (< 15 s), all minutes",user,61976C24-1C50-4355-9C49-AAE44A7D09F6,1
+W2,"short snippets (< 15 s), all minutes",user,665514DE-49DC-421F-8DCB-145D0B2609AD,28
+W2,"short snippets (< 15 s), all minutes",user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,25
+W2,"short snippets (< 15 s), all minutes",user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,1
+W2,"short snippets (< 15 s), all minutes",user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,41
+W2,"short snippets (< 15 s), all minutes",user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,3513
+W2,"short snippets (< 15 s), all minutes",user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,1
+W2,"short snippets (< 15 s), all minutes",user,86A4F379-B305-473D-9D83-FC7D800180EF,18
+W2,"short snippets (< 15 s), all minutes",user,96A358A0-FFF2-4239-B93E-C7425B901B47,1667
+W2,"short snippets (< 15 s), all minutes",user,9759096F-1119-4E19-A0AD-6F16989C7E1C,1
+W2,"short snippets (< 15 s), all minutes",user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,65
+W2,"short snippets (< 15 s), all minutes",user,9DC38D04-E82E-4F29-AB52-B476535226F2,5
+W2,"short snippets (< 15 s), all minutes",user,A5A30F76-581E-4757-97A2-957553A2C6AA,23
+W2,"short snippets (< 15 s), all minutes",user,A7599A50-24AE-46A6-8EA6-2576F1011D81,8
+W2,"short snippets (< 15 s), all minutes",user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,3
+W2,"short snippets (< 15 s), all minutes",user,B9724848-C7E2-45F4-9B3F-A1F38D864495,1
+W2,"short snippets (< 15 s), all minutes",user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,1
+W2,"short snippets (< 15 s), all minutes",user,BEF6C611-50DA-4971-A040-87FB979F3FC1,328
+W2,"short snippets (< 15 s), all minutes",user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,1956
+W2,"short snippets (< 15 s), all minutes",user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,1
+W2,"short snippets (< 15 s), all minutes",user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,1153
+W2,included minutes with a short snippet,total,,8112
+W2,included minutes with a short snippet,class,bike,478
+W2,included minutes with a short snippet,class,bus,153
+W2,included minutes with a short snippet,class,car,764
+W2,included minutes with a short snippet,class,run,53
+W2,included minutes with a short snippet,class,still,4982
+W2,included minutes with a short snippet,class,train,95
+W2,included minutes with a short snippet,class,walk,1587
+W2,included minutes with a short snippet,platform,android,8097
+W2,included minutes with a short snippet,platform,iphone,15
+W2,included minutes with a short snippet,split,dev,5267
+W2,included minutes with a short snippet,split,test,2845
+W2,included minutes with a short snippet,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,1
+W2,included minutes with a short snippet,user,0BFC35E2-4817-4865-BFA7-764742302A2D,150
+W2,included minutes with a short snippet,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,3
+W2,included minutes with a short snippet,user,136562B6-95B2-483D-88DC-065F28409FD2,1
+W2,included minutes with a short snippet,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,2048
+W2,included minutes with a short snippet,user,27E04243-B138-4F40-A164-F40B60165CF3,606
+W2,included minutes with a short snippet,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,1
+W2,included minutes with a short snippet,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,21
+W2,included minutes with a short snippet,user,40E170A7-607B-4578-AF04-F021C3B0384A,101
+W2,included minutes with a short snippet,user,481F4DD2-7689-43B9-A2AA-C8772227162B,30
+W2,included minutes with a short snippet,user,4E98F91F-4654-42EF-B908-A3389443F2E7,2
+W2,included minutes with a short snippet,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,1
+W2,included minutes with a short snippet,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,2
+W2,included minutes with a short snippet,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,2
+W2,included minutes with a short snippet,user,61359772-D8D8-480D-B623-7C636EAD0C81,15
+W2,included minutes with a short snippet,user,665514DE-49DC-421F-8DCB-145D0B2609AD,15
+W2,included minutes with a short snippet,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,21
+W2,included minutes with a short snippet,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,1
+W2,included minutes with a short snippet,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,8
+W2,included minutes with a short snippet,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,2045
+W2,included minutes with a short snippet,user,86A4F379-B305-473D-9D83-FC7D800180EF,3
+W2,included minutes with a short snippet,user,96A358A0-FFF2-4239-B93E-C7425B901B47,400
+W2,included minutes with a short snippet,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,1
+W2,included minutes with a short snippet,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,27
+W2,included minutes with a short snippet,user,9DC38D04-E82E-4F29-AB52-B476535226F2,4
+W2,included minutes with a short snippet,user,A5A30F76-581E-4757-97A2-957553A2C6AA,8
+W2,included minutes with a short snippet,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,3
+W2,included minutes with a short snippet,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,2
+W2,included minutes with a short snippet,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,1
+W2,included minutes with a short snippet,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,1
+W2,included minutes with a short snippet,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,177
+W2,included minutes with a short snippet,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,1339
+W2,included minutes with a short snippet,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,1
+W2,included minutes with a short snippet,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,1071
+W2,short snippets per user,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,4264
+W2,short snippets per user,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,3513
+W2,short snippets per user,user,27E04243-B138-4F40-A164-F40B60165CF3,2280
+W2,short snippets per user,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,1956
+W2,short snippets per user,user,96A358A0-FFF2-4239-B93E-C7425B901B47,1667
+W2,short snippets per user,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,1153
+W2,short snippets per user,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,328
+W2,short snippets per user,user,0BFC35E2-4817-4865-BFA7-764742302A2D,213
+W2,short snippets per user,user,40E170A7-607B-4578-AF04-F021C3B0384A,101
+W2,short snippets per user,user,481F4DD2-7689-43B9-A2AA-C8772227162B,79
+W2,short snippets per user,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,65
+W2,short snippets per user,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,41
+W2,short snippets per user,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,31
+W2,short snippets per user,user,665514DE-49DC-421F-8DCB-145D0B2609AD,28
+W2,short snippets per user,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,25
+W2,short snippets per user,user,A5A30F76-581E-4757-97A2-957553A2C6AA,23
+W2,short snippets per user,user,61359772-D8D8-480D-B623-7C636EAD0C81,18
+W2,short snippets per user,user,86A4F379-B305-473D-9D83-FC7D800180EF,18
+W2,short snippets per user,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,12
+W2,short snippets per user,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,8
+W2,short snippets per user,user,9DC38D04-E82E-4F29-AB52-B476535226F2,5
+W2,short snippets per user,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,3
+W2,short snippets per user,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,3
+W2,short snippets per user,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,3
+W2,short snippets per user,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,2
+W2,short snippets per user,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,2
+W2,short snippets per user,user,4E98F91F-4654-42EF-B908-A3389443F2E7,2
+W2,short snippets per user,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,1
+W2,short snippets per user,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,1
+W2,short snippets per user,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,1
+W2,short snippets per user,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,1
+W2,short snippets per user,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,1
+W2,short snippets per user,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,1
+W2,short snippets per user,user,11B5EC4D-4133-4289-B475-4E737182A406,1
+W2,short snippets per user,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,1
+W2,short snippets per user,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,1
+W2,short snippets per user,user,136562B6-95B2-483D-88DC-065F28409FD2,1
+W2,code,,,experiments/04_frozen-benchmark_es-shl/build.py:170
+W2,commit,,,b1e2a9c
+W3,snippets stored in full,total,,376952
+W3,snippets stored in full,class,(none),70080
+W3,snippets stored in full,class,bike,5017
+W3,snippets stored in full,class,bus,1794
+W3,snippets stored in full,class,car,11248
+W3,snippets stored in full,class,run,1090
+W3,snippets stored in full,class,still,265065
+W3,snippets stored in full,class,train,339
+W3,snippets stored in full,class,walk,22319
+W3,snippets stored in full,platform,android,156035
+W3,snippets stored in full,platform,iphone,220917
+W3,snippets stored in full,split,dev,303889
+W3,snippets stored in full,split,test,73063
+W3,snippets stored in full,user,00EABED2-271D-49D8-B599-1D4A09240601,2285
+W3,snippets stored in full,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,6808
+W3,snippets stored in full,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,3960
+W3,snippets stored in full,user,0BFC35E2-4817-4865-BFA7-764742302A2D,3090
+W3,snippets stored in full,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,7513
+W3,snippets stored in full,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,2685
+W3,snippets stored in full,user,11B5EC4D-4133-4289-B475-4E737182A406,8844
+W3,snippets stored in full,user,136562B6-95B2-483D-88DC-065F28409FD2,6218
+W3,snippets stored in full,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,6549
+W3,snippets stored in full,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,7356
+W3,snippets stored in full,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,4771
+W3,snippets stored in full,user,27E04243-B138-4F40-A164-F40B60165CF3,4923
+W3,snippets stored in full,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,8515
+W3,snippets stored in full,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,6164
+W3,snippets stored in full,user,3600D531-0C55-44A7-AE95-A7A38519464E,5202
+W3,snippets stored in full,user,40E170A7-607B-4578-AF04-F021C3B0384A,7647
+W3,snippets stored in full,user,481F4DD2-7689-43B9-A2AA-C8772227162B,6688
+W3,snippets stored in full,user,4E98F91F-4654-42EF-B908-A3389443F2E7,3244
+W3,snippets stored in full,user,4FC32141-E888-4BFF-8804-12559A491D8C,4979
+W3,snippets stored in full,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,6617
+W3,snippets stored in full,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,6617
+W3,snippets stored in full,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,5946
+W3,snippets stored in full,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,7536
+W3,snippets stored in full,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,3907
+W3,snippets stored in full,user,61359772-D8D8-480D-B623-7C636EAD0C81,6072
+W3,snippets stored in full,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,8728
+W3,snippets stored in full,user,665514DE-49DC-421F-8DCB-145D0B2609AD,9165
+W3,snippets stored in full,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,7267
+W3,snippets stored in full,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,11996
+W3,snippets stored in full,user,797D145F-3858-4A7F-A7C2-A4EB721E133C,3593
+W3,snippets stored in full,user,7CE37510-56D0-4120-A1CF-0E23351428D2,9760
+W3,snippets stored in full,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,1600
+W3,snippets stored in full,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,9186
+W3,snippets stored in full,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,9239
+W3,snippets stored in full,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,6326
+W3,snippets stored in full,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,9539
+W3,snippets stored in full,user,86A4F379-B305-473D-9D83-FC7D800180EF,10714
+W3,snippets stored in full,user,96A358A0-FFF2-4239-B93E-C7425B901B47,5807
+W3,snippets stored in full,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,9959
+W3,snippets stored in full,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,6027
+W3,snippets stored in full,user,9DC38D04-E82E-4F29-AB52-B476535226F2,9684
+W3,snippets stored in full,user,A5A30F76-581E-4757-97A2-957553A2C6AA,1667
+W3,snippets stored in full,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,6040
+W3,snippets stored in full,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,3898
+W3,snippets stored in full,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,7520
+W3,snippets stored in full,user,B09E373F-8A54-44C8-895B-0039390B859F,8133
+W3,snippets stored in full,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,9383
+W3,snippets stored in full,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,7626
+W3,snippets stored in full,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,8309
+W3,snippets stored in full,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,3450
+W3,snippets stored in full,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,5074
+W3,snippets stored in full,user,CA820D43-E5E2-42EF-9798-BE56F776370B,7864
+W3,snippets stored in full,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,8393
+W3,snippets stored in full,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,2860
+W3,snippets stored in full,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,3615
+W3,snippets stored in full,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,6210
+W3,snippets stored in full,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,3441
+W3,snippets stored in full,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,3529
+W3,snippets stored in full,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,2242
+W3,snippets stored in full,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,4972
+W3,code,,,experiments/04_frozen-benchmark_es-shl/build.py:204
+W3,commit,,,b1e2a9c
+L1,minutes with a class (rules v2 'ok'),total,,221285
+L1,minutes with a class (rules v2 'ok'),class,bike,4878
+L1,minutes with a class (rules v2 'ok'),class,bus,1793
+L1,minutes with a class (rules v2 'ok'),class,car,11166
+L1,minutes with a class (rules v2 'ok'),class,run,762
+L1,minutes with a class (rules v2 'ok'),class,still,181103
+L1,minutes with a class (rules v2 'ok'),class,train,342
+L1,minutes with a class (rules v2 'ok'),class,walk,21241
+L1,minutes with a class (rules v2 'ok'),platform,android,97407
+L1,minutes with a class (rules v2 'ok'),platform,iphone,123878
+L1,minutes with a class (rules v2 'ok'),split,dev,177110
+L1,minutes with a class (rules v2 'ok'),split,test,44175
+L1,minutes with a class (rules v2 'ok'),user,00EABED2-271D-49D8-B599-1D4A09240601,1642
+L1,minutes with a class (rules v2 'ok'),user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,3529
+L1,minutes with a class (rules v2 'ok'),user,0A986513-7828-4D53-AA1F-E02D6DF9561B,2734
+L1,minutes with a class (rules v2 'ok'),user,0BFC35E2-4817-4865-BFA7-764742302A2D,2187
+L1,minutes with a class (rules v2 'ok'),user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,6152
+L1,minutes with a class (rules v2 'ok'),user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,2048
+L1,minutes with a class (rules v2 'ok'),user,11B5EC4D-4133-4289-B475-4E737182A406,2910
+L1,minutes with a class (rules v2 'ok'),user,136562B6-95B2-483D-88DC-065F28409FD2,5091
+L1,minutes with a class (rules v2 'ok'),user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,4140
+L1,minutes with a class (rules v2 'ok'),user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,6131
+L1,minutes with a class (rules v2 'ok'),user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,3207
+L1,minutes with a class (rules v2 'ok'),user,27E04243-B138-4F40-A164-F40B60165CF3,1770
+L1,minutes with a class (rules v2 'ok'),user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,3930
+L1,minutes with a class (rules v2 'ok'),user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,3173
+L1,minutes with a class (rules v2 'ok'),user,3600D531-0C55-44A7-AE95-A7A38519464E,2746
+L1,minutes with a class (rules v2 'ok'),user,40E170A7-607B-4578-AF04-F021C3B0384A,6509
+L1,minutes with a class (rules v2 'ok'),user,481F4DD2-7689-43B9-A2AA-C8772227162B,4800
+L1,minutes with a class (rules v2 'ok'),user,4E98F91F-4654-42EF-B908-A3389443F2E7,1724
+L1,minutes with a class (rules v2 'ok'),user,4FC32141-E888-4BFF-8804-12559A491D8C,2695
+L1,minutes with a class (rules v2 'ok'),user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,4492
+L1,minutes with a class (rules v2 'ok'),user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,3924
+L1,minutes with a class (rules v2 'ok'),user,59818CD2-24D7-4D32-B133-24C2FE3801E5,2744
+L1,minutes with a class (rules v2 'ok'),user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,5412
+L1,minutes with a class (rules v2 'ok'),user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,2222
+L1,minutes with a class (rules v2 'ok'),user,61359772-D8D8-480D-B623-7C636EAD0C81,4827
+L1,minutes with a class (rules v2 'ok'),user,61976C24-1C50-4355-9C49-AAE44A7D09F6,4228
+L1,minutes with a class (rules v2 'ok'),user,665514DE-49DC-421F-8DCB-145D0B2609AD,7402
+L1,minutes with a class (rules v2 'ok'),user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,4355
+L1,minutes with a class (rules v2 'ok'),user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,5916
+L1,minutes with a class (rules v2 'ok'),user,797D145F-3858-4A7F-A7C2-A4EB721E133C,2839
+L1,minutes with a class (rules v2 'ok'),user,7CE37510-56D0-4120-A1CF-0E23351428D2,5969
+L1,minutes with a class (rules v2 'ok'),user,7D9BB102-A612-4E2A-8E22-3159752F55D8,684
+L1,minutes with a class (rules v2 'ok'),user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,5544
+L1,minutes with a class (rules v2 'ok'),user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,6135
+L1,minutes with a class (rules v2 'ok'),user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,3416
+L1,minutes with a class (rules v2 'ok'),user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,5358
+L1,minutes with a class (rules v2 'ok'),user,86A4F379-B305-473D-9D83-FC7D800180EF,2638
+L1,minutes with a class (rules v2 'ok'),user,96A358A0-FFF2-4239-B93E-C7425B901B47,705
+L1,minutes with a class (rules v2 'ok'),user,9759096F-1119-4E19-A0AD-6F16989C7E1C,3954
+L1,minutes with a class (rules v2 'ok'),user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,3571
+L1,minutes with a class (rules v2 'ok'),user,9DC38D04-E82E-4F29-AB52-B476535226F2,6755
+L1,minutes with a class (rules v2 'ok'),user,A5A30F76-581E-4757-97A2-957553A2C6AA,1106
+L1,minutes with a class (rules v2 'ok'),user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,3437
+L1,minutes with a class (rules v2 'ok'),user,A7599A50-24AE-46A6-8EA6-2576F1011D81,3425
+L1,minutes with a class (rules v2 'ok'),user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,4610
+L1,minutes with a class (rules v2 'ok'),user,B09E373F-8A54-44C8-895B-0039390B859F,3157
+L1,minutes with a class (rules v2 'ok'),user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,5823
+L1,minutes with a class (rules v2 'ok'),user,B9724848-C7E2-45F4-9B3F-A1F38D864495,4805
+L1,minutes with a class (rules v2 'ok'),user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,5887
+L1,minutes with a class (rules v2 'ok'),user,BEF6C611-50DA-4971-A040-87FB979F3FC1,1835
+L1,minutes with a class (rules v2 'ok'),user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,3378
+L1,minutes with a class (rules v2 'ok'),user,CA820D43-E5E2-42EF-9798-BE56F776370B,4065
+L1,minutes with a class (rules v2 'ok'),user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,4630
+L1,minutes with a class (rules v2 'ok'),user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,1574
+L1,minutes with a class (rules v2 'ok'),user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,3148
+L1,minutes with a class (rules v2 'ok'),user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,3228
+L1,minutes with a class (rules v2 'ok'),user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,1548
+L1,minutes with a class (rules v2 'ok'),user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,1213
+L1,minutes with a class (rules v2 'ok'),user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,2050
+L1,minutes with a class (rules v2 'ok'),user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,2158
+L1,code,,,src/tmd/extrasensory.py:27
+L1,commit,,,cb8a024
+L2,train minutes from original ON_A_TRAIN,total,,344
+L2,train minutes from original ON_A_TRAIN,class,train,344
+L2,train minutes from original ON_A_TRAIN,platform,android,251
+L2,train minutes from original ON_A_TRAIN,platform,iphone,93
+L2,train minutes from original ON_A_TRAIN,split,dev,190
+L2,train minutes from original ON_A_TRAIN,split,test,154
+L2,train minutes from original ON_A_TRAIN,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,117
+L2,train minutes from original ON_A_TRAIN,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,37
+L2,train minutes from original ON_A_TRAIN,user,3600D531-0C55-44A7-AE95-A7A38519464E,69
+L2,train minutes from original ON_A_TRAIN,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,24
+L2,train minutes from original ON_A_TRAIN,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,97
+L2,train minutes the cleaned CSV calls SITTING,total,,338
+L2,code,,,src/tmd/extrasensory.py:28
+L2,commit,,,7f435c5
+L3,bus minutes with 'passenger',total,,475
+L3,bus minutes with 'passenger',class,bus,475
+L3,bus minutes with 'passenger',platform,iphone,475
+L3,bus minutes with 'passenger',split,dev,475
+L3,bus minutes with 'passenger',user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,305
+L3,bus minutes with 'passenger',user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,170
+L3,car minutes via 'passenger' only,total,,839
+L3,code,,,src/tmd/extrasensory.py:110
+L3,commit,,,7f435c5
+L4,label_source share of official examples,class bike,2,0.755
+L4,label_source share of official examples,class bike,1,0.153
+L4,label_source share of official examples,class bike,6,0.038
+L4,label_source share of official examples,class bike,4,0.03
+L4,label_source share of official examples,class bike,5,0.019
+L4,label_source share of official examples,class bike,0,0.006
+L4,label_source share of official examples,class bike,3,0.001
+L4,label_source share of official examples,class bus,2,0.724
+L4,label_source share of official examples,class bus,1,0.216
+L4,label_source share of official examples,class bus,6,0.024
+L4,label_source share of official examples,class bus,5,0.02
+L4,label_source share of official examples,class bus,4,0.01
+L4,label_source share of official examples,class bus,0,0.006
+L4,label_source share of official examples,class bus,3,0.001
+L4,label_source share of official examples,class car,2,0.785
+L4,label_source share of official examples,class car,1,0.139
+L4,label_source share of official examples,class car,6,0.038
+L4,label_source share of official examples,class car,4,0.017
+L4,label_source share of official examples,class car,5,0.015
+L4,label_source share of official examples,class car,0,0.006
+L4,label_source share of official examples,class car,3,0.001
+L4,label_source share of official examples,class run,2,0.564
+L4,label_source share of official examples,class run,1,0.346
+L4,label_source share of official examples,class run,4,0.086
+L4,label_source share of official examples,class run,0,0.004
+L4,label_source share of official examples,class still,2,0.811
+L4,label_source share of official examples,class still,1,0.085
+L4,label_source share of official examples,class still,6,0.056
+L4,label_source share of official examples,class still,4,0.03
+L4,label_source share of official examples,class still,5,0.014
+L4,label_source share of official examples,class still,0,0.003
+L4,label_source share of official examples,class still,3,0.001
+L4,label_source share of official examples,class train,2,0.628
+L4,label_source share of official examples,class train,1,0.252
+L4,label_source share of official examples,class train,6,0.079
+L4,label_source share of official examples,class train,5,0.033
+L4,label_source share of official examples,class train,4,0.008
+L4,label_source share of official examples,class walk,2,0.834
+L4,label_source share of official examples,class walk,1,0.092
+L4,label_source share of official examples,class walk,6,0.025
+L4,label_source share of official examples,class walk,5,0.024
+L4,label_source share of official examples,class walk,4,0.019
+L4,label_source share of official examples,class walk,0,0.006
+L4,label_source share of official examples,class walk,3,0.001
+L4,code,,,src/tmd/extrasensory.py:127
+L4,commit,,,7f435c5
+L5,unlabelled minutes with a window,total,,66796
+L5,unlabelled minutes with a window,class,(none),66796
+L5,unlabelled minutes with a window,platform,android,24293
+L5,unlabelled minutes with a window,platform,iphone,42503
+L5,unlabelled minutes with a window,split,dev,49444
+L5,unlabelled minutes with a window,split,test,17352
+L5,unlabelled minutes with a window,user,00EABED2-271D-49D8-B599-1D4A09240601,167
+L5,unlabelled minutes with a window,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,1339
+L5,unlabelled minutes with a window,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,81
+L5,unlabelled minutes with a window,user,0BFC35E2-4817-4865-BFA7-764742302A2D,776
+L5,unlabelled minutes with a window,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,38
+L5,unlabelled minutes with a window,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,4
+L5,unlabelled minutes with a window,user,11B5EC4D-4133-4289-B475-4E737182A406,3342
+L5,unlabelled minutes with a window,user,136562B6-95B2-483D-88DC-065F28409FD2,240
+L5,unlabelled minutes with a window,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,123
+L5,unlabelled minutes with a window,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,95
+L5,unlabelled minutes with a window,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,1541
+L5,unlabelled minutes with a window,user,27E04243-B138-4F40-A164-F40B60165CF3,1209
+L5,unlabelled minutes with a window,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,1862
+L5,unlabelled minutes with a window,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,1366
+L5,unlabelled minutes with a window,user,3600D531-0C55-44A7-AE95-A7A38519464E,1435
+L5,unlabelled minutes with a window,user,40E170A7-607B-4578-AF04-F021C3B0384A,525
+L5,unlabelled minutes with a window,user,481F4DD2-7689-43B9-A2AA-C8772227162B,620
+L5,unlabelled minutes with a window,user,4E98F91F-4654-42EF-B908-A3389443F2E7,587
+L5,unlabelled minutes with a window,user,4FC32141-E888-4BFF-8804-12559A491D8C,395
+L5,unlabelled minutes with a window,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,612
+L5,unlabelled minutes with a window,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,230
+L5,unlabelled minutes with a window,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,3139
+L5,unlabelled minutes with a window,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,39
+L5,unlabelled minutes with a window,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,560
+L5,unlabelled minutes with a window,user,61359772-D8D8-480D-B623-7C636EAD0C81,152
+L5,unlabelled minutes with a window,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,2989
+L5,unlabelled minutes with a window,user,665514DE-49DC-421F-8DCB-145D0B2609AD,1741
+L5,unlabelled minutes with a window,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,426
+L5,unlabelled minutes with a window,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,3681
+L5,unlabelled minutes with a window,user,797D145F-3858-4A7F-A7C2-A4EB721E133C,754
+L5,unlabelled minutes with a window,user,7CE37510-56D0-4120-A1CF-0E23351428D2,356
+L5,unlabelled minutes with a window,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,916
+L5,unlabelled minutes with a window,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,1350
+L5,unlabelled minutes with a window,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,241
+L5,unlabelled minutes with a window,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,218
+L5,unlabelled minutes with a window,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,649
+L5,unlabelled minutes with a window,user,86A4F379-B305-473D-9D83-FC7D800180EF,6158
+L5,unlabelled minutes with a window,user,96A358A0-FFF2-4239-B93E-C7425B901B47,2804
+L5,unlabelled minutes with a window,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,1983
+L5,unlabelled minutes with a window,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,529
+L5,unlabelled minutes with a window,user,9DC38D04-E82E-4F29-AB52-B476535226F2,290
+L5,unlabelled minutes with a window,user,A5A30F76-581E-4757-97A2-957553A2C6AA,2
+L5,unlabelled minutes with a window,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,2043
+L5,unlabelled minutes with a window,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,116
+L5,unlabelled minutes with a window,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,48
+L5,unlabelled minutes with a window,user,B09E373F-8A54-44C8-895B-0039390B859F,3484
+L5,unlabelled minutes with a window,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,1242
+L5,unlabelled minutes with a window,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,374
+L5,unlabelled minutes with a window,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,2422
+L5,unlabelled minutes with a window,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,1362
+L5,unlabelled minutes with a window,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,552
+L5,unlabelled minutes with a window,user,CA820D43-E5E2-42EF-9798-BE56F776370B,1476
+L5,unlabelled minutes with a window,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,142
+L5,unlabelled minutes with a window,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,26
+L5,unlabelled minutes with a window,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,85
+L5,unlabelled minutes with a window,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,1330
+L5,unlabelled minutes with a window,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,1415
+L5,unlabelled minutes with a window,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,2292
+L5,unlabelled minutes with a window,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,8
+L5,unlabelled minutes with a window,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,2815
+L5,code,,,src/tmd/bench.py:106
+L5,commit,,,a711d65
+X1,minutes with reason drop:SLEEPING,total,,83055
+X1,minutes with reason drop:SLEEPING,class,still,83055
+X1,minutes with reason drop:SLEEPING,platform,android,30360
+X1,minutes with reason drop:SLEEPING,platform,iphone,52695
+X1,minutes with reason drop:SLEEPING,split,dev,73184
+X1,minutes with reason drop:SLEEPING,split,test,9871
+X1,minutes with reason drop:SLEEPING,user,00EABED2-271D-49D8-B599-1D4A09240601,477
+X1,minutes with reason drop:SLEEPING,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,1742
+X1,minutes with reason drop:SLEEPING,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,1145
+X1,minutes with reason drop:SLEEPING,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,1312
+X1,minutes with reason drop:SLEEPING,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,633
+X1,minutes with reason drop:SLEEPING,user,11B5EC4D-4133-4289-B475-4E737182A406,2525
+X1,minutes with reason drop:SLEEPING,user,136562B6-95B2-483D-88DC-065F28409FD2,876
+X1,minutes with reason drop:SLEEPING,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,2286
+X1,minutes with reason drop:SLEEPING,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,1035
+X1,minutes with reason drop:SLEEPING,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,1
+X1,minutes with reason drop:SLEEPING,user,27E04243-B138-4F40-A164-F40B60165CF3,1115
+X1,minutes with reason drop:SLEEPING,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,2409
+X1,minutes with reason drop:SLEEPING,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,1317
+X1,minutes with reason drop:SLEEPING,user,3600D531-0C55-44A7-AE95-A7A38519464E,1021
+X1,minutes with reason drop:SLEEPING,user,40E170A7-607B-4578-AF04-F021C3B0384A,615
+X1,minutes with reason drop:SLEEPING,user,481F4DD2-7689-43B9-A2AA-C8772227162B,1097
+X1,minutes with reason drop:SLEEPING,user,4E98F91F-4654-42EF-B908-A3389443F2E7,892
+X1,minutes with reason drop:SLEEPING,user,4FC32141-E888-4BFF-8804-12559A491D8C,1860
+X1,minutes with reason drop:SLEEPING,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,1458
+X1,minutes with reason drop:SLEEPING,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,2440
+X1,minutes with reason drop:SLEEPING,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,63
+X1,minutes with reason drop:SLEEPING,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,2074
+X1,minutes with reason drop:SLEEPING,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,1107
+X1,minutes with reason drop:SLEEPING,user,61359772-D8D8-480D-B623-7C636EAD0C81,1093
+X1,minutes with reason drop:SLEEPING,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,1432
+X1,minutes with reason drop:SLEEPING,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,2485
+X1,minutes with reason drop:SLEEPING,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,2399
+X1,minutes with reason drop:SLEEPING,user,7CE37510-56D0-4120-A1CF-0E23351428D2,3420
+X1,minutes with reason drop:SLEEPING,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,2292
+X1,minutes with reason drop:SLEEPING,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,2702
+X1,minutes with reason drop:SLEEPING,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,2269
+X1,minutes with reason drop:SLEEPING,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,3470
+X1,minutes with reason drop:SLEEPING,user,86A4F379-B305-473D-9D83-FC7D800180EF,1876
+X1,minutes with reason drop:SLEEPING,user,96A358A0-FFF2-4239-B93E-C7425B901B47,1082
+X1,minutes with reason drop:SLEEPING,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,3714
+X1,minutes with reason drop:SLEEPING,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,1913
+X1,minutes with reason drop:SLEEPING,user,9DC38D04-E82E-4F29-AB52-B476535226F2,2552
+X1,minutes with reason drop:SLEEPING,user,A5A30F76-581E-4757-97A2-957553A2C6AA,517
+X1,minutes with reason drop:SLEEPING,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,510
+X1,minutes with reason drop:SLEEPING,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,352
+X1,minutes with reason drop:SLEEPING,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,2690
+X1,minutes with reason drop:SLEEPING,user,B09E373F-8A54-44C8-895B-0039390B859F,1482
+X1,minutes with reason drop:SLEEPING,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,2310
+X1,minutes with reason drop:SLEEPING,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,2422
+X1,minutes with reason drop:SLEEPING,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,1031
+X1,minutes with reason drop:SLEEPING,user,CA820D43-E5E2-42EF-9798-BE56F776370B,2305
+X1,minutes with reason drop:SLEEPING,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,3433
+X1,minutes with reason drop:SLEEPING,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,1260
+X1,minutes with reason drop:SLEEPING,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,289
+X1,minutes with reason drop:SLEEPING,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,1607
+X1,minutes with reason drop:SLEEPING,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,448
+X1,minutes with reason drop:SLEEPING,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,25
+X1,minutes with reason drop:SLEEPING,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,175
+X1,code,,,src/tmd/extrasensory.py:123
+X1,commit,,,cb8a024
+X2,minutes with reason drop:not_carried,total,,1078
+X2,minutes with reason drop:not_carried,class,run,146
+X2,minutes with reason drop:not_carried,class,walk,932
+X2,minutes with reason drop:not_carried,platform,android,281
+X2,minutes with reason drop:not_carried,platform,iphone,797
+X2,minutes with reason drop:not_carried,split,dev,1004
+X2,minutes with reason drop:not_carried,split,test,74
+X2,minutes with reason drop:not_carried,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,12
+X2,minutes with reason drop:not_carried,user,11B5EC4D-4133-4289-B475-4E737182A406,6
+X2,minutes with reason drop:not_carried,user,136562B6-95B2-483D-88DC-065F28409FD2,11
+X2,minutes with reason drop:not_carried,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,24
+X2,minutes with reason drop:not_carried,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,22
+X2,minutes with reason drop:not_carried,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,279
+X2,minutes with reason drop:not_carried,user,481F4DD2-7689-43B9-A2AA-C8772227162B,155
+X2,minutes with reason drop:not_carried,user,4FC32141-E888-4BFF-8804-12559A491D8C,29
+X2,minutes with reason drop:not_carried,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,46
+X2,minutes with reason drop:not_carried,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,15
+X2,minutes with reason drop:not_carried,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,19
+X2,minutes with reason drop:not_carried,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,81
+X2,minutes with reason drop:not_carried,user,7CE37510-56D0-4120-A1CF-0E23351428D2,6
+X2,minutes with reason drop:not_carried,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,59
+X2,minutes with reason drop:not_carried,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,62
+X2,minutes with reason drop:not_carried,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,1
+X2,minutes with reason drop:not_carried,user,9DC38D04-E82E-4F29-AB52-B476535226F2,89
+X2,minutes with reason drop:not_carried,user,A5A30F76-581E-4757-97A2-957553A2C6AA,6
+X2,minutes with reason drop:not_carried,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,14
+X2,minutes with reason drop:not_carried,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,3
+X2,minutes with reason drop:not_carried,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,17
+X2,minutes with reason drop:not_carried,user,B09E373F-8A54-44C8-895B-0039390B859F,11
+X2,minutes with reason drop:not_carried,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,7
+X2,minutes with reason drop:not_carried,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,24
+X2,minutes with reason drop:not_carried,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,2
+X2,minutes with reason drop:not_carried,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,33
+X2,minutes with reason drop:not_carried,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,45
+X2,code,,,src/tmd/extrasensory.py:124
+X2,commit,,,cb8a024
+X3,included windows: quiet walk / run / bike,total,,3183
+X3,included windows: quiet walk / run / bike,class,bike,398
+X3,included windows: quiet walk / run / bike,class,run,162
+X3,included windows: quiet walk / run / bike,class,walk,2623
+X3,included windows: quiet walk / run / bike,platform,android,1368
+X3,included windows: quiet walk / run / bike,platform,iphone,1815
+X3,included windows: quiet walk / run / bike,split,dev,2677
+X3,included windows: quiet walk / run / bike,split,test,506
+X3,included windows: quiet walk / run / bike,user,00EABED2-271D-49D8-B599-1D4A09240601,40
+X3,included windows: quiet walk / run / bike,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,6
+X3,included windows: quiet walk / run / bike,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,16
+X3,included windows: quiet walk / run / bike,user,0BFC35E2-4817-4865-BFA7-764742302A2D,28
+X3,included windows: quiet walk / run / bike,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,302
+X3,included windows: quiet walk / run / bike,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,4
+X3,included windows: quiet walk / run / bike,user,136562B6-95B2-483D-88DC-065F28409FD2,42
+X3,included windows: quiet walk / run / bike,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,246
+X3,included windows: quiet walk / run / bike,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,96
+X3,included windows: quiet walk / run / bike,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,14
+X3,included windows: quiet walk / run / bike,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,20
+X3,included windows: quiet walk / run / bike,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,14
+X3,included windows: quiet walk / run / bike,user,3600D531-0C55-44A7-AE95-A7A38519464E,5
+X3,included windows: quiet walk / run / bike,user,40E170A7-607B-4578-AF04-F021C3B0384A,163
+X3,included windows: quiet walk / run / bike,user,481F4DD2-7689-43B9-A2AA-C8772227162B,121
+X3,included windows: quiet walk / run / bike,user,4FC32141-E888-4BFF-8804-12559A491D8C,18
+X3,included windows: quiet walk / run / bike,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,36
+X3,included windows: quiet walk / run / bike,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,107
+X3,included windows: quiet walk / run / bike,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,44
+X3,included windows: quiet walk / run / bike,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,59
+X3,included windows: quiet walk / run / bike,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,20
+X3,included windows: quiet walk / run / bike,user,61359772-D8D8-480D-B623-7C636EAD0C81,119
+X3,included windows: quiet walk / run / bike,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,17
+X3,included windows: quiet walk / run / bike,user,665514DE-49DC-421F-8DCB-145D0B2609AD,97
+X3,included windows: quiet walk / run / bike,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,188
+X3,included windows: quiet walk / run / bike,user,7CE37510-56D0-4120-A1CF-0E23351428D2,51
+X3,included windows: quiet walk / run / bike,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,4
+X3,included windows: quiet walk / run / bike,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,47
+X3,included windows: quiet walk / run / bike,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,9
+X3,included windows: quiet walk / run / bike,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,55
+X3,included windows: quiet walk / run / bike,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,113
+X3,included windows: quiet walk / run / bike,user,86A4F379-B305-473D-9D83-FC7D800180EF,98
+X3,included windows: quiet walk / run / bike,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,33
+X3,included windows: quiet walk / run / bike,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,78
+X3,included windows: quiet walk / run / bike,user,9DC38D04-E82E-4F29-AB52-B476535226F2,110
+X3,included windows: quiet walk / run / bike,user,A5A30F76-581E-4757-97A2-957553A2C6AA,8
+X3,included windows: quiet walk / run / bike,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,2
+X3,included windows: quiet walk / run / bike,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,61
+X3,included windows: quiet walk / run / bike,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,156
+X3,included windows: quiet walk / run / bike,user,B09E373F-8A54-44C8-895B-0039390B859F,123
+X3,included windows: quiet walk / run / bike,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,10
+X3,included windows: quiet walk / run / bike,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,153
+X3,included windows: quiet walk / run / bike,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,27
+X3,included windows: quiet walk / run / bike,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,66
+X3,included windows: quiet walk / run / bike,user,CA820D43-E5E2-42EF-9798-BE56F776370B,19
+X3,included windows: quiet walk / run / bike,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,2
+X3,included windows: quiet walk / run / bike,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,31
+X3,included windows: quiet walk / run / bike,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,5
+X3,included windows: quiet walk / run / bike,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,7
+X3,included windows: quiet walk / run / bike,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,75
+X3,included windows: quiet walk / run / bike,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,18
+X3,code,,,experiments/04_frozen-benchmark_es-shl/build.py:52
+X3,commit,,,cf1085c
+X4,still minutes capped,total,,62499
+X4,still minutes capped,class,still,62499
+X4,still minutes capped,platform,android,30435
+X4,still minutes capped,platform,iphone,32064
+X4,still minutes capped,split,dev,48195
+X4,still minutes capped,split,test,14304
+X4,still minutes capped,user,00EABED2-271D-49D8-B599-1D4A09240601,1069
+X4,still minutes capped,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,61
+X4,still minutes capped,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,1320
+X4,still minutes capped,user,11B5EC4D-4133-4289-B475-4E737182A406,1642
+X4,still minutes capped,user,136562B6-95B2-483D-88DC-065F28409FD2,181
+X4,still minutes capped,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,3204
+X4,still minutes capped,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,417
+X4,still minutes capped,user,27E04243-B138-4F40-A164-F40B60165CF3,657
+X4,still minutes capped,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,1380
+X4,still minutes capped,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,554
+X4,still minutes capped,user,3600D531-0C55-44A7-AE95-A7A38519464E,1128
+X4,still minutes capped,user,481F4DD2-7689-43B9-A2AA-C8772227162B,2458
+X4,still minutes capped,user,4E98F91F-4654-42EF-B908-A3389443F2E7,492
+X4,still minutes capped,user,4FC32141-E888-4BFF-8804-12559A491D8C,177
+X4,still minutes capped,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,1411
+X4,still minutes capped,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,1254
+X4,still minutes capped,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,2873
+X4,still minutes capped,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,1482
+X4,still minutes capped,user,61359772-D8D8-480D-B623-7C636EAD0C81,1610
+X4,still minutes capped,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,2757
+X4,still minutes capped,user,665514DE-49DC-421F-8DCB-145D0B2609AD,5031
+X4,still minutes capped,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,1241
+X4,still minutes capped,user,7CE37510-56D0-4120-A1CF-0E23351428D2,2234
+X4,still minutes capped,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,538
+X4,still minutes capped,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,2251
+X4,still minutes capped,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,2959
+X4,still minutes capped,user,86A4F379-B305-473D-9D83-FC7D800180EF,74
+X4,still minutes capped,user,96A358A0-FFF2-4239-B93E-C7425B901B47,133
+X4,still minutes capped,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,381
+X4,still minutes capped,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,1325
+X4,still minutes capped,user,9DC38D04-E82E-4F29-AB52-B476535226F2,2586
+X4,still minutes capped,user,A5A30F76-581E-4757-97A2-957553A2C6AA,92
+X4,still minutes capped,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,939
+X4,still minutes capped,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,1493
+X4,still minutes capped,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,882
+X4,still minutes capped,user,B09E373F-8A54-44C8-895B-0039390B859F,1257
+X4,still minutes capped,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,3638
+X4,still minutes capped,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,1992
+X4,still minutes capped,user,CA820D43-E5E2-42EF-9798-BE56F776370B,691
+X4,still minutes capped,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,1989
+X4,still minutes capped,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,2246
+X4,still minutes capped,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,938
+X4,still minutes capped,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,752
+X4,still minutes capped,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,710
+X4,resting share of official still,total,,0.143
+X4,"no position reported, share of official still",total,,0.616
+X4,code,,,src/tmd/extrasensory.py:139
+X4,commit,,,cb8a024
+X5,minutes with reason conflict,total,,18
+X5,minutes with reason conflict,class,bus,1
+X5,minutes with reason conflict,class,run,15
+X5,minutes with reason conflict,class,train,2
+X5,minutes with reason conflict,platform,android,3
+X5,minutes with reason conflict,platform,iphone,15
+X5,minutes with reason conflict,split,dev,16
+X5,minutes with reason conflict,split,test,2
+X5,minutes with reason conflict,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,2
+X5,minutes with reason conflict,user,A5A30F76-581E-4757-97A2-957553A2C6AA,1
+X5,minutes with reason conflict,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,15
+X5,code,,,src/tmd/extrasensory.py:118
+X5,commit,,,7f435c5
+X6,minutes with reason check:MOTORBIKE,total,,86
+X6,minutes with reason check:MOTORBIKE,class,car,86
+X6,minutes with reason check:MOTORBIKE,platform,android,86
+X6,minutes with reason check:MOTORBIKE,split,test,86
+X6,minutes with reason check:MOTORBIKE,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,86
+X6,code,,,src/tmd/extrasensory.py:45
+X6,commit,,,7f435c5
+X7,minutes with another transport / exercise label,total,,1471
+X7,minutes with another transport / exercise label,class,(none),16
+X7,minutes with another transport / exercise label,class,bike,142
+X7,minutes with another transport / exercise label,class,run,167
+X7,minutes with another transport / exercise label,class,still,996
+X7,minutes with another transport / exercise label,class,walk,150
+X7,minutes with another transport / exercise label,platform,android,415
+X7,minutes with another transport / exercise label,platform,iphone,1056
+X7,minutes with another transport / exercise label,split,dev,1020
+X7,minutes with another transport / exercise label,split,test,451
+X7,minutes with another transport / exercise label,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,197
+X7,minutes with another transport / exercise label,user,11B5EC4D-4133-4289-B475-4E737182A406,62
+X7,minutes with another transport / exercise label,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,35
+X7,minutes with another transport / exercise label,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,218
+X7,minutes with another transport / exercise label,user,3600D531-0C55-44A7-AE95-A7A38519464E,1
+X7,minutes with another transport / exercise label,user,481F4DD2-7689-43B9-A2AA-C8772227162B,8
+X7,minutes with another transport / exercise label,user,4E98F91F-4654-42EF-B908-A3389443F2E7,38
+X7,minutes with another transport / exercise label,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,9
+X7,minutes with another transport / exercise label,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,23
+X7,minutes with another transport / exercise label,user,7CE37510-56D0-4120-A1CF-0E23351428D2,9
+X7,minutes with another transport / exercise label,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,77
+X7,minutes with another transport / exercise label,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,307
+X7,minutes with another transport / exercise label,user,A5A30F76-581E-4757-97A2-957553A2C6AA,35
+X7,minutes with another transport / exercise label,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,36
+X7,minutes with another transport / exercise label,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,155
+X7,minutes with another transport / exercise label,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,1
+X7,minutes with another transport / exercise label,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,1
+X7,minutes with another transport / exercise label,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,128
+X7,minutes with another transport / exercise label,user,CA820D43-E5E2-42EF-9798-BE56F776370B,18
+X7,minutes with another transport / exercise label,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,38
+X7,minutes with another transport / exercise label,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,45
+X7,minutes with another transport / exercise label,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,30
+X7,minutes per label,label,ON_A_PLANE,630
+X7,minutes per label,label,ELLIPTICAL_MACHINE,233
+X7,minutes per label,label,ELEVATOR,200
+X7,minutes per label,label,TREADMILL,164
+X7,minutes per label,label,SKATEBOARDING,131
+X7,minutes per label,label,STATIONARY_BIKE,86
+X7,minutes per label,label,ON_A_BOAT,18
+X7,minutes per label,label,WHEELCHAIR,9
+X7,code,,,src/tmd/extrasensory.py:42
+X7,commit,,,7f435c5
+X8,included minutes of excluded users,total,,1835
+X8,included minutes of excluded users,class,car,213
+X8,included minutes of excluded users,class,still,1505
+X8,included minutes of excluded users,class,walk,117
+X8,included minutes of excluded users,platform,android,1835
+X8,included minutes of excluded users,split,dev,1835
+X8,included minutes of excluded users,user,BEF6C611-50DA-4971-A040-87FB979F3FC1,1835
+X8,code,,,src/tmd/extrasensory.py:55
+X8,commit,,,cf1085c
+P1,official test examples,total,,26394
+P1,official test examples,class,bike,876
+P1,official test examples,class,bus,287
+P1,official test examples,class,car,2130
+P1,official test examples,class,run,81
+P1,official test examples,class,still,19286
+P1,official test examples,class,train,52
+P1,official test examples,class,walk,3682
+P1,official test examples,platform,android,9885
+P1,official test examples,platform,iphone,16509
+P1,official test examples,split,test,26394
+P1,official test examples,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,3521
+P1,official test examples,user,0BFC35E2-4817-4865-BFA7-764742302A2D,1919
+P1,official test examples,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,768
+P1,official test examples,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,2776
+P1,official test examples,user,27E04243-B138-4F40-A164-F40B60165CF3,507
+P1,official test examples,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,2584
+P1,official test examples,user,665514DE-49DC-421F-8DCB-145D0B2609AD,2239
+P1,official test examples,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,5496
+P1,official test examples,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,2496
+P1,official test examples,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,1868
+P1,official test examples,user,B09E373F-8A54-44C8-895B-0039390B859F,1777
+P1,official test examples,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,443
+P1,test users with >= 5 examples,class,still,12
+P1,test users with >= 5 examples,class,walk,11
+P1,test users with >= 5 examples,class,run,4
+P1,test users with >= 5 examples,class,bike,6
+P1,test users with >= 5 examples,class,car,10
+P1,test users with >= 5 examples,class,bus,6
+P1,test users with >= 5 examples,class,train,2
+P1,location coverage,split,test,0.856
+P1,location coverage,split,dev,0.827
+P1,code,,,src/tmd/splits.py:76
+P1,commit,,,aef0a4c
+P2,official dev examples,total,,118986
+P2,official dev examples,class,bike,3118
+P2,official dev examples,class,bus,1348
+P2,official dev examples,class,car,8028
+P2,official dev examples,class,run,463
+P2,official dev examples,class,still,92730
+P2,official dev examples,class,train,190
+P2,official dev examples,class,walk,13109
+P2,official dev examples,platform,android,45528
+P2,official dev examples,platform,iphone,73458
+P2,official dev examples,split,dev,118986
+P2,official dev examples,user,00EABED2-271D-49D8-B599-1D4A09240601,532
+P2,official dev examples,user,0A986513-7828-4D53-AA1F-E02D6DF9561B,2657
+P2,official dev examples,user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,5843
+P2,official dev examples,user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,723
+P2,official dev examples,user,11B5EC4D-4133-4289-B475-4E737182A406,1267
+P2,official dev examples,user,136562B6-95B2-483D-88DC-065F28409FD2,4867
+P2,official dev examples,user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,3894
+P2,official dev examples,user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,2529
+P2,official dev examples,user,3600D531-0C55-44A7-AE95-A7A38519464E,1613
+P2,official dev examples,user,40E170A7-607B-4578-AF04-F021C3B0384A,6243
+P2,official dev examples,user,481F4DD2-7689-43B9-A2AA-C8772227162B,2075
+P2,official dev examples,user,4E98F91F-4654-42EF-B908-A3389443F2E7,1228
+P2,official dev examples,user,4FC32141-E888-4BFF-8804-12559A491D8C,2500
+P2,official dev examples,user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,3045
+P2,official dev examples,user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,2562
+P2,official dev examples,user,59818CD2-24D7-4D32-B133-24C2FE3801E5,2699
+P2,official dev examples,user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,2429
+P2,official dev examples,user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,717
+P2,official dev examples,user,61359772-D8D8-480D-B623-7C636EAD0C81,3081
+P2,official dev examples,user,61976C24-1C50-4355-9C49-AAE44A7D09F6,1452
+P2,official dev examples,user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,3091
+P2,official dev examples,user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,5728
+P2,official dev examples,user,797D145F-3858-4A7F-A7C2-A4EB721E133C,2839
+P2,official dev examples,user,7CE37510-56D0-4120-A1CF-0E23351428D2,3684
+P2,official dev examples,user,7D9BB102-A612-4E2A-8E22-3159752F55D8,142
+P2,official dev examples,user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,3860
+P2,official dev examples,user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,1299
+P2,official dev examples,user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,2286
+P2,official dev examples,user,86A4F379-B305-473D-9D83-FC7D800180EF,2445
+P2,official dev examples,user,96A358A0-FFF2-4239-B93E-C7425B901B47,169
+P2,official dev examples,user,9759096F-1119-4E19-A0AD-6F16989C7E1C,3539
+P2,official dev examples,user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,2088
+P2,official dev examples,user,9DC38D04-E82E-4F29-AB52-B476535226F2,4054
+P2,official dev examples,user,A5A30F76-581E-4757-97A2-957553A2C6AA,981
+P2,official dev examples,user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,3572
+P2,official dev examples,user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,2173
+P2,official dev examples,user,B9724848-C7E2-45F4-9B3F-A1F38D864495,4651
+P2,official dev examples,user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,5859
+P2,official dev examples,user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,1311
+P2,official dev examples,user,CA820D43-E5E2-42EF-9798-BE56F776370B,3355
+P2,official dev examples,user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,1300
+P2,official dev examples,user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,1542
+P2,official dev examples,user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,897
+P2,official dev examples,user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,2283
+P2,official dev examples,user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,1473
+P2,official dev examples,user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,962
+P2,official dev examples,user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,1447
+P2,dev examples per fold,fold 0,bike,342
+P2,dev examples per fold,fold 0,bus,174
+P2,dev examples per fold,fold 0,car,1431
+P2,dev examples per fold,fold 0,run,288
+P2,dev examples per fold,fold 0,still,23745
+P2,dev examples per fold,fold 0,train,69
+P2,dev examples per fold,fold 0,walk,2889
+P2,dev examples per fold,fold 1,bike,892
+P2,dev examples per fold,fold 1,bus,277
+P2,dev examples per fold,fold 1,car,1807
+P2,dev examples per fold,fold 1,run,104
+P2,dev examples per fold,fold 1,still,16873
+P2,dev examples per fold,fold 1,walk,2405
+P2,dev examples per fold,fold 2,bike,600
+P2,dev examples per fold,fold 2,bus,207
+P2,dev examples per fold,fold 2,car,1791
+P2,dev examples per fold,fold 2,run,19
+P2,dev examples per fold,fold 2,still,17083
+P2,dev examples per fold,fold 2,train,97
+P2,dev examples per fold,fold 2,walk,2498
+P2,dev examples per fold,fold 3,bike,768
+P2,dev examples per fold,fold 3,bus,279
+P2,dev examples per fold,fold 3,car,1405
+P2,dev examples per fold,fold 3,run,23
+P2,dev examples per fold,fold 3,still,22462
+P2,dev examples per fold,fold 3,train,24
+P2,dev examples per fold,fold 3,walk,2881
+P2,dev examples per fold,fold 4,bike,516
+P2,dev examples per fold,fold 4,bus,411
+P2,dev examples per fold,fold 4,car,1594
+P2,dev examples per fold,fold 4,run,29
+P2,dev examples per fold,fold 4,still,12567
+P2,dev examples per fold,fold 4,walk,2436
+P2,code,,,experiments/04_frozen-benchmark_es-shl/propose_test_v2.py:136
+P2,commit,,,aef0a4c
+P3,minutes with a window kept out of pre-training,total,,65996
+P3,minutes with a window kept out of pre-training,class,(none),17352
+P3,minutes with a window kept out of pre-training,class,bike,917
+P3,minutes with a window kept out of pre-training,class,bus,287
+P3,minutes with a window kept out of pre-training,class,car,2213
+P3,minutes with a window kept out of pre-training,class,run,207
+P3,minutes with a window kept out of pre-training,class,still,40820
+P3,minutes with a window kept out of pre-training,class,train,52
+P3,minutes with a window kept out of pre-training,class,walk,4148
+P3,minutes with a window kept out of pre-training,platform,android,27532
+P3,minutes with a window kept out of pre-training,platform,iphone,38464
+P3,minutes with a window kept out of pre-training,split,test,65996
+P3,minutes with a window kept out of pre-training,user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,6806
+P3,minutes with a window kept out of pre-training,user,0BFC35E2-4817-4865-BFA7-764742302A2D,2723
+P3,minutes with a window kept out of pre-training,user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,3060
+P3,minutes with a window kept out of pre-training,user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,4771
+P3,minutes with a window kept out of pre-training,user,27E04243-B138-4F40-A164-F40B60165CF3,2643
+P3,minutes with a window kept out of pre-training,user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,6133
+P3,minutes with a window kept out of pre-training,user,665514DE-49DC-421F-8DCB-145D0B2609AD,9083
+P3,minutes with a window kept out of pre-training,user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,9185
+P3,minutes with a window kept out of pre-training,user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,6040
+P3,minutes with a window kept out of pre-training,user,A7599A50-24AE-46A6-8EA6-2576F1011D81,3890
+P3,minutes with a window kept out of pre-training,user,B09E373F-8A54-44C8-895B-0039390B859F,8133
+P3,minutes with a window kept out of pre-training,user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,3529
+P3,code,,,src/tmd/bench.py:80
+P3,commit,,,b1e2a9c
+P4,official examples,source,shl_user1,23076
+P4,official examples,source,shl_user23,2365
+P4,code,,,experiments/04_frozen-benchmark_es-shl/build.py:285
+P4,commit,,,7f435c5
+G1,official examples with lat/lon,total,,0.8319
+G1,official examples with lat/lon,cls,bike,0.9369
+G1,official examples with lat/lon,cls,bus,0.7804
+G1,official examples with lat/lon,cls,car,0.878
+G1,official examples with lat/lon,cls,run,0.7426
+G1,official examples with lat/lon,cls,still,0.8299
+G1,official examples with lat/lon,cls,train,0.876
+G1,official examples with lat/lon,cls,walk,0.7998
+G1,official examples with lat/lon,platform,android,0.6671
+G1,official examples with lat/lon,platform,iphone,0.9334
+G1,minutes with lat/lon,total,,305747
+G1,code,,,src/tmd/extrasensory.py:189
+G1,commit,,,a711d65
+G2,minutes per reason,reason,present,305747
+G2,minutes per reason,reason,no_updates,71598
+G2,minutes per reason,reason,withheld,1
+G2,code,,,src/tmd/extrasensory.py:197
+G2,commit,,,a711d65
+G3,official fixes with speed -1,total,,0.6294
+G3,official fixes with speed -1,cls,bike,0.0786
+G3,official fixes with speed -1,cls,bus,0.1998
+G3,official fixes with speed -1,cls,car,0.1042
+G3,official fixes with speed -1,cls,run,0.4604
+G3,official fixes with speed -1,cls,still,0.7458
+G3,official fixes with speed -1,cls,train,0.2783
+G3,official fixes with speed -1,cls,walk,0.3775
+G3,official fixes with speed -1,platform,android,0.8017
+G3,official fixes with speed -1,platform,iphone,0.5536
+G3,code,,,experiments/04_frozen-benchmark_es-shl/build.py:266
+G3,commit,,,a711d65
+G4,official fixes with bearing -1,total,,0.6581
+G4,official fixes with bearing -1,cls,bike,0.0989
+G4,official fixes with bearing -1,cls,bus,0.2414
+G4,official fixes with bearing -1,cls,car,0.1344
+G4,official fixes with bearing -1,cls,run,0.4802
+G4,official fixes with bearing -1,cls,still,0.7744
+G4,official fixes with bearing -1,cls,train,0.3726
+G4,official fixes with bearing -1,cls,walk,0.406
+G4,official fixes with bearing -1,platform,android,0.8321
+G4,official fixes with bearing -1,platform,iphone,0.5815
+G4,code,,,experiments/04_frozen-benchmark_es-shl/build.py:271
+G4,commit,,,30550d9
+G5,"interval to previous fix [s], median",total,,60.0
+G5,code,,,experiments/04_frozen-benchmark_es-shl/build.py:264
+G5,commit,,,a711d65
+G6,sessions,total,,8729
+G6,"minutes per session, median",total,,4.0
+G6,code,,,src/tmd/gps.py:12
+G6,commit,,,a711d65
+H1,shl_user1 minutes per window status,status,ok,36825
+H1,shl_user1 minutes per window status,status,edge,118
+H1,shl_user1 minutes per window status,status,nan_gap,25
+H1,shl_user23 minutes per window status,status,ok,3015
+H1,shl_user23 minutes per window status,status,edge,7
+H1,shl_user23 minutes per window status,status,nan_gap,2
+H1,code,,,experiments/04_frozen-benchmark_es-shl/build.py:311
+H1,commit,,,a711d65
+H2,shl_user1 minutes per label status,status,ok,23100
+H2,shl_user1 minutes per label status,status,null,13056
+H2,shl_user1 minutes per label status,status,mixed,694
+H2,shl_user1 minutes per label status,status,edge,118
+H2,shl_user23 minutes per label status,status,ok,2366
+H2,shl_user23 minutes per label status,status,null,586
+H2,shl_user23 minutes per label status,status,mixed,65
+H2,shl_user23 minutes per label status,status,edge,7
+H2,code,,,experiments/04_frozen-benchmark_es-shl/build.py:324
+H2,commit,,,a711d65
+H3,shl_user1 fixes,total,,80892
+H3,shl_user1 1 Hz fixes,total,,1377605
+H3,"shl_user1 interval to previous fix [s], median",class,(none),20.068000078201294
+H3,"shl_user1 interval to previous fix [s], median",class,bike,10.032000064849854
+H3,"shl_user1 interval to previous fix [s], median",class,bus,10.032000064849854
+H3,"shl_user1 interval to previous fix [s], median",class,car,10.026999950408936
+H3,"shl_user1 interval to previous fix [s], median",class,run,20.05999994277954
+H3,"shl_user1 interval to previous fix [s], median",class,still,71.23549997806549
+H3,"shl_user1 interval to previous fix [s], median",class,subway,10.03000020980835
+H3,"shl_user1 interval to previous fix [s], median",class,train,10.031000137329102
+H3,"shl_user1 interval to previous fix [s], median",class,walk,20.06500005722046
+H3,shl_user23 fixes,total,,5550
+H3,shl_user23 1 Hz fixes,total,,101516
+H3,"shl_user23 interval to previous fix [s], median",class,(none),21.063999891281128
+H3,"shl_user23 interval to previous fix [s], median",class,bike,10.058000087738037
+H3,"shl_user23 interval to previous fix [s], median",class,bus,10.039499998092651
+H3,"shl_user23 interval to previous fix [s], median",class,car,10.031999826431274
+H3,"shl_user23 interval to previous fix [s], median",class,run,20.060999989509583
+H3,"shl_user23 interval to previous fix [s], median",class,still,87.29650008678436
+H3,"shl_user23 interval to previous fix [s], median",class,subway,10.035000085830688
+H3,"shl_user23 interval to previous fix [s], median",class,train,10.034000158309937
+H3,"shl_user23 interval to previous fix [s], median",class,walk,20.067999839782715
+H3,code,,,src/tmd/gps.py:14
+H3,commit,,,a711d65
+H4,shl_user1 fixes,total,,23645
+H4,shl_user1 1 Hz fixes,total,,1377605
+H4,"shl_user1 interval to previous fix [s], median",class,(none),60.18499994277954
+H4,"shl_user1 interval to previous fix [s], median",class,bike,60.16000008583069
+H4,"shl_user1 interval to previous fix [s], median",class,bus,60.15300011634827
+H4,"shl_user1 interval to previous fix [s], median",class,car,60.14099979400635
+H4,"shl_user1 interval to previous fix [s], median",class,run,60.187999963760376
+H4,"shl_user1 interval to previous fix [s], median",class,still,60.18400001525879
+H4,"shl_user1 interval to previous fix [s], median",class,subway,60.15649998188019
+H4,"shl_user1 interval to previous fix [s], median",class,train,60.17799997329712
+H4,"shl_user1 interval to previous fix [s], median",class,walk,60.18999981880188
+H4,shl_user23 fixes,total,,1749
+H4,shl_user23 1 Hz fixes,total,,101516
+H4,"shl_user23 interval to previous fix [s], median",class,(none),60.18400001525879
+H4,"shl_user23 interval to previous fix [s], median",class,bike,60.18899989128113
+H4,"shl_user23 interval to previous fix [s], median",class,bus,60.17200005054474
+H4,"shl_user23 interval to previous fix [s], median",class,car,60.17400002479553
+H4,"shl_user23 interval to previous fix [s], median",class,run,60.187000036239624
+H4,"shl_user23 interval to previous fix [s], median",class,still,60.194000124931335
+H4,"shl_user23 interval to previous fix [s], median",class,subway,60.18950009346008
+H4,"shl_user23 interval to previous fix [s], median",class,train,60.20199990272522
+H4,"shl_user23 interval to previous fix [s], median",class,walk,60.19700002670288
+H4,code,,,experiments/04_frozen-benchmark_es-shl/build.py:409
+H4,commit,,,a711d65
+H5,shl_user1 gps_waiis_cadence speed missing share,class,(none),0.478
+H5,shl_user1 gps_waiis_cadence speed missing share,class,bike,0.134
+H5,shl_user1 gps_waiis_cadence speed missing share,class,bus,0.215
+H5,shl_user1 gps_waiis_cadence speed missing share,class,car,0.053
+H5,shl_user1 gps_waiis_cadence speed missing share,class,run,0.281
+H5,shl_user1 gps_waiis_cadence speed missing share,class,still,0.736
+H5,shl_user1 gps_waiis_cadence speed missing share,class,subway,0.144
+H5,shl_user1 gps_waiis_cadence speed missing share,class,train,0.09
+H5,shl_user1 gps_waiis_cadence speed missing share,class,walk,0.483
+H5,shl_user1 gps_waiis_cadence speed missing share,total,,0.23
+H5,shl_user1 gps_per_minute speed missing share,class,(none),0.681
+H5,shl_user1 gps_per_minute speed missing share,class,bike,0.179
+H5,shl_user1 gps_per_minute speed missing share,class,bus,0.399
+H5,shl_user1 gps_per_minute speed missing share,class,car,0.115
+H5,shl_user1 gps_per_minute speed missing share,class,run,0.286
+H5,shl_user1 gps_per_minute speed missing share,class,still,0.874
+H5,shl_user1 gps_per_minute speed missing share,class,subway,0.311
+H5,shl_user1 gps_per_minute speed missing share,class,train,0.178
+H5,shl_user1 gps_per_minute speed missing share,class,walk,0.482
+H5,shl_user1 gps_per_minute speed missing share,total,,0.433
+H5,shl_user23 gps_waiis_cadence speed missing share,class,(none),0.608
+H5,shl_user23 gps_waiis_cadence speed missing share,class,bike,0.233
+H5,shl_user23 gps_waiis_cadence speed missing share,class,bus,0.242
+H5,shl_user23 gps_waiis_cadence speed missing share,class,car,0.048
+H5,shl_user23 gps_waiis_cadence speed missing share,class,run,0.329
+H5,shl_user23 gps_waiis_cadence speed missing share,class,still,0.743
+H5,shl_user23 gps_waiis_cadence speed missing share,class,subway,0.158
+H5,shl_user23 gps_waiis_cadence speed missing share,class,train,0.104
+H5,shl_user23 gps_waiis_cadence speed missing share,class,walk,0.483
+H5,shl_user23 gps_waiis_cadence speed missing share,total,,0.254
+H5,shl_user23 gps_per_minute speed missing share,class,(none),0.752
+H5,shl_user23 gps_per_minute speed missing share,class,bike,0.218
+H5,shl_user23 gps_per_minute speed missing share,class,bus,0.408
+H5,shl_user23 gps_per_minute speed missing share,class,car,0.119
+H5,shl_user23 gps_per_minute speed missing share,class,run,0.133
+H5,shl_user23 gps_per_minute speed missing share,class,still,0.881
+H5,shl_user23 gps_per_minute speed missing share,class,subway,0.333
+H5,shl_user23 gps_per_minute speed missing share,class,train,0.182
+H5,shl_user23 gps_per_minute speed missing share,class,walk,0.47
+H5,shl_user23 gps_per_minute speed missing share,total,,0.447
+H5,v0 [m/s],total,,1.9542068977760614
+H5,code,,,src/tmd/gps.py:104
+H5,commit,,,b1e2a9c
+H6,rows,table,shl_user1/stream.parquet,55279562
+H6,rows,table,shl_user23/stream.parquet,4523608
+H6,rows,table,shl_user1/accelerometer_other_positions.parquet,5964
+H6,code,,,experiments/04_frozen-benchmark_es-shl/build.py:445
+H6,commit,,,b1e2a9c
+F1,files,total,,23
+F1,bytes,total,,4803094796
+F1,rows,file,extrasensory/accelerometer.parquet,360064
+F1,sha256,file,extrasensory/accelerometer.parquet,85d8e15531bc5f7f38c706a3a17616a5b7554b2c9ffe46669d4edae51bf7979e
+F1,rows,file,extrasensory/gps_per_minute.parquet,305747
+F1,sha256,file,extrasensory/gps_per_minute.parquet,3798bde083f3a42d44c67833dec2ac14d775c09929671ce830339ff66d5b3a07
+F1,rows,file,extrasensory/labels.parquet,377346
+F1,sha256,file,extrasensory/labels.parquet,a9f385155d698b98dcd5b246c8897ac85d1a44f09cfb03dbfe60998234388552
+F1,rows,file,extrasensory/location_features.parquet,377346
+F1,sha256,file,extrasensory/location_features.parquet,cc8e063862eaa46e331ca5990ed238e4c99cb5ad7a091f39635c262768228bbd
+F1,rows,file,extrasensory/sessions.parquet,8729
+F1,sha256,file,extrasensory/sessions.parquet,d94e658f804d09ed6e9d0514723c0735c3e109c1188f3b23f794f1725276f3f7
+F1,rows,file,extrasensory/snippets.parquet,376952
+F1,sha256,file,extrasensory/snippets.parquet,cab62b8ab8869dff17ec5d7d4384b503f68e2d6e828a365cb726c664530ddcb8
+F1,rows,file,shl_user1/accelerometer.parquet,36825
+F1,sha256,file,shl_user1/accelerometer.parquet,c54a21cc690bc43fcf0ad006326878b1a1b600c0a715c2e6cfdf85470e239e61
+F1,rows,file,shl_user1/accelerometer_other_positions.parquet,5964
+F1,sha256,file,shl_user1/accelerometer_other_positions.parquet,5f2725e2a9229e6e73d133658cb4dcfb023b4db7d185ba650e239139baaa3c33
+F1,rows,file,shl_user1/gps_1hz.parquet,1377605
+F1,sha256,file,shl_user1/gps_1hz.parquet,a2950344ac39b096720ad9b7457773b0ce1962503013116a800ce65978b16a02
+F1,rows,file,shl_user1/gps_per_minute.parquet,23645
+F1,sha256,file,shl_user1/gps_per_minute.parquet,de5e3a7ad14b6f801e571ed1d71c7fbc5e55a3fdd216728140467a6ad24b1b17
+F1,rows,file,shl_user1/gps_unblanked.parquet,104537
+F1,sha256,file,shl_user1/gps_unblanked.parquet,5c22305e76f97e23138aa91caa724abee7e28f8546e58c5e9d3d6ea2c6a5f852
+F1,rows,file,shl_user1/gps_waiis_cadence.parquet,80892
+F1,sha256,file,shl_user1/gps_waiis_cadence.parquet,04475a0e0e492c42a955eeebb08a0f681afdb101ab6f5a4a3fb4a4f7121fbbb1
+F1,rows,file,shl_user1/labels.parquet,36968
+F1,sha256,file,shl_user1/labels.parquet,5cc4650ff7551620e7283c8c242e238fb092f66c6b6aa0d959fcadc4e716a2d8
+F1,rows,file,shl_user1/sessions.parquet,90
+F1,sha256,file,shl_user1/sessions.parquet,22f67e501301acb6aea7372829308cacdd280e3265367f710273c1593f82b35d
+F1,rows,file,shl_user1/stream.parquet,55279562
+F1,sha256,file,shl_user1/stream.parquet,7a15c5eca3b92c2b5e866a02a976b6bea52fcc71d6db355377d3166c420c82d6
+F1,rows,file,shl_user23/accelerometer.parquet,3015
+F1,sha256,file,shl_user23/accelerometer.parquet,8c2bb9b60463b1019e4e2ae3c4723b2edcb7a18ff1ae35c0edf5abf2950dc257
+F1,rows,file,shl_user23/gps_1hz.parquet,101516
+F1,sha256,file,shl_user23/gps_1hz.parquet,b0af0d24addb85ab12ae87cb374d2080940e79d65f6e2dbae92f84d8846297e9
+F1,rows,file,shl_user23/gps_per_minute.parquet,1749
+F1,sha256,file,shl_user23/gps_per_minute.parquet,266bcd710d3304a070e56001d8b0090e680f501f6a4cc01ec47422972abaabdf
+F1,rows,file,shl_user23/gps_unblanked.parquet,7299
+F1,sha256,file,shl_user23/gps_unblanked.parquet,f91dea51207452013c4aecef268c1414ecf3948334a9aa5b90703d035d482c06
+F1,rows,file,shl_user23/gps_waiis_cadence.parquet,5550
+F1,sha256,file,shl_user23/gps_waiis_cadence.parquet,78be783bc6abbe7b022893ddf09c4bdf5e851180738cd8dca9d4d011064dc04c
+F1,rows,file,shl_user23/labels.parquet,3024
+F1,sha256,file,shl_user23/labels.parquet,cce2894ee0540bc4a70964cd48766c2b9e95dcf23ec59b8be8ce12fb92cb19aa
+F1,rows,file,shl_user23/sessions.parquet,6
+F1,sha256,file,shl_user23/sessions.parquet,890c107bf7aa3c7a0e0e908fd1ac1ca7e2bce9c4e7fdaf5419f56de5efeab686
+F1,rows,file,shl_user23/stream.parquet,4523608
+F1,sha256,file,shl_user23/stream.parquet,2159878dcd3a101d3d56303b4261632769e717e815e1e2e409d0fd76622fa848
+F1,code,,,experiments/04_frozen-benchmark_es-shl/build.py:623
+F1,commit,,,a711d65
+F2,code,,,experiments/04_frozen-benchmark_es-shl/build.py:77
+F2,commit,,,a711d65
+F3,official examples (ExtraSensory),total,,145380
+F3,official examples (ExtraSensory),class,bike,3994
+F3,official examples (ExtraSensory),class,bus,1635
+F3,official examples (ExtraSensory),class,car,10158
+F3,official examples (ExtraSensory),class,run,544
+F3,official examples (ExtraSensory),class,still,112016
+F3,official examples (ExtraSensory),class,train,242
+F3,official examples (ExtraSensory),class,walk,16791
+F3,official examples (ExtraSensory),platform,android,55413
+F3,official examples (ExtraSensory),platform,iphone,89967
+F3,official examples (ExtraSensory),split,dev,118986
+F3,official examples (ExtraSensory),split,test,26394
+F3,official examples (ExtraSensory),user,00EABED2-271D-49D8-B599-1D4A09240601,532
+F3,official examples (ExtraSensory),user,098A72A5-E3E5-4F54-A152-BBDA0DF7B694,3521
+F3,official examples (ExtraSensory),user,0A986513-7828-4D53-AA1F-E02D6DF9561B,2657
+F3,official examples (ExtraSensory),user,0BFC35E2-4817-4865-BFA7-764742302A2D,1919
+F3,official examples (ExtraSensory),user,0E6184E1-90C0-48EE-B25A-F1ECB7B9714E,5843
+F3,official examples (ExtraSensory),user,1155FF54-63D3-4AB2-9863-8385D0BD0A13,723
+F3,official examples (ExtraSensory),user,11B5EC4D-4133-4289-B475-4E737182A406,1267
+F3,official examples (ExtraSensory),user,136562B6-95B2-483D-88DC-065F28409FD2,4867
+F3,official examples (ExtraSensory),user,1538C99F-BA1E-4EFB-A949-6C7C47701B20,3894
+F3,official examples (ExtraSensory),user,1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842,768
+F3,official examples (ExtraSensory),user,24E40C4C-A349-4F9F-93AB-01D00FB994AF,2776
+F3,official examples (ExtraSensory),user,27E04243-B138-4F40-A164-F40B60165CF3,507
+F3,official examples (ExtraSensory),user,2C32C23E-E30C-498A-8DD2-0EFB9150A02E,2529
+F3,official examples (ExtraSensory),user,33A85C34-CFE4-4732-9E73-0A7AC861B27A,2584
+F3,official examples (ExtraSensory),user,3600D531-0C55-44A7-AE95-A7A38519464E,1613
+F3,official examples (ExtraSensory),user,40E170A7-607B-4578-AF04-F021C3B0384A,6243
+F3,official examples (ExtraSensory),user,481F4DD2-7689-43B9-A2AA-C8772227162B,2075
+F3,official examples (ExtraSensory),user,4E98F91F-4654-42EF-B908-A3389443F2E7,1228
+F3,official examples (ExtraSensory),user,4FC32141-E888-4BFF-8804-12559A491D8C,2500
+F3,official examples (ExtraSensory),user,5119D0F8-FCA8-4184-A4EB-19421A40DE0D,3045
+F3,official examples (ExtraSensory),user,5152A2DF-FAF3-4BA8-9CA9-E66B32671A53,2562
+F3,official examples (ExtraSensory),user,59818CD2-24D7-4D32-B133-24C2FE3801E5,2699
+F3,official examples (ExtraSensory),user,59EEFAE0-DEB0-4FFF-9250-54D2A03D0CF2,2429
+F3,official examples (ExtraSensory),user,5EF64122-B513-46AE-BCF1-E62AAC285D2C,717
+F3,official examples (ExtraSensory),user,61359772-D8D8-480D-B623-7C636EAD0C81,3081
+F3,official examples (ExtraSensory),user,61976C24-1C50-4355-9C49-AAE44A7D09F6,1452
+F3,official examples (ExtraSensory),user,665514DE-49DC-421F-8DCB-145D0B2609AD,2239
+F3,official examples (ExtraSensory),user,74B86067-5D4B-43CF-82CF-341B76BEA0F4,3091
+F3,official examples (ExtraSensory),user,78A91A4E-4A51-4065-BDA7-94755F0BB3BB,5728
+F3,official examples (ExtraSensory),user,797D145F-3858-4A7F-A7C2-A4EB721E133C,2839
+F3,official examples (ExtraSensory),user,7CE37510-56D0-4120-A1CF-0E23351428D2,3684
+F3,official examples (ExtraSensory),user,7D9BB102-A612-4E2A-8E22-3159752F55D8,142
+F3,official examples (ExtraSensory),user,8023FE1A-D3B0-4E2C-A57A-9321B7FC755F,5496
+F3,official examples (ExtraSensory),user,806289BC-AD52-4CC1-806C-0CDB14D65EB6,3860
+F3,official examples (ExtraSensory),user,81536B0A-8DBF-4D8A-AC24-9543E2E4C8E0,1299
+F3,official examples (ExtraSensory),user,83CF687B-7CEC-434B-9FE8-00C3D5799BE6,2286
+F3,official examples (ExtraSensory),user,86A4F379-B305-473D-9D83-FC7D800180EF,2445
+F3,official examples (ExtraSensory),user,96A358A0-FFF2-4239-B93E-C7425B901B47,169
+F3,official examples (ExtraSensory),user,9759096F-1119-4E19-A0AD-6F16989C7E1C,3539
+F3,official examples (ExtraSensory),user,99B204C0-DD5C-4BB7-83E8-A37281B8D769,2088
+F3,official examples (ExtraSensory),user,9DC38D04-E82E-4F29-AB52-B476535226F2,4054
+F3,official examples (ExtraSensory),user,A5A30F76-581E-4757-97A2-957553A2C6AA,981
+F3,official examples (ExtraSensory),user,A5CDF89D-02A2-4EC1-89F8-F534FDABDD96,2496
+F3,official examples (ExtraSensory),user,A7599A50-24AE-46A6-8EA6-2576F1011D81,1868
+F3,official examples (ExtraSensory),user,A76A5AF5-5A93-4CF2-A16E-62353BB70E8A,3572
+F3,official examples (ExtraSensory),user,B09E373F-8A54-44C8-895B-0039390B859F,1777
+F3,official examples (ExtraSensory),user,B7F9D634-263E-4A97-87F9-6FFB4DDCB36C,2173
+F3,official examples (ExtraSensory),user,B9724848-C7E2-45F4-9B3F-A1F38D864495,4651
+F3,official examples (ExtraSensory),user,BE3CA5A6-A561-4BBD-B7C9-5DF6805400FC,5859
+F3,official examples (ExtraSensory),user,C48CE857-A0DD-4DDB-BEA5-3A25449B2153,1311
+F3,official examples (ExtraSensory),user,CA820D43-E5E2-42EF-9798-BE56F776370B,3355
+F3,official examples (ExtraSensory),user,CCAF77F0-FABB-4F2F-9E24-D56AD0C5A82F,1300
+F3,official examples (ExtraSensory),user,CDA3BBF7-6631-45E8-85BA-EEB416B32A3C,1542
+F3,official examples (ExtraSensory),user,CF722AA9-2533-4E51-9FEB-9EAC84EE9AAC,897
+F3,official examples (ExtraSensory),user,D7D20E2E-FC78-405D-B346-DBD3FD8FC92B,2283
+F3,official examples (ExtraSensory),user,E65577C1-8D5D-4F70-AF23-B3ADB9D3DBA3,1473
+F3,official examples (ExtraSensory),user,ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2,443
+F3,official examples (ExtraSensory),user,F50235E0-DD67-4F2A-B00B-1F31ADA998B9,962
+F3,official examples (ExtraSensory),user,FDAA70A1-42A3-4E3F-9AE3-3FDA412E03BF,1447
+F3,official examples,source,shl_user1,23076
+F3,official examples,source,shl_user23,2365
+F3,code,,,experiments/04_frozen-benchmark_es-shl/build.py:113
+F3,commit,,,cf1085c
+F4,source label columns,total,,167
+F4,code,,,experiments/04_frozen-benchmark_es-shl/build.py:152
+F4,commit,,,a711d65

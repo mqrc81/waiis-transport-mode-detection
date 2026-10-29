@@ -1,0 +1,4 @@
+cls,bike,bus,car,run,run,still,subway,train,walk
+acc_implausible,False,False,False,False,True,False,False,False,False
+user,,,,,,,,,
+User1,2844,3028,4058,1030,17,3366,2388,3353,3015

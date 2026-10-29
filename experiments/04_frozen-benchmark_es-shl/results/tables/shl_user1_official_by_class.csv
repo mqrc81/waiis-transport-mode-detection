@@ -1,0 +1,9 @@
+cls,windows,acc_implausible,label_implausible,official
+bike,2844,0,2,2842
+bus,3028,0,0,3028
+car,4058,0,0,4058
+run,1047,17,0,1030
+still,3366,0,0,3366
+subway,2388,0,0,2388
+train,3353,0,0,3353
+walk,3015,0,4,3011

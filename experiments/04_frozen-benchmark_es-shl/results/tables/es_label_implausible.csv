@@ -1,0 +1,7 @@
+platform,android,android,iphone,iphone,All
+label_implausible,False,True,False,True,
+cls,,,,,
+bike,1694,99,2300,299,4392
+run,438,1,108,161,708
+walk,7264,1268,9629,1355,19516
+All,9396,1368,12037,1815,24616

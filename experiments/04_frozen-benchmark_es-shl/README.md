@@ -23,7 +23,7 @@ possible like what the WAIIS app sends, as measured in production:
 ## Results
 
 **The dataset is `waiis_bench_v1`**: `<data>/processed/waiis_bench_v1/`, 23 Parquet files, 4.8 GB.
-- Built from commit `<commit>` in a clean git worktree; `manifest.json` holds the parameters and the sha256 of
+- Built from commit `35257b4` in a clean git worktree; `manifest.json` holds the parameters and the sha256 of
   every file.
 - Read it with `tmd.bench`.
 - Every decision that shaped it, with its effect, is in **`decision_register.md`**.
@@ -140,11 +140,15 @@ Per user, per position and per fold: `results/tables/` (`es_class_counts.csv`, `
 - To rebuild from the build commit in a clean worktree (data root = the worktree's parent's `data/`, or `$TMD_DATA`):
 
   ```
-  git worktree add ../tmd-waiis-bench <commit>
+  git worktree add ../tmd-waiis-bench 35257b4
   cd ../tmd-waiis-bench && uv run python experiments/04_frozen-benchmark_es-shl/build.py
   ```
 
-<!-- REBUILD-CHECK -->
+- **Rebuild check (2026-10-29):** the full rebuild from `35257b4` in a separate worktree gave 23 data files whose
+  sha256 and row counts all equal the development build's manifest (in `results/manifests/`), with
+  identical build parameters. Only `manifest.json` itself differs (version, commit, date). The count tables in
+  `results/tables/` are identical too.
+- `waiis_bench_v1` is the only benchmark on disk.
 
 ### Version
 
