@@ -13,7 +13,7 @@ built at commit `e51ea79`.
 | ID | Decision | Why | Effect | Flag/reversible? | Risk |
 |---|---|---|---|---|---|
 | S1 | ExtraSensory: labels, original labels, raw accelerometer, absolute location | in-the-wild phone data with user labels | 377,346 min, 60 users | – | b: 2015 students, one city |
-| S2 | Accelerometer only; gyroscope, magnetometer, audio unused | WAIIS app records no gyroscope | +5,343 examples (3 users) | – | – |
+| S2 | **Accelerometer only; gyroscope, magnetometer, audio unused** | WAIIS app records no gyroscope | +5,343 examples (3 users) | – | – |
 | S3 | SHL hips: User 1 training source, Users 2–3 rail check | metro and most train data | 25,441 examples | – | b: one phone, one position |
 | S4 | SHL User 1 duplicated days kept once | same recordings in two folders | −3 days | – | – |
 
@@ -37,8 +37,8 @@ built at commit `e51ea79`.
 
 | ID | Decision | Why | Effect | Flag/reversible? | Risk |
 |---|---|---|---|---|---|
-| W1 | One 15 s window (375 × 3) per snippet, centred | one fixed shape for every model | 360,064 windows | – | b: WAIIS fragment length unknown |
-| W2 | Snippets under 15 s stored, never official | 80–100 Hz Android phones give 8–10 s | −8,112 included min | yes (`short`) | c: concentrated in 6 users |
+| W1 | **One 15 s window (375 × 3) per snippet, centred** | one fixed shape for every model | 360,064 windows | – | b: WAIIS fragment length unknown |
+| W2 | **Snippets under 15 s stored, never official** | 80–100 Hz Android phones give 8–10 s | −8,112 included min | yes (`short`) | c: concentrated in 6 users |
 | W3 | Every snippet stored in full at 25 Hz | allows other window lengths later | 376,952 snippets | yes (`snippets`) | – |
 
 ## Labels
@@ -55,20 +55,20 @@ built at commit `e51ea79`.
 
 | ID | Decision | Why | Effect | Flag/reversible? | Risk |
 |---|---|---|---|---|---|
-| X1 | Drop `SLEEPING` still minutes | phone on nightstand, adds no signal | −83,055 min | yes (`reason`) | b: night recording unknown |
+| X1 | **Drop `SLEEPING` still minutes** | phone on nightstand, adds no signal | −83,055 min | yes (`reason`) | b: night recording unknown |
 | X2 | Drop walk / run / bike when the phone isn't carried | label describes the person, not the phone | −1,078 min | yes (`not_carried`) | – |
-| X3 | Drop quiet walk / run / bike windows | phone not moving with the person | −3,183 windows | yes (`label_implausible`) | c: iPhone test run 38 left |
-| X4 | Cap resting still at 20% per user | resting is real but shouldn't dominate | −62,499 min | yes (`capped`) | a: unknown positions often resting |
+| X3 | **Drop quiet walk / run / bike windows** | phone not moving with the person | −3,183 windows | yes (`label_implausible`) | c: iPhone test run 38 left |
+| X4 | **Cap resting still at 20% per user** | resting is real but shouldn't dominate | −62,499 min | yes (`capped`) | a: unknown positions often resting |
 | X5 | Drop minutes with two moving classes | contradictory labels | −18 min | yes (`reason`) | – |
 | X6 | Motorbike kept as a labelled check, never trained | one user only | 86 min | yes (`motorbike`) | b: relevance to WAIIS unknown |
 | X7 | Drop plane, boat, elevator, treadmill, skateboard and similar | not one of our classes | −1,471 min | yes (`reason`) | b: production will contain these |
-| X8 | Exclude user BEF6C611 (Android, dev fold 4) entirely | inconsistent accelerometer processing | −1,835 min | yes (`user_excluded`) | – |
+| X8 | **Exclude user BEF6C611 (Android, dev fold 4) entirely** | inconsistent accelerometer processing | −1,835 min | yes (`user_excluded`) | – |
 
 ## Splits
 
 | ID | Decision | Why | Effect | Flag/reversible? | Risk |
 |---|---|---|---|---|---|
-| P1 | 12 reserved test users, balanced by class, platform, location | approved re-pick | 26,394 test examples | yes (`split`) | c: 11 were 02 dev users |
+| P1 | **12 reserved test users, balanced by class, platform, location** | approved re-pick | 26,394 test examples | yes (`split`) | c: 11 were 02 dev users |
 | P2 | Dev: 5 folds by user, balanced by platform | evaluate on unseen users | 118,986 dev examples | yes (`fold`) | a: train in 3 folds only |
 | P3 | Pre-training accessors never return reserved users | test data unseen in pre-training | 12 + 2 users | n/a | – |
 | P4 | SHL: User 1 day folds; Users 2–3 rail check only | unseen-person rail evaluation | 23,076 / 2,365 examples | – | a: User 1 is one person |
@@ -79,7 +79,7 @@ built at commit `e51ea79`.
 |---|---|---|---|---|---|
 | G1 | Lat/lon from the absolute-location files, never imputed | no raw track; NaN is ambiguous | 81% of minutes | – | a: Android 33% missing, iPhone 7% |
 | G2 | `location_missing_reason` per minute | separate "no update" from "no fix" | 71,598 no_updates | yes | b: still looks like no update |
-| G3 | speed = `max_speed`, accuracy = best; otherwise −1 | production format | 63% speed −1 | yes (`location_features`) | a: missing speed signals slow |
+| G3 | **speed = `max_speed`, accuracy = best; otherwise −1** | production format | 63% speed −1 | yes (`location_features`) | a: missing speed signals slow |
 | G4 | Bearing from the previous fix, −1 when speed is −1 | phones omit bearing without speed | 66% bearing −1 | yes (`bearing_from_fixes`) | b: 60 s baseline, not instantaneous |
 | G5 | One fix per minute, time = minute timestamp | fix time not published | median 60 s between fixes | – | b: sparser than production |
 | G6 | Session = minutes at most 2 min apart | contiguous recording batches | 8,729 sessions | yes (`ts`) | b: WAIIS batching unknown |
@@ -91,7 +91,7 @@ built at commit `e51ea79`.
 | H1 | One 15 s window per clock minute, centred | mimic the app's fragments | 39,840 windows | – | b: no gaps between fragments |
 | H2 | Label only when one coarse label fills the window | no transitions inside examples | −14,401 min | yes (`majority_cls`) | a: ExtraSensory has no mixed minutes |
 | H3 | GPS thinned to the WAIIS cadence by speed (10 / 20 / 180 s) | match production fix rate | 80,892 fixes (User 1) | yes (`gps_1hz`) | b: fix trigger assumed |
-| H4 | Second GPS variant: one fix per minute | avoid fix interval as dataset shortcut | 23,645 fixes (User 1) | – | a: use it for joint training |
+| H4 | **Second GPS variant: one fix per minute** | avoid fix interval as dataset shortcut | 23,645 fixes (User 1) | – | a: use it for joint training |
 | H5 | Speed and bearing blanked, more often when slow | production misses speed mostly when slow | 23% speed −1 | yes (`gps_unblanked`) | b: curve shape assumed |
 | H6 | Hips stream, other positions, 1 Hz track stored | pre-training and position studies | 59.8 M samples | yes (extras) | – |
 
