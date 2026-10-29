@@ -1,10 +1,13 @@
-"""Step 3, item 6: re-pick the 12 ExtraSensory test users on es_bench_v2 (PROPOSAL, not in use).
+"""Re-pick of the 12 ExtraSensory test users (approved by the supervisor on 2026-10-28).
+
+The approved pick was computed on the development build of commit b1e2a9c (decision register, History);
+rerunning it on waiis_bench_v1 gives different counts, and the script never overwrites the approved file.
 
 Usage: uv run python propose_test_v2.py [--seed 0] [--draws 3000000]
-Reads the official v2 examples (tmd.bench.examples). Writes
-- splits/reserved_test_v2.json (project root): proposed reserved test set; SHL Users 2-3 unchanged;
+Reads the official examples (tmd.bench.examples). Writes
+- splits/reserved_test_v2.json (project root), unless it is already approved; SHL Users 2-3 unchanged;
 - splits/es_users_v2.csv (this folder): uuid, platform, partition, fold (dev folds rebuilt from the other users);
-- results/tables_v2/test_pick_{old_vs_new,users}.csv.
+- results/tables/test_pick_{old_vs_new,users,dev_folds}.csv.
 The old files (splits/reserved_test.json, 02's es_users.csv) are not touched. Approved 2026-10-28: the new files are
 now the reference, and this script no longer overwrites an approved reserved_test_v2.json.
 
@@ -29,8 +32,8 @@ from tmd.paths import PROJECT
 from tmd.splits import balanced_folds, reserved_test
 
 HERE = Path(__file__).resolve().parent
-RES = HERE / "results" / "tables_v2"
-V2 = "es_bench_v2"               # the pick was made on v2
+RES = HERE / "results" / "tables"
+VERSION = bench.VERSION
 N_TEST, K = 12, 5
 MIN_EX = 5                       # a user "has" a class with >= 5 examples
 MAX_IMPLAUSIBLE = 0.10           # users with more implausible windows are not eligible
@@ -42,10 +45,10 @@ C7 = [c for c in CLASSES if c != "subway"]
 
 def user_table() -> tuple[pd.DataFrame, pd.DataFrame]:
     lab = bench.read("extrasensory", "labels", columns=["user", "ts", "platform", "has_acc", "acc_implausible"],
-                     version=V2)
+                     version=VERSION)
     win = lab[lab.has_acc]
     imp = win.groupby("user").acc_implausible.mean()
-    ex = bench.examples("extrasensory", columns=["platform", "cls", "has_location", "split"], version=V2)
+    ex = bench.examples("extrasensory", columns=["platform", "cls", "has_location", "split"], version=VERSION)
     n = ex.groupby(["user", "cls"]).size().unstack(fill_value=0).reindex(columns=C7, fill_value=0)
     u = pd.DataFrame({"platform": lab.groupby("user").platform.first(), "implausible_share": imp,
                       "examples": ex.groupby("user").size(), "with_location": ex.groupby("user").has_location.sum(),
@@ -145,7 +148,7 @@ def main() -> None:
     old_json = json.loads((PROJECT / "splits" / "reserved_test.json").read_text())
     new_json = {
         "description": "PROPOSED 2026-10-28, NOT IN USE: pending the supervisor's approval. Re-pick of the 12 "
-                       "ExtraSensory test users on es_bench_v2 (experiment 04, step 3, item 6). SHL Users 2-3 "
+                       "ExtraSensory test users (experiment 04). SHL Users 2-3 "
                        "unchanged. The reference stays splits/reserved_test.json until this is approved.",
         "source": "experiments/04_frozen-benchmark_es-shl/propose_test_v2.py --seed "
                   f"{a.seed} --draws {a.draws}; dev folds in experiments/04_frozen-benchmark_es-shl/splits/"

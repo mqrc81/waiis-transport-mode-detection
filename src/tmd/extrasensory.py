@@ -50,7 +50,7 @@ POSITION_LABELS = ["PHONE_IN_POCKET", "PHONE_IN_HAND", "PHONE_IN_BAG", "PHONE_ON
 RESTING_LABELS = ["PHONE_ON_TABLE", "orig:PHONE_AWAY_FROM_ME"]
 FOOT_BIKE = ["walk", "run", "bike"]
 RESTING_STILL_MAX_SHARE = 0.2
-# Users left out of every official set and pre-training accessor (es_bench_v4; Marc, 2026-10-28): BEF6C611's raw
+# Users left out of every official set and pre-training accessor (Marc, 2026-10-28): BEF6C611's raw
 # |acc| level jumps between g, m/s2 and gravity-free scales (04 decision register, U1 / V1).
 EXCLUDED_USERS = {"BEF6C611-50DA-4971-A040-87FB979F3FC1": "inconsistent accelerometer processing"}
 

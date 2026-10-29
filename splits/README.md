@@ -4,7 +4,7 @@
   2026-10-28; experiment 04, step 3). No experiment trains, tunes, selects or pre-trains on it, self-supervised
   pre-training included.
   - SHL: Users 2 and 3, all days and all 4 positions (6 `user, day` rows). Unchanged from the first set.
-  - ExtraSensory: 12 users (`uuid, platform`), re-picked on `es_bench_v2` by
+  - ExtraSensory: 12 users (`uuid, platform`), re-picked in experiment 04 by
     `experiments/04_frozen-benchmark_es-shl/propose_test_v2.py`. Their dev folds:
     `experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv`.
   - **11 of the 12 ExtraSensory users were dev users in experiment 02** (training and model choices there);

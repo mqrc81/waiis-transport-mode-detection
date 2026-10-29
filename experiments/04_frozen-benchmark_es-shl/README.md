@@ -2,888 +2,178 @@
 
 ## Question
 
-Build one frozen, versioned dataset (`es_bench_v1`) that every model reads (LightGBM, InceptionTime
-\+ GPS, LIMU-BERT later), so that models are compared on exactly the same examples. The examples should look as much
-as possible like what the WAIIS app sends, as measured in production:
+Build one frozen, versioned dataset, **`waiis_bench_v1`**, that every model reads (LightGBM, InceptionTime + GPS,
+LIMU-BERT later), so that models are compared on exactly the same examples. The examples should look as much as
+possible like what the WAIIS app sends, as measured in production:
 - accelerometer only, ~25 Hz, recorded in fragments;
 - GPS: a fix every ~10 s while moving, ~20 s when walking, minutes apart when still; ~23% of fixes have no speed;
   median accuracy ~8 m.
 
-*(Brief from Marc, 2026-10-28. This is a data build, not a model experiment: it has no MLflow runs. Experiment 03's
-README calls the planned LIMU-BERT experiment "04"; that one will get a later number.)*
+*(Brief from Marc, 2026-10-28. This is a data build, not a model experiment: it has no MLflow runs.)*
 
 ## Plan
 
-1. **Inventory.** What is on disk (absolute location?), snippet length per platform at 25 Hz, how many snippets the
-   15 s window drops, location coverage per class, what the SHL location files contain.
-   **Stop-point: wait for OK.**
-2. **Build `es_bench_v1`** with one command (`build.py` in this folder; shared readers in `src/tmd`).
-   - **Accelerometer.** `raw_acc` only. Units are decided per snippet (median |acc| < 3 → g → × 9.80665), as in 02.
-     Each snippet is resampled to 25 Hz with an anti-aliasing filter, inside the snippet only. Windows never cross
-     snippets. Same cleaning as 02 (time going backwards, span > 40 s, hole > 0.5 s, NaN), without requiring a
-     gyroscope. One 15 s window (375 × 3) is cut from each snippet's centre; snippets with less than 15 s are dropped
-     and counted per platform.
-   - **Labels.** Rules v2 (`tmd.extrasensory`) unchanged. Every minute is kept, with flags `included_v2`,
-     `not_carried`, `capped`, `motorbike`, `has_location`. The official example set is `included_v2`. The source
-     label columns are kept so that rules can be re-derived.
-   - **Split.** Test users from `splits/reserved_test.json`, unchanged. Dev folds are 02's folds by user, with the
-     3 gyroscope-less users added without moving anyone. Report class shares per fold.
-   - **GPS (ExtraSensory).** Per minute, keyed by user + minute like the labels:
-     - from the main CSV, all `location:` / `location_quick_features:` columns;
-     - lat/lon from the absolute-location files.
-
-     The GPS track is built per user: one fix per minute, and a new session wherever two minutes are > 2 min apart.
-     Each fix has time, lat, lon, speed (`max_speed`, else −1), accuracy (`best_horizontal_accuracy`, else −1) and
-     bearing (from consecutive fixes, else −1), plus distance and speed between consecutive fixes.
-   - **SHL.** These are separate files in the same format, hips only, accelerometer only, one 15 s window per minute.
-     GPS comes from `Hips_Location.txt`, thinned to the WAIIS cadence, with speed removed on ~23% of fixes (fixed
-     seed).
-     - Users 2–3 are a rail check set, evaluation only.
-     - User 1 is an optional training source (all of the metro data, most of the train data).
-   - **Format.** Parquet tables `sessions`, `accelerometer`, `gps`, `labels`, joined on user + minute timestamp. The
-     build writes a manifest with the sha256 of every output file.
-   - **README.** Counts per class and per user, for all minutes and for moving minutes only. Counts per platform and
-     phone position, location coverage per class, dropped counts with reasons, and every decision.
-   **Stop-point.**
+1. Inventory of the raw data (`inventory.py`). **Stop-point.**
+2. Build the benchmark with one command (`build.py`; shared readers in `src/tmd`), verify it, and document every
+   decision (`decision_register.md`). **Stop-point.**
+3. Re-pick the ExtraSensory test users on the benchmark's counts (`propose_test_v2.py`). **Stop-point: the
+   supervisor's OK.**
+4. Final build, verification and documentation. **Stop-point.**
 
 ## Results
 
-### Step 1: inventory (2026-10-28) — **stop-point**
+**The dataset is `waiis_bench_v1`**: `<data>/processed/waiis_bench_v1/`, 23 Parquet files, 4.8 GB.
+- Built from commit `<commit>` in a clean git worktree; `manifest.json` holds the parameters and the sha256 of
+  every file.
+- Read it with `tmd.bench`.
+- Every decision that shaped it, with its effect, is in **`decision_register.md`**.
+- The step-by-step log of the stop-points is in this README at commit `51e9319`.
 
 ```
-uv run python inventory.py      # ~12 s; tables in results/inventory/, log in logs/inventory.log
+uv run python inventory.py              # raw-data inventory; results/inventory/, logs/inventory.log
+uv run python build.py --workers 8      # ~2 min; <data>/processed/waiis_bench_v1/, results/tables/, logs/build.log
+uv run pytest tests                     # reserved and excluded users never reach a pre-training accessor
+uv run python register_numbers.py       # results/tables/decision_details.csv (numbers behind the register)
 ```
 
-Snippet statistics come from 02's per-minute audit of `raw_acc` (`<data>/processed/es_minutes_audit.parquet`, made by
-02's `audit_es.py`). The build will recompute them from the raw files. Labels are rules v2 over all 60 users. The
-still cap is applied as in 02 (`eval_tables.py`: `cap_resting_still` over the `ok` minutes of all users, seed 0), so
-`included_v2` is the same set of minutes as in 02.
-
-#### On disk
-- **Absolute location is already in the data root**: `raw/extrasensory/ExtraSensory.per_uuid_absolute_location.zip`
-  (2,303,359 bytes, sha256 `09d06c2bf1f69d306b2e529d50d5fe2c8c5d56a832ddd3b64c8ee3e4908b750e`, file date
-  2026-10-23), unzipped to `per_uuid_absolute_location/`. It has 60 users with `timestamp, latitude, longitude`. As
-  with the cleaned CSVs, the unzip left one folder per file.
-  - There is one row for every one of the 377,346 CSV minutes, with lat/lon present in 305,747.
-  - Website definition: NaN if there is no location update in the minute's recording, or if all updates have an
-    accuracy worse than 200 m. Otherwise the coordinates are those of the latest update among the ones with the best
-    accuracy.
-  - Source: http://extrasensory.ucsd.edu/data/additional_data_files/ExtraSensory.per_uuid_absolute_location.zip
-    (link on the saved dataset page; recorded in LICENSES.md at step 2).
-- **LICENSES.md has no ExtraSensory entry yet** (02 used the dataset without adding one). The saved dataset page
-  states no licence, only that published work must cite Vaizman et al. 2017. Added at step 2.
-- **Free disk on the data volume: 2.8 GB** (`df`, 2026-10-28). See open question 2; 18 GB were free at step 2.
-
-#### ExtraSensory accelerometer at 25 Hz
-A 375-sample window at 25 Hz needs a snippet span of at least 14.96 s.
-
-| samples at 25 Hz (clean snippets) | p1 | p5 | p10 | p25 | p50 | p90 |
-|---|---|---|---|---|---|---|
-| Android (153,140 snippets) | 168 | 233 | 394 | 399 | 400 | 413 |
-| iPhone (220,681 snippets) | 572 | 573 | 574 | 578 | 586 | 630 |
-
-- **iPhone** snippets are ~23 s long (800 samples at ≈ 34 Hz). Every clean one fits 15 s.
-- **Android** snippets are ~16 s long (800 samples at 50 Hz). 9.5% of the clean ones are shorter than 15 s
-  (`es_snippet_len25_hist.csv`). They come almost all from 6 users whose phones sample faster at times (800
-  samples at ≈ 80–100 Hz = 8–10 s; `es_users_under_15s.csv`):
-
-  | user | clean snippets | under 15 s | share |
-  |---|---|---|---|
-  | 1DBB0F6F | 7,107 | 4,055 | 57% |
-  | 81536B0A | 6,179 | 3,395 | 55% |
-  | 27E04243 | 4,764 | 2,135 | 45% |
-  | CCAF77F0 (no gyro) | 8,390 | 1,954 | 23% |
-  | 96A358A0 (test) | 5,748 | 1,612 | 28% |
-  | F50235E0 (no gyro) | 2,183 | 1,117 | 51% |
-
-**Status per snippet** (02's cleaning on acc alone, then the 15 s rule; the first failing reason counts):
-
-| | all minutes, Android | all, iPhone | included_v2, Android | included_v2, iPhone |
-|---|---|---|---|---|
-| ok (15 s window) | 138,559 | 220,681 | 58,049 | 91,632 |
-| under 15 s | 14,581 | 0 | 7,502 | 0 |
-| hole > 0.5 s | 1,710 | 236 | 804 | 166 |
-| time not increasing | 1,187 | 0 | 562 | 0 |
-| span > 40 s | 66 | 36 | 46 | 16 |
-| no file | 282 | 8 | 9 | 0 |
-| total | 156,385 | 220,961 | 66,972 | 91,814 |
-
-**By class** (included_v2 minutes; `es_acc_status_by_class.csv`):
-
-| | still | walk | run | bike | car | bus | train |
-|---|---|---|---|---|---|---|---|
-| included_v2 | 118,604 | 21,241 | 762 | 4,878 | 11,166 | 1,793 | 342 |
-| with a 15 s window | 112,927 | 19,468 | 708 | 4,376 | 10,334 | 1,626 | 242 |
-| kept | 95.2% | 91.7% | 92.9% | 89.7% | 92.5% | 90.7% | **70.8%** |
-| lost to the 15 s rule | 4,562 | 1,478 | 49 | 457 | 714 | 151 | 91 |
-
-- **Train is hit hardest.** 1DBB0F6F (dev, fold 3) is the largest train user, and 91 of their 115 train minutes are
-  under 15 s; only 15 remain. Train with a window per user: B7F9D634 97, 3600D531 (test) 69, 33A85C34 37,
-  A76A5AF5 24, 1DBB0F6F 15. Dev train goes from 273 to 173 minutes, and fold 3 from 115 to 15. See open question 1.
-- **Gyroscope-less users come back** (included_v2 with a window):
-
-  | user | still | walk | run | bike | car | bus |
-  |---|---|---|---|---|---|---|
-  | 61359772 | 2,682 | 231 | 0 | 227 | 0 | 60 |
-  | CCAF77F0 | 1,254 | 20 | 0 | 0 | 28 | 0 |
-  | F50235E0 | 847 | 44 | 5 | 19 | 12 | 13 |
-
-  **They already have folds**: 02's `splits/es_users.csv` assigned them as dev users in folds 1, 3 and 2
-  (61359772, CCAF77F0 and F50235E0). Nothing needs to be added and nobody moves. The class shares per fold will be
-  recomputed with them at step 2.
-
-#### ExtraSensory location
-- **The two sources agree.** Lat/lon is present in 305,747 minutes, and `location:num_valid_updates > 0` in 305,338.
-  410 minutes have lat/lon but no location features, and 1 has features but no lat/lon.
-- **Coverage per class** (included_v2; `es_location_coverage_by_class.csv`):
-
-  | | still | walk | run | bike | car | bus | train | motorbike (check) | all minutes |
-  |---|---|---|---|---|---|---|---|---|---|
-  | has lat/lon | 82.8% | 78.9% | 80.7% | 93.7% | 88.0% | 77.2% | 91.2% | 100% | 81.0% |
-  | iPhone | 92.4% | 95.9% | 100% | 99.4% | 95.8% | 96.1% | 100% | – | 92.1% |
-  | Android | 69.3% | 60.7% | 70.2% | 87.3% | 71.6% | 60.3% | 88.0% | 100% | 65.4% |
-- **Units and invalid values.**
-  - `min_speed` / `max_speed` are in m/s. Medians of `max_speed`: walk 1.5, bike 6.5, car 14, bus 6–7.5 and
-    train 21–23 m/s.
-  - **Invalid speed is NaN in the CSV, not −1.** No speed or accuracy value is negative. The CSV evidently already
-    turned iOS's −1 into NaN. Speed is NaN in 59% (iPhone) and 84% (Android) of the minutes that have location
-    updates, so −1 will be written wherever it is NaN.
-  - `best_horizontal_accuracy` is in m: median 10 m (iPhone) and 12.4 m (Android), max 199 m (the 200 m cut).
-- **Speed missing per class** (minutes with updates; `es_location_speed_by_class.csv`). The production share is 23%.
-
-  | speed valid | still | walk | run | bike | car | bus | train |
-  |---|---|---|---|---|---|---|---|
-  | iPhone | 33% | 65% | 60% | 89% | 91% | 90% | 92% |
-  | Android | 9% | 40% | 42% | 79% | 79% | 58% | 72% |
-
-  In vehicles ExtraSensory is close to production (8–28% missing, Android bus 42%). On foot and in still it is far
-  more often missing. I don't plan to blank any extra speeds in ExtraSensory.
-- **Cadence.** There is at most one fix per minute: the best-accuracy update within the ~20 s recording. Consecutive
-  fixes are a median of 60 s apart (p90 72 s), and 2.4% of the gaps are over 2 min (session breaks). This is
-  **sparser than production while moving** (10–20 s) and cannot be made denser. Speed and bearing from consecutive
-  fixes therefore span ~60 s, while production spans 10–20 s.
-
-#### SHL location files
-`<Pos>_Location.txt` (doc 3.10) has 7 columns: time [ms], ignore, ignore, accuracy [m, 68% radius], latitude,
-longitude, altitude. **There is no speed and no bearing column**, so both must be computed from consecutive fixes.
-`<Pos>_GPS.txt` holds only satellite IDs, SNR and angles. Hips (`shl_hips_location.csv`):
-
-| | recordings | fixes | hours | fix interval p50 | gaps > 60 s | accuracy p50 | lat/lon NaN |
-|---|---|---|---|---|---|---|---|
-| User1 | 90 | 1,377,679 | 592 | 1.0 s | 1,012 | 8 m | 0 |
-| User2 (4 phones) | 3 | 64,709 | 26 | 1.0 s | 51 | 8 m | 0 |
-| User3 (4 phones) | 3 | 36,815 | 17 | 1.0 s | 21 | 16 m | 0 |
-
-The 1 Hz fixes can be thinned to the production cadence. Gaps over 60 s are presumably tunnels, the underground and
-indoors (to check per class at step 2).
-
-#### Open questions (for Marc; answered below)
-1. **The 15 s rule costs 29% of train**, mostly from 1DBB0F6F (dev fold 3: 115 → 15 train minutes). Options:
-   - (a) Keep it as specified.
-   - (b) Lower the window to 10 s for everyone, which keeps nearly all Android snippets.
-   - (c) Keep 15 s, plus a flagged second window table with the shorter snippets padded and a valid-length column.
-
-   I recommend (a), because every model then sees the same fixed shape. Record the loss, and rely on SHL for train.
-2. **Disk.**
-   - The ES accelerometer table for every minute with a window is 359,240 × 375 × 3 float32 = 1.6 GB before
-     compression. SHL adds ~0.2 GB, and sensor noise compresses poorly.
-   - With 2.8 GB free, that is too tight to build safely.
-   - Options:
-     - free space, e.g. `processed/shl_u1_hips_w10s` (7.3 GB, from 01) or 02's feature parquets (1.6 GB). I won't
-       delete anything without your OK;
-     - store float16 (~0.8 GB; resolution ~0.008 m/s² near 9.8);
-     - store accelerometer only for labelled minutes. That drops ~70k unlabelled minutes, which LIMU-BERT could use
-       for pre-training.
-
-   I recommend freeing space and keeping float32 for every minute.
-3. **SHL GPS thinning: what sets the cadence?** If the cadence is chosen from the ground-truth label, the fix
-   interval itself leaks the class.
-   - I propose choosing it from the speed of the 1 Hz track, smoothed over 10 s: ≥ 3 m/s → a fix every 10 s,
-     0.5–3 m/s → 20 s, below that → 180 s.
-   - Speed is the distance between 1 Hz fixes over time, since SHL has no Doppler speed. It is then set to −1 on 23%
-     of the kept fixes (seed 0).
-   - Is 180 s right for "minutes apart"?
-4. **SHL windows.** I propose one window centred in each clock minute. It gets a label only if all 375 samples have
-   the same coarse label (≠ Null). Otherwise it is kept with a `mixed` / `null` flag, like the ES flags. User 1 would
-   include its `User1_4phones` hips days, as in 02's day folds.
-
-#### Decisions (2026-10-28, from Marc)
-1. **Keep the 15 s window.** Record the loss per user and per class, and say that it is concentrated in 6 Android
-   users with 80–100 Hz snippets (step 2 below).
-2. **Disk.** Keep float32 and keep the accelerometer for every minute, unlabelled ones included. Delete
-   `processed/shl_u1_hips_w10s` only if 01's README has a command to rebuild it.
-   - At step 2 the folder was **already gone**: it is not in `processed/`, and nothing in this session deleted it.
-     18 GB were free, so nothing was deleted.
-   - For the record: 01 rebuilds it with `cache_raw.py` → `make_windows.py` → `make_kshot.py` (01's
-     `COMMANDS.md`). `COMMANDS.md` still names the old output path `/Users/ms/data/shl_unimts/`, but
-     `shl_common.py:12` writes to `processed/shl_u1_hips_w10s`.
-3. **SHL GPS thinned by speed** from the 1 Hz track, with 180 s for slow. Each kept fix gets its speed and bearing
-   from the 1 Hz track around the fix time (~3 s), not from consecutive thinned fixes. Speed is then blanked on 23%
-   of the kept fixes (seed 0). Natural gaps stay gaps.
-   - A **second variant has one fix per minute**, matching ExtraSensory's cadence. Otherwise a model trained on both
-     datasets can tell them apart from the fix interval, the same kind of shortcut as `ctx_n` in 02.
-4. **SHL windows** as proposed: one 15 s window per clock minute, with mixed or null labels flagged. User 1
-   includes the `User1_4phones` hips days.
-5. **ExtraSensory location NaN is ambiguous.** Location updates only on a significant change, so a still phone can
-   give none. NaN can also mean location off or no fix, all updates worse than 200 m, or coordinates hidden near
-   home (~500 m, per the paper).
-   - Never forward-fill or impute: NaN stays NaN, and −1 in the track format.
-   - Add a per-minute `location_missing_reason`, and check whether `withheld` occurs.
-   - Report coverage and reasons per class, and note that missing location correlates with still.
-   - Sessions come from minute timestamps (gap > 2 min), not from fixes.
-6. Also: add ExtraSensory to LICENSES.md, and in 03's README replace "04" (LIMU-BERT) with "a later experiment".
-   Both done.
-
-### Step 2: build of `es_bench_v1` (2026-10-28) — **stop-point**
-
-```
-uv run python build.py --workers 8      # ~2 min; <data>/processed/es_bench_v1/, results/tables/*.csv, logs/build.log
-uv run python build.py --sources shl_user23   # rebuild check: all 15 sha256 identical to the full build
-```
-
-**Shared code added or changed** (`src/tmd`):
-- `bench.py`: the reader (`read`, `examples`, `windows`, `manifest`, `verify`).
-- `gps.py`: haversine, bearing, sessions, speed and bearing from a dense track, cadence thinning.
-- `resample.py`: `es_acc_to_25hz` (the acc-only path) and `centre`. The cleaning checks moved into
-  `es_snippet_problem` and the unit rule into `to_ms2`. **02's `es_snippet_to_25hz` is unchanged**: its output was
-  identical to the committed version on 90 sampled snippets.
-- `extrasensory.py`: `read_location`, `location_missing_reason`.
-- `shl.py`: `read_location`.
-
-#### What was built
-
-`<data>/processed/es_bench_v1/` is 1.77 GB, and `manifest.json` holds the parameters, the git commit and the
-sha256, size and rows of every file. One folder per source:
+### Contents
 
 | source | tables | role |
 |---|---|---|
-| `extrasensory` | `labels`, `sessions`, `accelerometer`, `gps_per_minute`, `location_features` | main benchmark; dev folds + reserved test users |
-| `shl_user1` | `labels`, `sessions`, `accelerometer`, `gps_waiis_cadence`, `gps_per_minute` | optional training source (metro, most train) |
-| `shl_user23` | same as `shl_user1` | rail check set, evaluation only |
+| `extrasensory` | `labels`, `sessions`, `accelerometer`, `gps_per_minute`, `location_features`, `snippets` | main benchmark: dev folds + reserved test users |
+| `shl_user1` | `labels`, `sessions`, `accelerometer`, `gps_waiis_cadence`, `gps_per_minute`, `gps_1hz`, `gps_unblanked`, `stream`, `accelerometer_other_positions` | optional training source (metro, most train) |
+| `shl_user23` | as `shl_user1`, without `accelerometer_other_positions` | rail check set, evaluation only |
 
-- **Join key** is `user, ts` (minute timestamp, unix s). For SHL, `ts` is the start of the clock minute.
-- **`labels`** has one row per minute, and every minute is kept. Columns:
-  - split (`dev` / `test` / `rail_check`), `fold`, `session`, `cls`, `y`;
-  - flags: `included_v2` (SHL: `included`), `has_acc`, `acc_status`, `has_location`, `location_missing_reason`,
-    `not_carried`, `capped`, `motorbike`;
-  - rule outputs (`reason`, `position`, `resting`, `moving`, `PHONE_*`);
-  - ExtraSensory also keeps all source label columns: 51 `label:*` (cleaned CSV) and 116 `orig:*` (original
-    labels), so rules can be re-derived.
-- **`accelerometer`** has one row per minute that has a window. `x`, `y`, `z` are fixed-size lists of 375 float32
-  values in m/s² at 25 Hz. ExtraSensory adds `unit` (detected `g` or `m/s2`), `raw_n`, `raw_rate_hz`, `span_s` and
-  `start_offset_s`; SHL adds `t_start_ms`.
-- **The official example set** is `tmd.bench.examples(source)`: included minutes that have a window. That is
-  149,681 ExtraSensory minutes, 23,099 for SHL User 1 and 2,366 for SHL Users 2–3.
-- **GPS tracks** have the columns `user, ts, session, time, lat, lon, speed, accuracy, bearing` (−1 = unknown),
-  plus `dist_prev_m`, `dt_prev_s` and `speed_prev_mps` from the previous fix in the same session. SHL tracks also
-  have `rec`, `speed_10s` and `speed_blanked`.
-  - `gps_per_minute`: at most one fix per minute, which is ExtraSensory's native cadence.
-    - ExtraSensory: the minute's absolute lat/lon, `speed` = `location:max_speed` and `accuracy` =
-      `best_horizontal_accuracy`. `time` is the minute timestamp, because the fix's own time is not published.
-      `bearing_from_fixes` is the bearing from the previous fix and is never blanked. `bearing` is that value, but
-      −1 wherever speed is −1 (the production rule; second rebuild below).
-    - SHL: inside the minute's 15 s window, the best-accuracy fix, latest on ties (the ExtraSensory rule). `time`
-      is the real fix time.
-  - `gps_waiis_cadence` (SHL only): the 1 Hz track thinned to the production cadence. A fix is kept when it is at
-    least *interval* after the last kept fix. The interval comes from the speed over ~10 s at the candidate fix:
-    ≥ 3 m/s → 10 s, ≥ 0.5 m/s → 20 s, otherwise 180 s.
-  - In both SHL variants, speed and bearing come from the 1 Hz track: the first and last fix within ±1.5 s, never
-    across a gap > 5 s. Speed **and bearing** are then set to −1 on 23% of the kept fixes (`rng(0)`, separately
-    per table), as phones record a fix without speed (decision 2026-10-28, below).
-  - **Use `gps_per_minute` when a model trains on ExtraSensory and SHL together.** With `gps_waiis_cadence`, the
-    fix interval alone separates the datasets.
-- **`sessions`**: per user, minutes sorted by time, with a new session at each gap > 2 min between minutes (not
-  between fixes). The columns are start, end, minute count, minutes with a window and minutes with a location.
-  - ExtraSensory has 8,729 sessions (median 4 minutes, max 7,875). SHL User 1 has 90 and Users 2–3 have 6, one per
-    recording.
-- **`location_features`** (ExtraSensory): all 17 `location:*` / `location_quick_features:*` columns plus lat/lon,
-  per minute, unchanged (NaN kept).
+- **Join key** `user, ts`: the minute timestamp [unix s].
+- **`labels`**: one row per minute, every minute kept, with flags and (ExtraSensory) all source label columns.
+- **`official`** (in `labels`): the official example set. `tmd.bench.examples(source)` returns it.
+  - official = included by the label rules, has a 15 s window, and none of `acc_implausible`, `label_implausible`,
+    `user_excluded`.
+- **`accelerometer`**: one 15 s window per minute (375 × 3 float32, m/s², 25 Hz, gravity included).
+- **Never official, explicit accessors only** (reserved test users excluded unless `include_reserved=True`; excluded
+  users always): full snippets incl. short and time-repaired ones, the SHL hips stream, SHL User 1's other phone
+  positions, the SHL 1 Hz track and unblanked speeds.
+- **GPS**: speed, accuracy and bearing are −1 when unknown; lat/lon are never imputed.
+  - Models that train on ExtraSensory and SHL together use `gps_per_minute`. With `gps_waiis_cadence`, the fix
+    interval alone separates the datasets.
 
-#### ExtraSensory counts
+### Official examples
 
-Per class (`es_class_counts.csv`). "Examples" are included_v2 minutes with a 15 s window.
-
-| | still | walk | run | bike | car | bus | train |
-|---|---|---|---|---|---|---|---|
-| minutes with that class (any rule outcome) | 265,154 | 22,323 | 1,090 | 5,020 | 11,252 | 1,794 | 344 |
-| included_v2 | 118,604 | 21,241 | 762 | 4,878 | 11,166 | 1,793 | 342 |
-| **examples** | **112,927** | **19,468** | **708** | **4,376** | **10,334** | **1,626** | **242** |
-| iPhone / Android | 69,327 / 43,600 | 10,960 / 8,508 | 269 / 439 | 2,594 / 1,782 | 7,548 / 2,786 | 841 / 785 | 93 / 149 |
-| dev / test | 94,148 / 18,779 | 15,862 / 3,606 | 585 / 123 | 3,477 / 899 | 8,432 / 1,902 | 1,357 / 269 | 173 / 69 |
-| users | 60 | 59 | 22 | 23 | 49 | 28 | 5 |
-
-- **Per user:**
-  - all minutes: `es_user_class_all_minutes.csv` (unlabelled minutes included);
-  - examples: `es_user_class_examples.csv` (with platform and split);
-  - moving classes only: `es_user_class_examples_moving.csv`.
-
-  Moving examples per user range from 1 (27E04243) and 2 (96A358A0, test) to 1,612 (0E6184E1).
-- **Platform × position** (examples; `es_platform_position_class.csv`):
-
-  | | none reported | in_pocket | in_hand | in_bag | on_table | total |
-  |---|---|---|---|---|---|---|
-  | iPhone | 52,650 | 13,347 | 9,028 | 5,843 | 10,764 | 91,632 |
-  | Android | 38,120 | 7,963 | 3,722 | 3,020 | 5,224 | 58,049 |
-
-**Dropped, with reasons.**
-- **Label rules** (all 377,346 minutes; `es_label_reason.csv`):
-
-  | reason | minutes |
-  |---|---|
-  | ok | 221,285 |
-  | unlabelled | 70,353 |
-  | `drop:SLEEPING` | 83,055 |
-  | `drop:not_carried` | 1,078 |
-  | `drop:ON_A_PLANE` | 630 |
-  | `drop:ELLIPTICAL_MACHINE` | 233 |
-  | `drop:ELEVATOR` | 200 |
-  | `drop:TREADMILL` | 164 |
-  | `drop:SKATEBOARDING` | 131 |
-  | `check:MOTORBIKE` | 86 |
-  | `drop:STATIONARY_BIKE` | 86 |
-  | conflict | 18 |
-  | `drop:ON_A_BOAT` | 18 |
-  | `drop:WHEELCHAIR` | 9 |
-
-  The still cap then removes 62,499 `ok` still minutes (`capped`).
-- **Accelerometer**, included_v2 minutes (`es_acc_status_by_class.csv`; all minutes: `es_acc_status_all.csv`):
-
-  | | still | walk | run | bike | car | bus | train | total |
-  |---|---|---|---|---|---|---|---|---|
-  | under 15 s | 4,562 | 1,478 | 49 | 457 | 714 | 151 | 91 | 7,502 |
-  | hole > 0.5 s | 716 | 129 | 2 | 36 | 74 | 10 | 3 | 970 |
-  | time not increasing | 344 | 162 | 3 | 6 | 40 | 6 | 1 | 562 |
-  | span > 40 s | 47 | 3 | 0 | 3 | 4 | 0 | 5 | 62 |
-  | no file | 8 | 1 | 0 | 0 | 0 | 0 | 0 | 9 |
-  | kept | 95.2% | 91.7% | 92.9% | 89.7% | 92.5% | 90.7% | **70.8%** | 94.3% |
-
-  All 7,502 minutes lost to the 15 s rule are Android. Over all minutes there are 359,240 windows.
-- **The 15 s loss is concentrated in 6 Android users whose phones record 800 samples at 80–100 Hz** (8–10 s
-  snippets) for part of the time. These 6 lose 7,293 of the 7,502 included minutes (97%); every other user loses
-  ≤ 100. Per user and class (`es_15s_loss_by_user.csv`, included_v2):
-
-  | user | split | included | under 15 s | still | walk | run | bike | car | bus | train |
-  |---|---|---|---|---|---|---|---|---|---|---|
-  | 81536B0A | dev 3 | 3,416 | 1,972 | 1,075 | 44 | 0 | 427 | 426 | 0 | 0 |
-  | 1DBB0F6F | dev 3 | 2,927 | 1,951 | 1,050 | 704 | 44 | 0 | 36 | 26 | **91** |
-  | CCAF77F0 (no gyro) | dev 3 | 2,641 | 1,337 | 879 | 269 | 0 | 0 | 188 | 1 | 0 |
-  | F50235E0 (no gyro) | dev 2 | 2,050 | 1,037 | 799 | 135 | 5 | 28 | 54 | 16 | 0 |
-  | 27E04243 | dev 3 | 1,113 | 600 | 293 | 262 | 0 | 0 | 0 | 45 | 0 |
-  | 96A358A0 | test | 572 | 396 | 307 | 26 | 0 | 0 | 0 | 63 | 0 |
-
-  (Folds from `es_users.csv`.)
-  - **4 of the 6 are in dev fold 3.**
-  - The 15 s rule causes **91 of the 100 dropped train minutes**, all from 1DBB0F6F.
-  - It also costs **all 63 bus minutes of test user 96A358A0**. Test bus now has 5 users with examples (24–119
-    each), not 6.
-
-**Folds** (examples; `es_fold_class_counts.csv`, shares in `es_fold_class_share.csv`). These are 02's folds; the 3
-gyroscope-less users were already in folds 1, 3 and 2, so nobody moved.
-
-| fold | users | still | walk | run | bike | car | bus | train |
+| ExtraSensory | still | walk | run | bike | car | bus | train | all |
 |---|---|---|---|---|---|---|---|---|
-| 0 | 10 | 17,610 | 3,146 | 42 | 546 | 1,641 | 190 | 0 |
-| 1 | 9 | 24,842 | 4,160 | 287 | 881 | 2,460 | 244 | 97 |
-| 2 | 9 | 16,724 | 2,710 | 158 | 801 | 1,588 | 436 | 24 |
-| 3 | 10 | 11,177 | 2,381 | **9** | 375 | **516** | 162 | **15** |
-| 4 | 10 | 23,795 | 3,465 | 89 | 874 | 2,227 | 325 | 37 |
-| test | 12 | 18,779 | 3,606 | 123 | 899 | 1,902 | 269 | 69 |
+| dev, iPhone | 56,390 | 8,257 | 69 | 1,654 | 6,197 | 798 | 93 | 73,458 |
+| dev, Android | 36,340 | 4,852 | 394 | 1,464 | 1,831 | 550 | 97 | 45,528 |
+| test, iPhone | 13,041 | 1,372 | 38 | 646 | 1,365 | 47 | 0 | 16,509 |
+| test, Android | 6,245 | 2,310 | 43 | 230 | 765 | 240 | 52 | 9,885 |
+| **all** | **112,016** | **16,791** | **544** | **3,994** | **10,158** | **1,635** | **242** | **145,380** |
+| users | 59 | 58 | 22 | 23 | 48 | 28 | 5 | |
 
-Share of each class's examples per dev fold: still 10–22%, walk 12–21%, run 1–41%, bike 9–20%, car 5–24%,
-bus 10–27%, train 0–40%. Fold 3 is now thin in run, car and train, because 4 of the 6 high-rate
-users are in it. Test holds 17–21% of every class except train (28%, one
-user).
-
-**Location** (examples; `es_location_by_class.csv`):
-
-| | still | walk | run | bike | car | bus | train |
-|---|---|---|---|---|---|---|---|
-| has location | 82.8% | 78.6% | 80.1% | 93.6% | 87.8% | 78.0% | 87.6% |
-| iPhone | 92.4% | 95.9% | 100% | 99.5% | 95.8% | 96.1% | 100% |
-| Android | 67.6% | 56.4% | 67.9% | 85.0% | 66.3% | 58.6% | 79.9% |
-| missing: `no_updates` | 17.2% | 21.4% | 19.9% | 6.4% | 12.2% | 22.0% | 12.4% |
-
-- **Missing reasons, all 377,346 minutes:**
-  - present 305,747;
-  - `no_updates` 71,598;
-  - `withheld` 1 (an unlabelled minute);
-  - `poor_accuracy` 0;
-  - `unknown` 0.
-- **`withheld` effectively does not occur.** When coordinates are missing, the relative location features are
-  missing too (except in that 1 minute). So the home hiding is either not in the released data, or it removed the
-  features as well; we can't tell which.
-- **`poor_accuracy` can't be told apart from `no_updates`.** The features never have an accuracy over 200 m (max
-  199.3 m), so the CSV also seems to drop updates worse than 200 m. A minute whose only updates were poor therefore
-  looks like a minute with no updates.
-- **Missing location and still (possible shortcut).**
-  - **In ExtraSensory the link is weak.** Still minutes miss location 17% of the time, which is less than walk
-    (21%) and bus (22%) and more than bike (6%) and car (12%).
-  - **The strong link is platform:** Android misses 32% of minutes, iPhone 8%.
-  - **In SHL it is strong** (SHL counts below): no fix within the window for 54–61% of still minutes and 51–87% of
-    train and subway minutes, against 0–20% for walk, run, bike, car and bus. Indoors and underground mean no fix.
-  - A model that uses "has a fix" or the fix interval can learn still and rail from that. Experiments that use GPS
-    should report results with and without the location-missing indicator.
-- **Speed** is −1 on 67.5% of ExtraSensory fixes (the CSV has NaN; no negative values occur); production has ~23%
-  without speed.
-  - `bearing_from_fixes` is −1 on 29.1% (first fix of a session, or a move under 1 m).
-  - `bearing` is −1 on 71.0%: it follows speed (second rebuild below).
-
-#### SHL counts
-
-| | still | walk | run | bike | car | bus | train | subway | total |
+| SHL | still | walk | run | bike | car | bus | train | subway | all |
 |---|---|---|---|---|---|---|---|---|---|
-| User 1 (`shl_user1`) | 3,366 | 3,015 | 1,047 | 2,844 | 4,058 | 3,028 | 3,353 | 2,388 | 23,099 |
-| User 2 (`shl_user23`) | 197 | 240 | 14 | 136 | 255 | 68 | 133 | 174 | 1,217 |
-| User 3 (`shl_user23`) | 290 | 188 | 31 | 63 | 84 | 82 | 227 | 184 | 1,149 |
+| User 1 (`shl_user1`) | 3,366 | 3,011 | 1,030 | 2,842 | 4,058 | 3,028 | 3,353 | 2,388 | 23,076 |
+| Users 2–3 (`shl_user23`) | 487 | 427 | 45 | 199 | 339 | 150 | 360 | 358 | 2,365 |
 
-- **Minutes and labels.**
-  - User 1 has 36,968 minutes in 90 recordings (`release/User1` without 220617, 260617 and 270617, plus
-    `User1_4phones`, as in 02). Users 2–3 have 3,024 minutes in 6 recordings. Platform `android`, position `hips`.
-  - Label status, User 1: ok 23,100; null 13,056; mixed 694 (a transition inside the window); edge 118 (the window
-    doesn't fit in the recording).
-  - Accelerometer: 25 windows fall in a NaN gap, 1 of them on an `ok` minute.
-  - Users 2–3: ok 2,366, null 586, mixed 65, edge 7, NaN gap 2.
-- **Train and subway in User 1** have 3,353 and 2,388 examples (56 h and 40 h), against 242 ExtraSensory train
-  examples.
-- **GPS** (`shl_user1_gps_by_class.csv`, `shl_user23_gps_by_class.csv`; the 1 Hz track has 1,377,605 fixes for
-  User 1 and 101,516 for Users 2–3). User 1:
+Per user, per position and per fold: `results/tables/` (`es_class_counts.csv`, `es_fold_class_counts.csv`,
+`*_user_class_examples.csv`, …) and `results/tables/decision_details.csv`.
 
-  | `gps_waiis_cadence` | still | walk | run | bike | car | bus | train | subway |
-  |---|---|---|---|---|---|---|---|---|
-  | fixes | 874 | 7,565 | 3,424 | 14,478 | 18,070 | 10,787 | 7,994 | 3,119 |
-  | interval to previous, p50 | 71 s | 20 s | 20 s | 10 s | 10 s | 10 s | 10 s | 10 s |
-  | speed −1 | 25% | 24% | 23% | 23% | 23% | 24% | 26% | 24% |
-  | accuracy p50 | 8 m | 6 m | 6 m | 6 m | 8 m | 8 m | 16 m | 12 m |
+### Split
 
-  - Totals: 80,892 fixes (User 1) and 5,550 (Users 2–3). 22.9% of speeds were blanked, and 24.2% are −1 in total
-    (some fixes have no 1 Hz neighbour).
-  - The cadence comes out as specified: 10 s in vehicles and on the bike, 20 s on foot. Still fixes are a median of
-    71–87 s apart, and up to 180 s.
+- **Test:** the 12 reserved ExtraSensory users of `splits/reserved_test_v2.json`, approved by the supervisor on
+  2026-10-28. SHL Users 2–3 are the rail check.
+- **Dev:** 5 folds by user, `splits/es_users_v2.csv`.
+- **11 of the 12 test users were dev users in experiment 02** (training and model choices there).
 
-  | `gps_per_minute` | still | walk | run | bike | car | bus | train | subway |
-  |---|---|---|---|---|---|---|---|---|
-  | examples with a fix, User 1 | 39.4% | 85.9% | 99.8% | 99.3% | 83.2% | 89.7% | 49.0% | 30.6% |
-  | examples with a fix, Users 2–3 | 46.4% | 86.0% | 100% | 89.9% | 91.7% | 80.0% | 38.1% | 13.4% |
+| test user | platform | examples | still | walk | run | bike | car | bus | train |
+|---|---|---|---|---|---|---|---|---|---|
+| 098A72A5 | iPhone | 3,521 | 3,046 | 187 | 32 | 114 | 142 | 0 | 0 |
+| 0BFC35E2 | Android | 1,919 | 1,349 | 308 | 34 | 106 | 113 | 9 | 0 |
+| 1DBB0F6F | Android | 768 | 681 | 66 | 1 | 0 | 0 | 5 | 15 |
+| 24E40C4C | iPhone | 2,776 | 1,897 | 373 | 0 | 56 | 420 | 30 | 0 |
+| 27E04243 | Android | 507 | 506 | 0 | 0 | 0 | 0 | 1 | 0 |
+| 33A85C34 | Android | 2,584 | 1,777 | 437 | 0 | 124 | 209 | 0 | 37 |
+| 665514DE | Android | 2,239 | 1,016 | 1,056 | 8 | 0 | 20 | 139 | 0 |
+| 8023FE1A | iPhone | 5,496 | 4,570 | 236 | 0 | 354 | 336 | 0 | 0 |
+| A5CDF89D | iPhone | 2,496 | 2,138 | 189 | 0 | 0 | 169 | 0 | 0 |
+| A7599A50 | Android | 1,868 | 916 | 443 | 0 | 0 | 423 | 86 | 0 |
+| B09E373F | iPhone | 1,777 | 1,137 | 249 | 6 | 122 | 263 | 0 | 0 |
+| ECECC2AB | iPhone | 443 | 253 | 138 | 0 | 0 | 35 | 17 | 0 |
 
-  User 1 has 23,645 per-minute fixes, with a median of 60 s between them (as in ExtraSensory) and 22–25% of speeds
-  at −1.
+- Test users with ≥ 5 examples: still 12, walk 11, car 10, bike 6, bus 6, run 4, train 2.
+- iPhone share of examples: test 62.5%, dev 61.7%. Location coverage: test 85.6%, dev 82.7%.
+- Dev folds hold 8–10 users with examples each. Train is in folds 0, 2 and 3 only.
 
-#### Deviations and decisions taken in the build
-- **More tables than the four named in the brief.**
-  - GPS has two SHL variants (Marc, decision 3), and ExtraSensory's track is called `gps_per_minute` so that it
-    matches the SHL variant with the same cadence.
-  - The location columns are a separate `location_features` table rather than part of `labels`.
-- **The processed folder is named `es_bench_v1/`**, not by its parameters (CLAUDE.md: files in `processed/` are
-  named by their parameters). The version stands for the parameter set, which is in `manifest.json`.
-- **`y` is 0 for every minute that is not included** (ExtraSensory: not `included_v2`, so capped still minutes are
-  0 too; SHL: not `ok`). In 02, `y` was set before the cap. `cls` keeps the rule's class name.
-- **The still cap** is drawn as in 02 (`cap_resting_still` over the `ok` minutes of all 60 users, seed 0), so
-  `included_v2` is exactly 02's minute set: 158,786 minutes, the same as at step 1.
-- **ExtraSensory window position.** The window is the centre of the resampled snippet (`start_offset_s`), not
-  aligned to the minute timestamp. SHL windows are centred on the clock minute (`ts` + 30 s).
-- **SHL resampling.** Each NaN-free stretch is resampled 100 → 25 Hz as a whole (as 02's `make_features.py`), then
-  the window is cut from it. The window must lie inside one stretch.
-- **SHL cadence.** The interval is set by the speed at the candidate fix, so a fix arrives 10 s after moving off,
-  not 180 s later. The phone's real trigger (distance filter or activity) is unknown.
-- **SHL speed blanking** sets `speed` and `bearing` to −1 (Marc, 2026-10-28: production fixes on iPhone and
-  Android without speed have no bearing either). The first build kept the bearing; the rebuild below replaced it.
-- **Bearing is −1** for the first fix of a session, and wherever the move is under 1 m (ExtraSensory: from the
-  previous fix; SHL: over ±1.5 s).
-- **No MLflow run.** This is a data build. Model experiments that read it log `DataInput(name="extrasensory_dev" /
-  "extrasensory_test", features=..., extra=(("benchmark", "es_bench_v1"),))`. The split files are still 02's, so
-  `tracking.SPLITS` needs no new entry.
-- **The manifest says `git_dirty: true`** (build from commit `96f1435` with this work uncommitted). The data don't
-  depend on the commit; rebuilding after the commit gives the same sha256 (checked on `shl_user23`) and a clean
-  manifest.
-- The build prints a pandas `PerformanceWarning` (fragmented frame in `es_user`). It is harmless.
+| dev fold | still | walk | run | bike | car | bus | train |
+|---|---|---|---|---|---|---|---|
+| 0 | 23,745 | 2,889 | 288 | 342 | 1,431 | 174 | 69 |
+| 1 | 16,873 | 2,405 | 104 | 892 | 1,807 | 277 | 0 |
+| 2 | 17,083 | 2,498 | 19 | 600 | 1,791 | 207 | 97 |
+| 3 | 22,462 | 2,881 | 23 | 768 | 1,405 | 279 | 24 |
+| 4 | 12,567 | 2,436 | 29 | 516 | 1,594 | 411 | 0 |
 
-#### Rebuild (2026-10-28): bearing blanked with speed, clean manifest
-- Two changes before the rebuild:
-  - **Bearing is blanked with speed** in SHL (`build.py`, `shl_tracks`).
-  - **The git state is read at the start of the build** (`main`), because the build rewrites its own tracked
-    `results/` and `logs/`.
-- Two fixes along the way:
-  - The count tables moved from `results/build/` to **`results/tables/`**, because `.gitignore:17` (`build/`) hid
-    them from git.
-  - `.DS_Store` was added to `.gitignore`.
-- Built from commit `17a77b0` on a clean tree: **`manifest.json` has `git_dirty: false`**.
-- **Only the 4 SHL GPS files changed**; the other 11 sha256 are identical to the first build.
-  - No blanked fix keeps a bearing.
-  - Bearing −1 is now 30% (`gps_waiis_cadence`) and 47–48% (`gps_per_minute`), up from 7–57% depending on class.
-  - Per class, bearing −1 in `gps_waiis_cadence` (User 1) is 24% (run) to 35% (bus), still 63%.
-  - The other GPS numbers above are unchanged.
+### Location and missing speed
 
-#### Second rebuild (2026-10-28): ExtraSensory bearing follows speed
-- **What changed.** In `extrasensory/gps_per_minute`, `bearing` is now −1 wherever `speed` is −1. The bearing
-  from consecutive fixes is a new column, `bearing_from_fixes`, never blanked (`build.py`, `es_track`; Marc,
-  2026-10-28).
-- **Build.** From commit `30550d9` on a clean tree: `git_dirty: false`, and `bench.verify()` passes.
-- **Result.**
-  - **Only `extrasensory/gps_per_minute.parquet` changed**; the other 14 sha256 are identical to the first rebuild.
-  - `bearing` is −1 on 71.0% of fixes and `bearing_from_fixes` on 29.1%. No fix with speed −1 has a bearing.
-- Also fixed: the output path in 01's `COMMANDS.md` (12 paths, plus a note on the move).
-
-#### Output files (sha256 from `manifest.json`, commit `30550d9`)
-
-| file | rows | sha256 |
-|---|---|---|
-| `extrasensory/accelerometer.parquet` | 359,240 | `148a9f030bd2db44c823f6b4f187778ad1bac5cd835c1e4bd1b19f1970236e6d` |
-| `extrasensory/gps_per_minute.parquet` | 305,747 | `3798bde083f3a42d44c67833dec2ac14d775c09929671ce830339ff66d5b3a07` |
-| `extrasensory/labels.parquet` | 377,346 | `1a6579d6859ce792b77230a6d46b4d883b8fffab2409ace666bad474b9230a04` |
-| `extrasensory/location_features.parquet` | 377,346 | `cc8e063862eaa46e331ca5990ed238e4c99cb5ad7a091f39635c262768228bbd` |
-| `extrasensory/sessions.parquet` | 8,729 | `c5c2090161e0aeb3f44f5dbe7677691bc1f0b94372848b68be7bf9e443832b17` |
-| `shl_user1/accelerometer.parquet` | 36,825 | `d1209fc862bd948ec50915121bc30625c36c1478e6e114609d88a1324e47fff1` |
-| `shl_user1/gps_per_minute.parquet` | 23,645 | `6e2e3680a2934276c08bdaf682f4423eab408d3b3b44a0997ba9b82eec516eb6` |
-| `shl_user1/gps_waiis_cadence.parquet` | 80,892 | `e64a8608278de7203ca0a8a7bea23972e160ebd9d22a0f554dc61697edddcada` |
-| `shl_user1/labels.parquet` | 36,968 | `0eaf44ee479d4f9595a4f67d1eb4f0283199fa6b438633e761577977780cbd3b` |
-| `shl_user1/sessions.parquet` | 90 | `22f67e501301acb6aea7372829308cacdd280e3265367f710273c1593f82b35d` |
-| `shl_user23/accelerometer.parquet` | 3,015 | `debe6c6833c52bc5aebcec25ca93dc34bdae2ab21353f9d2579c0d35a3c0c4c7` |
-| `shl_user23/gps_per_minute.parquet` | 1,749 | `f7f1b50d20e0172ab7c79670bf21c521ecada4bc49498408557b65bf9f55c057` |
-| `shl_user23/gps_waiis_cadence.parquet` | 5,550 | `d64d7471b93a922d2f8ee498f2d1324111ce38673d3cdb1faf0a815f366acfea` |
-| `shl_user23/labels.parquet` | 3,024 | `6920d88a6631be40f89278a321fe82f4de8c617c9ee2139f580ff9895e814684` |
-| `shl_user23/sessions.parquet` | 6 | `890c107bf7aa3c7a0e0e908fd1ac1ca7e2bce9c4e7fdaf5419f56de5efeab686` |
-
-#### Open questions (step 2)
-1. ~~Bearing on fixes without speed.~~ Answered: blank the bearing wherever speed is blanked (rebuilt, see below).
-2. **Fold 3 is thin** in run (9), car (516) and train (15) after the 15 s rule. The folds are 02's and fixed, but
-   per-fold metrics for run and train will be noisy there.
-3. ~~Commit, then rebuild for a clean manifest.~~ Answered: yes (see "Rebuild" below).
-4. ~~ExtraSensory bearing without speed.~~ Answered: `bearing` = −1 where speed = −1, and the bearing from
-   consecutive fixes is kept as `bearing_from_fixes` (second rebuild below).
-
-### Step 3: `es_bench_v2` and a proposed test re-pick (2026-10-28) — **stop-point: supervisor's OK needed**
-
-*(Brief from Marc, 2026-10-28: items 1–7. v1 stays on disk unchanged; no model has used it.)*
-
-```
-uv run python register_numbers.py > logs/register_numbers.out   # decision_register.md numbers (v1)
-uv run python build.py --workers 8      # ~2 min; <data>/processed/es_bench_v2/, results/tables_v2/, logs/build_v2.out
-uv run pytest tests                     # 18 passed: no reserved test user reaches a pre-training accessor
-uv run python propose_test_v2.py        # ~5 s; splits/reserved_test_v2.json, splits/es_users_v2.csv (PROPOSAL)
-```
-
-- **Build:** from commit `b1e2a9c`. The manifest says `git_dirty: true` only because of uncommitted edits to
-  `DECISIONS.md` and 01–03's READMEs (removed "Draft" markers, not mine).
-- **Checks:**
-  - `bench.verify()` is clean for v1 and v2.
-  - **All 359,240 v1 windows are byte-identical in v2.**
-  - Every SHL window equals a slice of the new stream.
-- **Register:** every change is in `decision_register.md` (section 11 and the **v2:** notes).
-
-#### What changed (official set: included, has a window, `acc_implausible` false)
-
-| | v1 | v2 |
-|---|---|---|
-| ExtraSensory examples | 149,681 | **148,701** (+405 hole-trimmed, −1,385 implausible) |
-| SHL User 1 examples | 23,099 | 22,112 (−987 implausible: run 566, walk 377, bike 44) |
-| SHL Users 2–3 examples | 2,366 | 2,366 |
-| files / size | 15 / 1.77 GB | 23 / 4.80 GB |
-
-1. **`acc_implausible`** (median |acc| of the window outside 7–13 m/s²).
-   - ExtraSensory: 1,408 included windows flagged, 1,192 of them BEF6C611 (79% of its windows). The rest are 216
-     windows from other users, all above 13 m/s²: run 95, walk 108.
-   - SHL: 1,124 windows (User 1), all above 13 m/s².
-   - **Problem: the upper bound removes genuine running.** SHL run's median is 13.2 m/s², so 566 of 1,047 SHL
-     User 1 run windows go. ExtraSensory test run drops from 123 to 57 examples. See the open question below.
-   - Per user × class: `es_implausible_by_user.csv`, `shl_user1_implausible.csv`.
-2. **SHL speed and bearing blanking by speed:** p = 0.95 · exp(−v / 1.954 m/s), calibrated to 23.0% on User 1's
-   WAIIS-cadence fixes; the label is never used. Missing speed per class:
-
-   | | still | walk | run | bike | car | bus | train | subway | all |
-   |---|---|---|---|---|---|---|---|---|---|
-   | SHL U1 `gps_waiis_cadence` | 73.6% | 48.3% | 28.1% | 13.4% | 5.3% | 21.5% | 9.0% | 14.4% | 23.0% |
-   | SHL U1 `gps_per_minute` | 87.4% | 48.2% | 28.6% | 17.9% | 11.5% | 39.9% | 17.8% | 31.1% | 43.3% |
-   | ExtraSensory iPhone | 66.9% | 35.3% | 46.3% | 11.4% | 9.0% | 10.2% | 8.6% | – | – |
-   | ExtraSensory Android | 91.6% | 61.6% | 68.4% | 16.8% | 16.0% | 37.1% | 43.2% | – | – |
-
-   SHL now follows ExtraSensory's pattern (missing when slow); v1's uniform 23% did not.
-3. **Pre-training safety.**
-   - `tmd.bench.pretraining_minutes`, `unlabelled_minutes` and every extras accessor drop the reserved test users
-     (`splits/reserved_test.json`) unless `include_reserved=True`.
-   - `tests/test_bench_reserved.py` fails if one leaks: a synthetic check, plus every accessor on the built data.
-   - `examples()` (the official set) still includes test users, marked by `split`.
-4. **`quiet`** = std of |acc| over the window < **0.03 m/s²**. It is descriptive and never used for inclusion; the
-   20% cap is unchanged.
-   - The threshold catches 78% of still-on-table windows and lies above the noise floor (~0.008–0.010 m/s²).
-   - Share of quiet examples:
-     - ExtraSensory still 54–55%, on a table 64–71%, in a pocket 20–26%;
-     - SHL still 41–53%, moving classes ≤ 8%;
-     - but **70% of iPhone run** (161 of 231) and 12–15% of walk: likely label noise (phone not carried).
-5. **Holes (C3, now approved):** the longest clean stretch is kept if ≥ 15 s.
-   - 824 snippets (Android 610, iPhone 214).
-   - **405 official examples recovered:** still 307, walk 46, car 27, bike 16, bus 9.
-   - Included: dev 340, test 88.
-6. Test re-pick: see below. **Not in use.**
-7. **Stored, never official** (via explicit accessors only, reserved users excluded by default):
-
-   | item | table | rows | size |
-   |---|---|---|---|
-   | a, c: every ES snippet in full at 25 Hz (official window = centre crop; 15,853 `short`, median 9.3 s) | `extrasensory/snippets` | 376,952 | 2,057 MB |
-   | b: time-repaired snippets (sorted, repeated timestamps removed, re-checked; `time_repaired`) | in `snippets` | 1,185 | – |
-   | d: continuous 25 Hz hips stream (NaN-free stretches ≥ 15 s; t_ms, x, y, z, label) | `shl_user1/stream`, `shl_user23/stream` | 55.3 M + 4.5 M | 791 + 63 MB |
-   | e: User 1 hand / torso / bag windows, 4phones days | `shl_user1/accelerometer_other_positions` | 5,964 | 36 MB |
-   | f: 1 Hz track incl. altitude | `gps_1hz` | 1,377,605 + 101,516 | 68 MB |
-   | f: speed and bearing before blanking | `gps_unblanked` | 104,537 + 7,299 | 3 MB |
-
-   **Added size: +3.03 GB** (v2 4.80 GB against v1 1.77 GB). Still not stored: 290 minutes without a file and
-   104 snippets with a span > 40 s.
-
-**Reporting rule for test results (from v2 on):** ExtraSensory test results must always be reported **per
-platform (iPhone, Android)** and **with and without location** (`has_location`), as well as overall.
-*(Superseded at step 5: per platform, with no separate without-location breakdown, and with user-bootstrap CIs per
-class.)* Counts per
-split × platform × location are in `es_split_platform_location.csv`.
-
-#### Proposed re-pick of the 12 ExtraSensory test users (item 6) — NOT IN USE, needs the supervisor's OK
-
-The old pick (02, 2026-10-25) used obsolete counts: labels v1, gyroscope required, no implausibility flag.
-`propose_test_v2.py` re-picks on the v2 official examples.
-
-**Rule:**
-- eligible = every user except BEF6C611 (79% implausible windows; the threshold is 10%);
-- 6–7 iPhone users;
-- iPhone share and location coverage of the test examples within ±3 points of the figures for all users;
-- users with ≥ 5 examples: bus ≥ 5, bike ≥ 4, run ≥ 3, train 1–2, still / walk / car ≥ 5;
-- among the 9,972 subsets that pass (3 M draws, seed 0), class shares closest to 12/59.
-
-**Output:**
-- `splits/reserved_test_v2.json` (marked PROPOSED, SHL Users 2–3 unchanged);
-- `splits/es_users_v2.csv` (this folder), with dev folds rebuilt from the other 48 users;
-- `results/tables_v2/test_pick_*.csv`.
-
-The reserved set stays `splits/reserved_test.json` until approved; the reader and v2's `split` column use it.
-
-| | all 60 users | old test | **new test (proposal)** |
-|---|---|---|---|
-| iPhone users | 34 | 7 | 6 |
-| examples | 148,701 | 25,663 | 26,871 |
-| iPhone share of examples | 61.6% | 66.4% | 62.1% |
-| location coverage | 82.9% | **94.9%** | 85.4% |
-| still: examples (share) / users ≥ 5 | 112,235 | 18,844 (16.8%) / 12 | 19,286 (17.2%) / 12 |
-| walk | 19,334 | 3,615 (18.7%) / 11 | 4,086 (21.1%) / 11 |
-| run | 613 | 57 (9.3%) / **2** | 138 (22.5%) / **4** |
-| bike | 4,392 | 899 (20.5%) / 4 | 893 (20.3%) / 6 |
-| car | 10,252 | 1,906 (18.6%) / 10 | 2,130 (20.8%) / 10 |
-| bus | 1,634 | 273 (16.7%) / 5 | 286 (17.5%) / 6 |
-| train | 241 | 69 (28.6%) / 1 | 52 (21.6%) / 2 |
-
-**Users** (first 8 characters; examples, with location):
-
-| old test | | new test | |
-|---|---|---|---|
-| 098A72A5 iPhone | 3,506 | 098A72A5 iPhone (kept) | 3,506 |
-| 1155FF54 Android | 727 | 0BFC35E2 Android | 1,947 |
-| 1538C99F iPhone | 4,135 | 1DBB0F6F Android (train 15) | 864 |
-| 3600D531 iPhone (train 69) | 1,618 | 24E40C4C iPhone | 2,788 |
-| 481F4DD2 Android | 2,195 | 27E04243 Android | 507 (29% with location) |
-| 59EEFAE0 Android | 2,488 | 33A85C34 Android (train 37) | 2,598 |
-| 5EF64122 iPhone | 737 | 665514DE Android | 2,336 |
-| 74B86067 Android | 3,047 | 8023FE1A iPhone | 5,537 |
-| 96A358A0 Android | 169 | A5CDF89D iPhone | 2,498 |
-| C48CE857 iPhone | 1,377 | A7599A50 Android | 1,929 (20% with location) |
-| CA820D43 iPhone | 3,374 | B09E373F iPhone | 1,900 |
-| D7D20E2E iPhone | 2,290 | ECECC2AB iPhone | 461 |
-
-New dev folds (examples): train is in folds 0, 2 and 3 only, because 3 train users remain in dev.
-
-| fold | users | still | walk | run | bike | car | bus | train |
+| official examples with a fix | still | walk | run | bike | car | bus | train | subway |
 |---|---|---|---|---|---|---|---|---|
-| 0 | 9 | 23,745 | 3,385 | 282 | 512 | 1,431 | 174 | 69 |
-| 1 | 10 | 16,872 | 2,769 | 60 | 920 | 1,807 | 277 | 0 |
-| 2 | 10 | 17,078 | 2,835 | 14 | 637 | 1,790 | 207 | 96 |
-| 3 | 10 | 22,462 | 3,446 | 96 | 830 | 1,404 | 279 | 24 |
-| 4 | 9 | 12,792 | 2,813 | 23 | 600 | 1,690 | 411 | 0 |
+| ExtraSensory iPhone | 92% | 97% | 100% | 99% | 96% | 96% | 100% | – |
+| ExtraSensory Android | 68% | 58% | 68% | 86% | 65% | 59% | 80% | – |
+| SHL User 1 (per minute) | 39% | 86% | 100% | 99% | 83% | 90% | 49% | 31% |
 
-**For the supervisor's decision:**
-- **The 11 new test users were dev users in experiment 02.** They were used there for training and for model
-  choices (R2, step 3, the ExtraSensory-only model). The old test users have never been used by any experiment.
-  The new set fits the constraints much better (run 2 → 4 users, location coverage close to the overall figure);
-  the old one is untouched data.
-- The run counts depend on item 1's upper bound (open question 1). If the bound changes, the re-pick has to be
-  rerun (5 s).
+- Missing location is mainly a platform effect in ExtraSensory, and a still / rail effect in SHL (indoors,
+  underground).
+- Missing speed is class-dependent in both datasets: highest when still, lowest in vehicles. SHL blanking is
+  driven by speed (p = 0.95 · exp(−v / 1.954 m/s), 23% at the WAIIS cadence).
+- Per class: `results/tables/es_speed_missing_by_class.csv` and `shl_user1_gps_by_class.csv`.
 
-#### Open questions (step 3)
-1. **The 13 m/s² upper bound of `acc_implausible` removes genuine running and brisk walking:** SHL User 1 run
-   1,047 → 481 examples, ExtraSensory test run 123 → 57. All 721 windows below 7 m/s² are BEF6C611.
-   - Proposal: keep the 7 m/s² lower bound and exclude BEF6C611 at user level (or raise the upper bound to
-     ~20 m/s²).
-   - Then rebuild (2 min) and rerun the re-pick.
-2. **Re-pick vs untouched test users** (above): the supervisor's call.
-3. **Label noise suggested by `quiet`:** 70% of iPhone run and 12–15% of walk examples are as quiet as a phone on
-   a table. Should these be reviewed, like the v2 label review in 02?
+### Reporting rule for test results
 
-### Step 4: the approved test split, `es_bench_v3` (2026-10-28) — **stop-point**
-
-**The supervisor approved the re-pick** (relayed by Marc, 2026-10-28).
-- `splits/reserved_test_v2.json` (marked APPROVED) and `splits/es_users_v2.csv` here are now the reference.
-- `splits/reserved_test.json` and 02's `es_users.csv` are kept unchanged as superseded; 02's MLflow inputs record
-  their hashes.
-
-**Changes** (commit `aef0a4c`):
-- `tmd.splits.reserved_test()` reads the approved set; `reserved_test(1)` reads the old one. The reader's
-  reserved-user filter follows it on every benchmark version.
-- `tracking.SPLITS`: new entries `extrasensory_dev_v2`, `extrasensory_test_v2` and `shl_user23_test_v2`. The old
-  entries stay for 02's runs.
-- `CLAUDE.md`, `splits/README.md` and 02's `splits/README.md` now point to the new file.
-- `DECISIONS.md`: a draft entry.
-- `propose_test_v2.py` is pinned to v2 and no longer overwrites an approved file.
-
-**`es_bench_v3` = v2 with the approved split** (`uv run python build.py`).
-- Built from `aef0a4c` on a clean tree (`git_dirty: false`). `bench.verify()` is clean, and the 18 tests pass.
-- **Only `extrasensory/labels.parquet` and `extrasensory/sessions.parquet` differ from v2** (`split`, `fold`). The
-  other 21 files are byte-identical.
-- The test users and folds equal the approved files. `tmd.bench` now defaults to v3; v1 and v2 stay on disk.
-- Official examples are the same 148,701:
-
-  | | still | walk | run | bike | car | bus | train |
-  |---|---|---|---|---|---|---|---|
-  | dev | 92,949 | 15,248 | 475 | 3,499 | 8,122 | 1,348 | 189 |
-  | test | 19,286 | 4,086 | 138 | 893 | 2,130 | 286 | 52 |
-
-**Reporting per platform and location on the test set** (`es_split_platform_location.csv`):
-
-| test examples | with location | without |
-|---|---|---|
-| iPhone | 16,680 | **10** |
-| Android | 6,255 | 3,926 |
-
-- The "without location" split is only meaningful on Android.
-- Test train is Android only (52 examples, 2 users).
-
-#### Open questions (step 4)
-1. ~~Still open from step 3: `acc_implausible`'s 13 m/s² upper bound.~~ Answered at step 5.
-2. ~~v2 can be deleted from disk.~~ Done at step 5 (v2 and v3 deleted after v4 verified).
-
-### Step 5: `es_bench_v4` (2026-10-28) — **stop-point**
-
-*(Brief from Marc, 2026-10-28.)*
-
-```
-uv run python build.py --workers 8      # ~2 min; <data>/processed/es_bench_v4/, results/tables_v4/, logs/build_v4.out
-uv run pytest tests                     # 19 passed
-```
-
-**Build.** From commit `cf1085c` on a clean tree (`git_dirty: false`).
-- `bench.verify()` is clean.
-- The test users and folds are the approved ones, unchanged.
-- `tmd.bench` defaults to v4. Its labels tables have one `official` column, and `examples()` reads it.
-
-**What changed from v3:**
-1. **The upper plausibility bound is 20 m/s²** (the lower stays 7 m/s²). Left out BEF6C611, it still removes:
-
-   | | ExtraSensory | SHL User 1 | SHL Users 2–3 |
-   |---|---|---|---|
-   | removed | run 2 (iPhone 1, Android 1) | run 17 of 1,047 | 0 |
-
-   Nothing falls below 7 m/s² outside BEF6C611. At 13 m/s² the bound had removed run 95 + walk 108 (ExtraSensory)
-   and run 566 + walk 377 + bike 44 (SHL User 1).
-   (`es_acc_bounds_by_class.csv`, `shl_user1_acc_bounds_by_class.csv`)
-2. **BEF6C611 is excluded entirely** (`user_excluded`, reason "inconsistent accelerometer processing";
-   `tmd.extrasensory.EXCLUDED_USERS`).
-   - Its 1,835 included minutes (still 1,505, car 213, walk 117) are out of the official set and of every
-     pre-training accessor (the test checks this).
-   - It stays a dev user in fold 0 of the approved split file (the split was not changed); it just contributes
-     nothing.
-3. **`label_implausible`** = a quiet window (std |acc| < 0.03 m/s²) in walk, run or bike. It is out of the official
-   set, with the same logic as `not_carried`: the label describes the person, not the phone. Still is unaffected.
-   - ExtraSensory:
-
-     | | iPhone | Android |
-     |---|---|---|
-     | walk | 1,355 of 10,984 (12%) | 1,268 of 8,532 (15%) |
-     | run | **161 of 269 (60%)** | 1 of 439 |
-     | bike | 299 of 2,599 (12%) | 99 of 1,793 (6%) |
-
-     (`es_label_implausible.csv`)
-   - SHL: bike 2 and walk 4 (User 1); walk 1 (Users 2–3).
-4. **Test examples, v3 against v4:**
-
-   | ExtraSensory test | still | walk | run | bike | car | bus | train | all |
-   |---|---|---|---|---|---|---|---|---|
-   | v3 | 19,286 | 4,086 | 138 | 893 | 2,130 | 286 | 52 | 26,871 |
-   | **v4** | 19,286 | 3,682 | **81** | 876 | 2,130 | 287 | 52 | 26,394 |
-   | v4 test users with ≥ 5 | 12 | 11 | 4 | 6 | 10 | 6 | 2 | |
-
-   - Bus gains 1: a window that v3's 13 m/s² bound had removed.
-   - Dev: 121,830 → 118,986 examples.
-   - SHL User 1: 22,112 → 23,076 (run 481 → 1,030). SHL Users 2–3: 2,366 → 2,365.
-   - Details: `results/tables_v4/v3_vs_v4_examples.csv`.
-5. **v4 test examples per platform:**
-
-   | | still | walk | run | bike | car | bus | train |
-   |---|---|---|---|---|---|---|---|
-   | iPhone | 13,041 | 1,372 | 38 | 646 | 1,365 | 47 | 0 |
-   | Android | 6,245 | 2,310 | 43 | 230 | 765 | 240 | 52 |
-
-**Reporting rule for ExtraSensory test results (from v4 on; replaces step 3's).**
-- Report overall and **per platform** (iPhone, Android).
-- **"Without location" is not a separate breakdown.** It is effectively Android-only: 10 iPhone test examples lack
-  location.
+- ExtraSensory test results are reported **overall and per platform** (iPhone, Android).
+- "Without location" is not a separate breakdown: only 10 iPhone test examples lack a fix, so it would be
+  Android-only.
 - **Per-class results come with user-bootstrap 95% confidence intervals**: `tmd.evaluate.bootstrap_users_recall`
-  for per-class recall, `bootstrap_users` for macro-F1, 1,000 resamples of test users. This matters most for train
-  (2 users, 52 examples, Android only) and run (4 users, 81 examples).
+  for per-class recall, `bootstrap_users` for macro-F1, 1,000 resamples of the test users. Train (2 users, 52
+  examples, Android only) and run (4 users, 81 examples) are tiny.
+- SHL Users 2–3 are reported separately, as the rail check.
 
-#### Versions on disk and how to rebuild them
+### Verification and rebuilding
 
-Only **v1** and **v4** are kept in `<data>/processed/`. v2 and v3 were deleted on 2026-10-28 (Marc's OK).
+- `tmd.bench.verify()` compares every file with `manifest.json`.
+- To rebuild from the build commit in a clean worktree (data root = the worktree's parent's `data/`, or `$TMD_DATA`):
 
-Each version is rebuilt from its own commit in a separate worktree. The builder writes to
-`<data>/processed/<version>/` (the data root is the worktree's parent's `data/`, or `$TMD_DATA`):
+  ```
+  git worktree add ../tmd-waiis-bench <commit>
+  cd ../tmd-waiis-bench && uv run python experiments/04_frozen-benchmark_es-shl/build.py
+  ```
 
-```
-git worktree add ../tmd-<version> <commit>
-cd ../tmd-<version> && uv run python experiments/04_frozen-benchmark_es-shl/build.py
-```
+<!-- REBUILD-CHECK -->
 
-Check the result with `tmd.bench.verify("<version>")`, or against `results/manifests/<version>.json` (copied before
-the deletion). Every rebuild so far reproduced the hashes of the files it did not intend to change (steps 2–5);
-a full rebuild of an old version from its commit has not been run.
+### Version
 
-| version | commit | contents | on disk |
-|---|---|---|---|
-| `es_bench_v1` | `30550d9` | step 2 | yes |
-| `es_bench_v2` | `b1e2a9c` | + flags, repairs, extras (step 3), old split | no (manifest in `results/manifests/`) |
-| `es_bench_v3` | `aef0a4c` | v2 + approved split (step 4) | no (manifest in `results/manifests/`) |
-| `es_bench_v4` | `cf1085c` | v3 + bound 20 m/s², BEF6C611 excluded, `label_implausible`, `official` | **yes, default** |
+Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were intermediate builds, never used by any model, deleted.
 
-#### Open questions (step 5)
-- The step-3 question on the 13 m/s² bound is answered (20 m/s² and the user exclusion).
-- `label_implausible` removes 60% of iPhone run. iPhone run in ExtraSensory is now 107 examples (38 in test).
+### Open questions
+1. The 9 questions for WAIIS in `decision_register.md` (recording schedule, sampling, units, platforms, carrying,
+   modes, GPS, labels, batching).
+2. `label_implausible` removes 60% of iPhone run (161 of 269 windows). Is ExtraSensory's iPhone run label noise,
+   or quiet treadmill-like running?
 
 ## Conclusion
 
-*(Written for es_bench_v1 at step 2; to be updated once v2 and the test split are settled.)*
-
 **Draft — not approved**
 
-**What it is.** `es_bench_v1` is a frozen benchmark: `<data>/processed/es_bench_v1/`, 15 Parquet files,
-1.77 GB.
-- Its `manifest.json` (commit `30550d9`, clean tree) holds the parameters and the sha256 of every file.
-- One command rebuilds it (`uv run python build.py`), and rebuilds reproduce the hashes.
-- Every model reads it through `tmd.bench`.
-
-**What it contains.**
-- **ExtraSensory**, all 60 users and all 377,346 minutes:
-  - every minute is kept, with flags and the source label columns;
-  - 359,240 accelerometer windows of 15 s (375 × 3, m/s², 25 Hz, one per snippet);
-  - **149,681 official examples** (labels v2), split into 02's 5 dev folds and the 12 reserved test users;
-  - one GPS fix per minute, plus the location features.
-- **SHL hips**, in the same format:
-  - User 1: 23,099 examples, an optional training source with all of the metro and most of the train data;
-  - Users 2–3: 2,366 examples, a rail check set, evaluation only;
-  - GPS in two variants: `gps_waiis_cadence` (the production cadence) and `gps_per_minute` (ExtraSensory's
-    cadence).
+**What it is.** `waiis_bench_v1` is the frozen benchmark for every transport-mode model in this project.
+- 145,380 official ExtraSensory examples (59 users, accelerometer only, 15 s windows at 25 Hz, labels v2), split
+  into 5 dev folds and 12 reserved test users.
+- SHL hips data: User 1 as an optional training source (23,076 examples, incl. metro); Users 2–3 as the rail check
+  (2,365).
+- Per-minute GPS for ExtraSensory; two GPS cadences for SHL.
+- Every decision is documented in `decision_register.md`. It rebuilds with one command and is verified by sha256.
 
 **Known limitations.**
-- **The 15 s window costs 7,502 included minutes, 97% of them from 6 Android users** with 80–100 Hz snippets.
-  This removes 29% of train (91 of 100 dropped train minutes, all from 1DBB0F6F) and leaves dev fold 3 thin (run 9,
-  car 516, train 15).
-- **Test bus has 5 users**, not 6. Test user 96A358A0 lost all 63 of their bus minutes to the 15 s rule.
-- **ExtraSensory GPS is one fix per minute**, with no fix time inside the minute. Speed and bearing between fixes
-  span ~60 s, while production has 10–20 s while moving. Speed is missing on 67.5% of fixes, against ~23% in
-  production.
-- **Missing location differs by platform, and on SHL by rail class.**
-  - ExtraSensory: 32% missing on Android, 8% on iPhone; across classes it varies only from 6% to 22%.
-  - SHL: no fix in 54–61% of still minutes and 51–87% of train and subway minutes, against 0–20% for the other
-    classes.
-  - A model can use the presence of a fix as a shortcut, so GPS models should be reported with and without it.
+- **Few rail and run users:** ExtraSensory train comes from 5 users (2 in test, Android only), run from 22 users (4
+  in test).
+- **11 of the 12 test users were 02 dev users**, so the test set is not untouched by earlier choices.
+- **ExtraSensory GPS is one fix per minute**, sparser than production. Missing location differs by platform, and in
+  SHL by rail class.
+- **Missing speed signals "slow" in both datasets.** This is a likely shortcut.
+- **The production conditions are assumed, not measured:** recording schedule, units, cadence trigger and per-mode
+  missing rates (open questions).

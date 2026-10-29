@@ -86,7 +86,7 @@ def centre(x: np.ndarray, n: int) -> tuple[np.ndarray | None, int]:
 
 
 def es_acc_repair_to_25hz(acc: np.ndarray) -> tuple[np.ndarray | None, str, dict]:
-    """es_bench_v2 (experiment 04): like `es_acc_to_25hz`, but repairs instead of dropping where possible.
+    """Experiment 04 (waiis_bench_v1): like `es_acc_to_25hz`, but repairs instead of dropping where possible.
 
     - Time not increasing: sort by time, drop repeated timestamps (first kept), then re-run the checks;
       flag `time_repaired`.

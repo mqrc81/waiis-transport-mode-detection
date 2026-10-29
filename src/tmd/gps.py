@@ -95,7 +95,7 @@ def thin(t: np.ndarray, interval: np.ndarray) -> np.ndarray:
     return np.array(keep, dtype=np.int64)
 
 
-# es_bench_v2: speed (and bearing) are missing more often when slow. p(v) = BLANK_P0 * exp(-v / v0) at the 1 Hz speed
+# Speed (and bearing) are missing more often when slow. p(v) = BLANK_P0 * exp(-v / v0) at the 1 Hz speed
 # v of the fix; v0 is calibrated once so that ~23% of the fixes of the calibration track have no speed (fixes whose
 # speed is already unknown count as missing). The label is never used.
 BLANK_P0 = 0.95

@@ -1,25 +1,17 @@
-"""Reader for the frozen benchmarks es_bench_v1 / v2 / v3 (built by experiments/04_frozen-benchmark_es-shl).
+"""Reader for the frozen benchmark waiis_bench_v1 (built by experiments/04_frozen-benchmark_es-shl/build.py).
 
-    <data>/processed/<version>/manifest.json                 version, parameters, sha256 of every file
-    <data>/processed/<version>/<source>/<table>.parquet       source in SOURCES
+    <data>/processed/waiis_bench_v1/manifest.json                 parameters, git commit, sha256 of every file
+    <data>/processed/waiis_bench_v1/<source>/<table>.parquet       source in SOURCES
 
 Tables join on (user, ts): ts is the minute timestamp [unix s]. `labels` has one row per minute (every minute is
 kept, with flags), `accelerometer` one 15 s window (375 x 3, m/s2, 25 Hz) per minute that has one.
 
 Accessors:
-- `examples(source)`: **the official example set** (v4: the `official` column; v1: included minutes with a window;
-  v2 / v3: and a plausible accelerometer). Includes the reserved test users, marked by `split`, because evaluation
-  needs them. Excluded users (EXCLUDED_USERS) are never in it from v4, nor in any pre-training accessor.
+- `examples(source)`: **the official example set** (the `official` column). It includes the reserved test users,
+  marked by `split`, because evaluation needs them. Excluded users (tmd.extrasensory.EXCLUDED_USERS) are never in it.
 - `pretraining_minutes`, `unlabelled_minutes` and the extras (`snippets`, `shl_stream`, `shl_other_positions`,
-  `shl_gps_1hz`, `shl_gps_unblanked`): **exclude the reserved test users by default** (`tmd.splits.reserved_test()`,
-  i.e. splits/reserved_test_v2.json: 12 ExtraSensory users, SHL Users 2-3). Pass include_reserved=True only for
-  evaluation. On v1 / v2, whose `split` column follows the superseded 2026-10-25 set, the filter still uses the
-  current set, so the current test users never reach pre-training.
-
-Versions: v1 (2026-10-28, step 2); v2 = v1 + flags, repairs and extras (step 3); v3 = v2 with the approved
-ExtraSensory split (es_users_v2.csv / reserved_test_v2.json; step 4); v4 = v3 with the plausibility bound at
-20 m/s2, BEF6C611 excluded (tmd.extrasensory.EXCLUDED_USERS), label_implausible, and an `official` column (step 5).
-Use v4. Only v1 and v4 are kept on disk; v2 and v3 are rebuilt from their commits (04 README).
+  `shl_gps_1hz`, `shl_gps_unblanked`): **exclude the reserved test users by default** (`tmd.splits.reserved_test()`:
+  12 ExtraSensory users, SHL Users 2-3; include_reserved=True only for evaluation) and always the excluded users.
 - `read(source, table)`: a raw table, no filtering.
 """
 from __future__ import annotations
@@ -32,12 +24,11 @@ import pandas as pd
 
 from tmd.paths import PROCESSED
 
-VERSIONS = ("es_bench_v1", "es_bench_v2", "es_bench_v3", "es_bench_v4")
-VERSION = "es_bench_v4"            # default
+VERSIONS = ("waiis_bench_v1",)
+VERSION = "waiis_bench_v1"         # default
 ROOT = PROCESSED / VERSION
 FS, WIN = 25, 375
 SOURCES = ("extrasensory", "shl_user1", "shl_user23")
-INCLUDED = {"extrasensory": "included_v2", "shl_user1": "included", "shl_user23": "included"}
 KEY = ["user", "ts"]
 
 
@@ -96,20 +87,10 @@ def _guard(df: pd.DataFrame, source: str, include_reserved: bool) -> pd.DataFram
 # ---------------------------------------------------------------- official set
 
 def examples(source: str, columns: list[str] | None = None, version: str = VERSION) -> pd.DataFrame:
-    """Label rows of the official example set (v4: `official`; v1: included with a window; v2 / v3: and
-    acc_implausible False). The reserved test users are included (column `split`)."""
-    if version not in ("es_bench_v1", "es_bench_v2", "es_bench_v3"):
-        lab = read(source, "labels", None if columns is None else list(dict.fromkeys(KEY + columns + ["official"])),
-                   version=version)
-        return lab[lab.official].reset_index(drop=True)
-    inc = INCLUDED[source]
-    flags = [inc, "has_acc"] + (["acc_implausible"] if version != "es_bench_v1" else [])
-    lab = read(source, "labels", None if columns is None else list(dict.fromkeys(KEY + columns + flags)),
+    """Label rows of the official example set (`official`). The reserved test users are included (column `split`)."""
+    lab = read(source, "labels", None if columns is None else list(dict.fromkeys(KEY + columns + ["official"])),
                version=version)
-    keep = lab[inc] & lab.has_acc
-    if "acc_implausible" in flags:
-        keep &= ~lab.acc_implausible
-    return lab[keep].reset_index(drop=True)
+    return lab[lab.official].reset_index(drop=True)
 
 
 # ---------------------------------------------------------------- pre-training and extras (reserved users excluded)
@@ -132,28 +113,28 @@ def unlabelled_minutes(source: str, columns: list[str] | None = None, include_re
 
 
 def snippets(filters=None, include_reserved: bool = False, version: str = VERSION) -> pd.DataFrame:
-    """v2, ExtraSensory: every resampled snippet in full (variable length), incl. short and time-repaired ones."""
+    """ExtraSensory: every resampled snippet in full (variable length), incl. short and time-repaired ones."""
     return _guard(read("extrasensory", "snippets", filters=filters, version=version), "extrasensory",
                   include_reserved)
 
 
 def shl_stream(source: str, filters=None, include_reserved: bool = False, version: str = VERSION) -> pd.DataFrame:
-    """v2, SHL: continuous 25 Hz hips stream, one row per 25 Hz sample (t_ms, x, y, z, coarse label)."""
+    """SHL: continuous 25 Hz hips stream, one row per 25 Hz sample (t_ms, x, y, z, coarse label)."""
     return _guard(read(source, "stream", filters=filters, version=version), source, include_reserved)
 
 
 def shl_other_positions(include_reserved: bool = False, version: str = VERSION) -> pd.DataFrame:
-    """v2, SHL User 1 (4phones days): windows of the hand, torso and bag phones. Never in the official set."""
+    """SHL User 1 (4phones days): windows of the hand, torso and bag phones. Never in the official set."""
     return _guard(read("shl_user1", "accelerometer_other_positions", version=version), "shl_user1", include_reserved)
 
 
 def shl_gps_1hz(source: str, include_reserved: bool = False, version: str = VERSION) -> pd.DataFrame:
-    """v2, SHL: the full 1 Hz location track (incl. altitude) with the speed / bearing derived from it."""
+    """SHL: the full 1 Hz location track (incl. altitude) with the speed / bearing derived from it."""
     return _guard(read(source, "gps_1hz", version=version), source, include_reserved)
 
 
 def shl_gps_unblanked(source: str, include_reserved: bool = False, version: str = VERSION) -> pd.DataFrame:
-    """v2, SHL: the true speed / bearing of every kept fix of both GPS variants, before blanking."""
+    """SHL: the true speed / bearing of every kept fix of both GPS variants, before blanking."""
     return _guard(read(source, "gps_unblanked", version=version), source, include_reserved)
 
 

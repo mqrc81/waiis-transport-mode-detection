@@ -28,7 +28,7 @@
 
 ## ExtraSensory Dataset
 
-- Used in: `experiments/02_family-baseline_shl-es`, `experiments/04_frozen-benchmark_es-shl` (benchmark `es_bench_v1`).
+- Used in: `experiments/02_family-baseline_shl-es`, `experiments/04_frozen-benchmark_es-shl` (benchmark `waiis_bench_v1`).
 - Location: `<data root>/raw/extrasensory/` (zips and their unzipped folders). Source: http://extrasensory.ucsd.edu/
   (dataset page saved as `The ExtraSensory Dataset.html` in the same folder).
 - Terms: the dataset page states no licence. It requires that published work using the dataset cites the original

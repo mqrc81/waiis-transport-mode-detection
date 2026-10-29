@@ -3,7 +3,7 @@
 Every decision that affects which examples, labels, values or splits are in `es_bench_v1`, from experiment 02 through 04.
 
 **`es_bench_v2`** (2026-10-28, step 3) keeps every v1 decision except where an entry carries a **v2:** note.
-**`es_bench_v3`** is v2 with the approved split (V11). **`es_bench_v4`**, the current version, adds V12–V14.
+**`es_bench_v3`** is v2 with the approved split (V11). **`waiis_bench_v1`**, the current version, adds V12–V14.
 Only v1 and v4 are on disk; the README (step 5) says how to rebuild the others from their commits.
 - Its new decisions are in section 11 (V1–V10).
 - v1 stays on disk unchanged; its numbers below are v1's.

@@ -1,28 +1,22 @@
-"""Build the frozen benchmark es_bench_v4 (README, step 5). One command rebuilds everything:
+"""Build the frozen benchmark waiis_bench_v1 (04 README). One command rebuilds everything:
 
     uv run python build.py [--workers 8] [--sources extrasensory shl_user1 shl_user23]
 
-Writes <data>/processed/es_bench_v4/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
-every file; read them with `tmd.bench`). Count tables for the README go to results/tables_v2/, the full log to
-logs/build_v4.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
-es_bench_v1 is built by this file at commit 30550d9, es_bench_v2 at b1e2a9c, es_bench_v3 at aef0a4c
-(`git show <commit>:experiments/04_frozen-benchmark_es-shl/build.py`).
+Writes <data>/processed/waiis_bench_v1/<source>/<table>.parquet and manifest.json (parameters, git commit, sha256 of
+every file; read them with `tmd.bench`). Count tables for the README go to results/tables/, the full log to
+logs/build.log; stdout gets a short summary. Existing output of a rebuilt source is overwritten.
+Every decision is listed in decision_register.md.
 
-v3 = v2 with the ExtraSensory split approved on 2026-10-28 (splits/es_users_v2.csv here, splits/reserved_test_v2.json).
-v4 = v3 with (Marc, 2026-10-28): acc_implausible upper bound 20 m/s2 (was 13); BEF6C611 excluded at user level
-(user_excluded, tmd.extrasensory.EXCLUDED_USERS); label_implausible = quiet windows in walk / run / bike; and one
-`official` column in every labels table = the official example set.
-
-Changes from v1 (README step 3, decision register):
-1. acc_implausible: window median |acc| outside 7-13 m/s2 (v4: 7-20); out of the official set.
-2. SHL speed / bearing blanking driven by the 1 Hz speed at the fix (p = 0.95 exp(-v / v0), v0 calibrated on
-   SHL User 1's WAIIS-cadence fixes to ~23% missing), not uniform.
-3. (reader) reserved test users excluded from every pre-training accessor (tmd.bench, tests/test_bench_reserved.py).
-4. quiet: std of |acc| over the window < 0.03 m/s2, descriptive only.
-5. Holed snippets keep their longest clean stretch (official if >= 15 s, flag hole_trimmed).
-7. Stored but never official: short snippets, time-repaired snippets, every ES snippet in full (`snippets`), the
-   continuous SHL hips stream (`stream`), SHL User 1 hand / torso / bag windows (`accelerometer_other_positions`),
-   the SHL 1 Hz track (`gps_1hz`) and the true speed / bearing before blanking (`gps_unblanked`).
+- Accelerometer: raw_acc only, units per snippet, 25 Hz per snippet; holes > 0.5 s -> longest clean stretch;
+  non-increasing timestamps repaired but never official; one centred 15 s window per snippet; short snippets kept,
+  never official. Flags: acc_implausible (window median |acc| outside 7-20 m/s2), quiet (std |acc| < 0.03 m/s2),
+  label_implausible (quiet walk / run / bike), user_excluded (tmd.extrasensory.EXCLUDED_USERS). `official` = the
+  official example set.
+- Labels: rules v2 (tmd.extrasensory); split from splits/es_users_v2.csv and splits/reserved_test_v2.json.
+- GPS: ExtraSensory one fix per minute; SHL at the WAIIS cadence and per minute, speed / bearing blanked with a
+  probability that falls with speed (~23% overall).
+- Stored, never official: full ExtraSensory snippets, the continuous SHL hips stream, SHL User 1 hand / torso / bag
+  windows, the SHL 1 Hz track and the unblanked speed.
 """
 import argparse
 import json
@@ -44,19 +38,19 @@ from tmd.paths import PROJECT
 from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_repair_to_25hz, window_stats
 from tmd.splits import reserved_test
 
-VERSION = "es_bench_v4"
+VERSION = "waiis_bench_v1"
 ROOT = bench.root(VERSION)
 HERE = Path(__file__).resolve().parent
-RES = HERE / "results" / "tables_v4"
+RES = HERE / "results" / "tables"
 SPLITS_02 = PROJECT / "experiments" / "02_family-baseline_shl-es" / "splits"
-ES_SPLIT = HERE / "splits" / "es_users_v2.csv"       # approved 2026-10-28 (step 4)
+ES_SPLIT = HERE / "splits" / "es_users_v2.csv"       # approved 2026-10-28
 WIN, FS = bench.WIN, bench.FS
 SEED = 0
 SPEED_HALF_S = 1.5             # speed / bearing of a kept SHL fix: from the 1 Hz track over ~3 s around it
 CADENCE_HALF_S = 5.0           # cadence choice: speed over ~10 s around the candidate fix
-ACC_PLAUSIBLE = (7.0, 20.0)    # m/s2, window median |acc| (Marc, 2026-10-28; upper bound 13 until v3)
-LABEL_QUIET_CLASSES = ["walk", "run", "bike"]   # quiet window = phone not moving with the person (v4)
-QUIET_STD = 0.03               # m/s2, std of |acc| over the window (README step 3)
+ACC_PLAUSIBLE = (7.0, 20.0)    # m/s2, window median |acc| (Marc, 2026-10-28)
+LABEL_QUIET_CLASSES = ["walk", "run", "bike"]   # quiet window = phone not moving with the person
+QUIET_STD = 0.03               # m/s2, std of |acc| over the window
 OTHER_POSITIONS = ["Hand", "Torso", "Bag"]
 COMPRESSION = "zstd"
 CLS_NAME = {v: k for k, v in CLASS_ID.items()}
@@ -504,7 +498,7 @@ def build_shl(source: str, workers: int, v0: float) -> None:
     shl_report(source, lab, full, waiis, minute)
 
 
-# ---------------------------------------------------------------- reports (results/tables_v2/*.csv)
+# ---------------------------------------------------------------- reports (results/tables/*.csv)
 
 def table(df: pd.DataFrame, name: str, title: str) -> None:
     df.to_csv(RES / f"{name}.csv")
@@ -660,7 +654,7 @@ def main() -> None:
     commit, dirty = git()          # before the build rewrites its own results/ and logs/
     RES.mkdir(parents=True, exist_ok=True)
     (HERE / "logs").mkdir(exist_ok=True)
-    logging.basicConfig(filename=HERE / "logs" / "build_v4.log", filemode="w", level=logging.INFO,
+    logging.basicConfig(filename=HERE / "logs" / "build.log", filemode="w", level=logging.INFO,
                         format="%(message)s")
     v0 = calibrate_blanking(a.workers) if any(s != "extrasensory" for s in a.sources) else None
     for s in a.sources:
