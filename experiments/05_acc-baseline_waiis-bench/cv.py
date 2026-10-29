@@ -135,7 +135,8 @@ def main():
               "patience": pl.PATIENCE, "hmm_step_s": pl.STEP_S, "hmm_max_gap_s": pl.MAX_GAP_S,
               "hmm_transitions": "all labelled training minutes, before caps and drops",
               "es_family_classes": tab["es_family_classes"], "es_class_classes": tab["es_class_classes"],
-              "shl_eval": "same-person day folds", **{f"lgb_{k}": v for k, v in pl.PARAMS.items()}}
+              "shl_eval": "same-person day folds", "bootstrap": "users, redraw resamples lacking a class",
+              **{f"lgb_{k}": v for k, v in pl.PARAMS.items()}}
     with run(pl.EXP, params, run_name=f"{a.name}_seed{a.seed}", datasets=pl.datasets(pl.feature_tag(cfg))):
         mlflow.log_metrics({k: float(v) for k, v in metrics.items() if v == v})
         for fn, fig in figs.items():

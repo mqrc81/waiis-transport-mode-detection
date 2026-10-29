@@ -1,0 +1,35 @@
+    user platform  fold  n_train  rail_recall_before  rail_recall_after  mean_p_rail_before
+3600D531   iphone     0       69            0.159420           0.000000            0.200826
+A76A5AF5   iphone     3       24            0.083333           0.000000            0.108050
+B7F9D634  android     2       97            0.360825           0.164948            0.341706
+{
+ "all": {
+  "n_train": 190,
+  "rail_recall_before": 0.25263157894736843,
+  "rail_recall_after": 0.08421052631578947,
+  "mean_p_rail_before_train": 0.2610296905040741,
+  "mean_p_rail_before_other": 0.08612540364265442,
+  "rail_predicted_before_other": 6741,
+  "rail_predicted_after_other": 316
+ },
+ "train_to_before": {
+  "still": 51,
+  "walk": 17,
+  "run": 0,
+  "bike": 3,
+  "car": 51,
+  "bus": 20,
+  "train": 34,
+  "subway": 14
+ },
+ "train_to_after": {
+  "still": 68,
+  "walk": 19,
+  "run": 0,
+  "bike": 0,
+  "car": 85,
+  "bus": 2,
+  "train": 12,
+  "subway": 4
+ }
+}
