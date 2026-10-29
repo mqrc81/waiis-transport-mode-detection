@@ -12,7 +12,8 @@ Every decision is listed in decision_register.md.
   never official. Flags: acc_implausible (window median |acc| outside 7-20 m/s2), quiet (std |acc| < 0.03 m/s2),
   label_implausible (quiet walk / run / bike), user_excluded (tmd.extrasensory.EXCLUDED_USERS). `official` = the
   official example set.
-- Labels: rules v2 (tmd.extrasensory); split from splits/es_users_v2.csv and splits/reserved_test_v2.json.
+- Labels: rules v2 (tmd.extrasensory); splits from splits/es_users_v2.csv, splits/shl_days.csv (here) and
+  splits/reserved_test_v2.json (project root).
 - GPS: ExtraSensory one fix per minute; SHL at the WAIIS cadence and per minute, speed / bearing blanked with a
   probability that falls with speed (~23% overall).
 - Stored, never official: full ExtraSensory snippets, the continuous SHL hips stream, SHL User 1 hand / torso / bag
@@ -42,8 +43,8 @@ VERSION = "waiis_bench_v1"
 ROOT = bench.root(VERSION)
 HERE = Path(__file__).resolve().parent
 RES = HERE / "results" / "tables"
-SPLITS_02 = PROJECT / "experiments" / "02_family-baseline_shl-es" / "splits"
 ES_SPLIT = HERE / "splits" / "es_users_v2.csv"       # approved 2026-10-28
+SHL_SPLIT = HERE / "splits" / "shl_days.csv"         # SHL day folds: 02's file, copied unchanged
 WIN, FS = bench.WIN, bench.FS
 SEED = 0
 SPEED_HALF_S = 1.5             # speed / bearing of a kept SHL fix: from the 1 Hz track over ~3 s around it
@@ -284,8 +285,8 @@ def sessions_table(labels: pd.DataFrame, keep: list[str]) -> pd.DataFrame:
 
 def shl_recordings(source: str) -> list[tuple[shl.Recording, str, int]]:
     """(recording, split, fold). User 1: release/User1 without the 3 days duplicated in User1_4phones, plus
-    User1_4phones (02 audit), folds from 02's shl_days.csv. Users 2-3: rail check, evaluation only."""
-    days = pd.read_csv(SPLITS_02 / "shl_days.csv", dtype={"day": str})
+    User1_4phones (02 audit), day folds from splits/shl_days.csv. Users 2-3: rail check, evaluation only."""
+    days = pd.read_csv(SHL_SPLIT, dtype={"day": str})
     if source == "shl_user1":
         fold = days[(days.user == "User1") & (days.partition == "dev")].set_index("day").fold.to_dict()
         four = shl.recordings("User1_4phones")
@@ -636,7 +637,7 @@ def write_manifest(commit: str, dirty: bool, v0: float | None) -> None:
                       "speed_missing_share": gps.SPEED_MISSING_SHARE, "blank_p0": gps.BLANK_P0, "blank_v0": v0,
                       "speed_half_window_s": SPEED_HALF_S, "cadence_half_window_s": CADENCE_HALF_S,
                       "es_splits": "experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
-                      "shl_splits": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",
+                      "shl_splits": "experiments/04_frozen-benchmark_es-shl/splits/shl_days.csv",
                       "reserved_test": "splits/reserved_test_v2.json"},
            "versions": {"numpy": np.__version__, "pandas": pd.__version__, "pyarrow": pa.__version__},
            "files": files}

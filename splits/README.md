@@ -1,5 +1,20 @@
 # Splits shared by all experiments
 
+## Current splits (used by `waiis_bench_v1`)
+
+| split | file | `tracking.SPLITS` name |
+|---|---|---|
+| reserved test users: 12 ExtraSensory users, SHL Users 2–3 | `splits/reserved_test_v2.json` (here) | `extrasensory_test_v2`, `shl_user23_test_v2` |
+| ExtraSensory dev folds: 5 folds by user | `experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv` | `extrasensory_dev_v2` |
+| SHL User 1 dev folds: 5 folds of whole days | `experiments/04_frozen-benchmark_es-shl/splits/shl_days.csv` | `shl_user1_dev` |
+
+- `shl_days.csv` is a byte-identical copy of 02's file (sha256 `af25db55`); 02 keeps its own.
+- Its `test` rows (Users 2–3) are the same as the SHL part of `reserved_test_v2.json`.
+- Every other split file and name is legacy, kept only for the records of experiments 02 and 03
+  (`tmd.tracking.LEGACY`, refused for new runs).
+
+## Reserved test set
+
 - `reserved_test_v2.json`: **the reserved final-test set, and the reference for it** (approved by the supervisor on
   2026-10-28; experiment 04). No experiment trains, tunes, selects or pre-trains on it, self-supervised
   pre-training included.

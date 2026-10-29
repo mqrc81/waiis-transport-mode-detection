@@ -78,9 +78,14 @@ Per user, per position and per fold: `results/tables/` (`es_class_counts.csv`, `
 
 ### Split
 
-- **Test:** the 12 reserved ExtraSensory users of `splits/reserved_test_v2.json`, approved by the supervisor on
-  2026-10-28. SHL Users 2–3 are the rail check.
-- **Dev:** 5 folds by user, `splits/es_users_v2.csv`.
+All current splits (also listed in `splits/README.md` at the project root):
+
+| split | file | `tracking.SPLITS` name |
+|---|---|---|
+| test users: 12 ExtraSensory users, SHL Users 2–3 (rail check), approved 2026-10-28 | `splits/reserved_test_v2.json` (project root) | `extrasensory_test_v2`, `shl_user23_test_v2` |
+| ExtraSensory dev: 5 folds by user | `splits/es_users_v2.csv` (here) | `extrasensory_dev_v2` |
+| SHL User 1 dev: 5 folds of whole days | `splits/shl_days.csv` (here; a byte-identical copy of 02's file) | `shl_user1_dev` |
+
 - **11 of the 12 test users were dev users in experiment 02** (training and model choices there).
 
 | test user | platform | examples | still | walk | run | bike | car | bus | train |

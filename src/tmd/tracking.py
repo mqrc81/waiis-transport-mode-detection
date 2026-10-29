@@ -58,7 +58,7 @@ def _use_experiment(name: str) -> None:
 
 # Dataset part -> split file (repo-relative). A new split gets a new name here.
 SPLITS = {
-    "shl_user1_dev": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",  # 02's day folds
+    "shl_user1_dev": "experiments/04_frozen-benchmark_es-shl/splits/shl_days.csv",  # = 02's file, same sha256
     "extrasensory_dev": "experiments/02_family-baseline_shl-es/splits/es_users.csv",  # legacy (02 only)
     "shl_user23_test": "experiments/02_family-baseline_shl-es/splits/reserved_test.json",     # legacy (02 only)
     "extrasensory_test": "experiments/02_family-baseline_shl-es/splits/reserved_test.json",   # legacy (02 only)
