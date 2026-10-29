@@ -210,22 +210,47 @@ The 8-class difference and its CI are reported too, but don't decide.
   - per-class recall for car, bus and train with user-bootstrap CIs (`bootstrap_users_recall`). ExtraSensory train
     has 3 dev users (folds 0, 2 and 3), so its CI will be wide.
 
-### Test (stop-point 3, once)
+### Test (stop-point 3, once) — exactly what is scored
 
-- **Test models:** one per seed, trained on all ExtraSensory dev + SHL User 1.
-  - Number of trees = the median of that seed's 5 inner-validation best iterations from the cross-validation, so
-    training data only.
-  - HMM transitions and initial distribution from all labelled dev minutes.
-- **12 ExtraSensory test users** (`extrasensory_test_v2`), overall and per platform:
-  - family and 8-class macro-F1 with user-bootstrap CIs, with their class lists;
-  - per-class recall with CIs;
-  - confusion matrices.
-- **SHL Users 2–3 rail check** (`shl_user23_test_v2`), reported separately.
-- Per seed, with the 3-seed mean.
-- Context and HMM on test users use their usable non-official minutes (`include_reserved=True`, evaluation only).
-- **Motorbike check set, after all choices are frozen.** It holds 83 windowed minutes, all from user 33A85C34, a
-  reserved test user. Reported as a descriptive histogram of predicted classes, labelled as reserved-test data from
-  one user. No labels are used; motorbike is never trained.
+*Fixed 2026-10-29, after stop-point 2 was approved and before any test user was read. Code: `test.py`.*
+
+**Final configuration:** B + HMM forward-backward.
+- 580 features: A's 116 + 464 sub-window statistics; no gravity, no context, no low-pass.
+
+**Test models.** One per seed (0, 1, 2), each trained on **all official examples of all 47 ExtraSensory dev users +
+SHL User 1** (all 5 folds; SHL weight 1). Balanced class weights, 02's LightGBM settings, no early stopping.
+- **Number of trees per seed** = the median of that seed's 5 early-stopping counts from the cross-validation
+  (`models/B_seed<k>_folds.json`), × 8 classes. The test model sees 5/5 of the dev data, while the counts were
+  found on 3/5. The count is not rescaled.
+- **HMM:** transitions (per 1-min step, +1 pseudo-count) and initial distribution from **all labelled dev minutes**
+  of ExtraSensory dev and SHL User 1, before caps and drops, as in F. Forward-backward, restart after 10 min or at a
+  new session.
+- **Minutes:** the chain runs over every usable minute of the test users' sessions (`--part test` feature tables).
+  Scoring is on official examples only.
+
+**Scored.** Each seed is scored separately, one MLflow run per seed (`test_seed<k>`).
+- **Headline** = the mean over the 3 seeds. All three values are reported too, each with its own user-bootstrap CI
+  (1,000 resamples; resamples lacking a class are redrawn, and the redraw rate is reported).
+
+1. **12 ExtraSensory test users** (`extrasensory_test_v2`), **overall, iPhone and Android**:
+   - family and 8-class macro-F1 with CIs and their class lists (overall and Android: 7 classes / 5 families;
+     iPhone: 6 / 4, since there is no train);
+   - per-class recall with CIs; confusion matrices;
+   - rail (family) and train (class) recall **before and after the HMM**, with CIs;
+   - car, bus and train recall with CIs.
+2. **Inference time:** single window (features + model) and per window over whole sessions (features + model +
+   forward-backward). 200 test sessions with ≥ 3 usable minutes, single thread, after warm-up, median and p95.
+   **Model size** per seed.
+3. **SHL Users 2–3 rail check** (`shl_user23_test_v2`), reported separately:
+   - family and 8-class macro-F1, per-class recall, and rail / train / subway recall before and after the HMM;
+   - no CI: 2 users.
+4. **Motorbike check set**, last. It holds the windowed minutes of `reason = check:MOTORBIKE`, all from user
+   33A85C34, a reserved test user.
+   - Reported as a histogram of predicted classes, before and after the HMM.
+   - Descriptive only, labelled as reserved-test data from one user. Motorbike is never trained, and its label is
+     not scored.
+
+`test.py` refuses to run a second time once `test_seed*` runs exist.
 
 ### Reported metrics (every run)
 

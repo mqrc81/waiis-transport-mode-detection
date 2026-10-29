@@ -35,9 +35,10 @@ MODELS = pl.OUT / "models"
 log = logging.getLogger()
 
 
-def latency(cfg: pl.Cfg, model: lgb.Booster, df: pd.DataFrame, hmm_method: str | None, lab: pd.DataFrame,
+def latency(cfg: pl.Cfg, model: lgb.Booster, pool: pd.DataFrame, hmm_method: str | None, hmm_ap: tuple | None,
             seed: int) -> dict:
-    """Single window (features + context assembly + model) and pipeline (whole sessions) per window, fold-0 model."""
+    """Single window (features + context assembly + model) and pipeline (whole sessions of `pool`, ExtraSensory
+    usable minutes) per window. hmm_ap = (transitions, initial distribution) when hmm_method is set."""
     rng = np.random.default_rng(seed)
     nbr = rng.normal(size=(6, len(af.CONTEXT_BASE))).astype(np.float32)
     cb = [af.BASE.index(n) for n in af.CONTEXT_BASE]
@@ -50,14 +51,14 @@ def latency(cfg: pl.Cfg, model: lgb.Booster, df: pd.DataFrame, hmm_method: str |
         return np.concatenate([f, c], 1)
 
     out = inference_latency(lambda x: model.predict(x, num_threads=1), featurize, shape=(1, 375, 3))
-    # pipeline: 200 fold-0 ExtraSensory sessions with >= 3 usable minutes
-    es = df[(df.source == "extrasensory") & (df.fold == 0)]
+    # pipeline: 200 sessions of the pool with >= 3 usable minutes
+    es = pool
     n = es.groupby(["user", "session"]).size()
     pick = n[n >= 3].sample(min(200, int((n >= 3).sum())), random_state=seed).index
     keep = es.set_index(["user", "session"]).loc[pick].reset_index()[["user", "ts", "session"]]
     keys, w = load_windows("extrasensory", keep)
     keys = keys.assign(source="extrasensory")
-    a, pi = pl.hmm_params(lab[(lab.fold != 0) & (lab.fold >= 0)]) if hmm_method else (None, None)
+    a, pi = hmm_ap if hmm_method else (None, None)
     groups = [np.flatnonzero(g) for g in (keys.groupby(["user", "session"]).ngroup().to_numpy()[None]
                                           == np.arange(len(pick))[:, None])]
 
@@ -120,7 +121,9 @@ def main():
     metrics.update({"model_bytes_mean": float(fr.model_bytes.mean()), "n_trees_mean": float(fr.n_trees.mean()),
                     "rounds_mean": float(fr.rounds.mean()), "rounds_min": float(fr.rounds.min()),
                     "rounds_max": float(fr.rounds.max()), "n_features": float(n_feat)})
-    metrics.update(latency(cfg, model0, df, a.hmm, lab, a.seed))
+    pool = df[(df.source == "extrasensory") & (df.fold == 0)]            # fold-0 model, fold-0 sessions
+    hmm_ap = pl.hmm_params(lab[(lab.fold != 0) & (lab.fold >= 0)]) if a.hmm else None
+    metrics.update(latency(cfg, model0, pool, a.hmm, hmm_ap, a.seed))
     tab["folds"] = folds
     params = {"model": "lightgbm" + (f"+hmm-{a.hmm}" if a.hmm else ""), "row": a.name, "seed": a.seed,
               "dataset": "es_dev+shl_u1" if cfg.shl_w > 0 else "es_dev", "rate_hz": 25,

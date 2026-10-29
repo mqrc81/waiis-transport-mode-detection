@@ -189,7 +189,8 @@ def class_list(y: np.ndarray, level: str) -> str:
 
 
 def evaluate(df: pd.DataFrame, p: np.ndarray, base_p: np.ndarray | None = None) -> tuple[dict, dict, dict]:
-    """Metrics on the official ES dev rows (pooled OOF, user-bootstrap CIs) and SHL User 1 (day folds, no CI)."""
+    """Metrics on the official ES dev rows (pooled OOF, user-bootstrap CIs; resamples lacking a class are redrawn)
+    and SHL User 1 (day folds, no CI)."""
     m, figs, tab = {}, {}, {}
     for src, pre in [("extrasensory", "es"), ("shl_user1", "shl")]:
         sel = ((df.source == src) & df.official).to_numpy()
@@ -207,7 +208,9 @@ def evaluate(df: pd.DataFrame, p: np.ndarray, base_p: np.ndarray | None = None) 
             figs[f"cm_{pre}_{lvl}.png"] = plot_cm(s["cm"], lvl, f"{pre} {lvl} (pooled OOF)")
             tab[f"cm_{pre}_{lvl}"] = s["cm"].tolist()
             if pre == "es":
-                ci = bootstrap_users_recall(yy, pp, users, lvl)
+                st = {}
+                ci = bootstrap_users_recall(yy, pp, users, lvl, stats=st)
+                m[f"es_{lvl}_ci_redraw_rate"] = st["redraw_rate"]
                 for c, (lo, hi) in ci.items():
                     key = f"es_{lvl}_f1" if c == "macro_f1" else f"es_{lvl}_recall_{c}"
                     m[f"{key}_lo"], m[f"{key}_hi"] = lo, hi
@@ -220,7 +223,9 @@ def evaluate(df: pd.DataFrame, p: np.ndarray, base_p: np.ndarray | None = None) 
                 if base_p is not None:
                     bs = base_p[sel]
                     bp = (family_proba(bs).argmax(1) + 1) if lvl == "family" else bs.argmax(1) + 1
-                    dd = bootstrap_users_diff(yy, pp, bp, users, lvl)
+                    st = {}
+                    dd = bootstrap_users_diff(yy, pp, bp, users, lvl, stats=st)
+                    m[f"es_{lvl}_diff_redraw_rate"] = st["redraw_rate"]
                     m[f"es_{lvl}_f1_diff"], m[f"es_{lvl}_f1_diff_lo"], m[f"es_{lvl}_f1_diff_hi"] = \
                         dd["diff"], dd["lo"], dd["hi"]
         if pre == "shl" and base_p is not None:

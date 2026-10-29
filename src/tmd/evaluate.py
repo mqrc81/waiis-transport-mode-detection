@@ -41,27 +41,42 @@ def scores(y: np.ndarray, pred: np.ndarray, level: str) -> dict:
     }
 
 
-def bootstrap_users(y, pred, users, level: str, n_boot: int = 1000, seed: int = 0) -> tuple[float, float]:
-    """95% CI of macro-F1 from resampling users with replacement (approved 2026-10-25)."""
+def user_resamples(y, users, n_boot: int = 1000, seed: int = 0, stats: dict | None = None):
+    """Yield n_boot index arrays, each from drawing the users with replacement. A draw that lacks a class present in
+    y (the full evaluation set's true labels) is redrawn, so every resample is scored over the same classes;
+    `stats["redraw_rate"]` = redraws / (redraws + n_boot)."""
     rng = np.random.default_rng(seed)
     uniq = np.unique(users)
     idx = {u: np.flatnonzero(users == u) for u in uniq}
-    vals = []
+    has = {u: set(np.unique(y[i])) for u, i in idx.items()}
+    need = set(np.unique(y))
+    redraws = 0
     for _ in range(n_boot):
-        sel = np.concatenate([idx[u] for u in rng.choice(uniq, len(uniq))])
-        vals.append(scores(y[sel], pred[sel], level)["macro_f1"])
+        while True:
+            draw = rng.choice(uniq, len(uniq))
+            if need <= set().union(*(has[u] for u in set(draw))):
+                break
+            redraws += 1
+        yield np.concatenate([idx[u] for u in draw])
+    if stats is not None:
+        stats["redraw_rate"] = redraws / (redraws + n_boot)
+
+
+def bootstrap_users(y, pred, users, level: str, n_boot: int = 1000, seed: int = 0,
+                    stats: dict | None = None) -> tuple[float, float]:
+    """95% CI of macro-F1 from resampling users with replacement (approved 2026-10-25). Resamples lacking a class of y
+    are redrawn (experiment 05; `user_resamples`)."""
+    vals = [scores(y[sel], pred[sel], level)["macro_f1"] for sel in user_resamples(y, users, n_boot, seed, stats)]
     return float(np.percentile(vals, 2.5)), float(np.percentile(vals, 97.5))
 
 
-def bootstrap_users_recall(y, pred, users, level: str, n_boot: int = 1000, seed: int = 0) -> dict[str, tuple]:
-    """95% CI of each class's recall (and macro-F1) from resampling users with replacement. A class absent from a
-    resample is skipped for that resample; classes with few users (ExtraSensory train, run) get wide intervals."""
-    rng = np.random.default_rng(seed)
-    uniq = np.unique(users)
-    idx = {u: np.flatnonzero(users == u) for u in uniq}
+def bootstrap_users_recall(y, pred, users, level: str, n_boot: int = 1000, seed: int = 0,
+                           stats: dict | None = None) -> dict[str, tuple]:
+    """95% CI of each class's recall (and macro-F1) from resampling users with replacement. Resamples lacking a class
+    of y are redrawn (`user_resamples`), so every class is in every resample; classes with few users (ExtraSensory
+    train, run) get wide intervals."""
     vals: dict[str, list] = {}
-    for _ in range(n_boot):
-        sel = np.concatenate([idx[u] for u in rng.choice(uniq, len(uniq))])
+    for sel in user_resamples(y, users, n_boot, seed, stats):
         s = scores(y[sel], pred[sel], level)
         vals.setdefault("macro_f1", []).append(s["macro_f1"])
         for k, r in s["recall"].items():
@@ -70,16 +85,13 @@ def bootstrap_users_recall(y, pred, users, level: str, n_boot: int = 1000, seed:
     return {k: (float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))) for k, v in vals.items()}
 
 
-def bootstrap_users_diff(y, pred_a, pred_b, users, level: str, n_boot: int = 1000, seed: int = 0) -> dict:
+def bootstrap_users_diff(y, pred_a, pred_b, users, level: str, n_boot: int = 1000, seed: int = 0,
+                         stats: dict | None = None) -> dict:
     """Paired user bootstrap of macro-F1(pred_a) - macro-F1(pred_b) on the same examples: each resample draws users
-    with replacement and scores both predictions on it. Returns the point difference and its 95% CI."""
-    rng = np.random.default_rng(seed)
-    uniq = np.unique(users)
-    idx = {u: np.flatnonzero(users == u) for u in uniq}
-    vals = []
-    for _ in range(n_boot):
-        sel = np.concatenate([idx[u] for u in rng.choice(uniq, len(uniq))])
-        vals.append(scores(y[sel], pred_a[sel], level)["macro_f1"] - scores(y[sel], pred_b[sel], level)["macro_f1"])
+    with replacement (redrawn if it lacks a class of y) and scores both predictions on it. Returns the point
+    difference and its 95% CI."""
+    vals = [scores(y[sel], pred_a[sel], level)["macro_f1"] - scores(y[sel], pred_b[sel], level)["macro_f1"]
+            for sel in user_resamples(y, users, n_boot, seed, stats)]
     d = scores(y, pred_a, level)["macro_f1"] - scores(y, pred_b, level)["macro_f1"]
     return {"diff": float(d), "lo": float(np.percentile(vals, 2.5)), "hi": float(np.percentile(vals, 97.5))}
 
