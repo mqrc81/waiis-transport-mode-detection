@@ -229,6 +229,12 @@ How the test users were picked: `splits/README.md`.
 
 - Users counts those with official examples. BEF6C611 (Android, dev fold 4) is excluded for inconsistent
   accelerometer processing (`decision_register.md`, X8).
+- **Dev fold 4 is the smallest** (17,553 examples, against 22,295–28,938 in the other folds), for two reasons:
+  - it contains BEF6C611, whose 1,544 windows are all excluded, so it has 8 users with examples instead of 9;
+  - the folds were balanced on each class's share, not on total size. Fold 4 holds only 14% of the dev still
+    examples (still is 78% of all examples), but the largest share of bus (31%).
+
+  It also has no train and the lowest location coverage (65%).
 - Per user: `results/tables/decision_details.csv`, IDs P1 (test) and P2 (dev), breakdown `user`.
 
 ### Location coverage (official examples with a fix)
