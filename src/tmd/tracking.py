@@ -60,8 +60,8 @@ def _use_experiment(name: str) -> None:
 SPLITS = {
     "shl_user1_dev": "experiments/02_family-baseline_shl-es/splits/shl_days.csv",  # 02's day folds
     "extrasensory_dev": "experiments/02_family-baseline_shl-es/splits/es_users.csv",  # 02's user folds
-    "shl_user23_test": "splits/reserved_test.json",
-    "extrasensory_test": "splits/reserved_test.json",
+    "shl_user23_test": "experiments/02_family-baseline_shl-es/splits/reserved_test.json",     # legacy (02 only)
+    "extrasensory_test": "experiments/02_family-baseline_shl-es/splits/reserved_test.json",   # legacy (02 only)
     "extrasensory_dev_v2": "experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",  # approved 2026-10-28
     "extrasensory_test_v2": "splits/reserved_test_v2.json",                                  # the reference
     "shl_user23_test_v2": "splits/reserved_test_v2.json",
@@ -69,6 +69,8 @@ SPLITS = {
     "shl_user1_03_validation": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
     "shl_user1_03_test": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
 }
+# Names kept only so experiment 02's records resolve; a new run must use the *_test_v2 names.
+LEGACY = {"extrasensory_test", "shl_user23_test"}
 CONTEXTS = ("training", "evaluation")
 # Registered dynamically by MLflow, so it can't be imported by name.
 _LocalSource = next(s for s in get_registered_sources() if s.__name__ == "LocalArtifactDatasetSource")
@@ -121,8 +123,13 @@ def check_inputs(datasets: list[DataInput]) -> None:
 def run(experiment: str, params: dict, run_name: str | None = None, *, datasets: list[DataInput]):
     """Start a run tagged with the git commit and whether the tree was dirty, with its dataset inputs.
 
-    `datasets` is required; pass [] only for runs that use no data (smoke tests).
+    `datasets` is required; pass [] only for runs that use no data (smoke tests). Legacy split names
+    (LEGACY: the superseded 2026-10-25 test set) are refused.
     """
+    legacy = sorted({d.name for d in datasets} & LEGACY)
+    if legacy:
+        raise ValueError(f"legacy split name(s) {legacy}: superseded test set, experiment 02 only; "
+                         "use extrasensory_test_v2 / shl_user23_test_v2")
     check_inputs(datasets)
     k_num = k_per_class(params)
     _use_experiment(experiment)

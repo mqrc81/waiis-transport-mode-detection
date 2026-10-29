@@ -35,6 +35,9 @@ splits are written to `splits/shl_days.csv` and `splits/es_users.csv` (see `spli
 *(2026-10-28: both files moved unchanged to this folder's `splits/`. The reserved final test is now
 `splits/reserved_test.json` at the project root, the reference from now on.)*
 
+*(2026-10-29: `reserved_test.json` was moved, unchanged, to this folder's `splits/`; it is superseded by
+`splits/reserved_test_v2.json` at the project root.)*
+
 No model was trained, so nothing from this step is logged to MLflow (one dummy logging run, see Decisions). Everything below comes from the CSVs in `results/audit/`.
 
 **Commands** (run from this folder; short output goes to `logs/*.out`, the full log to `logs/*.log`):

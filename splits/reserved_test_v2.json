@@ -1,6 +1,6 @@
 {
  "description": "APPROVED 2026-10-28 by the supervisor (relayed by Marc); the reference from then on, superseding reserved_test.json. Re-pick of the 12 ExtraSensory test users (experiment 04). SHL Users 2-3 unchanged.",
- "source": "experiments/04_frozen-benchmark_es-shl/propose_test_v2.py --seed 0 --draws 3000000; dev folds in experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
+ "source": "splits/README.md, section 'How the test users were picked' (method, seed, exact reproduction). The script propose_test_v2.py last existed at commit 4b09ec3. Dev folds: experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
  "shl": [
   {
    "user": "User2",

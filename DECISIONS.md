@@ -74,7 +74,7 @@ tested across seeds).
 **Decision.**
 - Every model reads **`waiis_bench_v1`** (experiment 04).
 - The reserved ExtraSensory test set is **`splits/reserved_test_v2.json`**: 12 users re-picked in experiment 04.
-  It replaces `splits/reserved_test.json`, which is kept as superseded.
+  It replaces the 2026-10-25 set, kept unchanged as `experiments/02_family-baseline_shl-es/splits/reserved_test.json`.
 - The dev folds are `experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv`.
 - SHL Users 2–3 (the rail check) are unchanged.
 - ExtraSensory test results are always reported overall and per platform. Per-class results come with

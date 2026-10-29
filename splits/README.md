@@ -9,8 +9,8 @@
   - **11 of the 12 ExtraSensory users were dev users in experiment 02** (training and model choices there);
     098A72A5 is the only one carried over.
   - Read it with `tmd.splits.reserved_test()`.
-- `reserved_test.json`: the first set (approved 2026-10-25 in experiment 02, step 1), **superseded**. Kept unchanged
-  because 02's MLflow inputs record its hash; read it with `tmd.splits.reserved_test(1)`.
+- The first set (approved 2026-10-25, **superseded**) is in `experiments/02_family-baseline_shl-es/splits/reserved_test.json`.
+  It is unchanged, so its hash still matches 02's records; read it with `tmd.splits.reserved_test(1)`.
 
 ## How the test users were picked
 
