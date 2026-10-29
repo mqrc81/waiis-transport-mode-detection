@@ -114,18 +114,6 @@ built at commit `e51ea79`.
 - SHL stream stretches shorter than 15 s.
 - SHL pressure, light, cell, Wi-Fi and satellite data.
 
-## Open questions for WAIIS
-
-1. When does the app record, and how long is one fragment?
-2. Is sampling exactly 25 Hz, or are there jitter, holes or clock faults?
-3. Which acceleration units does it send, and is gravity included?
-4. What is the iOS / Android split, and which device models?
-5. How do users carry the phone, and how often does it rest?
-6. Which modes matter: motorbike, scooter, plane, tram, taxi?
-7. What triggers a GPS fix, and how often is speed or bearing missing per mode?
-8. Who labels the production data, and at what granularity?
-9. What is one upload: a trip, a day?
-
 ## History
 
 - Labels v1 (`7f435c5`) were replaced by v2 with the `SLEEPING` drop, the not-carried drop and the still cap (`cb8a024`).
