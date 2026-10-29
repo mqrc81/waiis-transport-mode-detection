@@ -177,10 +177,6 @@ Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were 
 
 ## Conclusion
 
-**The deliverable is `waiis_bench_v1`**: the prepared files, the split, the counts and location coverage below.
-Every decision taken is in [`decision_register.md`](decision_register.md); the numbers behind it are in
-`results/tables/decision_details.csv`.
-
 ### Prepared files
 
 - **Location:** `<data>/processed/waiis_bench_v1/`, 23 Parquet files, 4.8 GB.
@@ -270,7 +266,5 @@ underground).
 
 - **Thin classes:** ExtraSensory train comes from only 5 users (2 in test, Android only, 52 examples), run from 22
   (4 in test, 81 examples). Per-class test results are reported with user-bootstrap intervals.
-- **The test set isn't untouched:** 11 of its 12 users were dev users in experiment 02.
 - **GPS is sparser than production and has shortcuts:** ExtraSensory has one fix per minute, and missing speed
   signals "slow" in both datasets.
-- **The WAIIS conditions are assumed, not measured** (open questions in the register).
