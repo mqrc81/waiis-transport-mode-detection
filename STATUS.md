@@ -29,12 +29,7 @@ No model has been evaluated on `waiis_bench_v1` yet, so there is no best model.
   - Outdated: a same-person day split, acc + gyro.
   - Still holds: the curve hadn't flattened by k = 1000, and the remaining gain is in the vehicle classes.
 
-## 4. Open questions waiting for WAIIS facts
-
-See the [decision register's list](experiments/04_frozen-benchmark_es-shl/decision_register.md#open-questions-for-waiis)
-(recording schedule, sampling, units, platforms, carrying, modes, GPS, labels, batching).
-
-## 5. Next experiment
+## 4. Next experiment
 
 An accelerometer-only baseline on `waiis_bench_v1`: LightGBM on 02's features plus HMM smoothing.
 - Cross-validated on the dev folds; final evaluation on the reserved test users.
