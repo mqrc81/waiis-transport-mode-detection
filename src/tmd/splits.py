@@ -71,8 +71,8 @@ def pick_test_groups(counts: pd.DataFrame, n: int, valid: Callable[[pd.Index], b
 
 # --- reserved final-test set ---
 # 1: experiments/02_family-baseline_shl-es/splits/reserved_test.json, approved 2026-10-25 (experiment 02), superseded.
-# 2: splits/reserved_test_v2.json, ExtraSensory users re-picked in experiment 04, approved by the
-#    supervisor 2026-10-28. The reference. SHL Users 2-3 are the same in both.
+# 2: splits/reserved_test_v2.json, ExtraSensory users re-picked in experiment 04, approved 2026-10-28.
+# The reference. SHL Users 2-3 are the same in both.
 RESERVED_FILES = {1: "experiments/02_family-baseline_shl-es/splits/reserved_test.json",
                   2: "splits/reserved_test_v2.json"}
 RESERVED_VERSION = 2

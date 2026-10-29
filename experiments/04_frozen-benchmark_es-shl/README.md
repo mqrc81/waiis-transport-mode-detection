@@ -9,15 +9,14 @@ possible like what the WAIIS app sends, as measured in production:
 - GPS: a fix every ~10 s while moving, ~20 s when walking, minutes apart when still; ~23% of fixes have no speed;
   median accuracy ~8 m.
 
-*(Brief from Marc, 2026-10-28. This is a data build, not a model experiment: it has no MLflow runs.)*
+*(This is a data build, not a model experiment: it has no MLflow runs.)*
 
 ## Plan
 
 1. Inventory of the raw data (`inventory.py`). **Stop-point.**
 2. Build the benchmark with one command (`build.py`; shared readers in `src/tmd`), verify it, and document every
    decision (`decision_register.md`). **Stop-point.**
-3. Re-pick the ExtraSensory test users on the benchmark's counts (method in `splits/README.md`). **Stop-point: the
-   supervisor's OK.**
+3. Re-pick the ExtraSensory test users on the benchmark's counts (method in `splits/README.md`).
 4. Final build, verification and documentation. **Stop-point.**
 
 ## Results
@@ -168,8 +167,6 @@ Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were 
    or quiet treadmill-like running?
 
 ## Conclusion
-
-*Approved by the supervisor, 2026-10-29 (relayed by Marc).*
 
 **The deliverable is `waiis_bench_v1`**: the prepared files, the split, the counts and location coverage below.
 Every decision taken is in [`decision_register.md`](decision_register.md); the numbers behind it are in

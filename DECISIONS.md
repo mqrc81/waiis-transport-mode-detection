@@ -56,10 +56,10 @@ in MLflow.
 - **Prediction runs in batches** over uploaded recordings, so smoothing may use the whole sequence (e.g. Viterbi),
   not only past windows.
 
-**Why.** The supervisor changed direction: the WAIIS app does not collect the gyroscope, and same-person day splits
+**Why.** Changed direction: the WAIIS app does not collect the gyroscope, and same-person day splits
 (SHL User 1) are considered optimistic. The label curve will be redone on unseen ExtraSensory users.
 
-**Evidence.** Supervisor's decision, relayed by Marc on 2026-10-28. Experiment 03 (`experiments/03_label-curve_shl/`)
+**Evidence.** Experiment 03 (`experiments/03_label-curve_shl/`)
 was closed at stop-point 2 because of it; on its one seed the gyroscope added about + 0.01 macro-F1 at k ≥ 50 (not
 tested across seeds).
 
@@ -87,5 +87,5 @@ tested across seeds).
   test set is therefore not untouched by earlier decisions.
 - Test train is Android only: 52 examples from 2 users. Test run has 81 examples.
 
-**Evidence.** Supervisor's approval, relayed by Marc on 2026-10-28.
+**Evidence.** Approved on 2026-10-28.
 `experiments/04_frozen-benchmark_es-shl/README.md` and `decision_register.md`.

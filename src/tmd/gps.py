@@ -10,7 +10,7 @@ import pandas as pd
 
 R_EARTH = 6_371_008.8          # m, mean radius
 SESSION_GAP_S = 120            # a gap > 2 min between minutes starts a new session
-# WAIIS production cadence (Marc, 2026-10-28): a fix every ~10 s while moving, ~20 s walking, minutes apart still.
+# WAIIS production cadence: a fix every ~10 s while moving, ~20 s walking, minutes apart still.
 CADENCE = ((3.0, 10.0), (0.5, 20.0), (0.0, 180.0))   # (speed >= m/s, interval s), first match wins
 SPEED_MISSING_SHARE = 0.23     # production: ~23% of fixes have no speed
 

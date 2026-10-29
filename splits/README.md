@@ -15,7 +15,7 @@
 
 ## Reserved test set
 
-- `reserved_test_v2.json`: **the reserved final-test set, and the reference for it** (approved by the supervisor on
+- `reserved_test_v2.json`: **the reserved final-test set, and the reference for it** (approved on
   2026-10-28; experiment 04). No experiment trains, tunes, selects or pre-trains on it, self-supervised
   pre-training included.
   - SHL: Users 2 and 3, all days and all 4 positions (6 `user, day` rows). Unchanged from the first set.

@@ -248,7 +248,7 @@ search. Usable minutes:
 - The 3 users without a gyroscope are dev users (folds 1, 3, 2) and contribute 0 acc + gyro minutes.
   They count only for the unlabelled pre-training partition if acc-only data is ever used there.
 
-#### Decisions (2026-10-25, from Marc)
+#### Decisions (2026-10-25)
 1. **Bus / train + passenger → bus / train**, as above. Implemented in `extrasensory.minute_classes` (`PASSENGER`).
 2. **Motorbike** is kept out of training and used as a separate labelled check, as above. SHL has none, and in
    ExtraSensory it comes from one user, so a 9th class would learn that person and can't be tested on unseen users.
@@ -441,7 +441,7 @@ The single fold models on ExtraSensory give family 0.320 ± 0.017, the same as t
 
 ### Step 2b: ExtraSensory label review per class (2026-10-25) — **v2 approved 2026-10-26**
 
-Asked by Marc: a phone lying on a table should not make up 42% of still. Commands (from this folder):
+Asked: a phone lying on a table should not make up 42% of still. Commands (from this folder):
 
 ```
 uv run python es_label_review.py      # results/audit/es_label_review.csv: class x source label x position x label_source
@@ -501,7 +501,7 @@ their own row.
 - Family F1 rises to 0.418 (still recall 0.283).
 - Cost: 72% of still minutes, and a still class built only from users who report positions.
 
-**Decision (2026-10-26, Marc):**
+**Decision (2026-10-26):**
 - v2 approved with the 20% cap. Training uses v2, not B: resting phones are real still states in production.
 - Every ExtraSensory table reports still twice, "still (v2)" and "still, carried phone only" (B's subset). The main
   macro-F1 uses v2.
@@ -636,7 +636,7 @@ In R1, SHL still went 15,381 → rail; in R2 it is 44,722.
 
   Python feature extraction is ≈ 2.1 ms of it. The model takes 0.03–0.05 ms, even at 4,792 trees.
 
-**Metrics from now on (2026-10-26, Marc):** (a) macro-F1, (b) confusion matrix and per-class recall, (c) inference
+**Metrics from now on (2026-10-26):** (a) macro-F1, (b) confusion matrix and per-class recall, (c) inference
 time per window (features + model, single thread, median and p95), (d) model size. CLAUDE.md and the brief were
 updated, and `tmd.evaluate.inference_latency` / `model_size_bytes` compute (c) and (d).
 
@@ -834,7 +834,7 @@ The other configs are in the MLflow runs (`tables.json`, `cm_*.png`).
 
 ### Status: parked (2026-10-26)
 
-Marc's decision: the next experiment is a label-efficiency study (LightGBM label curve with and without the
+Decision: the next experiment is a label-efficiency study (LightGBM label curve with and without the
 gyroscope; LIMU-BERT pre-training + fine-tuning on a new day split). 02 is parked at this point.
 
 **Current candidate: base + HMM Viterbi on R2.** R2 window-only LightGBM (features v1), Viterbi with SHL-estimated
@@ -888,7 +888,7 @@ within-dataset results. Their ES numbers must not be compared with the base conf
 - `tmd.tracking.SPLITS` points `*_dev` to this folder's files and `*_test` to `splits/reserved_test.json`.
 - `backfill_dataset_inputs.py` reads the split file from `splits/` at commits before the move.
 
-**MLflow dataset inputs, backfilled (2026-10-26, asked by Marc).** `tmd.tracking.run()` now takes
+**MLflow dataset inputs, backfilled (2026-10-26).** `tmd.tracking.run()` now takes
 `datasets=[DataInput(...)]` and logs one MLflow dataset input per dataset part (metadata only). The 11 existing runs
 got the same inputs with `MlflowClient.log_inputs`. Metrics, params, tags and artifacts were not touched.
 

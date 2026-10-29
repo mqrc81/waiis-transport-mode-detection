@@ -9,8 +9,6 @@ everything that experiment needs is saved as files. Model size is not a criterio
 
 ## Plan
 
-*(Brief from Marc, 2026-10-28.)*
-
 **Data.**
 - SHL User 1 only: `User1` plus `User1_4phones` (duplicates handled as in 02). Never read SHL Users 2–3 or the
   ExtraSensory test users (`splits/reserved_test.json`).

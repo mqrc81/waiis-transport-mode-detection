@@ -68,7 +68,7 @@ built at commit `e51ea79`.
 
 | ID | Decision | Why | Effect | Flag/reversible? | Risk |
 |---|---|---|---|---|---|
-| P1 | 12 reserved test users, balanced by class, platform, location | supervisor-approved re-pick | 26,394 test examples | yes (`split`) | c: 11 were 02 dev users |
+| P1 | 12 reserved test users, balanced by class, platform, location | approved re-pick | 26,394 test examples | yes (`split`) | c: 11 were 02 dev users |
 | P2 | Dev: 5 folds by user, balanced by platform | evaluate on unseen users | 118,986 dev examples | yes (`fold`) | a: train in 3 folds only |
 | P3 | Pre-training accessors never return reserved users | test data unseen in pre-training | 12 + 2 users | n/a | – |
 | P4 | SHL: User 1 day folds; Users 2–3 rail check only | unseen-person rail evaluation | 23,076 / 2,365 examples | – | a: User 1 is one person |

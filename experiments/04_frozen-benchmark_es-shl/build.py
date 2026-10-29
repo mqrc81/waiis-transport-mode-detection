@@ -49,7 +49,7 @@ WIN, FS = bench.WIN, bench.FS
 SEED = 0
 SPEED_HALF_S = 1.5             # speed / bearing of a kept SHL fix: from the 1 Hz track over ~3 s around it
 CADENCE_HALF_S = 5.0           # cadence choice: speed over ~10 s around the candidate fix
-ACC_PLAUSIBLE = (7.0, 20.0)    # m/s2, window median |acc| (Marc, 2026-10-28)
+ACC_PLAUSIBLE = (7.0, 20.0)    # m/s2, window median |acc|
 LABEL_QUIET_CLASSES = ["walk", "run", "bike"]   # quiet window = phone not moving with the person
 QUIET_STD = 0.03               # m/s2, std of |acc| over the window
 OTHER_POSITIONS = ["Hand", "Torso", "Bag"]
@@ -267,7 +267,7 @@ def es_track(loc: pd.DataFrame, labels: pd.DataFrame) -> pd.DataFrame:
                        "speed": np.where(spd.notna() & (spd >= 0), spd, -1.0),
                        "accuracy": np.where(acc.notna() & (acc >= 0), acc, -1.0)})
     tr = gps.add_consecutive(tr, ["user", "session"])
-    # Production rule (Marc, 2026-10-28): a fix without speed has no bearing. The bearing from consecutive fixes is
+    # Production rule: a fix without speed has no bearing. The bearing from consecutive fixes is
     # kept, never blanked, next to the other between-fix columns.
     tr["bearing_from_fixes"] = gps.bearing_from_previous(tr, ["user", "session"])
     tr.insert(tr.columns.get_loc("accuracy") + 1, "bearing",
@@ -423,7 +423,7 @@ def shl_tracks(full: pd.DataFrame, labels: pd.DataFrame, v0: float):
         p = gps.blank_probability(tr.speed.to_numpy(), v0)
         blank = (rng.random(len(tr)) < p) & (tr.speed.to_numpy() >= 0)
         tr["speed_blanked"] = blank
-        tr.loc[blank, ["speed", "bearing"]] = -1.0      # a fix without speed has no bearing (Marc, 2026-10-28)
+        tr.loc[blank, ["speed", "bearing"]] = -1.0      # a fix without speed has no bearing
         tr = gps.add_consecutive(tr, ["user", "session"])
         lead = ["user", "ts", "session", "rec", "time", "lat", "lon", "speed", "accuracy", "bearing"]
         out.append(tr[lead + [c for c in tr.columns if c not in lead + ["altitude"]]])
