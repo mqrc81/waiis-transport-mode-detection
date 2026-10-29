@@ -47,11 +47,27 @@ decision.
 and U12, and not testable for the low-rate users. This is a quality check, not an experiment. Its numbers are not
 in MLflow.
 
+## 2026-10-25: The model runs on an edge server, not on the phone
+
+**Draft — not approved**
+
+**Decision.**
+- The phone only records and uploads; the transport-mode model runs on an edge server.
+- Model size is not a hard limit; it is only reported.
+- Reported metrics: macro-F1, confusion matrix with per-class recall, inference time per window, and model size.
+
+**Why.** The WAIIS app only records and uploads the sensor data, so the model doesn't have to fit on the phone. The
+earlier 2 MB on-phone ceiling no longer applies.
+
+**Evidence.** Marc, 2026-10-25. `CLAUDE.md` (Project, Evaluation conventions). Experiment 02's LightGBM (6.5 MB on
+average) was over the old ceiling (`experiments/02_family-baseline_shl-es/README.md`, step 2).
+
 ## 2026-10-28: Accelerometer only; final test on the 12 ExtraSensory test users
 
 **Decision.**
 - The model uses the **accelerometer only**, no gyroscope.
 - The **final test is the 12 ExtraSensory test users** (`splits/reserved_test.json`).
+  Replaced the same day; see the next entry.
 - **SHL Users 2–3 are a separate rail check only**, not the final test.
 - **Prediction runs in batches** over uploaded recordings, so smoothing may use the whole sequence (e.g. Viterbi),
   not only past windows.
@@ -71,6 +87,8 @@ tested across seeds).
   It replaces the 2026-10-25 set, kept unchanged as `experiments/02_family-baseline_shl-es/splits/reserved_test.json`.
 - The dev folds are `experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv`.
 - SHL Users 2–3 (the rail check) are unchanged.
+- All data decisions behind waiis_bench_v1 (label rules, exclusions, caps, plausibility, windowing, GPS) are in
+  experiments/04_frozen-benchmark_es-shl/decision_register.md.
 - ExtraSensory test results are always reported overall and per platform. Per-class results come with
   user-bootstrap 95% CIs (`tmd.evaluate.bootstrap_users_recall`). There is no separate "without location"
   breakdown: it is effectively Android-only.
@@ -89,3 +107,55 @@ tested across seeds).
 
 **Evidence.** Approved on 2026-10-28.
 `experiments/04_frozen-benchmark_es-shl/README.md` and `decision_register.md`.
+
+## 2026-10-28: GPS is part of the model
+
+**Draft — not approved**
+
+**Decision.**
+- GPS features, including OpenStreetMap way types, are part of the model: an accelerometer model fused with a
+  GPS-feature model.
+- This replaces the internship plan's policy of keeping GPS as a separate validation stage
+  (`experiments/02_family-baseline_shl-es/docs/brief_block1_experiments.md`, Goal: "GPS never enters the sensor
+  model's features").
+
+**Why.**
+- The supervisor's direction.
+- GPS speed separates still from vehicles, and helps tell rail from road.
+- WAIIS sends GPS with every upload.
+
+**Evidence.** Supervisor's direction, relayed by Marc on 2026-10-28. The GPS tables of `waiis_bench_v1`
+(`experiments/04_frozen-benchmark_es-shl/README.md`, Contents).
+
+## 2026-10-28: No pre-trained LIMU-BERT or LIMU-BERT-X weights
+
+**Draft — not approved**
+
+**Decision.**
+- The public LIMU-BERT and LIMU-BERT-X weights are not used.
+- If LIMU-BERT is used, it is pre-trained from scratch with `feature_num = 3` (accelerometer only) on unlabelled
+  benchmark data.
+- Pre-training data comes from `tmd.bench.pretraining_minutes`, which excludes the reserved test users.
+
+**Why.** The public weights expect accelerometer + gyroscope input, and the WAIIS app records no gyroscope.
+
+**Evidence.**
+- `limu_bert_x.pt`: its input layer is 72 × 6 (checked by Marc, 2026-10-28; the file is not on this machine).
+- LIMU-BERT's public config (`../ext/LIMU-BERT-Public/config/limu_bert.json`, `base_v1`): `feature_num` 6,
+  `hidden` 72.
+
+## 2026-10-28: Labelling is on demand
+
+**Draft — not approved**
+
+**Decision.**
+- The model is trained on the labelled data, then predicts new trips in batches, with smoothing.
+- The least certain segments go to the labelling tool, and the model is retrained.
+- Confident predictions may be used as extra training labels.
+- The test set is always labelled by people.
+
+**Why.** Labels are expensive and unlabelled data is plentiful, so labelling effort goes where the model is least
+certain. Human labels on the test set keep the evaluation independent of the model's own predictions.
+
+**Evidence.** Marc, 2026-10-28. Batch prediction with whole-sequence smoothing: entry 2026-10-28 "Accelerometer
+only".

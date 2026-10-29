@@ -37,6 +37,12 @@ Final test: the 12 ExtraSensory test users (`splits/reserved_test_v2.json`); SHL
   2. confusion matrix and per-class recall;
   3. inference time per window: features + model end to end, single thread, after warm-up, median and p95 (`tmd.evaluate.inference_latency`);
   4. model size (`tmd.evaluate.model_size_bytes`).
+- ExtraSensory:
+  - Cross-validation metrics come from the pooled out-of-fold predictions (macro-F1 and per-class recall over all
+    dev folds at once), not from a mean of per-fold scores. Per-fold scores are reported only as spread.
+  - Cross-validation and test results come with user-bootstrap 95% CIs (`tmd.evaluate.bootstrap_users`,
+    `bootstrap_users_recall`).
+  - Test results are reported overall and per platform (iPhone, Android).
 
 ## Logging results
 - Log every run through `src/tmd/tracking.py`: `with run(experiment, params):`, then `mlflow.log_metrics` and `mlflow.log_figure`. The experiment name is the experiment folder name.
