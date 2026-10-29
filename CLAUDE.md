@@ -16,11 +16,13 @@ Final test: the 12 ExtraSensory test users (`splits/reserved_test_v2.json`); SHL
 - Outside git: data in the data root `data` (`raw/`, `processed/`, `checkpoints/`; absolute path in `CLAUDE.local.md`), upstream clones in `../ext/`. Paths are relative to project root.
 
 ## Working on an experiment
+- Every session reads `STATUS.md` and `DECISIONS.md` first. `STATUS.md` is updated whenever an experiment closes.
 - Follow the README's Plan, including its stop-points.
 - At every stop-point, update the Results section: commands run, numbers, deviations, open questions. A fresh session must be able to resume from the README alone.
 - At the end, draft the Conclusion and, if it changes direction, a `DECISIONS.md` entry. Write them from the Results section and the exported `runs.csv` only, and mark both **Draft — not approved**. I approve them by removing the marker.
 
 ## Rules
+- Documents and comments never mention "Marc" or "supervisor": approval is person-independent (e.g. "approved 2026-10-28").
 - Data, checkpoints and environments never go in git.
 - Edit files in `../ext` only when needed. Save them with git diff > experiments/NN_name/patches/<repo>.patch, and record the upstream commit hash in the README. Before another experiment uses the same clone, reset it (`git checkout .`) and apply that experiment's patch.
 - Ask before deleting files or installing anything system-wide. Adding packages with `uv add` is fine.

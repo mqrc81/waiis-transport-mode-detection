@@ -1,5 +1,7 @@
 # 03 Label curve on SHL User 1 (LightGBM, with and without gyroscope)
 
+> **Closed.** Based on superseded assumptions; see [STATUS.md](../../STATUS.md).
+
 ## Question
 
 How many labelled windows per class does LightGBM need before macro-F1 stops improving, and does the gyroscope help?

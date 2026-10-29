@@ -1,5 +1,7 @@
 # 02 Family baseline on SHL + ExtraSensory
 
+> **Parked.** Based on superseded assumptions; see [STATUS.md](../../STATUS.md).
+
 ## Question
 
 How well do hand-crafted features + LightGBM + HMM classify the family and the 8 classes at 25 Hz, across days,

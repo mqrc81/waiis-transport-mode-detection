@@ -1,5 +1,7 @@
 # 01 UniMTS few-shot on SHL
 
+> **Closed.** Based on superseded assumptions; see [STATUS.md](../../STATUS.md).
+
 ## Question
 
 Does the pretrained UniMTS motion model (zero-shot, linear probe, full fine-tuning) beat the same architecture from
