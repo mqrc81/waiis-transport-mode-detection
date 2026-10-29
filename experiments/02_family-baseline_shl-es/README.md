@@ -432,7 +432,7 @@ The single fold models on ExtraSensory give family 0.320 ± 0.017, the same as t
   applies from step 4 (R2).
 
 #### Open questions (step 2)
-1. ~~Model size~~ **Answered 2026-10-25 (Marc):** the model runs on an **edge server**, so 6.5 MB is well within
+1. ~~Model size~~ **Answered 2026-10-25:** the model runs on an **edge server**, so 6.5 MB is well within
    bounds. No shrinking; size and latency are still reported. CLAUDE.md, the block-1 brief ("phone model") and the
    draft DECISIONS entry of 2026-10-23 (UniMTS "too large" against a 2 MB ceiling) predate this and are not yet
    updated.

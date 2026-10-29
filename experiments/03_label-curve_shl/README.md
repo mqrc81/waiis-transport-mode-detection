@@ -57,7 +57,7 @@ positions (hand / torso / bag) on the test days; (b) ExtraSensory dev users with
 2. One seed of the full curve, both sensor sets, validation days only, as a sanity check.
 3. All seeds, test numbers, plot, answers. Draft the Conclusion.
 
-**Changes approved at stop-point 1 (Marc, 2026-10-28).** Split approved as proposed (seed 0, 44 / 15 / 15 days);
+**Changes approved at stop-point 1 (2026-10-28).** Split approved as proposed (seed 0, 44 / 15 / 15 days);
 subway's day count is reported next to its numbers. The plan of step 1 below holds, with these changes:
 1. **Smoothing is post-processing only**, never part of training.
    - Every run saves per-window class probabilities for validation and test days (with `rec`, `t_start_ms`,
@@ -294,7 +294,7 @@ k ≥ 200):
 (change 4) also needs a flattening k below all. Option: add k = 2000, 5000 and 10000 (run has 14,908 training windows,
 so all classes have enough). The sampled order is fixed, so extending `samples_k.csv` to rank < 10000 keeps every
 existing (k, seed) set unchanged.
-**Closed 2026-10-28 (Marc): not pursued.** No k values or seeds are added; 03 ends at this stop-point (see
+**Closed 2026-10-28: not pursued.** No k values or seeds are added; 03 ends at this stop-point (see
 Conclusion).
 
 ## Conclusion

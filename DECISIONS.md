@@ -116,11 +116,11 @@ tested across seeds).
   model's features").
 
 **Why.**
-- The supervisor's direction.
+- A change of project direction (2026-10-28).
 - GPS speed separates still from vehicles, and helps tell rail from road.
 - WAIIS sends GPS with every upload.
 
-**Evidence.** Supervisor's direction, relayed by Marc on 2026-10-28. The GPS tables of `waiis_bench_v1`
+**Evidence.** Direction change, 2026-10-28. The GPS tables of `waiis_bench_v1`
 (`experiments/04_frozen-benchmark_es-shl/README.md`, Contents).
 
 ## 2026-10-28: No pre-trained LIMU-BERT or LIMU-BERT-X weights
@@ -134,7 +134,7 @@ tested across seeds).
 **Why.** The public weights expect accelerometer + gyroscope input, and the WAIIS app records no gyroscope.
 
 **Evidence.**
-- `limu_bert_x.pt`: its input layer is 72 × 6 (checked by Marc, 2026-10-28; the file is not on this machine).
+- `limu_bert_x.pt`: its input layer is 72 × 6 (checked 2026-10-28; the file is not on this machine).
 - LIMU-BERT's public config (`../ext/LIMU-BERT-Public/config/limu_bert.json`, `base_v1`): `feature_num` 6,
   `hidden` 72.
 
