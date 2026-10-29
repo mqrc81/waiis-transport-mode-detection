@@ -1,0 +1,12 @@
+F_fb:F_viterbi family {"es_diff": 0.0033, "es_lo": -0.0009, "es_hi": 0.0074, "shl_diff": 0.0038}
+F_fb:F_viterbi class {"es_diff": -0.0003, "es_lo": -0.0043, "es_hi": 0.003, "shl_diff": 0.0029}
+F_fb:F_forward family {"es_diff": 0.0089, "es_lo": -0.0057, "es_hi": 0.0222, "shl_diff": 0.0281}
+F_fb:F_forward class {"es_diff": 0.0126, "es_lo": -0.0042, "es_hi": 0.0285, "shl_diff": 0.0364}
+X_Dm_fb:F_fb family {"es_diff": -0.0003, "es_lo": -0.0112, "es_hi": 0.0119, "shl_diff": 0.0073}
+X_Dm_fb:F_fb class {"es_diff": -0.0007, "es_lo": -0.0311, "es_hi": 0.0172, "shl_diff": 0.002}
+Dm:D family {"es_diff": 0.0038, "es_lo": -0.002, "es_hi": 0.0132, "shl_diff": -0.0017}
+Dm:D class {"es_diff": 0.0066, "es_lo": -0.0018, "es_hi": 0.0172, "shl_diff": -0.0027}
+F_fb es still recall {"quiet": 0.9956, "n_quiet": 50845, "not_quiet": 0.7359, "n_not_quiet": 41885}
+F_fb shl still recall {"quiet": 0.8882, "n_quiet": 1387, "not_quiet": 0.6993, "n_not_quiet": 1979}
+F_fb es recall {"car": [0.7288, 0.6268, 0.8114], "bus": [0.3398, 0.1719, 0.4774], "train": [0.0579, 0.0, 0.1134]}
+F_fb es car/bus/train rows {"5": {"1": 1321, "2": 818, "3": 0, "4": 5, "5": 5851, "6": 16, "7": 17, "8": 0}, "6": {"1": 180, "2": 354, "3": 0, "4": 6, "5": 312, "6": 458, "7": 38, "8": 0}, "7": {"1": 73, "2": 19, "3": 0, "4": 0, "5": 85, "6": 0, "7": 11, "8": 2}}

@@ -70,6 +70,20 @@ def bootstrap_users_recall(y, pred, users, level: str, n_boot: int = 1000, seed:
     return {k: (float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))) for k, v in vals.items()}
 
 
+def bootstrap_users_diff(y, pred_a, pred_b, users, level: str, n_boot: int = 1000, seed: int = 0) -> dict:
+    """Paired user bootstrap of macro-F1(pred_a) - macro-F1(pred_b) on the same examples: each resample draws users
+    with replacement and scores both predictions on it. Returns the point difference and its 95% CI."""
+    rng = np.random.default_rng(seed)
+    uniq = np.unique(users)
+    idx = {u: np.flatnonzero(users == u) for u in uniq}
+    vals = []
+    for _ in range(n_boot):
+        sel = np.concatenate([idx[u] for u in rng.choice(uniq, len(uniq))])
+        vals.append(scores(y[sel], pred_a[sel], level)["macro_f1"] - scores(y[sel], pred_b[sel], level)["macro_f1"])
+    d = scores(y, pred_a, level)["macro_f1"] - scores(y, pred_b, level)["macro_f1"]
+    return {"diff": float(d), "lo": float(np.percentile(vals, 2.5)), "hi": float(np.percentile(vals, 97.5))}
+
+
 def plot_cm(cm: np.ndarray, level: str, title: str):
     names = CLASSES if level == "class" else FAMILIES
     rown = cm / np.maximum(cm.sum(1, keepdims=True), 1)
@@ -102,14 +116,14 @@ def latency_ms(fn: Callable[[], object], n: int = 500, warmup: int = 50) -> tupl
 
 
 def inference_latency(predict: Callable[[np.ndarray], object], featurize: Callable[[np.ndarray], np.ndarray],
-                      n: int = 500, warmup: int = 50, seed: int = 0) -> dict:
+                      n: int = 500, warmup: int = 50, seed: int = 0, shape: tuple = (1, 125, 6)) -> dict:
     """Metric (c): inference time per window, single thread, after warm-up, median and p95 [ms].
 
-    End to end (features + model on one 5 s window at 25 Hz) plus both parts. `predict` must run single-threaded
-    (e.g. LightGBM `num_threads=1`).
+    End to end (features + model on one window at 25 Hz; default 5 s acc + gyro, `shape=(1, 375, 3)` for a 15 s
+    accelerometer window) plus both parts. `predict` must run single-threaded (e.g. LightGBM `num_threads=1`).
     """
     rng = np.random.default_rng(seed)
-    w = rng.normal(size=(1, 125, 6)).astype(np.float32)
+    w = rng.normal(size=shape).astype(np.float32)
     w[..., 2] += 9.81
     x = featurize(w)
     out = {}
@@ -122,3 +136,17 @@ def inference_latency(predict: Callable[[np.ndarray], object], featurize: Callab
 def model_size_bytes(booster) -> int:
     """Metric (d): model size = bytes of the saved LightGBM text model."""
     return len(booster.model_to_string().encode())
+
+
+def pipeline_latency(run_session: Callable[[object], object], sessions: list, n_windows: list[int]) -> dict:
+    """Inference time per window of the pipeline as it runs: run_session(session) processes a whole session (features,
+    context, model, smoothing). One warm-up pass over all sessions, then each session timed once; time / windows.
+    Median and p95 over sessions [ms]. Single thread is the caller's job (env vars, num_threads=1)."""
+    for s in sessions:
+        run_session(s)
+    per = np.empty(len(sessions))
+    for i, s in enumerate(sessions):
+        t0 = time.perf_counter()
+        run_session(s)
+        per[i] = (time.perf_counter() - t0) / n_windows[i]
+    return {"lat_pipeline_ms_p50": float(np.median(per) * 1e3), "lat_pipeline_ms_p95": float(np.percentile(per, 95) * 1e3)}

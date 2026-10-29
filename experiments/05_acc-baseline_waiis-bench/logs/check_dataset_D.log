@@ -1,0 +1,1 @@
+2026-10-29 15:47:14,024 {'auc_dataset_context': 0.981101147855326, 'auc_dataset_gap_pattern': 0.5585831960892329, 'auc_dataset_own_minute': 0.9467324828672974, 'check_pass': 0.0, 'family_from_gaps_f1': 0.11141887588274788, 'family_majority_f1': 0.17519696196791928}
