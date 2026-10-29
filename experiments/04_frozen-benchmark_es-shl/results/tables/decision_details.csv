@@ -1342,8 +1342,8 @@ P1,test users with >= 5 examples,class,bus,6
 P1,test users with >= 5 examples,class,train,2
 P1,location coverage,split,test,0.856
 P1,location coverage,split,dev,0.827
-P1,code,,,src/tmd/splits.py:76
-P1,commit,,,aef0a4c
+P1,code,,,splits/README.md:15
+P1,commit,,,1d03c9d
 P2,official dev examples,total,,118986
 P2,official dev examples,class,bike,3118
 P2,official dev examples,class,bus,1348
@@ -1435,8 +1435,8 @@ P2,dev examples per fold,fold 4,car,1594
 P2,dev examples per fold,fold 4,run,29
 P2,dev examples per fold,fold 4,still,12567
 P2,dev examples per fold,fold 4,walk,2436
-P2,code,,,experiments/04_frozen-benchmark_es-shl/propose_test_v2.py:136
-P2,commit,,,aef0a4c
+P2,code,,,src/tmd/splits.py:13
+P2,commit,,,1d03c9d
 P3,minutes with a window kept out of pre-training,total,,65996
 P3,minutes with a window kept out of pre-training,class,(none),17352
 P3,minutes with a window kept out of pre-training,class,bike,917

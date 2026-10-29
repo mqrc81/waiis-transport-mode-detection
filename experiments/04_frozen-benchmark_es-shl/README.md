@@ -16,7 +16,7 @@ possible like what the WAIIS app sends, as measured in production:
 1. Inventory of the raw data (`inventory.py`). **Stop-point.**
 2. Build the benchmark with one command (`build.py`; shared readers in `src/tmd`), verify it, and document every
    decision (`decision_register.md`). **Stop-point.**
-3. Re-pick the ExtraSensory test users on the benchmark's counts (`propose_test_v2.py`). **Stop-point: the
+3. Re-pick the ExtraSensory test users on the benchmark's counts (method in `splits/README.md`). **Stop-point: the
    supervisor's OK.**
 4. Final build, verification and documentation. **Stop-point.**
 
@@ -164,20 +164,23 @@ Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were 
 
 **Draft — not approved**
 
-**What it is.** `waiis_bench_v1` is the frozen benchmark for every transport-mode model in this project.
-- 145,380 official ExtraSensory examples (59 users, accelerometer only, 15 s windows at 25 Hz, labels v2), split
-  into 5 dev folds and 12 reserved test users.
-- SHL hips data: User 1 as an optional training source (23,076 examples, incl. metro); Users 2–3 as the rail check
-  (2,365).
-- Per-minute GPS for ExtraSensory; two GPS cadences for SHL.
-- Every decision is documented in `decision_register.md`. It rebuilds with one command and is verified by sha256.
+**`waiis_bench_v1`** is the frozen benchmark that every transport-mode model in this project reads (`tmd.bench`).
+- **Build:** commit `35257b4`, `<data>/processed/waiis_bench_v1/`, 23 files, 4.8 GB.
+- **Verified:** a full rebuild from that commit in a clean worktree gave the same sha256 for every data file
+  (2026-10-29). It is the only benchmark on disk.
+- **ExtraSensory:** 145,380 official examples (59 users, accelerometer only, 15 s windows at 25 Hz, labels v2),
+  split into 5 dev folds (118,986) and 12 reserved test users (26,394).
+- **SHL hips:** User 1 is an optional training source (23,076 examples, including all metro); Users 2–3 are the
+  rail check (2,365).
+- **GPS:** per minute for ExtraSensory; two cadences for SHL.
 
 **Known limitations.**
-- **Few rail and run users:** ExtraSensory train comes from 5 users (2 in test, Android only), run from 22 users (4
-  in test).
-- **11 of the 12 test users were 02 dev users**, so the test set is not untouched by earlier choices.
-- **ExtraSensory GPS is one fix per minute**, sparser than production. Missing location differs by platform, and in
-  SHL by rail class.
-- **Missing speed signals "slow" in both datasets.** This is a likely shortcut.
-- **The production conditions are assumed, not measured:** recording schedule, units, cadence trigger and per-mode
-  missing rates (open questions).
+- **Thin classes:** ExtraSensory has train from only 5 users (2 in test, Android only, 52 examples) and run from 22
+  (4 in test, 81 examples). Per-class test results need user-bootstrap intervals.
+- **The test set isn't untouched:** 11 of its 12 users were dev users in experiment 02.
+- **GPS is sparser than production and has shortcuts:** ExtraSensory has one fix per minute. Missing location
+  depends on platform (and in SHL on rail class), and missing speed signals "slow" in both datasets.
+- **The WAIIS conditions the benchmark imitates are assumed, not measured:** recording schedule, units, cadence
+  trigger and per-mode missing rates.
+
+The full list, with numbers and risks, is in [`decision_register.md`](decision_register.md).

@@ -135,5 +135,6 @@ built at commit `35257b4`.
 - SHL speed was blanked uniformly at 23% (`a711d65`), with bearing (`9ef9424`); blanking is now driven by speed (`b1e2a9c`).
 - ExtraSensory bearing was kept on fixes without speed (`a711d65`); it is now −1 there (`30550d9`).
 - The plausibility bound was 7–13 m/s² (`b1e2a9c`); it is now 7–20 m/s², plus the BEF6C611 exclusion (`cf1085c`).
-- Test users picked on 2026-10-25, gyroscope required (`7f435c5`), were replaced by the approved re-pick (`aef0a4c`).
+- Test users picked on 2026-10-25, gyroscope required (`7f435c5`), were replaced by the re-pick (picked at `1d03c9d`,
+  adopted at `aef0a4c`; method and reproduction in `splits/README.md`).
 - Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were intermediate builds, never used by any model, deleted.

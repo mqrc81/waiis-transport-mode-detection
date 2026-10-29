@@ -48,8 +48,8 @@ WHERE = {
     "X6": ("src/tmd/extrasensory.py", 'CHECK = ["MOTORBIKE"]', "7f435c5"),
     "X7": ("src/tmd/extrasensory.py", "DROP = [", "7f435c5"),
     "X8": ("src/tmd/extrasensory.py", "EXCLUDED_USERS = ", "cf1085c"),
-    "P1": ("src/tmd/splits.py", "RESERVED_FILES = ", "aef0a4c"),
-    "P2": ("experiments/04_frozen-benchmark_es-shl/propose_test_v2.py", "folds = balanced_folds(", "aef0a4c"),
+    "P1": ("splits/README.md", "## How the test users were picked", "1d03c9d"),   # picked; adopted in aef0a4c
+    "P2": ("src/tmd/splits.py", "def balanced_folds", "1d03c9d"),
     "P3": ("src/tmd/bench.py", "def _guard", "b1e2a9c"),
     "P4": ("experiments/04_frozen-benchmark_es-shl/build.py", "def shl_recordings", "7f435c5"),
     "G1": ("src/tmd/extrasensory.py", "def read_location", "a711d65"),
