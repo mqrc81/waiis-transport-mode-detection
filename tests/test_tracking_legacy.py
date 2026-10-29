@@ -1,4 +1,4 @@
-"""tracking.run() must refuse the legacy split names (the superseded 2026-10-25 test set, experiment 02 only)."""
+"""tracking.run() must refuse the legacy split names (superseded splits, kept only for experiments 02 and 03)."""
 import pytest
 
 from tmd import tracking
@@ -19,5 +19,5 @@ def test_run_refuses_legacy_split_names(name, monkeypatch):
 def test_legacy_names_resolve_and_current_names_exist():
     for name in tracking.LEGACY:
         assert (tracking.PROJECT / tracking.SPLITS[name]).exists()
-    for name in ("extrasensory_test_v2", "shl_user23_test_v2", "extrasensory_dev_v2"):
+    for name in ("extrasensory_test_v2", "shl_user23_test_v2", "extrasensory_dev_v2", "shl_user1_dev"):
         assert name in tracking.SPLITS and name not in tracking.LEGACY
