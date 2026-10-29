@@ -22,8 +22,6 @@ was not measured.
 
 ## 2026-10-23: Bologna TMD is a minor dataset, not a main training or test set
 
-**Draft — not approved**
-
 **Decision.** We will not build the model or its evaluation mainly on the Bologna TMD dataset (Carpineti et al.
 2018). At most it is an extra held-out check, or a small addition to training. It is never the only evidence for a
 decision.
@@ -51,8 +49,6 @@ in MLflow.
 
 ## 2026-10-28: Accelerometer only; final test on the 12 ExtraSensory test users
 
-**Draft — not approved**
-
 **Decision.**
 - The model uses the **accelerometer only**, no gyroscope.
 - The **final test is the 12 ExtraSensory test users** (`splits/reserved_test.json`).
@@ -68,8 +64,6 @@ was closed at stop-point 2 because of it; on its one seed the gyroscope added ab
 tested across seeds).
 
 ## 2026-10-28: ExtraSensory test users re-picked; the benchmark is waiis_bench_v1
-
-**Draft — not approved**
 
 **Decision.**
 - Every model reads **`waiis_bench_v1`** (experiment 04).

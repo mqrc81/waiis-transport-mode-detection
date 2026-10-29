@@ -169,8 +169,6 @@ Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were 
 
 ## Conclusion
 
-**Draft — not approved**
-
 **`waiis_bench_v1`** is the frozen benchmark that every transport-mode model in this project reads (`tmd.bench`).
 - **Build:** commit `e51ea79`, `<data>/processed/waiis_bench_v1/`, 23 files, 4.8 GB.
 - **Verified:** a full rebuild from that commit in a clean worktree gave the same sha256 for every data file
