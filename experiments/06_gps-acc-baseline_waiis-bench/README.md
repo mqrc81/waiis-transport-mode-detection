@@ -551,6 +551,40 @@ under the rule as written.
 - **The decision is left open.** If the rule is overridden, it will be recorded here as a deviation.
 - Row I is not rerun; its dirty-tag note stands.
 
+
+### Decision after stop-point 2 (2026-10-30): platform check overridden for H1; gps-v2 adopted
+
+**Final configuration:**
+- acc model: 05's B (580 features, lr 0.1);
+- GPS model: gps-v2 (13 features), trained with SHL User 1, lr 0.02;
+- **H1** product fusion on GPS-covered minutes, with a fallback to the acc model where there is no GPS;
+- then HMM forward-backward.
+- A′ is not adopted.
+
+**Deviation from the Plan: the platform check is overridden.**
+- **The rule as written:** a step is kept only if it passes its checks. Check 1 requires each within-class GPS AUC
+  to be ≤ the acc AUC + 0.02.
+- **It fails for H1:**
+  - platform within walk: GPS 0.746 (v1) / 0.730 (v2) against acc 0.510;
+  - within car: 0.593 / 0.594 against 0.533.
+  - The dataset part passes: walk 0.859 / 0.858 vs 0.986; car 0.839 / 0.839 vs 0.941.
+- **The reason for overriding:** the transfer test (table above). A GPS model trained without one platform gives the
+  same H1 gain on that platform as the normal folds, in both directions and both versions:
+  - transfer − normal, 8-class: +0.002, +0.000, +0.007, −0.002, all CIs containing 0.
+  - The fusion's gain therefore doesn't depend on recognising the platform.
+- **Limit:** the transfer test is between two platforms of **one study** (ExtraSensory, 2015 phones and app). It
+  doesn't establish transfer to WAIIS phones or to the WAIIS app's GPS recording.
+
+**gps-v2 over gps-v1:** equal scores (H1 8-class 0.613 both; +0.061 [+0.024, +0.090] vs +0.061 [+0.023, +0.088]).
+gps-v2 drops the fix-count proxies (path length, net displacement, straightness) and uses one stop threshold
+(1.0 m/s) on both platforms.
+
+**Next (as instructed):**
+- seeds 1–2 on development data (A, G_v2 and H1_v2);
+- if H1's mean 8-class gain over A falls below 0.01, stop and report before the test protocol;
+- otherwise write and commit the test protocol, then score the test once.
+- Draft DECISIONS.md entry: platform effects of GPS features are judged by a cross-platform transfer test.
+
 ## Conclusion
 
 *Not yet.*
