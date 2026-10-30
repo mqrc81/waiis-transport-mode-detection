@@ -29,7 +29,8 @@ def x_of(n: str) -> float:
 
 def load(path: Path) -> pd.DataFrame:
     r = pd.read_csv(path)
-    r = r[r["dirty"].astype(str).str.lower() == "false"].copy()
+    r = r[(r["dirty"].astype(str).str.lower() == "false") & r.es_class_f1.notna()].copy()   # clean, finished
+    assert not r.duplicated(["curve", "n_users", "draw"]).any(), "one clean run per (curve, n, draw)"
     r["n"] = r["n_users"].astype(str)
     r["draw"] = r["draw"].astype(int)
     return r
