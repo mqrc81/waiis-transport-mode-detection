@@ -820,7 +820,15 @@ Predicted classes after the HMM (before the HMM; A):
 - **gps-v2 = gps-v1** in score. It drops the fix-count proxies and uses one stop threshold.
 
 **Weak spots for the next models.**
-- On the test, the 8-class gain on iPhone is ~0, and walk recall falls (0.715 → 0.650).
+- **Walk → still (a target for the next experiment).** GPS moves walk minutes to still, on dev as well as on the
+  test:
+  - walk recall, dev 0.745 → 0.690 (iPhone 0.775 → 0.707, Android 0.694 → 0.661); test 0.715 → 0.650;
+  - walk minutes predicted still, dev 2,661 → 3,350 of 13,109; test 753 → 981 of 3,682 (seed means).
+  - Walk F1 still rises, because its precision rises more.
+- **iPhone test, 8-class gain ~0:** the loss is bus (F1 0.538 → 0.387, precision 0.783 → 0.336; 47 test minutes).
+  It does **not** appear on dev (iPhone bus F1 0.409 → 0.479).
+- **About half of the overall test gain is train precision:** false rail drops from 55 to 17 minutes (iPhone 26 → 0),
+  so train F1 goes 0.421 → 0.568 (+0.021 of the +0.041), with train recall unchanged at 0.404.
 - Bus stays low (test 0.25).
 - ExtraSensory train rests on 2 Android test users (0.40, unchanged).
 - Android test car and bus are covered by GPS less than half the time.
