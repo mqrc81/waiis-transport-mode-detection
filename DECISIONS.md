@@ -173,3 +173,27 @@ establish transfer to WAIIS phones or the WAIIS app's GPS recording. One seed fo
 
 **Evidence.** `experiments/06_gps-acc-baseline_waiis-bench/README.md` (Results: stop-point 2 follow-up, and the
 decision after it).
+
+## 2026-10-30: More labelled users of the same kind are not the next priority
+
+**Draft — not approved.**
+
+**Decision.**
+- The next work goes to the model, or to data aimed at the weak classes (bus, rail), rather than to more labelled
+  users of the kind ExtraSensory provides.
+- Public base data (SHL User 1) stays in training for both models; another public base with rail and bus is worth
+  weighing against WAIIS labelling.
+- WAIIS labelling plans for many users with bus (more than 17), walk and bike; still and car flatten earlier.
+
+**Why.**
+- On top of SHL User 1, 06's configuration reaches 8-class 0.586 with 3 ExtraSensory users and 0.613 with ~38. After
+  n = 3 each doubling adds about 0.01 (flattens at n = 3 by the pre-set rule), well inside the user-bootstrap CI at
+  n = all (0.533–0.693).
+- Without SHL User 1, ~38 ExtraSensory users reach only 0.544 and never predict train.
+- Bus is the class still gaining most at the end (F1 +0.027 per doubling); walk and bike also gain; still, car and
+  run don't.
+
+**Limits of the evidence.** ExtraSensory users (2015 phones and app), not WAIIS employees; development data only, a
+pool of ~38 users; 5 draws; rail can't be measured (2–3 ExtraSensory train users).
+
+**Evidence.** `experiments/07_user-label-curve_waiis-bench/README.md` (Results, stop-point 2; Conclusion).

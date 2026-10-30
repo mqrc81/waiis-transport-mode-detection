@@ -1,0 +1,66 @@
+2026/10/30 15:24:13 WARNING mlflow.tracking.fluent: Cannot retrieve experiment by name 07_user-label-curve_waiis-bench
+main: 32 runs to do (0 done)
+main_n0 {'es_class_f1': 0.452, 'es_family_f1': 0.502, 'es_class_f1_lo': 0.365, 'es_class_f1_hi': 0.545, 'es_class_recall_bus': 0.482, 'es_class_recall_train': 0.537, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 125s
+main_n1_d0 {'es_class_f1': 0.535, 'es_family_f1': 0.602, 'es_class_recall_bus': 0.429, 'es_class_recall_train': 0.505, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 80s
+main_n1_d1 {'es_class_f1': 0.516, 'es_family_f1': 0.57, 'es_class_recall_bus': 0.466, 'es_class_recall_train': 0.516, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 61s
+main_n1_d2 {'es_class_f1': 0.541, 'es_family_f1': 0.596, 'es_class_recall_bus': 0.458, 'es_class_recall_train': 0.542, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 57s
+main_n1_d3 {'es_class_f1': 0.518, 'es_family_f1': 0.58, 'es_class_recall_bus': 0.432, 'es_class_recall_train': 0.526, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 59s
+main_n1_d4 {'es_class_f1': 0.536, 'es_family_f1': 0.59, 'es_class_recall_bus': 0.459, 'es_class_recall_train': 0.526, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 58s
+main_n2_d0 {'es_class_f1': 0.554, 'es_family_f1': 0.611, 'es_class_recall_bus': 0.432, 'es_class_recall_train': 0.516, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 81s
+main_n2_d1 {'es_class_f1': 0.586, 'es_family_f1': 0.638, 'es_class_recall_bus': 0.421, 'es_class_recall_train': 0.516, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 60s
+main_n2_d2 {'es_class_f1': 0.573, 'es_family_f1': 0.623, 'es_class_recall_bus': 0.423, 'es_class_recall_train': 0.521, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 60s
+main_n2_d3 {'es_class_f1': 0.569, 'es_family_f1': 0.61, 'es_class_recall_bus': 0.415, 'es_class_recall_train': 0.511, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 60s
+main_n2_d4 {'es_class_f1': 0.589, 'es_family_f1': 0.618, 'es_class_recall_bus': 0.407, 'es_class_recall_train': 0.516, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 63s
+main_n3_d0 {'es_class_f1': 0.58, 'es_family_f1': 0.624, 'es_class_recall_bus': 0.41, 'es_class_recall_train': 0.447, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 85s
+main_n3_d1 {'es_class_f1': 0.594, 'es_family_f1': 0.642, 'es_class_recall_bus': 0.373, 'es_class_recall_train': 0.532, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 63s
+main_n3_d2 {'es_class_f1': 0.584, 'es_family_f1': 0.631, 'es_class_recall_bus': 0.412, 'es_class_recall_train': 0.5, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 61s
+main_n3_d3 {'es_class_f1': 0.586, 'es_family_f1': 0.62, 'es_class_recall_bus': 0.408, 'es_class_recall_train': 0.521, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 62s
+main_n3_d4 {'es_class_f1': 0.596, 'es_family_f1': 0.627, 'es_class_recall_bus': 0.388, 'es_class_recall_train': 0.526, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 64s
+main_n5_d0 {'es_class_f1': 0.59, 'es_family_f1': 0.631, 'es_class_recall_bus': 0.39, 'es_class_recall_train': 0.405, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 87s
+main_n5_d1 {'es_class_f1': 0.614, 'es_family_f1': 0.67, 'es_class_recall_bus': 0.392, 'es_class_recall_train': 0.516, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 66s
+main_n5_d2 {'es_class_f1': 0.585, 'es_family_f1': 0.652, 'es_class_recall_bus': 0.404, 'es_class_recall_train': 0.526, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 66s
+main_n5_d3 {'es_class_f1': 0.585, 'es_family_f1': 0.626, 'es_class_recall_bus': 0.397, 'es_class_recall_train': 0.379, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 68s
+main_n5_d4 {'es_class_f1': 0.583, 'es_family_f1': 0.624, 'es_class_recall_bus': 0.386, 'es_class_recall_train': 0.274, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 66s
+main_n10_d0 {'es_class_f1': 0.607, 'es_family_f1': 0.681, 'es_class_recall_bus': 0.386, 'es_class_recall_train': 0.374, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 95s
+main_n10_d1 {'es_class_f1': 0.601, 'es_family_f1': 0.687, 'es_class_recall_bus': 0.283, 'es_class_recall_train': 0.284, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 298s
+main_n10_d2 {'es_class_f1': 0.598, 'es_family_f1': 0.677, 'es_class_recall_bus': 0.361, 'es_class_recall_train': 0.342, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 230s
+main_n10_d3 {'es_class_f1': 0.595, 'es_family_f1': 0.664, 'es_class_recall_bus': 0.396, 'es_class_recall_train': 0.242, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 378s
+main_n10_d4 {'es_class_f1': 0.586, 'es_family_f1': 0.659, 'es_class_recall_bus': 0.358, 'es_class_recall_train': 0.253, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 73s
+main_n20_d0 {'es_class_f1': 0.601, 'es_family_f1': 0.672, 'es_class_recall_bus': 0.401, 'es_class_recall_train': 0.247, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 108s
+main_n20_d1 {'es_class_f1': 0.609, 'es_family_f1': 0.687, 'es_class_recall_bus': 0.346, 'es_class_recall_train': 0.3, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 88s
+main_n20_d2 {'es_class_f1': 0.609, 'es_family_f1': 0.686, 'es_class_recall_bus': 0.372, 'es_class_recall_train': 0.242, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 86s
+main_n20_d3 {'es_class_f1': 0.61, 'es_family_f1': 0.678, 'es_class_recall_bus': 0.391, 'es_class_recall_train': 0.247, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 84s
+main_n20_d4 {'es_class_f1': 0.602, 'es_family_f1': 0.674, 'es_class_recall_bus': 0.411, 'es_class_recall_train': 0.216, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 87s
+main_nall {'es_class_f1': 0.613, 'es_family_f1': 0.686, 'es_class_f1_lo': 0.533, 'es_class_f1_hi': 0.693, 'es_class_recall_bus': 0.435, 'es_class_recall_train': 0.221, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 177s
+noshl: 31 runs to do (0 done)
+noshl_n1_d0 {'es_class_f1': 0.297, 'es_family_f1': 0.434, 'es_class_recall_bus': 0.055, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 22s
+noshl_n1_d1 {'es_class_f1': 0.312, 'es_family_f1': 0.441, 'es_class_recall_bus': 0.0, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 13s
+[LightGBM] [Fatal] Check failed: (num_data) > (0) at /Users/runner/work/LightGBM/LightGBM/lightgbm-python/src/io/dataset.cpp, line 44 .
+
+Traceback (most recent call last):
+  File "/Users/ms/Projects/waiis/transport-mode-detection/experiments/07_user-label-curve_waiis-bench/curve.py", line 300, in <module>
+    main()
+  File "/Users/ms/Projects/waiis/transport-mode-detection/experiments/07_user-label-curve_waiis-bench/curve.py", line 268, in main
+    res = point(D, a.curve, n, d, draws, prog)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ms/Projects/waiis/transport-mode-detection/experiments/07_user-label-curve_waiis-bench/curve.py", line 118, in point
+    mg = fit(D.xg, D.y, tr & D.cov, GPS_LR, GPS_ROUNDS, d, None if va is None else va & D.cov, EARLY["gps"])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ms/Projects/waiis/transport-mode-detection/experiments/07_user-label-curve_waiis-bench/curve.py", line 94, in fit
+    return lgb.train(prm, dtr, rounds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/lightgbm/engine.py", line 296, in train
+    booster = Booster(params=params, train_set=train_set)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3758, in __init__
+    train_set.construct()
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2574, in construct
+    self._lazy_init(
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2170, in _lazy_init
+    self.__init_from_np2d(mat=data, params_str=params_str, ref_dataset=ref_dataset)
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2300, in __init_from_np2d
+    _safe_call(
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/lightgbm/basic.py", line 297, in _safe_call
+    raise LightGBMError(_LIB.LGBM_GetLastError().decode("utf-8"))
+lightgbm.basic.LightGBMError: Check failed: (num_data) > (0) at /Users/runner/work/LightGBM/LightGBM/lightgbm-python/src/io/dataset.cpp, line 44 .
+

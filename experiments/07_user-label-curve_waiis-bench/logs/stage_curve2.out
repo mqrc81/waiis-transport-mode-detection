@@ -1,0 +1,41 @@
+noshl: 29 runs to do (2 done)
+noshl_n1_d2 {'es_class_f1': 0.362, 'es_family_f1': 0.484, 'es_class_recall_bus': 0.001, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 84.0} 11s
+noshl_n1_d3 {'es_class_f1': 0.271, 'es_family_f1': 0.381, 'es_class_recall_bus': 0.0, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 46.2, 'gps_rounds_mean': 110.6} 13s
+noshl_n1_d4 {'es_class_f1': 0.346, 'es_family_f1': 0.456, 'es_class_recall_bus': 0.141, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 20s
+noshl_n2_d0 {'es_class_f1': 0.335, 'es_family_f1': 0.477, 'es_class_recall_bus': 0.185, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 25s
+noshl_n2_d1 {'es_class_f1': 0.374, 'es_family_f1': 0.521, 'es_class_recall_bus': 0.014, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 22s
+noshl_n2_d2 {'es_class_f1': 0.387, 'es_family_f1': 0.487, 'es_class_recall_bus': 0.0, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 18s
+noshl_n2_d3 {'es_class_f1': 0.365, 'es_family_f1': 0.497, 'es_class_recall_bus': 0.088, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 22s
+noshl_n2_d4 {'es_class_f1': 0.376, 'es_family_f1': 0.499, 'es_class_recall_bus': 0.097, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 28s
+noshl_n3_d0 {'es_class_f1': 0.375, 'es_family_f1': 0.522, 'es_class_recall_bus': 0.023, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 31s
+noshl_n3_d1 {'es_class_f1': 0.384, 'es_family_f1': 0.532, 'es_class_recall_bus': 0.024, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 28s
+noshl_n3_d2 {'es_class_f1': 0.397, 'es_family_f1': 0.508, 'es_class_recall_bus': 0.0, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 25s
+noshl_n3_d3 {'es_class_f1': 0.379, 'es_family_f1': 0.51, 'es_class_recall_bus': 0.104, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 26s
+noshl_n3_d4 {'es_class_f1': 0.425, 'es_family_f1': 0.576, 'es_class_recall_bus': 0.047, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 32s
+noshl_n5_d0 {'es_class_f1': 0.437, 'es_family_f1': 0.574, 'es_class_recall_bus': 0.133, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 36s
+noshl_n5_d1 {'es_class_f1': 0.401, 'es_family_f1': 0.545, 'es_class_recall_bus': 0.039, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 34s
+noshl_n5_d2 {'es_class_f1': 0.434, 'es_family_f1': 0.562, 'es_class_recall_bus': 0.004, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 36s
+noshl_n5_d3 {'es_class_f1': 0.416, 'es_family_f1': 0.566, 'es_class_recall_bus': 0.07, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 43s
+noshl_n5_d4 {'es_class_f1': 0.417, 'es_family_f1': 0.576, 'es_class_recall_bus': 0.027, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 49s
+noshl_n10_d0 {'es_class_f1': 0.47, 'es_family_f1': 0.61, 'es_class_recall_bus': 0.14, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 47s
+noshl_n10_d1 {'es_class_f1': 0.451, 'es_family_f1': 0.614, 'es_class_recall_bus': 0.013, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 46s
+noshl_n10_d2 {'es_class_f1': 0.489, 'es_family_f1': 0.615, 'es_class_recall_bus': 0.082, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 46s
+noshl_n10_d3 {'es_class_f1': 0.436, 'es_family_f1': 0.57, 'es_class_recall_bus': 0.065, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 48s
+noshl_n10_d4 {'es_class_f1': 0.437, 'es_family_f1': 0.594, 'es_class_recall_bus': 0.052, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 53s
+noshl_n20_d0 {'es_class_f1': 0.501, 'es_family_f1': 0.623, 'es_class_recall_bus': 0.183, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 68s
+noshl_n20_d1 {'es_class_f1': 0.488, 'es_family_f1': 0.627, 'es_class_recall_bus': 0.123, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 69s
+noshl_n20_d2 {'es_class_f1': 0.517, 'es_family_f1': 0.628, 'es_class_recall_bus': 0.152, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 66s
+noshl_n20_d3 {'es_class_f1': 0.515, 'es_family_f1': 0.622, 'es_class_recall_bus': 0.197, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 66s
+noshl_n20_d4 {'es_class_f1': 0.492, 'es_family_f1': 0.625, 'es_class_recall_bus': 0.165, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 67s
+noshl_nall {'es_class_f1': 0.544, 'es_family_f1': 0.626, 'es_class_f1_lo': 0.482, 'es_class_f1_hi': 0.613, 'es_class_recall_bus': 0.33, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 136s
+escheck: 10 runs to do (0 done)
+escheck_n2_d0 {'es_class_f1': 0.549, 'es_family_f1': 0.611, 'es_class_recall_bus': 0.433, 'es_class_recall_train': 0.479, 'es_class_f1_diff_vs_fixed': -0.005, 'acc_rounds_mean': 15.4, 'gps_rounds_mean': 52.8} 66s
+escheck_n2_d1 {'es_class_f1': 0.568, 'es_family_f1': 0.633, 'es_class_recall_bus': 0.421, 'es_class_recall_train': 0.474, 'es_class_f1_diff_vs_fixed': -0.018, 'acc_rounds_mean': 12.6, 'gps_rounds_mean': 49.0} 62s
+escheck_n2_d2 {'es_class_f1': 0.544, 'es_family_f1': 0.592, 'es_class_recall_bus': 0.36, 'es_class_recall_train': 0.468, 'es_class_f1_diff_vs_fixed': -0.029, 'acc_rounds_mean': 7.4, 'gps_rounds_mean': 23.8} 52s
+escheck_n2_d3 {'es_class_f1': 0.559, 'es_family_f1': 0.594, 'es_class_recall_bus': 0.385, 'es_class_recall_train': 0.468, 'es_class_f1_diff_vs_fixed': -0.01, 'acc_rounds_mean': 8.0, 'gps_rounds_mean': 31.4} 55s
+escheck_n2_d4 {'es_class_f1': 0.563, 'es_family_f1': 0.6, 'es_class_recall_bus': 0.396, 'es_class_recall_train': 0.5, 'es_class_f1_diff_vs_fixed': -0.026, 'acc_rounds_mean': 11.4, 'gps_rounds_mean': 43.8} 60s
+escheck_n10_d0 {'es_class_f1': 0.604, 'es_family_f1': 0.671, 'es_class_recall_bus': 0.382, 'es_class_recall_train': 0.453, 'es_class_f1_diff_vs_fixed': -0.003, 'acc_rounds_mean': 7.8, 'gps_rounds_mean': 45.4} 70s
+escheck_n10_d1 {'es_class_f1': 0.596, 'es_family_f1': 0.683, 'es_class_recall_bus': 0.285, 'es_class_recall_train': 0.284, 'es_class_f1_diff_vs_fixed': -0.006, 'acc_rounds_mean': 15.8, 'gps_rounds_mean': 57.2} 78s
+escheck_n10_d2 {'es_class_f1': 0.613, 'es_family_f1': 0.676, 'es_class_recall_bus': 0.381, 'es_class_recall_train': 0.463, 'es_class_f1_diff_vs_fixed': 0.014, 'acc_rounds_mean': 12.0, 'gps_rounds_mean': 57.2} 76s
+escheck_n10_d3 {'es_class_f1': 0.583, 'es_family_f1': 0.649, 'es_class_recall_bus': 0.369, 'es_class_recall_train': 0.232, 'es_class_f1_diff_vs_fixed': -0.012, 'acc_rounds_mean': 21.2, 'gps_rounds_mean': 88.8} 91s
+escheck_n10_d4 {'es_class_f1': 0.584, 'es_family_f1': 0.645, 'es_class_recall_bus': 0.379, 'es_class_recall_train': 0.237, 'es_class_f1_diff_vs_fixed': -0.002, 'acc_rounds_mean': 12.0, 'gps_rounds_mean': 56.6} 77s

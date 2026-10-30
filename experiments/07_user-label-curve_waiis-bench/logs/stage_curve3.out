@@ -1,0 +1,3 @@
+noshl: 2 runs to do (29 done)
+noshl_n2_d2 {'es_class_f1': 0.387, 'es_family_f1': 0.487, 'es_class_recall_bus': 0.0, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 21s
+noshl_n2_d3 {'es_class_f1': 0.365, 'es_family_f1': 0.497, 'es_class_recall_bus': 0.088, 'es_class_recall_train': 0.0, 'acc_rounds_mean': 47.0, 'gps_rounds_mean': 138.0} 22s
