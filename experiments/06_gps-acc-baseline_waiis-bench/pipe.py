@@ -27,7 +27,14 @@ HERE = Path(__file__).resolve().parent
 EXP = HERE.name
 OOF = OUT / "oof"
 ACC = af.names(True, False)                     # 05's B: 580 features
-GPS = gf.NAMES                                  # 16
+GPS_VERSION = gf.FEATURES_VERSION
+GPS = gf.names(GPS_VERSION)                     # gps-v1: 16; gps-v2: 13
+
+
+def use_gps(version: str) -> None:
+    """Select the GPS feature version for load() and every later use of GPS (call before load)."""
+    global GPS_VERSION, GPS
+    GPS_VERSION, GPS = version, gf.names(version)
 LR = {0.1: {"learning_rate": 0.1, "max_rounds": 1000, "patience": 30},
       0.02: {"learning_rate": 0.02, "max_rounds": 10000, "patience": 150}}
 
@@ -38,7 +45,7 @@ def load(part: str = "dev") -> pd.DataFrame:
     d = []
     for s in srcs:
         a = pd.read_parquet(P05 / f"{s}_{part}_25hz_w15s_acc-v1_lp-none.parquet", columns=keys + ACC)
-        g = pd.read_parquet(gps_path(s, part), columns=["user", "ts"] + GPS)
+        g = pd.read_parquet(gps_path(s, part, GPS_VERSION), columns=["user", "ts"] + GPS)
         assert (a.user.to_numpy() == g.user.to_numpy()).all() and (a.ts.to_numpy() == g.ts.to_numpy()).all()
         d.append(pd.concat([a, g[GPS]], axis=1).assign(source=s))
     df = pd.concat(d, ignore_index=True)

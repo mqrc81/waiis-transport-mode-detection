@@ -7,7 +7,9 @@
     uv run python run.py --row H1 --acc-row A --gps-row G --vs A     # product fusion
     uv run python run.py --row H2 --acc-row A --gps-row G --vs A        # inner fits use each row's own lr
     uv run python run.py --row I --lr 0.1 --vs A                     # early fusion
-Rows named H1_<gps-row> etc. when run with another GPS model (--name).
+Rows named H1_<gps-row> etc. when run with another GPS model (--name). --gps gps-v2 selects the v2 features:
+    uv run python run.py --row G --name G_v2 --gps gps-v2 --lr 0.02 --acc-row A
+    uv run python run.py --row H1 --name H1_v2 --gps gps-v2 --acc-row A --gps-row G_v2 --vs A
 """
 from __future__ import annotations
 
@@ -37,9 +39,12 @@ from tmd.tracking import run
 MODELS = pipe.OUT / "models"
 P05 = pipe.P05
 log = logging.getLogger()
-ACC_F, GPS_F = "acc-v1_whole_sub5s", "gps-v1_w2min"
-FEATURES = {"A": ACC_F, "A2": ACC_F, "I": f"{ACC_F}+{GPS_F}", "G": GPS_F, "G_esonly": GPS_F,
-            "H1": f"{ACC_F}+{GPS_F}", "H2": f"{ACC_F}+{GPS_F}"}
+ACC_F = "acc-v1_whole_sub5s"
+
+
+def features_tag(row: str, gps: str) -> str:
+    g = f"{gps}_w2min"
+    return {"A": ACC_F, "A2": ACC_F, "G": g, "G_esonly": g}.get(row, f"{ACC_F}+{g}")
 
 
 def save_models(name, seed, res):
@@ -136,7 +141,9 @@ def main():
     ap.add_argument("--gps-row", default="G")
     ap.add_argument("--no-shl", action="store_true", help="G: train without SHL User 1 rows")
     ap.add_argument("--vs")
+    ap.add_argument("--gps", choices=list(gf.VERSIONS), default="gps-v1", help="GPS feature version")
     a = ap.parse_args()
+    pipe.use_gps(a.gps)
     name = a.name or a.row
     (pipe.HERE / "logs").mkdir(exist_ok=True)
     logging.basicConfig(filename=pipe.HERE / "logs" / f"run_{name}_seed{a.seed}.log", filemode="w",
@@ -144,14 +151,14 @@ def main():
     t0 = time.time()
     prm = {"model": f"lightgbm+{a.row}+hmm-fb", "row": name, "seed": a.seed, "rate_hz": 25,
            "dataset": "es_dev+shl_u1", "class_set": "8class+family", "primary": "es 8-class macro-F1",
-           "features": FEATURES[a.row], "lr": a.lr, "acc_row": a.acc_row if a.row not in ("A", "A2", "I") else "",
+           "features": features_tag(a.row, a.gps), "gps_features": a.gps, "lr": a.lr, "acc_row": a.acc_row if a.row not in ("A", "A2", "I") else "",
            "gps_row": a.gps_row if a.row in ("H1", "H2") else "", "gps_train_shl": not a.no_shl,
            "fusion": {"H1": "product", "H2": "stacking LR (inner OOF)", "I": "early"}.get(a.row, "none"),
            "smoothing": "fb", "vs": a.vs or "", "scored": "covered minutes" if a.row in ("G", "G_esonly") else "all",
            "bootstrap": "users, redraw resamples lacking a class", "gps": "gps_per_minute, derived speed only",
            "usable_minutes": "context+hmm", **{f"lgb_{k}": v for k, v in pipe.params(a.lr)[0].items()}}
     prog = Progress(pipe.EXP, f"{name}_seed{a.seed}", n_units(a), log)
-    with run(pipe.EXP, prm, run_name=f"{name}_seed{a.seed}", datasets=pipe.datasets(FEATURES[a.row])):
+    with run(pipe.EXP, prm, run_name=f"{name}_seed{a.seed}", datasets=pipe.datasets(features_tag(a.row, a.gps))):
         m, figs, tab = row(a, name, prog)
         mlflow.log_metrics({k: float(v) for k, v in m.items() if v == v})
         for fn, fig in figs.items():
@@ -174,7 +181,7 @@ def row(a, name, prog):
     lab = pipe.labelled()
     cov = df.covered.to_numpy()
     allrows = np.ones(len(df), bool)
-    score_mask, extra_m, info = None, {}, {"features": FEATURES[a.row]}
+    score_mask, extra_m, info = None, {}, {"features": features_tag(a.row, a.gps), "gps_version": a.gps}
     acc_models = gps_models = stacker0 = None
     es_off, fold_all, y_all = ((df.source == "extrasensory") & df.official).to_numpy(), df.fold.to_numpy(), \
         df.y.to_numpy()
@@ -269,7 +276,7 @@ def row(a, name, prog):
 
     def predict_session(keys, w, gps):
         fa = af.features(w, True, False) if am is not None else None
-        fg = gf.features(keys, gps) if (gm is not None or early) else None
+        fg = gf.features(keys, gps, a.gps) if (gm is not None or early) else None
         if early:
             pa = am.predict(np.concatenate([fa, fg], 1), num_threads=1)
             return minutes.smooth(keys, pa, a0, pi0, "fb")
@@ -286,7 +293,8 @@ def row(a, name, prog):
         if gm is not None or early:
             g = gf.prepare(gps)
             fg = gf.window_features(t, *[g[c].to_numpy() for c in ("ts", "time", "pair_v", "pair_dist", "brg",
-                                                                   "lat", "lon")])[None].astype(np.float32)
+                                                                   "lat", "lon")], version=a.gps)[None].astype(
+                np.float32)
         if early:
             return am.predict(np.concatenate([fa, fg], 1), num_threads=1)
         pa = am.predict(fa, num_threads=1) if am is not None else None

@@ -1,4 +1,4 @@
-"""GPS motion features per minute from one fix per minute (experiment 06, version FEATURES_VERSION).
+"""GPS motion features per minute from one fix per minute (experiment 06; versions gps-v1, gps-v2).
 
 Inputs: a `gps_per_minute` table (tmd.bench). For a minute t, the window holds the fixes of the same (user, session)
 with ts in [t - 150, t + 150] s (minutes t-2 .. t+2). Only positions and speeds derived from them are used:
@@ -6,6 +6,10 @@ with ts in [t - 150, t + 150] s (minutes t-2 .. t+2). Only positions and speeds 
     displacement bearing from the previous fix, when the displacement is >= 20 m; turns between consecutive valid
     bearings (skipping stops); path = displacements with both fixes in the window
 No reported speed, accuracy, fix count, interval or missingness column. Missing values are NaN.
+
+gps-v2 (06, stop-point 2, fixed before running): gps-v1 without path_m, net_m, straightness (fix-count proxies), and
+one stop threshold for both platforms: stopped = pair speed < 1.0 m/s; a stop = consecutive pairs going from >= 1.0 to
+< 1.0 m/s. Repeated positions are kept (06 diag_repeats.py: 99.5% of ExtraSensory Android repeats are real stops).
 """
 from __future__ import annotations
 
@@ -16,7 +20,7 @@ import pandas as pd
 
 from tmd.gps import bearing_deg, haversine_m
 
-FEATURES_VERSION = "gps-v1"
+FEATURES_VERSION = "gps-v1"        # default; VERSIONS lists all
 HALF_WINDOW_S = 150
 MAX_PAIR_DT_S = 150
 STOP_MPS, MOVING_MPS = 0.5, 2.0
@@ -24,6 +28,12 @@ MIN_BEARING_M = 20.0
 NAMES = ["v_p10", "v_p50", "v_p90", "v_max", "v_mean", "v_now", "v_next",
          "acc_mean", "acc_max", "stop_frac", "n_stops", "turn_mean", "turn_max",
          "path_m", "net_m", "straightness"]
+VERSIONS = {"gps-v1": {"names": NAMES, "stop": STOP_MPS, "moving": MOVING_MPS},
+            "gps-v2": {"names": NAMES[:13], "stop": 1.0, "moving": 1.0}}
+
+
+def names(version: str = FEATURES_VERSION) -> list[str]:
+    return VERSIONS[version]["names"]
 
 
 def prepare(gps: pd.DataFrame) -> pd.DataFrame:
@@ -47,23 +57,25 @@ def _turn(b: np.ndarray) -> np.ndarray:
 
 
 def window_features(ts: np.ndarray, f_ts: np.ndarray, f_time: np.ndarray, v: np.ndarray, dist: np.ndarray,
-                    brg: np.ndarray, lat: np.ndarray, lon: np.ndarray) -> np.ndarray:
-    """Features of one minute t from the fixes of its session (arrays sorted by time). Returns (16,)."""
+                    brg: np.ndarray, lat: np.ndarray, lon: np.ndarray, version: str = FEATURES_VERSION) -> np.ndarray:
+    """Features of one minute t from the fixes of its session (arrays sorted by time). Returns (len(names),)."""
+    cfg = VERSIONS[version]
+    stop_mps, moving_mps = cfg["stop"], cfg["moving"]
     lo, hi = np.searchsorted(f_ts, ts - HALF_WINDOW_S, "left"), np.searchsorted(f_ts, ts + HALF_WINDOW_S, "right")
     out = np.full(len(NAMES), np.nan)
     if hi <= lo:
-        return out
+        return out[:len(cfg["names"])]
     vv, tt = v[lo:hi], f_time[lo:hi]
     ok = ~np.isnan(vv)
     if ok.any():
         s = vv[ok]
         out[0:5] = [*np.percentile(s, [10, 50, 90]), s.max(), s.mean()]
-        out[9] = (s < STOP_MPS).mean()
+        out[9] = (s < stop_mps).mean()
         cons = ok[1:] & ok[:-1]                         # consecutive pairs in the window
         if cons.any():
             dv = np.abs(np.diff(vv))[cons] / np.diff(tt)[cons]
             out[7:9] = [dv.mean(), dv.max()]
-            out[10] = float(((vv[:-1] >= MOVING_MPS) & (vv[1:] < STOP_MPS))[cons].sum())
+            out[10] = float(((vv[:-1] >= moving_mps) & (vv[1:] < stop_mps))[cons].sum())
         else:
             out[10] = 0.0
         d = dist[lo + 1:hi]                             # pairs with both ends in the window
@@ -81,13 +93,13 @@ def window_features(ts: np.ndarray, f_ts: np.ndarray, f_time: np.ndarray, v: np.
         out[14] = haversine_m(lat[lo], lon[lo], lat[hi - 1], lon[hi - 1])
         if out[13] == out[13] and out[13] >= 1.0:
             out[15] = min(out[14] / out[13], 1.0)
-    return out
+    return out[:len(cfg["names"])]
 
 
-def features(minutes: pd.DataFrame, gps: pd.DataFrame) -> np.ndarray:
-    """minutes: user, session, ts (any order) -> (N, 16) float32 in minutes' order."""
+def features(minutes: pd.DataFrame, gps: pd.DataFrame, version: str = FEATURES_VERSION) -> np.ndarray:
+    """minutes: user, session, ts (any order) -> (N, len(names(version))) float32 in minutes' order."""
     g = prepare(gps)
-    out = np.full((len(minutes), len(NAMES)), np.nan, np.float32)
+    out = np.full((len(minutes), len(names(version))), np.nan, np.float32)
     groups = {k: d for k, d in g.groupby(["user", "session"], sort=False)}
     m = minutes.reset_index(drop=True)
     with warnings.catch_warnings():
@@ -98,7 +110,7 @@ def features(minutes: pd.DataFrame, gps: pd.DataFrame) -> np.ndarray:
                 continue
             arr = [d[c].to_numpy() for c in ("ts", "time", "pair_v", "pair_dist", "brg", "lat", "lon")]
             for i in idx:
-                out[i] = window_features(m.ts.iat[i], *arr)
+                out[i] = window_features(m.ts.iat[i], *arr, version=version)
     return out
 
 

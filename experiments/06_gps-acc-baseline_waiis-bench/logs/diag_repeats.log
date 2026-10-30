@@ -1,0 +1,9 @@
+Android dev, labelled minutes with a pair: 68,844; repeats: 12,646 (18.4%)
+repeats in still minutes: 94.2%; in moving-class minutes: 5.8%
+repeat share per class: {'bike': 0.037, 'bus': 0.017, 'car': 0.03, 'run': 0.007, 'still': 0.196, 'train': 0.134, 'walk': 0.159}
+repeats in moving minutes at a stop (adjacent pair < 1.0 m/s): 91.3% of 739
+  per class: {'bike': 0.902, 'bus': 0.5, 'car': 0.689, 'run': 1.0, 'train': 1.0, 'walk': 0.94}
+moving minutes without a repeat, at a stop (reference): 60.6%
+REAL-STOP SHARE of Android repeats: 99.5% -> keep repeats; uniform stop threshold 1.0 m/s
+
+iPhone (reference): repeat share per class: {'bike': 0.022, 'bus': 0.008, 'car': 0.012, 'run': 0.013, 'still': 0.098, 'train': 0.0, 'walk': 0.03}

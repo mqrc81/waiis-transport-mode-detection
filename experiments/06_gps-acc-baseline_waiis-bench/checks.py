@@ -86,8 +86,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("check", choices=["gps", "missing", "coverage"])
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--gps", default="gps-v1", help="GPS feature version")
     a = ap.parse_args()
-    logging.basicConfig(filename=pipe.HERE / "logs" / f"check_{a.check}.log", filemode="w", level=logging.INFO,
+    pipe.use_gps(a.gps)
+    tag = "" if a.gps == "gps-v1" else f"_{a.gps}"
+    logging.basicConfig(filename=pipe.HERE / "logs" / f"check_{a.check}{tag}.log", filemode="w", level=logging.INFO,
                         format="%(asctime)s %(message)s")
     df = pipe.load()
     if a.check == "coverage":
@@ -96,10 +99,10 @@ def main():
         print(t.round(2).to_string())
         return
     m = check_gps(df, a.seed) if a.check == "gps" else check_missing(df, a.seed)
-    prm = {"model": "lightgbm-check", "check": a.check, "row": f"check_{a.check}", "seed": a.seed, "rate_hz": 25,
-           "class_set": "dataset/platform", "dataset": "es_dev+shl_u1", "features": "gps-v1_w2min vs acc-v1",
+    prm = {"model": "lightgbm-check", "check": a.check, "row": f"check_{a.check}{tag}", "seed": a.seed, "rate_hz": 25,
+           "class_set": "dataset/platform", "dataset": "es_dev+shl_u1", "features": f"{a.gps}_w2min vs acc-v1", "gps_features": a.gps,
            "rounds": ROUNDS, "within_class": "walk, car", **{f"lgb_{k}": v for k, v in SMALL.items()}}
-    with run(pipe.EXP, prm, run_name=f"check_{a.check}_seed{a.seed}", datasets=pipe.datasets("gps-v1_w2min")):
+    with run(pipe.EXP, prm, run_name=f"check_{a.check}{tag}_seed{a.seed}", datasets=pipe.datasets(f"{a.gps}_w2min")):
         mlflow.log_metrics(m)
     log.info("%s", json.dumps(m))
     print(a.check, {k: round(v, 3) for k, v in m.items()})

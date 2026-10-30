@@ -1,0 +1,2 @@
+extrasensory dev: 291155 rows, covered 0.810 (official 0.824), 12s -> /Users/ms/Projects/waiis/data/processed/06_gps-acc-baseline_waiis-bench/extrasensory_dev_gps-v2_w2min.parquet
+shl_user1 dev: 36806 rows, covered 0.696 (official 0.739), 1s -> /Users/ms/Projects/waiis/data/processed/06_gps-acc-baseline_waiis-bench/shl_user1_dev_gps-v2_w2min.parquet
