@@ -1,0 +1,10 @@
+walk n 10786 single-feature platform AUC (iPhone=1): {'path_m': 0.6, 'v_p10': 0.585, 'net_m': 0.582, 'v_now': 0.573, 'v_p50': 0.569, 'v_next': 0.568}
+          v_p50  stop_frac      path_m  turn_mean
+platform                                         
+android    0.35        0.6   88.610001  44.119999
+iphone     0.50        0.5  144.770004  37.939999
+car n 7255 single-feature platform AUC (iPhone=1): {'path_m': 0.579, 'stop_frac': 0.422, 'net_m': 0.567, 'v_p10': 0.563, 'v_p50': 0.562, 'acc_max': 0.562}
+          v_p50  stop_frac       path_m  turn_mean
+platform                                          
+android    4.47        0.2  1063.520020  22.820000
+iphone     6.97        0.0  1806.630005  26.799999

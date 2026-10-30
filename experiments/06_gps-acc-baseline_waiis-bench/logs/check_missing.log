@@ -1,0 +1,1 @@
+2026-10-30 10:09:30,029 {"auc_dataset_walk_missing": 0.659589844230473, "auc_platform_walk_missing": 0.6980185739627253, "auc_dataset_car_missing": 0.555568693407475, "auc_platform_car_missing": 0.5466683417488439, "auc_dataset_all_missing": 0.7834204357030112, "auc_platform_all_missing": 0.708100439847936, "check_pass": 0.0}
