@@ -1,0 +1,37 @@
+users per fold (ES dev): {0: 9, 1: 10, 2: 10, 3: 10, 4: 8} pool sizes: [38, 37, 37, 37, 39]
+
+ES official minutes per class over the n training users: median [min-max] over draws x folds
+n=  1 iphone 0.00 [0.00-1.00] still=1620 [167-3819] walk=300 [2-707] run=0 [0-283] bike=0 [0-456] car=115 [0-1011] bus=0 [0-307] train=0 [0-97]
+n=  2 iphone 0.50 [0.00-1.00] still=3227 [1421-9563] walk=504 [20-1611] run=2 [0-283] bike=2 [0-469] car=360 [0-1421] bus=35 [0-307] train=0 [0-97]
+n=  3 iphone 0.67 [0.33-1.00] still=5532 [2948-12652] walk=712 [164-2148] run=2 [0-296] bike=99 [0-584] car=479 [157-1463] bus=43 [0-307] train=0 [0-97]
+n=  5 iphone 0.60 [0.20-1.00] still=10579 [3977-16343] walk=1350 [473-2548] run=8 [1-297] bike=120 [0-1101] car=889 [233-1687] bus=97 [2-531] train=0 [0-97]
+n= 10 iphone 0.60 [0.20-0.90] still=19904 [14706-24780] walk=2682 [1524-4478] run=30 [5-386] bike=516 [121-1337] car=2083 [661-3053] bus=241 [91-609] train=0 [0-166]
+n= 20 iphone 0.60 [0.40-0.80] still=38677 [30042-45591] walk=5366 [3986-7778] run=142 [22-433] bike=1297 [478-2165] car=3690 [2707-4776] bus=606 [316-926] train=93 [0-190]
+n=all iphone 0.59 [0.59-0.61] still=75647 [68985-80163] walk=10611 [10220-10704] run=434 [175-444] bike=2518 [2226-2776] car=6434 [6221-6623] bus=1071 [937-1174] train=166 [93-190]
+
+class absent from the n training users: number of (draw, fold) of 25 (n=all: 5)
+n=  1 still=0 walk=0 run=13 bike=16 car=5 bus=14 train=23
+n=  2 still=0 walk=0 run=5 bike=9 car=2 bus=7 train=21
+n=  3 still=0 walk=0 run=5 bike=4 car=0 bus=5 train=20
+n=  5 still=0 walk=0 run=0 bike=1 car=0 bus=0 train=18
+n= 10 still=0 walk=0 run=0 bike=0 car=0 bus=0 train=14
+n= 20 still=0 walk=0 run=0 bike=0 car=0 bus=0 train=2
+n=all still=0 walk=0 run=0 bike=0 car=0 bus=0 train=0
+
+GPS-covered official minutes (GPS model's ES rows), median over draws x folds
+n=  1 still=1556 walk=285 run=0 bike=0 car=115 bus=0 train=0
+n=  2 still=2702 walk=448 run=2 bike=2 car=342 bus=24 train=0
+n=  3 still=5337 walk=623 run=2 bike=99 car=451 bus=26 train=0
+n=  5 still=8208 walk=1064 run=8 bike=109 car=818 bus=62 train=0
+n= 10 still=15642 walk=2173 run=30 bike=512 car=1719 bus=207 train=0
+n= 20 still=32625 walk=4439 run=135 bike=1257 car=3330 bus=551 train=88
+n=all still=60306 walk=8520 run=310 bike=2305 car=5796 bus=914 train=157
+
+users with the class among the n, median [min-max]
+n=  1 still=1 [1-1] walk=1 [1-1] run=0 [0-1] bike=0 [0-1] car=1 [0-1] bus=0 [0-1] train=0 [0-1]
+n=  2 still=2 [2-2] walk=2 [2-2] run=1 [0-2] bike=1 [0-2] car=2 [0-2] bus=1 [0-2] train=0 [0-1]
+n=  3 still=3 [3-3] walk=3 [3-3] run=1 [0-3] bike=1 [0-3] car=3 [1-3] bus=1 [0-2] train=0 [0-1]
+n=  5 still=5 [5-5] walk=5 [5-5] run=2 [1-4] bike=2 [0-4] car=4 [2-5] bus=2 [1-3] train=0 [0-2]
+n= 10 still=10 [10-10] walk=10 [10-10] run=4 [1-7] bike=4 [1-6] car=8 [5-10] bus=4 [2-7] train=0 [0-2]
+n= 20 still=20 [20-20] walk=20 [20-20] run=7 [3-11] bike=8 [4-10] car=16 [14-19] bus=9 [7-13] train=1 [0-3]
+n=all still=37 [37-39] walk=37 [37-39] run=13 [12-15] bike=14 [12-15] car=30 [29-32] bus=17 [15-18] train=2 [2-3]

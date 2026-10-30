@@ -66,6 +66,7 @@ SPLITS = {
     "extrasensory_dev_v2": "experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",  # approved 2026-10-28
     "extrasensory_test_v2": "splits/reserved_test_v2.json",                                  # the reference
     "shl_user23_test_v2": "splits/reserved_test_v2.json",
+    "extrasensory_dev_v2_draws07": "experiments/07_user-label-curve_waiis-bench/splits/draws.json",  # user draws
     "shl_user1_03_training": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",     # legacy (03 only)
     "shl_user1_03_validation": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
     "shl_user1_03_test": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
