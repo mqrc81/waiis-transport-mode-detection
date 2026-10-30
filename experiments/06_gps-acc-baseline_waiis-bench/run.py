@@ -30,11 +30,16 @@ import pipe
 from tmd import acc_features as af
 from tmd import gps_features as gf
 from tmd import lgbm, minutes
+from tmd.evaluate import scores
+from tmd.progress import Progress
 from tmd.tracking import run
 
 MODELS = pipe.OUT / "models"
 P05 = pipe.P05
 log = logging.getLogger()
+ACC_F, GPS_F = "acc-v1_whole_sub5s", "gps-v1_w2min"
+FEATURES = {"A": ACC_F, "A2": ACC_F, "I": f"{ACC_F}+{GPS_F}", "G": GPS_F, "G_esonly": GPS_F,
+            "H1": f"{ACC_F}+{GPS_F}", "H2": f"{ACC_F}+{GPS_F}"}
 
 
 def save_models(name, seed, res):
@@ -67,12 +72,22 @@ def row_lr(name, seed) -> float:
     return json.loads(str(np.load(pipe.OOF / f"{name}_seed{seed}.npz", allow_pickle=True)["info"]))["lr"]
 
 
-def inner_oof(df, cols, name, seed, lr, rows_mask, shl):
+def saved_inner(name, seed):
+    d, n = model_files(name, seed)
+    f = d / f"{n}_seed{seed}_inner.npz"
+    return np.load(f) if f.exists() else None
+
+
+def inner_fits(name, seed) -> int:
+    """New LightGBM fits inner_oof makes for a row: 4 per outer fold, 3 if the early-stopping fit was saved."""
+    return lgbm.K * (lgbm.K - 1 - (saved_inner(name, seed) is not None))
+
+
+def inner_oof(df, cols, name, seed, lr, rows_mask, shl, progress=None):
     """H2: inner out-of-fold probabilities per outer fold k over the training folds T = {0..4} \\ {k}.
     j = (k+1) % 5 reuses the outer early-stopping fit; the 3 other j are new fits with the outer fold's rounds."""
     _, folds = fold_models(name, seed)
-    d, n = model_files(name, seed)
-    z = np.load(d / f"{n}_seed{seed}_inner.npz") if (d / f"{n}_seed{seed}_inner.npz").exists() else None
+    z = saved_inner(name, seed)
     x = df[cols].to_numpy(np.float32)
     is_shl = (df.source != "extrasensory").to_numpy()
     sw = np.where(is_shl, 1.0 if shl else 0.0, 1.0)
@@ -92,9 +107,23 @@ def inner_oof(df, cols, name, seed, lr, rows_mask, shl):
             tr = trainable & (fold != k) & (fold != j)
             m = lgb.train({**prm, "seed": seed}, lgbm.dataset(x[tr], y[tr], sw[tr]), rounds)
             p[idx] = m.predict(x[idx])
+            if progress is not None:
+                progress.step(f"inner {name} k={k} j={j}")
         out[k] = p
         print(f"inner {name} k={k} done", flush=True)
     return out
+
+
+def n_units(a) -> int:
+    """Progress units of a row: its LightGBM fits (paired CV: 2 per fold; H2: the new inner fits), + 1 for
+    evaluation, latency and logging."""
+    if a.row in ("A2", "I", "G", "G_esonly"):
+        fits = 2 * lgbm.K
+    elif a.row == "H2":
+        fits = inner_fits(a.acc_row, a.seed) + inner_fits(a.gps_row, a.seed)
+    else:
+        fits = 0
+    return fits + 1
 
 
 def main():
@@ -113,26 +142,65 @@ def main():
     logging.basicConfig(filename=pipe.HERE / "logs" / f"run_{name}_seed{a.seed}.log", filemode="w",
                         level=logging.INFO, format="%(asctime)s %(message)s")
     t0 = time.time()
+    prm = {"model": f"lightgbm+{a.row}+hmm-fb", "row": name, "seed": a.seed, "rate_hz": 25,
+           "dataset": "es_dev+shl_u1", "class_set": "8class+family", "primary": "es 8-class macro-F1",
+           "features": FEATURES[a.row], "lr": a.lr, "acc_row": a.acc_row if a.row not in ("A", "A2", "I") else "",
+           "gps_row": a.gps_row if a.row in ("H1", "H2") else "", "gps_train_shl": not a.no_shl,
+           "fusion": {"H1": "product", "H2": "stacking LR (inner OOF)", "I": "early"}.get(a.row, "none"),
+           "smoothing": "fb", "vs": a.vs or "", "scored": "covered minutes" if a.row in ("G", "G_esonly") else "all",
+           "bootstrap": "users, redraw resamples lacking a class", "gps": "gps_per_minute, derived speed only",
+           "usable_minutes": "context+hmm", **{f"lgb_{k}": v for k, v in pipe.params(a.lr)[0].items()}}
+    prog = Progress(pipe.EXP, f"{name}_seed{a.seed}", n_units(a), log)
+    with run(pipe.EXP, prm, run_name=f"{name}_seed{a.seed}", datasets=pipe.datasets(FEATURES[a.row])):
+        m, figs, tab = row(a, name, prog)
+        mlflow.log_metrics({k: float(v) for k, v in m.items() if v == v})
+        for fn, fig in figs.items():
+            mlflow.log_figure(fig, fn)
+            plt.close(fig)
+        mlflow.log_dict(pipe.dump(tab), "tables.json")
+    log.info("metrics %s", json.dumps(m))
+    prog.step("evaluation, latency, MLflow")
+    key = ["es_class_f1", "es_class_f1_lo", "es_class_f1_hi", "es_family_f1", "es_class_f1_diff",
+           "es_class_f1_diff_lo", "es_class_f1_diff_hi", "shl_class_f1", "shl_class_f1_diff", "es_class_f1_covered",
+           "es_class_f1_uncovered", "acc_row_on_covered_es_class_f1", "rounds_mean", "hit_cap_folds",
+           "lat_inference_ms_p50", "lat_pipeline_ms_p50"]
+    print(name, {k: round(m[k], 4) for k in key if k in m}, f"{time.time() - t0:.0f}s", flush=True)
+
+
+def row(a, name, prog):
+    """Train or fuse the row (fold metrics go to the active MLflow run as each fold finishes), smooth, evaluate,
+    latency."""
     df = pipe.load()
     lab = pipe.labelled()
     cov = df.covered.to_numpy()
     allrows = np.ones(len(df), bool)
-    score_mask, extra_m, info = None, {}, {}
+    score_mask, extra_m, info = None, {}, {"features": FEATURES[a.row]}
     acc_models = gps_models = stacker0 = None
+    es_off, fold_all, y_all = ((df.source == "extrasensory") & df.official).to_numpy(), df.fold.to_numpy(), \
+        df.y.to_numpy()
+
+    def log_fold(k, raw_p, mask=None, **extra):
+        """Fold k as soon as it finishes: ES 8-class macro-F1 before the HMM, plus the fold's own numbers."""
+        sel = es_off & (fold_all == k) & (True if mask is None else mask)
+        f1 = scores(y_all[sel], raw_p[sel].argmax(1) + 1, "class")["macro_f1"]
+        mlflow.log_metrics({f"fold{k}_es_class_f1_raw": f1, **{f"fold{k}_{n}": float(v) for n, v in extra.items()}})
+
+    def on_fold(r, raw_p, mask=None):
+        log_fold(r["fold"], raw_p, mask, **{n: r[n] for n in ("rounds", "n_trees", "model_bytes", "hit_cap",
+                                                               "train_rows")})
     if a.row == "A":                                    # 05's B (seed) + fb, no training
         raw = np.load(P05 / "oof" / f"B_seed{a.seed}.npz")["p"]
         p = np.load(P05 / "oof" / f"F_fb_seed{a.seed}.npz")["p"]
         acc_models, folds = fold_models("A", a.seed)
-        info["features"] = "acc-v1_whole_sub5s"
     elif a.row in ("A2", "I"):
         cols = pipe.ACC if a.row == "A2" else pipe.ACC + pipe.GPS
-        res, _ = pipe.train(df, cols, a.seed, a.lr, allrows, True, log, name)
+        res, _ = pipe.train(df, cols, a.seed, a.lr, allrows, True, log, name, progress=prog, on_fold=on_fold)
         save_models(name, a.seed, res)
         raw, folds, acc_models = res["p"], res["rows"], res["models"]
         p = minutes.smooth_cv(df, raw, lab, "fb")
-        info["features"] = "acc-v1_whole_sub5s" + ("+gps-v1_w2min" if a.row == "I" else "")
     elif a.row in ("G", "G_esonly"):
-        res, _ = pipe.train(df, pipe.GPS, a.seed, a.lr, cov, not a.no_shl, log, name)
+        res, _ = pipe.train(df, pipe.GPS, a.seed, a.lr, cov, not a.no_shl, log, name, progress=prog,
+                            on_fold=lambda r, raw_p: on_fold(r, raw_p, cov))
         save_models(name, a.seed, res)
         raw = res["p"].copy()
         raw[~cov] = 1 / 8                               # no GPS: uniform emission, the HMM bridges
@@ -144,20 +212,18 @@ def main():
         extra_m = {"acc_row_on_covered_es_class_f1": acc_m["es_class_f1"],
                    "acc_row_on_covered_es_family_f1": acc_m["es_family_f1"],
                    "acc_row_on_covered_shl_class_f1": acc_m["shl_class_f1"]}
-        info["features"] = "gps-v1_w2min"
     else:                                               # H1 / H2: fuse saved rows
         raw_acc = pipe.load_probs(a.acc_row, a.seed, df, "raw")
         raw_gps = pipe.load_probs(a.gps_row, a.seed, df, "raw")
         acc_models, folds = fold_models(a.acc_row, a.seed)
         gps_models, gfolds = fold_models(a.gps_row, a.seed)
-        info["features"] = "acc-v1_whole_sub5s+gps-v1_w2min"
         if a.row == "H1":
             raw = pipe.product(raw_acc, raw_gps, cov)
         else:
             gps_shl = json.loads(str(np.load(pipe.OOF / f"{a.gps_row}_seed{a.seed}.npz",
                                              allow_pickle=True)["info"]))["gps_shl"]
-            in_acc = inner_oof(df, pipe.ACC, a.acc_row, a.seed, row_lr(a.acc_row, a.seed), allrows, True)
-            in_gps = inner_oof(df, pipe.GPS, a.gps_row, a.seed, row_lr(a.gps_row, a.seed), cov, gps_shl)
+            in_acc = inner_oof(df, pipe.ACC, a.acc_row, a.seed, row_lr(a.acc_row, a.seed), allrows, True, prog)
+            in_gps = inner_oof(df, pipe.GPS, a.gps_row, a.seed, row_lr(a.gps_row, a.seed), cov, gps_shl, prog)
             raw = raw_acc.astype(np.float64).copy()
             fold, off = df.fold.to_numpy(), df.official.to_numpy()
             coefs = []
@@ -167,6 +233,7 @@ def main():
                 sc = (fold == k) & cov
                 raw[sc] = pipe.stacker_proba(st, pipe.stack_features(raw_acc[sc], raw_gps[sc]))
                 coefs.append(st.coef_.size + st.intercept_.size)
+                log_fold(k, raw, cov, stacker_params=coefs[-1])
                 if k == 0:
                     stacker0 = st
             extra_m["stacker_params"] = float(np.mean(coefs))
@@ -229,27 +296,7 @@ def main():
 
     m.update(pipe.latency(pipe.session_pool(df, a.seed), predict_session, predict_one))
     tab["folds"] = folds
-    prm = {"model": f"lightgbm+{a.row}+hmm-fb", "row": name, "seed": a.seed, "rate_hz": 25,
-           "dataset": "es_dev+shl_u1", "class_set": "8class+family", "primary": "es 8-class macro-F1",
-           "features": info["features"], "lr": a.lr, "acc_row": a.acc_row if a.row not in ("A", "A2", "I") else "",
-           "gps_row": a.gps_row if a.row in ("H1", "H2") else "", "gps_train_shl": not a.no_shl,
-           "fusion": {"H1": "product", "H2": "stacking LR (inner OOF)", "I": "early"}.get(a.row, "none"),
-           "smoothing": "fb", "vs": a.vs or "", "scored": "covered minutes" if score_mask is not None else "all",
-           "bootstrap": "users, redraw resamples lacking a class", "gps": "gps_per_minute, derived speed only",
-           "usable_minutes": "context+hmm", **{f"lgb_{k}": v for k, v in pipe.params(a.lr)[0].items()}}
-    with run(pipe.EXP, prm, run_name=f"{name}_seed{a.seed}", datasets=pipe.datasets(info["features"])):
-        mlflow.log_metrics({k: float(v) for k, v in m.items() if v == v})
-        for fn, fig in figs.items():
-            mlflow.log_figure(fig, fn)
-            plt.close(fig)
-        mlflow.log_dict(pipe.dump(tab), "tables.json")
-    log.info("metrics %s", json.dumps(m))
-    key = ["es_class_f1", "es_class_f1_lo", "es_class_f1_hi", "es_family_f1", "es_class_f1_diff",
-           "es_class_f1_diff_lo", "es_class_f1_diff_hi", "shl_class_f1", "shl_class_f1_diff", "es_class_f1_covered",
-           "es_class_f1_uncovered", "acc_row_on_covered_es_class_f1", "rounds_mean", "hit_cap_folds",
-           "lat_inference_ms_p50", "lat_pipeline_ms_p50"]
-    print(name, {k: round(m[k], 4) for k in key if k in m}, f"{time.time() - t0:.0f}s", flush=True)
-
+    return m, figs, tab
 
 if __name__ == "__main__":
     main()

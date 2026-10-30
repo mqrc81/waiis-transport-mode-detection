@@ -56,14 +56,16 @@ def params(lr: float) -> tuple[dict, int, int]:
     return {**lgbm.PARAMS, "learning_rate": c["learning_rate"]}, c["max_rounds"], c["patience"]
 
 
-def train(df, cols, seed, lr, rows_mask, shl=True, log=None, name=""):
-    """Paired-fold LightGBM on `cols`, trained on official rows in rows_mask (SHL rows only if shl)."""
+def train(df, cols, seed, lr, rows_mask, shl=True, log=None, name="", **hooks):
+    """Paired-fold LightGBM on `cols`, trained on official rows in rows_mask (SHL rows only if shl).
+    hooks: progress, on_fold (lgbm.paired_cv)."""
     x = df[cols].to_numpy(np.float32)
     is_shl = (df.source != "extrasensory").to_numpy()
     sw = np.where(is_shl, 1.0 if shl else 0.0, 1.0)
     trainable = df.official.to_numpy() & rows_mask & (sw > 0) & (df.fold.to_numpy() >= 0)
     prm, mr, pat = params(lr)
-    return lgbm.paired_cv(x, df.y.to_numpy(), df.fold.to_numpy(), trainable, sw, seed, prm, mr, pat, log, name), \
+    return lgbm.paired_cv(x, df.y.to_numpy(), df.fold.to_numpy(), trainable, sw, seed, prm, mr, pat, log, name,
+                           **hooks), \
         (x, trainable, sw)
 
 
