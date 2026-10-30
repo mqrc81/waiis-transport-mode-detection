@@ -261,6 +261,45 @@ Option (b) of stop-point 2, run **once**. **No further feature changes after thi
 - **Stop-point 3:** the test protocol is written into this Plan and committed before scoring, as in 05. Then the
   12 test users and the SHL Users 2–3 rail check once, 3 seeds, and motorbike descriptive.
 
+### Test (stop-point 3, once): exactly what is scored
+
+*Fixed 2026-10-30, after the dev seeds (mean 8-class gain of H1_v2 over A: +0.062 ≥ 0.01) and before any test user
+was read. Code: `test.py`.*
+
+**Final configuration (H1, gps-v2):** acc model × GPS model, product on GPS-covered minutes, acc model where there is
+no GPS, then HMM forward-backward.
+
+**Models per seed (0, 1, 2), trained on all official examples of the 47 ExtraSensory dev users + SHL User 1:**
+- **acc model:** 05's test model `test_B_seed<k>.txt` (580 features, lr 0.1, rounds = the median of 05's 5 CV
+  early-stopping counts). It is the final configuration's acc model, built by 05's protocol, so it is reused, not
+  retrained.
+- **GPS model:** gps-v2 (13 features), lr 0.02, balanced class weights, trained on the GPS-covered official dev
+  minutes. Rounds = the median of G_v2 seed k's 5 early-stopping counts. No early stopping on the test.
+- **HMM:** transitions and initial distribution from all labelled dev minutes, before caps and drops (as in 05).
+  Forward-backward over every usable minute of the test users' sessions.
+- **GPS features of the test users:** `make_gps.py --part test --version gps-v2` (fixes of the reserved users only;
+  evaluation use).
+
+**Scored**, each seed separately (one MLflow run per seed, `test_seed<k>`). Headline = the mean of the 3 seeds; all
+three values are reported with their user-bootstrap CIs (1,000 resamples, redrawn when a class is missing).
+
+1. **12 ExtraSensory test users, overall, iPhone and Android:**
+   - 8-class (primary) and family macro-F1 with CIs and class lists (overall and Android: 7 / 5; iPhone: 6 / 4);
+   - the paired user-bootstrap **gain over A** (05's final configuration, scored here on the same minutes with the
+     same acc models and HMM);
+   - 8-class F1 split by minutes **with and without GPS**, per platform;
+   - **bus, car, train and run recall with CIs** (all classes reported), rail and train recall before / after the
+     HMM, confusion matrices.
+2. **Inference time:** single window (acc features + gps-v2 features + both models + product) and per window over
+   whole sessions (+ HMM), on 200 test sessions, single thread, after warm-up, median and p95. Size of both models.
+3. **SHL Users 2–3 rail check** (no CI, 2 users): 8-class and family F1, gain over A, per-class recall including
+   **train and subway**, before and after the HMM.
+4. **GPS coverage of the test split** per class, dataset and platform (descriptive).
+5. **Motorbike check set**, last: predicted-class histograms (H1 after and before the HMM, and A), descriptive only,
+   labelled as reserved-test data from one user (33A85C34).
+
+`test.py` refuses to run a second time once `test_seed*` runs exist.
+
 ### MLflow
 
 - Experiment `06_gps-acc-baseline_waiis-bench`.

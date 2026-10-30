@@ -151,3 +151,27 @@ certain. Human labels on the test set keep the evaluation independent of the mod
 
 **Evidence.** 2026-10-28. Batch prediction with whole-sequence smoothing: entry 2026-10-28 "Accelerometer
 only".
+
+## 2026-10-30: Platform effects of GPS features are judged by a cross-platform transfer test
+
+**Draft — not approved.**
+
+**Decision.**
+- For GPS features, platform effects are judged by a **cross-platform transfer test**: train the GPS model without
+  one platform, score that platform, and compare the fused model's gain there with its gain in the normal folds
+  (paired user-bootstrap CIs).
+- The within-class platform AUC from the GPS features is reported **for context only**, not as a pass / fail check.
+
+**Why.**
+- GPS recording differs by platform: ExtraSensory Android positions update less often. So GPS features identify the
+  platform within a class (walk AUC 0.746 for gps-v1, 0.730 for gps-v2, against 0.510 from the accelerometer
+  features), even when the model doesn't rely on it.
+- In experiment 06 the fusion's gain carried over completely to a platform the GPS model never saw: transfer − normal
+  8-class differences were +0.002, +0.000, +0.007 and −0.002, all CIs containing 0.
+- What matters is whether the gain carries across platforms, and the AUC doesn't measure that.
+
+**Limits of the evidence.** One study (ExtraSensory, two platforms, 2015 phones and app); the transfer test doesn't
+establish transfer to WAIIS phones or the WAIIS app's GPS recording. One seed for the transfer test.
+
+**Evidence.** `experiments/06_gps-acc-baseline_waiis-bench/README.md` (Results: stop-point 2 follow-up, and the
+decision after it).
