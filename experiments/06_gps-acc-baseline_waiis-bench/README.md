@@ -410,7 +410,8 @@ overall (0.91–1.00 per class); ES Android 0.67 (0.58–0.91); SHL User 1 0.74 
   when it logged.
 - The edits add hooks (progress, per-fold metrics) and restructure `run.py`. They don't change the models, the
   fusion or the evaluation.
-- They are not part of this experiment's commits. Open question 3.
+- That session has since committed them as `b16ef11` (`tmd.progress`, hooks in `tmd.lgbm`, CLAUDE.md, tqdm) and
+  `3ba8a44` (this folder's `run.py` / `pipe.py`). Every later run uses that code.
 
 **Proposed final configuration** (depends on open question 1):
 - if a GPS row is allowed: **H1** (product fusion; GPS model gps-v1 with SHL, lr 0.02; acc model A), the simplest
@@ -428,8 +429,8 @@ overall (0.91–1.00 per class); ES Android 0.67 (0.58–0.91); SHL User 1 0.74 
    I'd recommend (b): it tests whether the platform signal comes from recording artefacts, and costs about 15 min.
 2. **GPS model with or without SHL:** with SHL is better in both fusions (H1 +0.031, H2 +0.029 on ExtraSensory; SHL
    +0.057 / +0.006). Proposal: with SHL.
-3. **The other session's uncommitted edits:** should they be committed (by you or that session) before seeds 1–2?
-   Row I can then be rerun clean (~20 min) if wanted.
+3. **Row I** is tagged dirty (see above). Rerun it clean at the current commit (~20 min)? It isn't a candidate
+   (check 2 fails), so I'd leave it as is.
 
 ## Conclusion
 
