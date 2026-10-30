@@ -30,12 +30,14 @@ def dataset(x, y, w, ref=None) -> lgb.Dataset:
 
 def paired_cv(x: np.ndarray, y: np.ndarray, fold: np.ndarray, trainable: np.ndarray, sw: np.ndarray, seed: int,
               params: dict | None = None, max_rounds: int = MAX_ROUNDS, patience: int = PATIENCE, log=None,
-              name: str = "") -> dict:
+              name: str = "", progress=None, on_fold=None) -> dict:
     """Out-of-fold probabilities for every row with fold >= 0.
 
     trainable: rows that may be trained on (official, sw > 0); sw: per-row source weight. Returns a dict with
     p (N, 8; NaN for fold < 0), rows (per-fold info), models, and inner = {k: (row indices of fold (k+1)%5,
     probabilities of the early-stopping fit on them)}.
+    progress (a tmd.progress.Progress): one step per fit, 2 per fold. on_fold(row, p) is called as each fold
+    finishes, with the fold's info and p filled up to that fold. Neither changes the results.
     """
     params = {**(params or PARAMS), "seed": seed}
     p = np.full((len(y), 8), np.nan, np.float32)
@@ -51,6 +53,8 @@ def paired_cv(x: np.ndarray, y: np.ndarray, fold: np.ndarray, trainable: np.ndar
         rounds = max(m0.best_iteration, 1)
         idx = np.flatnonzero(fold == inner)
         inner_pred[k] = (idx, m0.predict(x[idx], num_iteration=rounds))
+        if progress is not None:
+            progress.step(f"{name} fold {k} early stopping ({rounds} rounds)")
         m = lgb.train(params, dataset(x[tr], y[tr], sw[tr]), rounds)
         sc = fold == k
         p[sc] = m.predict(x[sc])
@@ -61,4 +65,8 @@ def paired_cv(x: np.ndarray, y: np.ndarray, fold: np.ndarray, trainable: np.ndar
         if log is not None:
             log.info("%s fold %s", name, row)
         print(name, row, flush=True)
+        if progress is not None:
+            progress.step(f"{name} fold {k} refit")
+        if on_fold is not None:
+            on_fold(row, p)
     return {"p": p, "rows": rows, "models": models, "inner": inner_pred}

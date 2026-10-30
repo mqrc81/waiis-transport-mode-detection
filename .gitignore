@@ -232,3 +232,5 @@ __marimo__/
 !experiments/*/results/**/*.log
 # Machine-specific settings (data root)
 CLAUDE.local.md
+# Live progress files of running jobs (tmd.progress)
+.progress/
