@@ -1,6 +1,6 @@
 # Status
 
-*As of 2026-10-29. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
+*As of 2026-10-30. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
 
 ## 1. Data
 
@@ -11,7 +11,31 @@
 
 ## 2. Current results
 
-No model has been evaluated on `waiis_bench_v1` yet, so there is no best model.
+**Reference model: experiment 05**, an accelerometer-only LightGBM + HMM baseline
+([README](experiments/05_acc-baseline_waiis-bench/README.md)). Conclusion **drafted, not yet approved**.
+
+| `waiis_bench_v1` | family macro-F1 | 8-class macro-F1 |
+|---|---|---|
+| ExtraSensory test, 12 users (mean of 3 seeds) | 0.698 (iPhone 0.801, Android 0.690) | 0.666 |
+| ExtraSensory dev, pooled out-of-fold | 0.615 | 0.551 |
+| SHL Users 2–3, rail check | 0.932 | 0.795 |
+
+- **Model:**
+  - 580 features (`tmd.acc_features`: features v1 without gyroscope on the 15 s window + 5 s sub-window
+    statistics);
+  - LightGBM on ExtraSensory dev + SHL User 1;
+  - HMM forward-backward per session.
+- **Cost:** 1.3 MB; 11–14 ms per single window, ~1 ms per window over whole sessions.
+- **What mattered:**
+  - the HMM was the largest gain (+0.12 dev, +0.18 test);
+  - SHL User 1 in training helped ExtraSensory (+0.03);
+  - sub-window statistics gave +0.01;
+  - gravity features, a 10 Hz low-pass and context over neighbouring minutes were not adopted. Context values
+    identify the dataset.
+- **Weak spots:** bus (test 0.22), ExtraSensory train / rail (the HMM cuts dev rail recall 0.24 → 0.08; not on
+  test), not-quiet still.
+- **Evaluation change:** user-bootstrap CIs now redraw resamples that lack a class of the evaluation set
+  (`tmd.evaluate.user_resamples`).
 
 ## 3. Superseded experiments
 
@@ -31,6 +55,5 @@ No model has been evaluated on `waiis_bench_v1` yet, so there is no best model.
 
 ## 4. Next experiment
 
-An accelerometer-only baseline on `waiis_bench_v1`: LightGBM on 02's features plus HMM smoothing.
-- Cross-validated on the dev folds; final evaluation on the reserved test users.
-- Reported as `CLAUDE.md`'s evaluation conventions require.
+Not decided yet. Candidates named in 05's Question: InceptionTime + GPS fusion, and LIMU-BERT pre-trained from
+scratch (accelerometer only). Each has to beat 05 on the same test users and protocol.

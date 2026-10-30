@@ -1,0 +1,6 @@
+0 {'test_es_all_family_f1': 0.7039, 'test_es_all_class_f1': 0.6758, 'test_es_iphone_family_f1': 0.803, 'test_es_android_family_f1': 0.693, 'test_shl23_family_f1': 0.9334, 'rounds': 47}
+1 {'test_es_all_family_f1': 0.6979, 'test_es_all_class_f1': 0.6672, 'test_es_iphone_family_f1': 0.8013, 'test_es_android_family_f1': 0.6936, 'test_shl23_family_f1': 0.9269, 'rounds': 46}
+2 {'test_es_all_family_f1': 0.6927, 'test_es_all_class_f1': 0.6566, 'test_es_iphone_family_f1': 0.8001, 'test_es_android_family_f1': 0.6823, 'test_shl23_family_f1': 0.9347, 'rounds': 48}
+test_es_all_family_f1 mean 0.6982
+test_es_all_class_f1 mean 0.6665
+test_shl23_family_f1 mean 0.9317

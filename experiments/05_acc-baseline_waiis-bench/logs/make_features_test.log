@@ -1,0 +1,6 @@
+2026-10-29 18:28:42,022 extrasensory test: 65991 usable windows loaded in 2s
+2026-10-29 18:29:03,105 extrasensory test lp=None: 65991 rows (26394 official), 601 features, 0.00% NaN, 21s -> extrasensory_test_25hz_w15s_acc-v1_lp-none.parquet
+2026-10-29 18:29:20,920 extrasensory test lp=10.0: 65991 rows (26394 official), 601 features, 0.00% NaN, 18s -> extrasensory_test_25hz_w15s_acc-v1_lp-10hz.parquet
+2026-10-29 18:29:21,012 shl_user23 test: 3015 usable windows loaded in 0s
+2026-10-29 18:29:23,382 shl_user23 test lp=None: 3015 rows (2365 official), 601 features, 0.00% NaN, 2s -> shl_user23_test_25hz_w15s_acc-v1_lp-none.parquet
+2026-10-29 18:29:26,426 shl_user23 test lp=10.0: 3015 rows (2365 official), 601 features, 0.00% NaN, 3s -> shl_user23_test_25hz_w15s_acc-v1_lp-10hz.parquet
