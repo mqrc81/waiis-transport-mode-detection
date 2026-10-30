@@ -41,6 +41,12 @@ def scores(y: np.ndarray, pred: np.ndarray, level: str) -> dict:
     }
 
 
+def class_list(y: np.ndarray, level: str) -> str:
+    """The classes (or families) present in y, comma-separated: what a macro-F1 averages over."""
+    ids, names = (CLASS_IDS, CLASSES) if level == "class" else (FAMILY_IDS, FAMILIES)
+    return ",".join(n for i, n in zip(ids, names) if (y == i).any())
+
+
 def user_resamples(y, users, n_boot: int = 1000, seed: int = 0, stats: dict | None = None):
     """Yield n_boot index arrays, each from drawing the users with replacement. A draw that lacks a class present in
     y (the full evaluation set's true labels) is redrawn, so every resample is scored over the same classes;

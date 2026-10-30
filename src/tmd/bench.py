@@ -62,6 +62,24 @@ def arrays(df: pd.DataFrame) -> list[np.ndarray]:
     return [np.column_stack([r.x, r.y, r.z]).astype(np.float32) for r in df[["x", "y", "z"]].itertuples()]
 
 
+def load_windows(source: str, keep: pd.DataFrame) -> tuple[pd.DataFrame, np.ndarray]:
+    """Windows of the (user, ts) rows of `keep`, streamed from the `accelerometer` table: (keys merged with keep,
+    (n, 375, 3) float32), in table order. No reserved-user filter: the caller chooses the rows (from experiment 05)."""
+    import pyarrow.parquet as pq
+    want = set(zip(keep.user, keep.ts))
+    keys, arrs = [], []
+    for b in pq.ParquetFile(path(source, "accelerometer")).iter_batches(1 << 14, columns=["user", "ts", "x", "y", "z"]):
+        u, t = b.column("user").to_numpy(zero_copy_only=False), b.column("ts").to_numpy()
+        m = np.fromiter(((a, c) in want for a, c in zip(u, t)), bool, len(t))
+        if not m.any():
+            continue
+        xyz = [b.column(c).values.to_numpy().reshape(-1, WIN)[m] for c in ("x", "y", "z")]
+        arrs.append(np.stack(xyz, -1))
+        keys.append(pd.DataFrame({"user": u[m], "ts": t[m]}))
+    k = pd.concat(keys, ignore_index=True)
+    return k.merge(keep, on=["user", "ts"], how="left", validate="1:1"), np.concatenate(arrs)
+
+
 # ---------------------------------------------------------------- reserved test users
 
 def reserved_users(source: str) -> set[str]:
