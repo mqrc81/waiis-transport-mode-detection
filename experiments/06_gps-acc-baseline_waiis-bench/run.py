@@ -5,7 +5,7 @@
     uv run python run.py --row G --lr 0.1 --acc-row A                # GPS only, covered minutes (descriptive)
     uv run python run.py --row G_esonly --lr 0.1 --no-shl --acc-row A
     uv run python run.py --row H1 --acc-row A --gps-row G --vs A     # product fusion
-    uv run python run.py --row H2 --acc-row A --gps-row G --lr 0.1 --vs A
+    uv run python run.py --row H2 --acc-row A --gps-row G --vs A        # inner fits use each row's own lr
     uv run python run.py --row I --lr 0.1 --vs A                     # early fusion
 Rows named H1_<gps-row> etc. when run with another GPS model (--name).
 """
@@ -58,6 +58,13 @@ def fold_models(name, seed):
     d, n = model_files(name, seed)
     return [lgb.Booster(model_file=str(d / f"{n}_seed{seed}_fold{k}.txt")) for k in range(lgbm.K)], \
         json.loads((d / f"{n}_seed{seed}_folds.json").read_text())
+
+
+def row_lr(name, seed) -> float:
+    """The learning rate a saved row was trained with (A = 05's B: 0.1)."""
+    if name == "A":
+        return 0.1
+    return json.loads(str(np.load(pipe.OOF / f"{name}_seed{seed}.npz", allow_pickle=True)["info"]))["lr"]
 
 
 def inner_oof(df, cols, name, seed, lr, rows_mask, shl):
@@ -149,8 +156,8 @@ def main():
         else:
             gps_shl = json.loads(str(np.load(pipe.OOF / f"{a.gps_row}_seed{a.seed}.npz",
                                              allow_pickle=True)["info"]))["gps_shl"]
-            in_acc = inner_oof(df, pipe.ACC, a.acc_row, a.seed, a.lr, allrows, True)
-            in_gps = inner_oof(df, pipe.GPS, a.gps_row, a.seed, a.lr, cov, gps_shl)
+            in_acc = inner_oof(df, pipe.ACC, a.acc_row, a.seed, row_lr(a.acc_row, a.seed), allrows, True)
+            in_gps = inner_oof(df, pipe.GPS, a.gps_row, a.seed, row_lr(a.gps_row, a.seed), cov, gps_shl)
             raw = raw_acc.astype(np.float64).copy()
             fold, off = df.fold.to_numpy(), df.official.to_numpy()
             coefs = []
