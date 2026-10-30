@@ -26,6 +26,7 @@ Export an experiment's runs (the CSV that goes in git):
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import hashlib
 import subprocess
 from contextlib import contextmanager
@@ -121,13 +122,44 @@ def check_inputs(datasets: list[DataInput]) -> None:
             raise ValueError(f"unknown dataset or context: {d}")
 
 
-# Run outputs that scripts write into the repo while running; they don't make a run's code differ from its commit.
-DIRTY_IGNORE = (":(exclude,glob)experiments/*/logs/**",)
+# Changes that don't make a run's code or inputs differ from its commit (fnmatch patterns on repo-relative paths;
+# `*` also matches "/"). DIRTY_KEEP wins over DIRTY_IGNORE.
+DIRTY_IGNORE = (
+    "experiments/*/logs/*",       # run logs written while the run is going (since 05)
+    "experiments/*/results/*",    # run outputs: tables, CSVs, figures, runs.csv exports (since 06)
+    "log/*",                      # the daily logs
+    "*.md",                       # documentation (READMEs, STATUS, DECISIONS, CLAUDE.md)
+)
+DIRTY_KEEP = (
+    "experiments/04_frozen-benchmark_es-shl/results/manifests/*",   # read by tmd.bench.verify(): an input
+)
+
+
+def changed_paths() -> list[str]:
+    """Repo-relative paths with uncommitted changes, untracked files listed one by one (renames: both paths)."""
+    out = subprocess.run(["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"], cwd=PROJECT,
+                         capture_output=True, text=True).stdout
+    tok, paths, i = out.split("\0"), [], 0
+    while i < len(tok):
+        if len(tok[i]) > 3:
+            paths.append(tok[i][3:])
+            if tok[i][0] in "RC":                 # a rename / copy is followed by its original path
+                i += 1
+                paths.append(tok[i])
+        i += 1
+    return paths
+
+
+def counts_as_dirty(path: str) -> bool:
+    if any(fnmatch.fnmatchcase(path, k) for k in DIRTY_KEEP):
+        return True
+    return not any(fnmatch.fnmatchcase(path, ig) for ig in DIRTY_IGNORE)
 
 
 def is_dirty() -> bool:
-    """Uncommitted changes in the repo, ignoring the experiments' log folders (DIRTY_IGNORE; since experiment 05)."""
-    return bool(_git("status", "--porcelain", "--", ".", *DIRTY_IGNORE))
+    """Uncommitted changes in the repo other than DIRTY_IGNORE (logs, run outputs, daily logs, docs), DIRTY_KEEP
+    excepted."""
+    return any(counts_as_dirty(x) for x in changed_paths())
 
 
 @contextmanager

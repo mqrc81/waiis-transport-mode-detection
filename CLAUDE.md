@@ -50,7 +50,7 @@ Final test: the 12 ExtraSensory test users (`splits/reserved_test_v2.json`); SHL
 - Log every run through `src/tmd/tracking.py`: `with run(experiment, params):`, then `mlflow.log_metrics` and `mlflow.log_figure`. The experiment name is the experiment folder name.
 - Pass `datasets=[DataInput(...)]` to `run()`: one per dataset part used (e.g. `shl_user1_dev`, `extrasensory_dev_v2`), context `training` or `evaluation`, with label rules and feature set; a new split file gets a new entry in `tracking.SPLITS`.
 - Params include model, dataset, rate_hz, class_set, seed, and anything the Plan varies.
-- The helper tags the git commit and `dirty` (changes under `experiments/*/logs/` are ignored). Log dirty runs anyway, and mention it in Results.
+- The helper tags the git commit and `dirty`. Ignored: `experiments/*/logs/`, `experiments/*/results/` (run outputs), `log/` and Markdown files; 04's `results/manifests/` always count (`tracking.DIRTY_IGNORE`, `DIRTY_KEEP`). Log dirty runs anyway, and mention it in Results.
 - When the experiment finishes, export its runs once with `uv run python src/tmd/tracking.py export <experiment>`. Commit the export (`results/runs.csv` in the experiment folder) with the final Results tables, which are generated from it. Never edit the export by hand. Until then, MLflow is the only record.
 - Long runs report progress through `tmd.progress`: declare the total units up front (ablation rows, model fits, epochs, steps or files, whichever fits the script) and the run name used in MLflow.
 - Long jobs run in the background; give the log path at launch. Progress shows in the status line and through `uv run python -m tmd.progress watch`.
