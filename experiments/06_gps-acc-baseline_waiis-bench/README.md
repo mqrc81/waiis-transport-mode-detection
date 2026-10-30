@@ -479,6 +479,78 @@ overall (0.91–1.00 per class); ES Android 0.67 (0.58–0.91); SHL User 1 0.74 
 3. **Row I** is tagged dirty (see above). Rerun it clean at the current commit (~20 min)? It isn't a candidate
    (check 2 fails), so I'd leave it as is.
 
+
+### Stop-point 2 follow-up: gps-v2 and transfer test (2026-10-30)
+
+Plan section "Stop-point 2 follow-up", committed before running (`5c9f2f3`). All 7 runs are clean at `e919a3e`.
+
+```
+uv run python diag_repeats.py                                   # logs/diag_repeats.log
+uv run python make_gps.py --version gps-v2                      # gps-v1 regenerated identical to the cache first
+uv run python run.py --row G --name G_v2 --gps gps-v2 --lr 0.02 --acc-row A
+uv run python checks.py gps --gps gps-v2
+uv run python run.py --row H1 --name H1_v2 --gps gps-v2 --acc-row A --gps-row G_v2 --vs A
+uv run python transfer.py --gps gps-v1 && uv run python transfer.py --gps gps-v2   # logs/stage_v2.out
+```
+
+**Repeats diagnostic** (ExtraSensory Android dev users, 68,844 labelled minutes with a pair):
+- 12,646 repeats (18.4%); 94.2% are in still minutes, 5.8% in moving-class minutes.
+- Repeat share per class: still 0.196, walk 0.159, train 0.134, bike 0.037, car 0.030, bus 0.017, run 0.007
+  (iPhone: still 0.098, walk 0.030, others ≤ 0.022).
+- Of the 739 repeats in moving minutes, 91.3% sit at a stop (an adjacent pair < 1 m/s). For comparison, 60.6% of
+  moving minutes without a repeat are next to a pair < 1 m/s.
+- **Real-stop share: 99.5% → by the pre-set rule, repeats are kept and stop detection is uniform at 1.0 m/s.**
+- gps-v2 = 13 features (`tmd.gps_features`, `tests/test_gps_features.py`). Coverage is unchanged (ES 0.824, SHL
+  0.739 of official minutes). gps-v1 tables regenerated with the edited code are identical to the cache.
+
+**Rows** (pooled ExtraSensory dev, seed 0; 8-class over 7 classes, family over 5):
+
+| row | ES 8-class F1 [CI] | Δ 8-class vs A [paired CI] | ES family F1 | Δ family | ES 8-class iPhone / Android | SHL 8-class | Δ SHL | bus / train recall | single window / pipeline p50 ms | GPS model MB |
+|---|---|---|---|---|---|---|---|---|---|---|
+| G (v1, covered) | 0.502 [0.451–0.540] | – | 0.623 | – | 0.545 / 0.443 | 0.815 | – | 0.34 / 0.38 | 0.9 / 0.20 | 3.82 |
+| G_v2 (covered) | 0.512 [0.456–0.554] | – | 0.628 | – | – | 0.815 | – | – | 0.9 / 0.19 | – |
+| H1 (v1) | 0.613 [0.531–0.692] | +0.061 [+0.023, +0.088] | 0.681 | +0.065 | 0.652 / 0.574 | 0.952 | +0.016 | 0.43 / 0.22 | 12.5 / 1.34 | 3.82 |
+| **H1_v2** | **0.613 [0.533–0.693]** | **+0.061 [+0.024, +0.090]** | 0.682 | +0.067 | 0.655 / 0.571 | 0.952 | +0.016 | 0.43 / 0.22 | 12.5 / 1.35 | 3.80 |
+
+- A on the covered minutes scores 0.573 (8-class).
+- H1_v2's latency p95: 13.0 ms single window, 4.8 ms per window in the pipeline.
+
+**Checks** (4 and 1 of the follow-up):
+
+| check 1, within class | dataset AUC: GPS v1 / GPS v2 / acc | platform AUC (ES): GPS v1 / GPS v2 / acc |
+|---|---|---|
+| walk | 0.859 / 0.858 / 0.986 | **0.746 / 0.730** / 0.510 |
+| car | 0.839 / 0.839 / 0.941 | **0.593 / 0.594** / 0.533 |
+
+- The dataset AUCs apply to G and H1 alike (same GPS features). They pass in both versions: the GPS features
+  identify the dataset less well than the acc features.
+- **gps-v2 still fails the platform check** (walk +0.220, car +0.061 over acc; +0.02 allowed). Dropping the
+  distance features and the uniform stop threshold lowered walk only from 0.746 to 0.730.
+
+**Transfer test** (GPS model trained on one platform's dev users + SHL User 1, fused (H1) with A's out-of-fold acc
+probabilities; scored on the other platform's dev users; paired user-bootstrap CIs over that platform's users):
+
+| GPS | held-out platform (users) | 8-class: transfer H1 − A | normal-fold H1 − A | transfer − normal | family: transfer − A | normal − A | transfer − normal |
+|---|---|---|---|---|---|---|---|
+| v1 | Android (19), trained on iPhone (27) + SHL | +0.056 [+0.028, +0.083] | +0.055 [+0.027, +0.081] | +0.002 [−0.003, +0.011] | +0.053 [+0.024, +0.095] | +0.058 [+0.030, +0.100] | −0.006 [−0.017, +0.001] |
+| v1 | iPhone (28), trained on Android (17) + SHL | +0.063 [+0.006, +0.105] | +0.063 [+0.009, +0.105] | +0.000 [−0.004, +0.003] | +0.074 [+0.018, +0.100] | +0.073 [+0.018, +0.099] | +0.001 [−0.002, +0.003] |
+| v2 | Android (19) | +0.059 [+0.030, +0.089] | +0.052 [+0.025, +0.081] | +0.007 [−0.001, +0.025] | +0.053 [+0.024, +0.096] | +0.059 [+0.031, +0.100] | −0.006 [−0.018, +0.001] |
+| v2 | iPhone (28) | +0.064 [+0.005, +0.108] | +0.066 [+0.012, +0.108] | −0.002 [−0.008, +0.003] | +0.077 [+0.018, +0.104] | +0.075 [+0.018, +0.102] | +0.002 [−0.002, +0.004] |
+
+- Early stopping: 111–181 rounds, none at the cap. Users counts are those with official minutes on the held-out
+  platform.
+- **A GPS model that never saw the held-out platform gives the same gain as the normal folds**, in both directions
+  and both versions. Every transfer − normal CI contains 0, and every point difference is ≤ 0.007.
+- So the fusion's gain does not depend on learning the platform from the GPS features. The platform signal in GPS
+  (check 1) is real (Android positions update less often), but the gain carries across platforms.
+
+**Decision (as instructed):** gps-v2 fails the platform check, so H1_v2 is **not** the proposed final configuration
+under the rule as written.
+- The rule's other conditions hold (gain +0.061 ≥ 0.01, SHL +0.016), and the transfer test shows the gain
+  transfers across platforms.
+- **The decision is left open.** If the rule is overridden, it will be recorded here as a deviation.
+- Row I is not rerun; its dirty-tag note stands.
+
 ## Conclusion
 
 *Not yet.*
