@@ -12,7 +12,7 @@
 ## 2. Current results
 
 **Reference model: experiment 05**, an accelerometer-only LightGBM + HMM baseline
-([README](experiments/05_acc-baseline_waiis-bench/README.md)). Conclusion **drafted, not yet approved**.
+([README](experiments/05_acc-baseline_waiis-bench/README.md)). Conclusion approved 2026-10-30.
 
 | `waiis_bench_v1` | family macro-F1 | 8-class macro-F1 |
 |---|---|---|
@@ -55,5 +55,5 @@
 
 ## 4. Next experiment
 
-Not decided yet. Candidates named in 05's Question: InceptionTime + GPS fusion, and LIMU-BERT pre-trained from
+**06 GPS + accelerometer baseline** (planned 2026-10-30): GPS features fused with 05. Other candidates named in 05's Question: InceptionTime + GPS fusion, and LIMU-BERT pre-trained from
 scratch (accelerometer only). Each has to beat 05 on the same test users and protocol.

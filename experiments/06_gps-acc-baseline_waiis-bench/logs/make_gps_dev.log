@@ -1,0 +1,2 @@
+extrasensory dev: 291155 rows, covered 0.810 (official 0.824), 11s -> extrasensory_dev_gps-v1_w2min.parquet
+shl_user1 dev: 36806 rows, covered 0.696 (official 0.739), 1s -> shl_user1_dev_gps-v1_w2min.parquet
