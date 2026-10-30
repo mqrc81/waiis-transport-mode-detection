@@ -170,9 +170,7 @@ All current splits (also listed in `splits/README.md` at the project root):
 Built during development as es_bench_v4 (commit cf1085c); es_bench_v1–v3 were intermediate builds, never used by any model, deleted.
 
 ### Open questions
-1. The 9 questions for WAIIS in `decision_register.md` (recording schedule, sampling, units, platforms, carrying,
-   modes, GPS, labels, batching).
-2. `label_implausible` removes 60% of iPhone run (161 of 269 windows). Is ExtraSensory's iPhone run label noise,
+1. `label_implausible` removes 60% of iPhone run (161 of 269 windows). Is ExtraSensory's iPhone run label noise,
    or quiet treadmill-like running?
 
 ## Conclusion
