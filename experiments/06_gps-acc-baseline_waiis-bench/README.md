@@ -784,8 +784,6 @@ Predicted classes after the HMM (before the HMM; A):
 
 ## Conclusion
 
-**Draft — not approved.** Written from Results and `results/runs.csv`.
-
 **Answer.** GPS features from one fix per minute, fused with 05's accelerometer model by a product of probabilities
 (with the acc model where there is no GPS), then HMM forward-backward, improve the 05 baseline on `waiis_bench_v1`:
 
