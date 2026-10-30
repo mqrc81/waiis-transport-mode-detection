@@ -207,6 +207,53 @@ and initial distribution from all labelled training minutes per outer fold), ove
   - Single thread, after warm-up, median and p95.
 - **Size of both models** (and the logistic regression for H2).
 
+### Stop-point 2 follow-up: gps-v2 and transfer test (approved 2026-10-30; fixed before running)
+
+Option (b) of stop-point 2, run **once**. **No further feature changes after this run, whatever the checks say.**
+
+**gps-v2** = gps-v1 with these changes only:
+1. **Drop** `path_m`, `net_m` and `straightness`: they scale with the number of fixes in the window. That leaves
+   13 features.
+2. **Repeated positions (fixed rule, decided by a diagnostic before any v2 feature is computed):**
+   - The diagnostic runs on ExtraSensory **Android** dev users, all labelled minutes with a pair ≤ 150 s, and counts
+     the repeats (distance exactly 0):
+     - the share of repeats in still minutes vs in moving-class minutes, and the repeat share per class;
+     - for repeats in moving-class minutes, whether they sit at a stop: an adjacent pair (the previous or the next)
+       of the same session has a derived speed < 1 m/s.
+   - A repeat counts as a **real stop** if it is in a still minute, or in a moving minute at a stop.
+   - **If ≥ 50% of Android repeats are real stops:** keep the repeats, and make stop detection uniform on both
+     platforms with **one threshold, 1.0 m/s, fixed now**:
+     - `stop_frac` = the share of pair speeds < 1.0 m/s;
+     - `n_stops` = the number of consecutive pairs going from ≥ 1.0 m/s to < 1.0 m/s.
+   - **Otherwise:** treat repeats as missing (no pair speed, no bearing), with v1's stop definitions.
+3. Everything else as in gps-v1 (±2 min window, pairs ≤ 150 s, bearings ≥ 20 m, turns between consecutive valid
+   bearings).
+
+**Runs:** G and H1 with gps-v2, the GPS model trained with SHL User 1 at lr 0.02 (as G). H1 fuses with A. Check 1
+(dataset and platform, within walk and car) on gps-v2.
+
+**Transfer test** (gps-v1 and gps-v2; `transfer.py`):
+- **GPS model:** trained on the covered official minutes of the **iPhone dev users + SHL User 1**, scored on the
+  **Android dev users**; then the reverse (Android + SHL User 1 → iPhone).
+  - LightGBM as G (lr 0.02, balanced class weights).
+  - Rounds from early stopping on the training rows of dev fold 0 (ES users of the training platform in fold 0 +
+    SHL fold-0 days), fit on the other training rows, then a refit on all training rows.
+- **Fusion:** H1 with A's out-of-fold acc probabilities (05's B) on the held-out platform's covered minutes;
+  uncovered minutes keep p_acc. HMM forward-backward per outer fold, as in A.
+- **Reported, on the held-out platform's official minutes (8-class primary, family secondary):**
+  - the transfer H1's gain over A;
+  - the normal-fold H1's gain over A on the same platform (v1: H1; v2: H1_v2);
+  - the difference between the two;
+  - all with paired user-bootstrap CIs on that platform's users.
+- One MLflow run per (version, direction).
+
+**Decision (as instructed):**
+- If gps-v2 passes the platform check **and** H1_v2 gains ≥ 0.01 8-class over A (with the SHL guard), H1 with
+  gps-v2 is the proposed final configuration, under the rule as written.
+- Otherwise all numbers are reported and the decision is left open. An override of the rule would be recorded as a
+  deviation.
+- Row I is not rerun; it keeps its dirty-tag note.
+
 ### Final configuration and test
 
 - **Stop-point 2:** ablation results and the proposed final configuration. Wait for OK.
