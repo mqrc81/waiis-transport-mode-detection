@@ -188,3 +188,18 @@ cross-validation result. Here they are computed only at n = 0 and n = all; for n
   (one user, 167 still + 2 walk minutes) ends at 43 acc / 1 GPS rounds, because no split meets
   min_child_samples = 50. This is 06's settings applied to very little data, not a change; the rounds actually
   trained are logged per run (`acc_rounds_*`, `gps_rounds_*`).
+
+### Stop-point 2: runs (in progress)
+
+**Launch** (`d55d057`): `curve.py --curve main`, then `noshl`, then `escheck`, chained; output in
+`logs/stage_curve.out`, details in `logs/curve_<curve>.log`.
+- The main curve finished (32 runs, clean at `d55d057`).
+- **The no-SHL curve stopped at its third run** (`noshl_n1_d2`): LightGBM refused an empty GPS training set.
+  - Three dev users have no GPS-covered official minutes at all: 4E98F91F and 61359772 (Android), CDA3BBF7 (iPhone).
+  - CDA3BBF7 is the only user of no-SHL, n = 1, draw 2, fold 0, so the GPS model had no rows. No other training set
+    in the draws is affected (on the main curve SHL User 1 always provides GPS rows).
+- **Deviation from the Plan (`curve.py`, `point()`):** when a fold has no GPS-covered training minutes there is no
+  GPS model, and that fold uses the acc model alone. This is 06's fallback where there is no GPS, applied to a
+  missing model. Logged per run as `folds_without_gps_model`.
+- The code change only touches that case, so the runs before it (main, `noshl_n1_d0`, `noshl_n1_d1`) stand, at
+  `d55d057`. The rest of the chain was resumed at the fix's commit; runs already in MLflow are skipped.

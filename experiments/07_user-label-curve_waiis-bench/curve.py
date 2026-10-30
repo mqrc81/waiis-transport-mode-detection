@@ -115,11 +115,15 @@ def point(D: Data, curve: str, n, d: int, draws: dict, prog=None) -> dict:
         ma = fit(D.xa, D.y, tr, ACC_LR, ACC_ROUNDS, d, va, EARLY["acc"])
         if prog is not None:
             prog.step(f"{run_name(curve, n, d)} fold {k} acc")
-        mg = fit(D.xg, D.y, tr & D.cov, GPS_LR, GPS_ROUNDS, d, None if va is None else va & D.cov, EARLY["gps"])
+        # no GPS-covered training minutes (no-SHL, a single user without GPS): no GPS model, acc model alone (06's
+        # fallback where there is no GPS)
+        mg = fit(D.xg, D.y, tr & D.cov, GPS_LR, GPS_ROUNDS, d, None if va is None else va & D.cov, EARLY["gps"]) \
+            if (tr & D.cov).any() else None
         if prog is not None:
             prog.step(f"{run_name(curve, n, d)} fold {k} gps")
         sc = D.es & (D.fold == k)
-        raw[sc] = fusion.product(ma.predict(D.xa[sc]), mg.predict(D.xg[sc]), D.cov[sc])
+        pa = ma.predict(D.xa[sc])
+        raw[sc] = pa if mg is None else fusion.product(pa, mg.predict(D.xg[sc]), D.cov[sc])
         lab = D.lab
         hl = lab[((lab.source == "extrasensory") & lab.user.isin(u)) |
                  ((lab.source == "shl_user1") & with_shl & (lab.fold != k) & (lab.fold >= 0))]
@@ -132,9 +136,10 @@ def point(D: Data, curve: str, n, d: int, draws: dict, prog=None) -> dict:
                 "es_minutes": mins.tolist(),
                 "es_gps_minutes": np.bincount(D.y[es_tr & D.cov], minlength=9)[1:].tolist(),
                 "shl_minutes": int((tr & D.shl).sum()), "hmm_minutes": len(hl),
-                "acc_bytes": model_size_bytes(ma), "gps_bytes": model_size_bytes(mg),
+                "gps_model": mg is not None,
+                "acc_bytes": model_size_bytes(ma), "gps_bytes": model_size_bytes(mg) if mg else 0,
                 "acc_rounds": ma.best_iteration or ma.current_iteration(),
-                "gps_rounds": mg.best_iteration or mg.current_iteration()}
+                "gps_rounds": (mg.best_iteration or mg.current_iteration()) if mg else 0}
         if va is not None:
             info["val_minutes"] = int(va.sum())
         folds.append(info)
@@ -191,6 +196,7 @@ def evaluate(D: Data, res: dict, ci: bool) -> tuple[dict, dict, dict]:
         if c != "subway":
             m[f"train_absent_folds_{c}"] = float((mins[:, j] == 0).sum())
     m["train_shl_minutes"] = float(np.mean([x["shl_minutes"] for x in f]))
+    m["folds_without_gps_model"] = float(sum(not x["gps_model"] for x in f))
     for key in ("acc_bytes", "gps_bytes", "acc_rounds", "gps_rounds"):
         v = [x[key] for x in f]
         m[f"{key}_mean"], m[f"{key}_min"], m[f"{key}_max"] = float(np.mean(v)), float(min(v)), float(max(v))
