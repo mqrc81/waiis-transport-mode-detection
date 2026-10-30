@@ -688,8 +688,6 @@ choice was frozen). 83 windowed motorbike minutes, predicted classes after the H
 
 ## Conclusion
 
-**Draft — not approved.** Written from Results and `results/runs.csv`.
-
 **Answer.** An accelerometer-only LightGBM with forward-backward HMM smoothing reaches, on `waiis_bench_v1`:
 
 | | family macro-F1 | 8-class macro-F1 |
