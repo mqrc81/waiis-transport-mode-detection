@@ -154,8 +154,6 @@ only".
 
 ## 2026-10-30: Platform effects of GPS features are judged by a cross-platform transfer test
 
-**Draft — not approved.**
-
 **Decision.**
 - For GPS features, platform effects are judged by a **cross-platform transfer test**: train the GPS model without
   one platform, score that platform, and compare the fused model's gain there with its gain in the normal folds
