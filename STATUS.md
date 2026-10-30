@@ -11,30 +11,36 @@
 
 ## 2. Current results
 
-**Reference model: experiment 05**, an accelerometer-only LightGBM + HMM baseline
-([README](experiments/05_acc-baseline_waiis-bench/README.md)). Conclusion approved 2026-10-30.
+**Reference model: experiment 06**, accelerometer + GPS fusion
+([README](experiments/06_gps-acc-baseline_waiis-bench/README.md)). Conclusion **drafted, not yet approved**.
+- It replaces **05** (accelerometer only; [README](experiments/05_acc-baseline_waiis-bench/README.md), approved
+  2026-10-30), which stays the accelerometer-only baseline.
 
-| `waiis_bench_v1` | family macro-F1 | 8-class macro-F1 |
+| `waiis_bench_v1` | 8-class macro-F1 (06 / 05) | family macro-F1 (06 / 05) |
 |---|---|---|
-| ExtraSensory test, 12 users (mean of 3 seeds) | 0.698 (iPhone 0.801, Android 0.690) | 0.666 |
-| ExtraSensory dev, pooled out-of-fold | 0.615 | 0.551 |
-| SHL Users 2–3, rail check | 0.932 | 0.795 |
+| ExtraSensory test, 12 users (mean of 3 seeds) | **0.707** / 0.666 | **0.747** / 0.698 |
+| — iPhone / Android | 0.764 / 0.682 (05: 0.762 / 0.665) | 0.847 / 0.708 (05: 0.801 / 0.690) |
+| ExtraSensory dev, pooled out-of-fold | 0.613 / 0.551 | 0.681 / 0.615 |
+| SHL Users 2–3, rail check | 0.847 / 0.795 | 0.944 / 0.932 |
 
-- **Model:**
-  - 580 features (`tmd.acc_features`: features v1 without gyroscope on the 15 s window + 5 s sub-window
-    statistics);
-  - LightGBM on ExtraSensory dev + SHL User 1;
-  - HMM forward-backward per session.
-- **Cost:** 1.3 MB; 11–14 ms per single window, ~1 ms per window over whole sessions.
+- **Model (06):**
+  - acc model: 05's LightGBM (580 features, `tmd.acc_features`);
+  - GPS model: LightGBM on 13 GPS features from one fix per minute (`tmd.gps_features`, gps-v2: speeds derived
+    from positions, acceleration, stops, heading change), trained with SHL User 1;
+  - fusion: product of the two models' probabilities, with the acc model alone where there is no GPS;
+  - smoothing: HMM forward-backward per session.
+  - Cost: 1.4 + 3.8 MB; ~12 ms per single window, ~1 ms per window over whole sessions.
+- **Adopted despite a failed platform check** (a recorded deviation): GPS features identify iPhone vs Android
+  within a class. A cross-platform transfer test showed the gain doesn't depend on it.
+  - A DECISIONS.md entry (draft) makes this transfer test the criterion for GPS features.
 - **What mattered:**
-  - the HMM was the largest gain (+0.12 dev, +0.18 test);
-  - SHL User 1 in training helped ExtraSensory (+0.03);
-  - sub-window statistics gave +0.01;
-  - gravity features, a 10 Hz low-pass and context over neighbouring minutes were not adopted. Context values
-    identify the dataset.
-- **Weak spots:** bus (test 0.22), ExtraSensory train / rail (the HMM cuts dev rail recall 0.24 → 0.08; not on
-  test), not-quiet still.
-- **Evaluation change:** user-bootstrap CIs now redraw resamples that lack a class of the evaluation set
+  - the HMM (05: +0.12 family);
+  - GPS late fusion (06: +0.06 8-class on dev, +0.04 on test);
+  - SHL User 1 in training, for both models.
+  - Not adopted: stacking, early fusion, a lower learning rate, gravity, low-pass, context features.
+- **Weak spots:** bus (test 0.25), ExtraSensory train / rail (2 Android test users), walk (test recall falls with
+  GPS, 0.715 → 0.650), no 8-class gain on iPhone test users.
+- **Evaluation:** user-bootstrap CIs redraw resamples that lack a class of the evaluation set
   (`tmd.evaluate.user_resamples`).
 
 ## 3. Superseded experiments
@@ -55,5 +61,5 @@
 
 ## 4. Next experiment
 
-**06 GPS + accelerometer baseline** (planned 2026-10-30): GPS features fused with 05. Other candidates named in 05's Question: InceptionTime + GPS fusion, and LIMU-BERT pre-trained from
-scratch (accelerometer only). Each has to beat 05 on the same test users and protocol.
+Not decided yet. Candidates named in 05 and 06: InceptionTime + GPS fusion, and LIMU-BERT pre-trained from scratch
+(accelerometer only). Each has to beat 06 on the same test users and protocol.

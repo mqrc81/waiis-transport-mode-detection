@@ -1,0 +1,14 @@
+extrasensory test: 65991 rows, covered 0.814 (official 0.862), 3s -> /Users/ms/Projects/waiis/data/processed/06_gps-acc-baseline_waiis-bench/extrasensory_test_gps-v2_w2min.parquet
+shl_user23 test: 3015 rows, covered 0.629 (official 0.646), 0s -> /Users/ms/Projects/waiis/data/processed/06_gps-acc-baseline_waiis-bench/shl_user23_test_gps-v2_w2min.parquet
+0 {'test_es_all_class_f1': 0.7112, 'test_es_all_class_gain_vs_A': 0.0354, 'test_es_all_family_f1': 0.7491, 'test_es_iphone_class_f1': 0.7663, 'test_es_android_class_f1': 0.6859, 'test_shl23_class_f1': 0.8611}
+1 {'test_es_all_class_f1': 0.71, 'test_es_all_class_gain_vs_A': 0.0428, 'test_es_all_family_f1': 0.7483, 'test_es_iphone_class_f1': 0.7724, 'test_es_android_class_f1': 0.6829, 'test_shl23_class_f1': 0.8311}
+2 {'test_es_all_class_f1': 0.7007, 'test_es_all_class_gain_vs_A': 0.0441, 'test_es_all_family_f1': 0.7444, 'test_es_iphone_class_f1': 0.7527, 'test_es_android_class_f1': 0.6767, 'test_shl23_class_f1': 0.8488}
+test_es_all_class_f1 mean 0.7073
+test_es_all_class_gain_vs_A mean 0.0408
+test_es_all_family_f1 mean 0.7473
+test_shl23_class_f1 mean 0.847
+cls            still  walk   run  bike   car   bus  train  subway   all
+group                                                                  
+ES android      0.68  0.57  0.81   1.0  0.39  0.42   0.40     NaN  0.63
+ES iphone       1.00  1.00  1.00   1.0  1.00  1.00    NaN     NaN  1.00
+SHL Users 2-3   0.50  0.89  1.00   0.9  0.93  0.86   0.49    0.16  0.65

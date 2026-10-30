@@ -624,6 +624,214 @@ gps-v2 drops the fix-count proxies (path length, net displacement, straightness)
 - otherwise write and commit the test protocol, then score the test once.
 - Draft DECISIONS.md entry: platform effects of GPS features are judged by a cross-platform transfer test.
 
+
+### Stop-point 3: final configuration and test (2026-10-30)
+
+```
+uv run python run.py --row A --seed {1,2}                                         # 05's seed-k B + fb, rescored
+uv run python run.py --row G --name G_v2 --gps gps-v2 --lr 0.02 --acc-row A --seed {1,2}
+uv run python run.py --row H1 --name H1_v2 --gps gps-v2 --acc-row A --gps-row G_v2 --vs A --seed {1,2}
+uv run python make_gps.py --part test --version gps-v2
+uv run python test.py                                                             # 3 runs test_seed<k>, once
+uv run python ../../src/tmd/tracking.py export 06_gps-acc-baseline_waiis-bench   # results/runs.csv
+uv run python tables.py --csv                                                     # every table in this README
+```
+
+**Development, 3 seeds** (clean; seed 0 at `e919a3e` / `64ced02`, seeds 1–2 at `2fc7894`). The mean 8-class gain of
+H1_v2 over A is **+0.062**, above the 0.01 threshold, so the test protocol was written and committed (`e9ad503`).
+
+| row | seed | ES 8-class F1 [CI] | gain vs A [paired CI] | ES family F1 [CI] | 8-class covered / uncovered | iPhone / Android | SHL 8-class | SHL train / subway | commit |
+|---|---|---|---|---|---|---|---|---|---|
+| A | 0 | 0.552 [0.467–0.638] | – | 0.615 [0.567–0.653] | 0.573 / 0.409 | 0.589 / 0.519 | 0.936 | 0.94 / 0.87 | 64ced02 |
+| A | 1 | 0.551 [0.465–0.637] | – | 0.616 [0.567–0.653] | 0.571 / 0.424 | 0.585 / 0.519 | 0.936 | 0.95 / 0.87 | 2fc7894 |
+| A | 2 | 0.550 [0.467–0.634] | – | 0.615 [0.566–0.653] | 0.571 / 0.397 | 0.586 / 0.516 | 0.931 | 0.95 / 0.88 | 2fc7894 |
+| A | mean | 0.551 |  | 0.615 | | | 0.934 | | |
+| H1_v2 | 0 | 0.613 [0.533–0.693] | +0.061 [+0.024, +0.090] | 0.682 [0.621–0.727] | 0.642 / 0.406 | 0.655 / 0.571 | 0.952 | 0.95 / 0.92 | e919a3e |
+| H1_v2 | 1 | 0.616 [0.534–0.698] | +0.064 [+0.027, +0.091] | 0.681 [0.619–0.724] | 0.644 / 0.423 | 0.658 / 0.575 | 0.949 | 0.96 / 0.91 | 2fc7894 |
+| H1_v2 | 2 | 0.611 [0.527–0.693] | +0.061 [+0.024, +0.086] | 0.681 [0.617–0.727] | 0.642 / 0.396 | 0.657 / 0.566 | 0.948 | 0.96 / 0.90 | 2fc7894 |
+| H1_v2 | mean | 0.613 | +0.062 | 0.681 | | | 0.949 | | |
+
+| row | seed | bus [CI] | car [CI] | train [CI] | run [CI] | still recall quiet / not quiet |
+|---|---|---|---|---|---|---|
+| A | 0 | 0.34 [0.17–0.48] | 0.73 [0.63–0.81] | 0.06 [0.00–0.11] | 0.26 [0.03–0.79] | 0.996 / 0.736 |
+| A | 1 | 0.33 [0.18–0.46] | 0.72 [0.62–0.81] | 0.06 [0.00–0.12] | 0.26 [0.03–0.79] | 0.994 / 0.735 |
+| A | 2 | 0.32 [0.17–0.45] | 0.72 [0.62–0.81] | 0.06 [0.00–0.12] | 0.26 [0.03–0.79] | 0.996 / 0.736 |
+| H1_v2 | 0 | 0.43 [0.32–0.54] | 0.71 [0.61–0.79] | 0.22 [0.00–0.29] | 0.27 [0.03–0.81] | 0.999 / 0.842 |
+| H1_v2 | 1 | 0.43 [0.31–0.54] | 0.71 [0.61–0.79] | 0.24 [0.00–0.30] | 0.27 [0.03–0.81] | 0.997 / 0.843 |
+| H1_v2 | 2 | 0.42 [0.30–0.52] | 0.71 [0.61–0.79] | 0.24 [0.00–0.30] | 0.27 [0.03–0.82] | 0.998 / 0.842 |
+
+**Test** (scored once, `test.py`, code at `e9ad503`).
+- **The three test runs are tagged dirty.** `test.py` writes `results/gps_coverage_test.csv` before logging, and that
+  untracked output made the tree dirty (`results/` is not exempt like `logs/`). The code was exactly `e9ad503`; the
+  test isn't rerun.
+- **A** (05's final configuration) is recomputed here on the same minutes, with 05's test models and the same HMM. It
+  reproduces 05's test results exactly: 8-class 0.666, family 0.698, iPhone 0.762, Android 0.665.
+- **Class lists:** overall and Android 7 classes / 5 families; iPhone 6 / 4 (no train). SHL Users 2–3: 8 / 5.
+
+| test, ExtraSensory 12 users | mean of 3 seeds | seed 0 | seed 1 | seed 2 |
+|---|---|---|---|---|
+| all: 8-class F1 (H1_v2) | **0.707** | 0.711 [0.548–0.746] | 0.710 [0.552–0.751] | 0.701 [0.537–0.732] |
+| all: 8-class F1, A (05) | **0.666** | 0.676 [0.518–0.724] | 0.667 [0.513–0.726] | 0.657 [0.500–0.711] |
+| all: 8-class gain over A | **+0.041** | +0.035 [+0.010, +0.056] | +0.043 [+0.012, +0.066] | +0.044 [+0.013, +0.065] |
+| all: family F1 (H1_v2) | **0.747** | 0.749 [0.658–0.790] | 0.748 [0.658–0.789] | 0.744 [0.658–0.786] |
+| all: family F1, A | **0.698** | 0.704 [0.631–0.746] | 0.698 [0.628–0.748] | 0.693 [0.623–0.745] |
+| all: family gain over A | **+0.049** | +0.045 [+0.013, +0.077] | +0.050 [+0.015, +0.086] | +0.052 [+0.015, +0.088] |
+| all: 8-class F1, minutes with GPS | **0.667** | 0.669 | 0.672 | 0.661 |
+| all: 8-class F1, minutes without GPS | **0.547** | 0.553 | 0.547 | 0.541 |
+| all: A, minutes with GPS | **0.625** | 0.631 | 0.628 | 0.616 |
+| all: A, minutes without GPS | **0.545** | 0.550 | 0.547 | 0.538 |
+| iphone: 8-class F1 (H1_v2) | **0.764** | 0.766 [0.592–0.831] | 0.772 [0.587–0.844] | 0.753 [0.576–0.829] |
+| iphone: 8-class F1, A (05) | **0.762** | 0.763 [0.593–0.817] | 0.774 [0.610–0.816] | 0.748 [0.566–0.809] |
+| iphone: 8-class gain over A | **+0.002** | +0.003 [-0.060, +0.036] | -0.001 [-0.072, +0.052] | +0.004 [-0.074, +0.055] |
+| iphone: family F1 (H1_v2) | **0.847** | 0.848 [0.821–0.868] | 0.845 [0.818–0.868] | 0.848 [0.821–0.867] |
+| iphone: family F1, A | **0.801** | 0.803 [0.759–0.841] | 0.801 [0.758–0.836] | 0.800 [0.757–0.839] |
+| iphone: family gain over A | **+0.045** | +0.045 [+0.021, +0.078] | +0.044 [+0.020, +0.083] | +0.048 [+0.022, +0.079] |
+| iphone: 8-class F1, minutes with GPS | **0.764** | 0.766 | 0.772 | 0.753 |
+| iphone: 8-class F1, minutes without GPS | **0.462** | 0.462 | 0.462 | 0.462 |
+| iphone: A, minutes with GPS | **0.762** | 0.763 | 0.774 | 0.748 |
+| iphone: A, minutes without GPS | **0.462** | 0.462 | 0.462 | 0.462 |
+| android: 8-class F1 (H1_v2) | **0.682** | 0.686 [0.522–0.723] | 0.683 [0.518–0.723] | 0.677 [0.516–0.707] |
+| android: 8-class F1, A (05) | **0.665** | 0.670 [0.511–0.711] | 0.667 [0.509–0.711] | 0.658 [0.504–0.696] |
+| android: 8-class gain over A | **+0.017** | +0.016 [+0.004, +0.025] | +0.016 [+0.001, +0.030] | +0.019 [+0.008, +0.026] |
+| android: family F1 (H1_v2) | **0.708** | 0.709 [0.636–0.746] | 0.710 [0.638–0.748] | 0.704 [0.631–0.738] |
+| android: family F1, A | **0.690** | 0.693 [0.627–0.730] | 0.694 [0.614–0.736] | 0.682 [0.596–0.730] |
+| android: family gain over A | **+0.018** | +0.016 [+0.008, +0.034] | +0.017 [-0.002, +0.038] | +0.022 [+0.003, +0.049] |
+| android: 8-class F1, minutes with GPS | **0.647** | 0.648 | 0.650 | 0.643 |
+| android: 8-class F1, minutes without GPS | **0.547** | 0.553 | 0.547 | 0.541 |
+| android: A, minutes with GPS | **0.623** | 0.627 | 0.623 | 0.618 |
+| android: A, minutes without GPS | **0.545** | 0.550 | 0.547 | 0.538 |
+| all: recall still (H1_v2) | **0.950** | 0.949 [0.919–0.968] | 0.951 [0.919–0.969] | 0.949 [0.918–0.968] |
+| all: recall still, A | **0.904** | 0.906 [0.866–0.939] | 0.905 [0.864–0.939] | 0.901 [0.854–0.935] |
+| all: recall walk (H1_v2) | **0.650** | 0.649 [0.593–0.722] | 0.655 [0.605–0.721] | 0.648 [0.590–0.722] |
+| all: recall walk, A | **0.715** | 0.709 [0.659–0.779] | 0.721 [0.671–0.786] | 0.715 [0.659–0.787] |
+| all: recall run (H1_v2) | **0.741** | 0.741 [0.000–0.921] | 0.741 [0.000–0.921] | 0.741 [0.000–0.921] |
+| all: recall run, A | **0.708** | 0.704 [0.000–0.861] | 0.716 [0.000–0.881] | 0.704 [0.000–0.861] |
+| all: recall bike (H1_v2) | **0.852** | 0.854 [0.708–0.937] | 0.848 [0.703–0.928] | 0.855 [0.699–0.935] |
+| all: recall bike, A | **0.831** | 0.828 [0.690–0.915] | 0.833 [0.710–0.913] | 0.831 [0.696–0.914] |
+| all: recall car (H1_v2) | **0.765** | 0.771 [0.676–0.873] | 0.762 [0.669–0.868] | 0.762 [0.664–0.870] |
+| all: recall car, A | **0.751** | 0.758 [0.678–0.840] | 0.749 [0.671–0.830] | 0.746 [0.671–0.826] |
+| all: recall bus (H1_v2) | **0.253** | 0.265 [0.199–0.433] | 0.258 [0.196–0.506] | 0.237 [0.124–0.459] |
+| all: recall bus, A | **0.218** | 0.240 [0.193–0.418] | 0.216 [0.154–0.444] | 0.199 [0.120–0.441] |
+| all: recall train (H1_v2) | **0.404** | 0.404 [0.067–0.541] | 0.404 [0.067–0.541] | 0.404 [0.067–0.541] |
+| all: recall train, A | **0.404** | 0.404 [0.067–0.541] | 0.404 [0.067–0.541] | 0.404 [0.067–0.541] |
+| all: rail recall before HMM | **0.436** | 0.442 [0.267–0.514] | 0.442 [0.267–0.514] | 0.423 [0.200–0.514] |
+| all: rail recall after HMM | **0.404** | 0.404 [0.067–0.541] | 0.404 [0.067–0.541] | 0.404 [0.067–0.541] |
+| all: train recall before HMM | **0.404** | 0.404 [0.333–0.432] | 0.404 [0.267–0.459] | 0.404 [0.333–0.432] |
+| all: train recall after HMM | **0.404** | 0.404 [0.067–0.541] | 0.404 [0.067–0.541] | 0.404 [0.067–0.541] |
+
+| SHL Users 2–3 (no CI) | mean | seed 0 | seed 1 | seed 2 |
+|---|---|---|---|---|
+| 8-class F1 (H1_v2) | 0.847 | 0.861 | 0.831 | 0.849 |
+| 8-class F1, A | 0.795 | 0.797 | 0.790 | 0.798 |
+| 8-class gain over A | 0.052 | 0.064 | 0.041 | 0.050 |
+| family F1 | 0.944 | 0.945 | 0.941 | 0.945 |
+| family F1, A | 0.932 | 0.933 | 0.927 | 0.935 |
+| 8-class before HMM | 0.723 | 0.723 | 0.720 | 0.725 |
+| recall still | 0.868 | 0.856 | 0.871 | 0.877 |
+| recall walk | 0.993 | 0.993 | 0.993 | 0.993 |
+| recall run | 0.407 | 0.400 | 0.400 | 0.422 |
+| recall bike | 0.968 | 0.970 | 0.970 | 0.965 |
+| recall car | 0.987 | 0.994 | 0.985 | 0.982 |
+| recall bus | 0.967 | 0.953 | 0.953 | 0.993 |
+| recall train | 0.850 | 0.881 | 0.822 | 0.847 |
+| recall subway | 0.610 | 0.701 | 0.531 | 0.598 |
+| train recall, A | 0.741 | 0.742 | 0.739 | 0.742 |
+| subway recall, A | 0.534 | 0.570 | 0.475 | 0.556 |
+
+| seed | acc / GPS model MB | GPS rounds | single window p50 / p95 ms | pipeline p50 / p95 ms | CI redraw (all / Android / iPhone, 8-class) |
+|---|---|---|---|---|---|
+| 0 | 1.36 / 3.88 | 139 | 12.2 / 15.7 | 0.97 / 4.46 | 0.108 / 0.184 / 0.175 |
+| 1 | 1.33 / 3.79 | 136 | 11.8 / 13.2 | 0.96 / 4.44 | 0.108 / 0.184 / 0.175 |
+| 2 | 1.39 / 3.85 | 138 | 11.8 / 12.9 | 0.96 / 4.44 | 0.108 / 0.184 / 0.175 |
+
+**GPS coverage of the test split** (official minutes; `results/gps_coverage_test.csv`):
+
+| covered | still | walk | run | bike | car | bus | train | subway | all |
+|---|---|---|---|---|---|---|---|---|---|
+| ES iPhone | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | – | – | 1.00 |
+| ES Android | 0.68 | 0.57 | 0.81 | 1.00 | 0.39 | 0.42 | 0.40 | – | 0.63 |
+| SHL Users 2–3 | 0.50 | 0.89 | 1.00 | 0.90 | 0.93 | 0.86 | 0.49 | 0.16 | 0.65 |
+
+- iPhone test users are fully covered (dev 0.92), so the iPhone "without GPS" scores rest on very few minutes.
+- Android test car and bus are covered far less than in dev (0.39 / 0.42 against 0.73 / 0.59).
+
+**Motorbike check set** (reserved-test data from one user, 33A85C34; descriptive; all 83 minutes GPS-covered).
+Predicted classes after the HMM (before the HMM; A):
+
+| seed | still | walk | bike | car | bus |
+|---|---|---|---|---|---|
+| 0 | 19 (17; 7) | 8 (10; 19) | 0 (0; 0) | 56 (40; 55) | 0 (16; 2) |
+| 1 | 19 (16; 7) | 9 (11; 19) | 0 (1; 0) | 55 (38; 45) | 0 (17; 12) |
+| 2 | 18 (16; 7) | 10 (11; 20) | 0 (0; 0) | 55 (37; 24) | 0 (19; 32) |
+
+- With GPS, the road share is 55–56 of 83 (66–67%), stable across seeds and now all car. A's road share was 56–57,
+  split car / bus depending on the seed. Still rises from 7 to 18–19 minutes.
+
+**Notes.**
+- **Test gain is smaller than dev:** 8-class +0.041 vs +0.062; family +0.049 vs +0.066.
+  - The gain is on Android (+0.017 [+0.004, +0.025] seed 0) and in family terms on iPhone (+0.045).
+  - **On iPhone the 8-class gain is ~0** (+0.002, CIs include 0), although every iPhone test minute has GPS.
+  - **Walk recall falls with GPS** on test (0.715 → 0.650), while still (0.904 → 0.950), bus (0.218 → 0.253), car
+    and bike rise. Train is unchanged (0.404).
+  - Not investigated (the test isn't used to choose).
+- **SHL Users 2–3:** 8-class +0.052; train 0.74 → 0.85, subway 0.53 → 0.61.
+- **Cost:** single window 11.8–12.2 ms p50 (p95 12.9–15.7 ms); pipeline 0.96–0.97 ms per window (p95 4.4–4.5 ms);
+  acc model 1.33–1.39 MB + GPS model 3.79–3.88 MB.
+- **Early stopping:** acc model as 05 (24–75 rounds per fold); GPS model 111–181 (transfer), 133.6–136.4 mean per seed (G_v2) and 136–139 (test models),
+  never at the cap.
+- **Runs:** `results/runs.csv` holds all 06 runs, including the superseded dirty ones (the first A, the stopped
+  chain) and the dirty row I and test runs. Tables use the clean runs, the dirty row I where noted, and the test runs.
+
 ## Conclusion
 
-*Not yet.*
+**Draft — not approved.** Written from Results and `results/runs.csv`.
+
+**Answer.** GPS features from one fix per minute, fused with 05's accelerometer model by a product of probabilities
+(with the acc model where there is no GPS), then HMM forward-backward, improve the 05 baseline on `waiis_bench_v1`:
+
+| | 8-class macro-F1 | gain over 05 | family macro-F1 | gain over 05 |
+|---|---|---|---|---|
+| ExtraSensory test, 12 users (mean of 3 seeds) | **0.707** | **+0.041** (seed CIs from +0.010) | **0.747** | +0.049 |
+| — iPhone (6 classes) / Android (7) | 0.764 / 0.682 | +0.002 / +0.017 | 0.847 / 0.708 | +0.045 / +0.018 |
+| ExtraSensory dev, pooled out-of-fold (3 seeds) | 0.613 | +0.062 | 0.681 | +0.066 |
+| SHL Users 2–3, rail check | 0.847 | +0.052 | 0.944 | +0.012 |
+
+**This is the new reference** (H1, gps-v2):
+- **acc model:** 05's B;
+- **GPS model:** LightGBM on the 13 gps-v2 features (`tmd.gps_features`), trained with SHL User 1;
+- **fusion:** product of probabilities on GPS-covered minutes;
+- **smoothing:** HMM forward-backward;
+- **cost:** 1.4 + 3.8 MB, ~12 ms per single window, ~1 ms per window over whole sessions.
+
+**It was adopted against the rule as written**, a recorded deviation:
+- GPS features identify the platform within a class (walk AUC 0.730 vs 0.510 from the accelerometer), which fails
+  the platform check.
+- It was overridden because a GPS model trained without one platform gives the same gain on that platform (all
+  transfer − normal CIs contain 0).
+- That transfer is between two platforms of one study, so it doesn't establish transfer to WAIIS.
+
+**What worked and what didn't** (dev, 8-class, paired CIs):
+- **Fusion choice:**
+  - product fusion: +0.061 [+0.024, +0.090];
+  - stacking adds nothing over it (+0.004) and costs inner fits;
+  - early fusion is worse (−0.029 vs product) and fails the missingness check.
+- **GPS model with SHL User 1:** better than without (+0.031). The GPS-only model is weaker than the accelerometer
+  on the same minutes (0.51 vs 0.57) but complementary.
+- **The gain sits on GPS-covered minutes** (0.573 → 0.642); uncovered minutes are unchanged by design.
+- **Lowering the learning rate (A′):** +0.002, not adopted.
+- **gps-v2 = gps-v1** in score. It drops the fix-count proxies and uses one stop threshold.
+
+**Weak spots for the next models.**
+- On the test, the 8-class gain on iPhone is ~0, and walk recall falls (0.715 → 0.650).
+- Bus stays low (test 0.25).
+- ExtraSensory train rests on 2 Android test users (0.40, unchanged).
+- Android test car and bus are covered by GPS less than half the time.
+
+**Limits.**
+- One fix per minute, much sparser than the WAIIS cadence (~10 s when moving).
+- ExtraSensory fix times aren't published.
+- Its reported speed (a per-minute maximum) wasn't used.
+- No OSM way types in the benchmark.
+- The platform check was overridden on one study's evidence.
+- Test scores are higher than dev, as in 05.
+- The test runs are tagged dirty only by their own output file.
