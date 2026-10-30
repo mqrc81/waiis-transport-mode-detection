@@ -46,13 +46,15 @@
 ### Label curve (07, development data only)
 
 **07 user label curve** of 06's final configuration ([README](experiments/07_user-label-curve_waiis-bench/README.md)).
-Conclusion **drafted, not yet approved**. No test users were read.
-- With SHL User 1 in training, 8-class dev F1 rises 0.452 (no ExtraSensory user) → 0.535 (1) → 0.586 (3) → 0.613
-  (all ~38). After n = 3 it gains about 0.01 per doubling: it **flattens at n = 3** by the pre-set rule.
-- Without SHL User 1 it reaches only 0.544 with all ~38 users, never predicts train, and hasn't flattened.
+Conclusion **drafted, not yet approved** (revised at review). No test users were read.
+- **Domain step:** with SHL User 1 in training, 8-class dev F1 is 0.452 with no ExtraSensory user, 0.586 with 3
+  (+0.13), 0.613 with all ~38 (+0.03 more). Past n = 3 it gains about +0.01 per doubling (flattens at n = 3).
+- Without SHL User 1: 0.544 with all ~38 users; at that point 59% of the gap is train (6 non-rail classes: 0.635 vs
+  0.668).
 - Still gaining at the end: **bus** (most), walk, bike. Flat: still, car, run. Rail can't be measured.
-- Reading: past ~3 users, more labelled people of the ExtraSensory kind add little to the overall score; a better
-  model, or data aimed at bus and rail, is the larger lever (draft DECISIONS.md entry).
+- Draft reading for WAIIS: label a few users per mode and per platform first (06 is WAIIS's n = 0), then target bus
+  and train (draft DECISIONS.md entry).
+- Open dataset question: dev run recall 0.26 at every n against 0.74 on test.
 
 ## 3. Superseded experiments
 
@@ -73,5 +75,5 @@ Conclusion **drafted, not yet approved**. No test users were read.
 ## 4. Next experiment
 
 Not decided yet. Candidates named in 05 and 06: InceptionTime + GPS fusion, and LIMU-BERT pre-trained from scratch
-(accelerometer only). Each has to beat 06 on the same test users and protocol. 07 (draft) adds: data aimed at bus and
-rail, e.g. another public base like SHL User 1, rather than more labelled users of the same kind.
+(accelerometer only). Each has to beat 06 on the same test users and protocol. 07 (draft) adds: a few WAIIS users per mode
+and platform first, then data aimed at bus and train; and a check of run labels for the next benchmark version.

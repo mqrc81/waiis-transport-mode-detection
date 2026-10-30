@@ -208,7 +208,7 @@ uv run python tables.py                      # results/tables.md (the tables bel
 
 **Deviations and incidents.**
 1. **No GPS model when a fold has no GPS-covered training minutes** (`curve.py`, `point()`; committed as
-   `46c52af`). Three dev users have no GPS-covered official minutes at all: 4E98F91F and 61359772 (Android),
+   `46c52af`; accepted at review 2026-10-30 as 06's rule, kept as a recorded deviation). Three dev users have no GPS-covered official minutes at all: 4E98F91F and 61359772 (Android),
    CDA3BBF7 (iPhone).
    - CDA3BBF7 is the only user of no-SHL, n = 1, draw 2, fold 0. LightGBM refused the empty GPS training set, and the
      chain stopped there (the failed run is in `runs.csv` without metrics).
@@ -226,7 +226,10 @@ uv run python tables.py                      # results/tables.md (the tables bel
 
 **Uncertainty.** The draw ranges show only the variation from *which users are trained on*. The user-bootstrap CIs
 at n = 0 and n = all (scored users resampled) are much wider: 8-class 0.533–0.693 at n = all against a draw range of
-0.601–0.610 at n = 20. Differences of ~0.01 between neighbouring n are well inside the evaluation uncertainty.
+0.601–0.610 at n = 20.
+- Both describe *absolute* scores. The gains between n are paired differences: the draws are nested, and every run is
+  scored on the same minutes. Their spread over draws is in the gain-per-doubling tables. No paired user bootstrap of
+  the gains was computed. (Corrected at review: an earlier draft compared the gains with the absolute CI.)
 
 **Figure:** `results/curve.png`. Left: 8-class F1 against n, with and without SHL User 1 (median, range over draws);
 right: recall per class against n, main curve.
@@ -392,45 +395,108 @@ Per-fold: median over draws of the lowest and highest fold score (spread only).
 - **Cost** does not depend on n: ~12 ms per single window, ~1.3 ms per window over sessions; models 1.2–1.4 MB
   (acc) and 3.5–3.8 MB (GPS), growing slightly with n.
 
+### Review of the draft (2026-10-30): non-rail score, paired gains, labelled minutes
+
+Four changes were requested at review; no new runs. Code: `nonrail.py` (reads each clean run's logged confusion
+matrix, `tables.json` in MLflow; per-class F1 cross-checked against `runs.csv` to 1e-9); output
+`results/nonrail.csv`, `results/nonrail.md`.
+
+**Paired gain from n = 20 to all** (main curve; the n = all run against each draw's n = 20, 8-class):
++0.013, +0.004, +0.004, +0.004, +0.011 (draws 0–4), i.e. +0.004 to +0.014 per doubling.
+
+**Macro-F1 over the 6 non-rail classes** (still, walk, run, bike, car, bus; from the logged confusion matrices; median [range] over draws), against the 8-class score (7 classes)
+
+| n | 6-class, with SHL User 1 | 6-class, without | gap 6-class | 8-class, with | 8-class, without | gap 8-class | train F1 with / without | share of the 8-class gap from train |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 0.523 | – | – | 0.452 | – | – | 0.028 / – | – |
+| 1 | 0.600 [0.574–0.602] | 0.364 [0.316–0.422] | +0.236 | 0.535 [0.516–0.541] | 0.312 [0.271–0.362] | +0.223 | 0.143 / 0.000 | 9% |
+| 2 | 0.620 [0.615–0.634] | 0.436 [0.390–0.451] | +0.184 | 0.573 [0.554–0.589] | 0.374 [0.335–0.387] | +0.199 | 0.298 / 0.000 | 21% |
+| 3 | 0.633 [0.625–0.633] | 0.448 [0.437–0.495] | +0.185 | 0.586 [0.580–0.596] | 0.384 [0.375–0.425] | +0.202 | 0.337 / 0.000 | 24% |
+| 5 | 0.636 [0.629–0.647] | 0.487 [0.468–0.510] | +0.150 | 0.585 [0.583–0.614] | 0.417 [0.401–0.437] | +0.168 | 0.286 / 0.000 | 24% |
+| 10 | 0.646 [0.642–0.654] | 0.526 [0.509–0.570] | +0.120 | 0.598 [0.586–0.607] | 0.451 [0.436–0.489] | +0.148 | 0.315 / 0.000 | 30% |
+| 20 | 0.661 [0.653–0.663] | 0.584 [0.569–0.603] | +0.077 | 0.609 [0.601–0.610] | 0.501 [0.488–0.517] | +0.108 | 0.287 / 0.000 | 38% |
+| all | 0.668 | 0.635 | +0.033 | 0.613 | 0.544 | +0.069 | 0.284 / 0.000 | 59% |
+
+Gaps are differences of medians. 8-class = (6 × 6-class + train F1) / 7, so the train share of the 8-class gap = (train F1 gap / 7) / 8-class gap; the rest is the 6 non-rail classes.
+
+
+- **With SHL User 1**, the 6-class score shows the same shape as the 8-class one: 0.523 (n = 0) → 0.633 (n = 3,
+  +0.110) → 0.668 (all, +0.035 more).
+- **Without SHL User 1**, the 6-class curve is still rising at the end (0.584 → 0.635 from n = 20 to all).
+- **How much of SHL User 1's advantage is train:**
+  - at small n, mostly not: at n = 1–3 the 6-class gap (+0.18 to +0.24) is as large as the 8-class gap, and train
+    accounts for 9–24% of it. Without SHL, small training sets also lack run, bike and bus (dry run);
+  - the share grows with n, and **at n = all train is 59% of the 8-class gap**: the 6-class gap is +0.033, the
+    8-class gap +0.069. Without SHL, train F1 is 0 at every n.
+
+**Labelled minutes behind the per-class findings** (dry-run coverage, stop-point 1: official ExtraSensory minutes
+among the n users, median over draws × folds; users = training users with the class):
+
+| class | where its recall stops gaining (main curve) | users with the class there | labelled minutes there |
+|---|---|---|---|
+| still | from n = 1 | 1 | ~1,600 |
+| car | from n = 20 | ~16 | ~3,700 |
+| run | never moves (0.26 at every n, as SHL User 1 alone) | 13 at n = all | ~430 at n = all |
+| walk | still gaining at n = all | ~37 | ~10,600 |
+| bike | still gaining at n = all | ~14 | ~2,500 |
+| bus | still gaining at n = all | ~17 | ~1,070 |
+| train | not measurable | 2–3 | ~170 |
+
+**Run, dev against test:** run recall is 0.26 on dev at every n (and with SHL User 1 alone), against 0.74 on the 12
+test users for 06's final configuration (0.70–0.72 for 05's A; 06 `results/runs.csv`, `test_es_all_class_recall_run`).
+Extra ExtraSensory run users (up to 13, ~430 minutes) don't change it. This is a dataset question, not something 07
+can resolve (Conclusion).
+
 ## Conclusion
 
 **Draft — not approved.**
 
-**Answer.** With SHL User 1 as the public base, 06's final configuration gains most from the first few labelled
-ExtraSensory users, then about 0.01 8-class F1 per doubling (pooled dev out-of-fold, 5 draws):
+**Main finding: the domain step.** With SHL User 1 as the public base, the first few labelled ExtraSensory users give
+most of the gain; the rest of the pool adds little:
+- SHL User 1 alone: 8-class **0.452**;
+- + 3 ExtraSensory users: **0.586 (+0.13)**;
+- + the remaining ~35 users: **0.613 (+0.03)**.
 
 | ExtraSensory users | 0 | 1 | 3 | 10 | all (~38) |
 |---|---|---|---|---|---|
 | 8-class F1, with SHL User 1 | 0.452 | 0.535 | 0.586 | 0.598 | 0.613 |
 | 8-class F1, without | – | 0.312 | 0.384 | 0.451 | 0.544 |
+| 6 non-rail classes, with SHL User 1 | 0.523 | 0.600 | 0.633 | 0.646 | 0.668 |
+| 6 non-rail classes, without | – | 0.364 | 0.448 | 0.526 | 0.635 |
 | family F1, with SHL User 1 | 0.502 | 0.590 | 0.627 | 0.677 | 0.686 |
 
-- **Where it flattens:** by the rule fixed before running, at **n = 3** (3 → 5: +0.001 per doubling). Later steps
-  are at or below the 0.01 threshold (+0.010, +0.010, +0.005); the slope over n ≥ 1 is +0.014 per doubling.
-  - Another doubling of this kind of user (~38 → ~76) would be worth roughly +0.005 to +0.014 8-class. That is small
-    against the user-bootstrap CI at n = all (0.533–0.693).
-- **Classes still gaining at the end:** walk (recall +0.041 per doubling), bike (+0.015) and **bus** (+0.049; bus F1
-  +0.027, the largest F1 gain on the last step). Still, run and car have flattened; run hasn't moved from SHL User 1's
-  level (0.26).
-- **SHL User 1 is worth more than ~37 ExtraSensory users here:** without it, all ~38 users score 0.544, below the main
-  curve at n = 2 (0.573). Without SHL train is never predicted, and the no-SHL curve hasn't flattened (+0.048 on the
-  last step).
+(pooled dev out-of-fold, medians over 5 draws.)
 
-**For the priority question:**
-- **More labelled people of the ExtraSensory kind are not the next priority for the overall score.** Past ~3 users
-  on top of SHL User 1, each doubling adds ~0.01, inside the evaluation uncertainty. A better model, or data aimed at
-  the weak classes, is the larger lever.
-- **Labels still pay for bus, walk and bike.** Bus was still gaining at 17 bus users (~1,070 minutes), the most in the
-  pool; walk and bike at ~37 and ~14 users.
-- **Rough labeller numbers per mode (from ExtraSensory, not WAIIS):**
-  - still: flat from the first user (~1,700 still minutes);
-  - car: flat from n = 20, i.e. ~16 users with car (~3,700 car minutes);
-  - run: ExtraSensory users add nothing over SHL User 1;
-  - walk, bike: still gaining at ~37 and ~14 users with the mode;
-  - bus: still gaining at ~17 users with the mode, so plan for more than 17;
-  - rail: can't be measured (2–3 ExtraSensory train users; rail comes from SHL User 1).
-- **The public base matters most:** SHL User 1 does more than any number of ExtraSensory users in the pool. Another
-  public base, especially with rail and bus, is a candidate worth weighing against WAIIS labelling.
+- **Where it flattens:** by the rule fixed before running, at **n = 3** (3 → 5: +0.001 per doubling). After that
+  the gain is small, about **+0.01 per doubling** (+0.010, +0.010, +0.005 on the later steps; slope over n ≥ 1
+  +0.014). From n = 20 to all, the paired gain per draw is +0.004 to +0.013.
+- **Classes still gaining at the end:** bus most (F1 0.27 → 0.46, +0.027 per doubling on the last step), then walk
+  and bike. Still, car and run have stopped.
+- **SHL User 1's advantage:** without it, all ~38 users reach 8-class 0.544, below SHL User 1 + 2 users (0.573).
+  - At small n the advantage is mostly the non-rail classes (train is 9–24% of the gap at n = 1–3), since small
+    training sets lack run, bike and bus.
+  - At n = all it is mostly train: 59% of the 8-class gap. On the 6 non-rail classes, ~38 users without SHL come
+    within 0.033 of the main curve (0.635 vs 0.668), and that curve is still rising.
+
+**For WAIIS:**
+- **06 is WAIIS's n = 0.** The first labels should go to **a few users per mode and per platform** (iPhone, Android):
+  that is where the domain step was, +0.13 with 3 users here.
+- **Then target bus and train**, not more users in general: past ~3 users, more ExtraSensory-like users add ~0.01
+  per doubling overall, and the classes still gaining are bus, walk and bike.
+- **Rough labeller targets per mode** (ExtraSensory, users and labelled minutes; not WAIIS):
+  - still: flat from 1 user (~1,600 minutes);
+  - car: flat from ~16 users with car (~3,700 minutes);
+  - bus: still gaining at ~17 users (~1,070 minutes), so plan for more;
+  - bike: still gaining at ~14 users (~2,500 minutes);
+  - walk: still gaining at ~37 users (~10,600 minutes), although walk F1 barely moves at the end;
+  - run: doesn't respond to extra users (below);
+  - train: not measurable (2–3 users, ~170 minutes); rail comes from SHL User 1.
+- A better model, or a public base with rail and bus, is a larger lever than more users of the ExtraSensory kind.
+
+**Open dataset question (for a future benchmark version): run.** Dev run recall is 0.26 at every n, and the same with
+SHL User 1 alone; 13 ExtraSensory run users (~430 minutes) don't change it. On the 12 test users it is 0.74 (06's
+final configuration; 0.70–0.72 for 05's A). Why dev run differs this much from test run (the labels, the users, or
+how run minutes are selected) should be checked before run is used to judge a model.
 
 **Not adopted:** early stopping on 5 extra labelled users (n = 2: −0.018; n = 10: −0.003).
 
@@ -438,9 +504,10 @@ ExtraSensory users, then about 0.01 8-class F1 per doubling (pooled dev out-of-f
 - ExtraSensory users are not WAIIS employees, and their phones and app are from 2015. The WAIIS curve may differ,
   especially its starting point.
 - The pool stops at ~38 users, so the curve beyond that is extrapolation.
-- The draw ranges show training-user variation only. Evaluation-user uncertainty (bootstrap CIs) was computed only at
-  n = 0 and n = all, where it is ±0.08.
+- The draw ranges show training-user variation only. Evaluation-user uncertainty (user-bootstrap CIs) was computed
+  only for the absolute scores at n = 0 and n = all; there is no paired bootstrap of the gains.
 - Rail: ExtraSensory train comes from 2–3 users, and train recall falls as they enter training while its F1 rises.
 - The fixed rounds (47 / 138) come from models trained on all ~47 users; at small n they may not be the best choice
   (early stopping didn't help at n = 2 and n = 10).
-- One fold (no-SHL, n = 1, draw 2) has no GPS model (Results, deviation 1).
+- One fold (no-SHL, n = 1, draw 2) has no GPS model and uses the acc model alone: 06's rule where there is no GPS,
+  accepted at review and recorded as deviation 1.
