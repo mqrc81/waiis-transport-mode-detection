@@ -36,9 +36,8 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from tmd import bench, gps
-from tmd.bench.sources import extrasensory as es
-from tmd.bench.sources import shl
+from tmd import bench, gps, shl
+from tmd import extrasensory as es
 from tmd.labels import CLASSES, CLASS_ID
 from tmd.paths import PROJECT
 from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_repair_to_25hz, window_stats

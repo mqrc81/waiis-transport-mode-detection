@@ -301,37 +301,29 @@ Alternatives compared (`results/tables/cap_options.csv`):
    ExtraSensory dev run vs test run vs SHL run; where 05 / 06's out-of-fold predictions put dev run minutes, per user.
    If some users' run looks like another activity, propose a flag (not a deletion) at stop-point 2.
 
-#### 1. Reorganisation: the moves (before any code)
+#### 1. Reorganisation (done; revised after review)
 
-| Old module | New module | Old path keeps working as |
+**Moves** (first commit `223a5aa`; revised on review, second commit below):
+
+| Old module | New module | Old path |
 |---|---|---|
 | `src/tmd/bench.py` (reader API) | `src/tmd/bench/__init__.py` (same content) | `tmd.bench`, unchanged |
-| `experiments/04_…/build.py` (v1 build code) | `src/tmd/bench/build.py` | 04's `build.py`: a thin driver calling it (same CLI) |
-| `src/tmd/extrasensory.py` | `src/tmd/bench/sources/extrasensory.py` | `tmd.extrasensory`: alias of the new module |
-| `src/tmd/shl.py` | `src/tmd/bench/sources/shl.py` | `tmd.shl`: alias |
-| `src/tmd/nor_tmd.py` | `src/tmd/bench/sources/nor_tmd.py` | `tmd.nor_tmd`: alias |
-| `src/tmd/collecty.py` | `src/tmd/bench/sources/collecty.py` | `tmd.collecty`: alias |
-| `src/tmd/candidates.py` (08's window rules) | `src/tmd/bench/rules.py` | `tmd.candidates`: alias |
+| `experiments/04_…/build.py` (v1 build code) | `src/tmd/bench/build.py` | 04's `build.py` is a thin driver calling it (same CLI) |
 
-- An alias module replaces itself in `sys.modules` with the new module, so `from tmd import extrasensory`, private
-  names and attribute patches all hit the same object.
-- **Not moved** (no obvious group): `tmd.gps` and `tmd.resample` are used by model code too (`fusion`,
-  `gps_features`, `acc_features`, `windows`); feature, model and evaluation modules stay as they are.
-- `tmd.bench.build` gets two optional arguments, `--tables-dir` and `--log-dir` (defaults: 04's folders, as now),
-  so the gate rebuild doesn't overwrite 04's committed tables.
-- **Gate** (before the commit):
-  - `tmd.bench.verify()` on v1;
-  - a rebuild of v1 from the moved code into a scratch data root: the 23 data files' sha256 must equal
-    `results/manifests/waiis_bench_v1.json`, and the count tables must equal 04's committed tables;
-  - 06's dev out-of-fold probabilities (H1_v2, seed 0) recomputed from v1 through the moved code must equal the
-    saved file.
+- **Revised:** the per-dataset readers (`tmd.extrasensory`, `tmd.shl`, `tmd.nor_tmd`, `tmd.collecty`) and 08's
+  window rules (`tmd.candidates`) were first moved into `tmd.bench.sources` / `tmd.bench.rules`, with alias modules
+  at the old paths. On review that meant two files per reader. Inside `tmd.bench` and with old scripts unchanged,
+  one file per reader is not possible, so they **moved back to `src/tmd/`** (byte-identical to before the
+  reorganisation), and `tmd.bench.build` imports them from there (answer of 2026-11-02).
+- **Other sub-packages:** none. The obvious candidate (`features`, `acc_features`, `gps_features` → a `features`
+  package) has the same problem: it needs alias files or edits to 02–08's imports. `tmd.gps` and `tmd.resample` are
+  used by both model and build code.
+- `tmd.bench.build` gets optional `--tables-dir` / `--log-dir` (defaults: 04's folders).
+- `tmd.paths` reads `$TMD_MLFLOW_DB` / `$TMD_MLARTIFACTS` (defaults as before), mirroring `$TMD_DATA`, so the gate's
+  chain logs to a scratch MLflow store.
 
-#### 1. Reorganisation: done, gate passed (2026-11-02)
-
-The moves are as listed above, in their own commit.
-- **Extra change:** `tmd.paths` reads `$TMD_MLFLOW_DB` / `$TMD_MLARTIFACTS` (defaults as before), mirroring
-  `$TMD_DATA`, so the gate's chain logs to a scratch MLflow store.
-- **Gate** (`gate_v1.py`, full output in `logs/gate_v1.log`):
+**Gate** (`gate_v1.py`, full output in `logs/gate_v1.log`). It passed after the first commit and again, in full,
+after the revision:
 
 ```
 TMD_DATA=<scratch>/data uv run python experiments/04_frozen-benchmark_es-shl/build.py --workers 4 \
@@ -341,20 +333,22 @@ uv run python gate_v1.py --scratch <scratch>                     # checks; the 0
 
 1. `verify(waiis_bench_v1)`: intact.
 2. **Rebuild:** all 23 data files have the reference sha256. The 32 count tables the build writes equal 04's
-   committed tables byte for byte. `decision_details.csv` comes from 04's `register_numbers.py`, not the build, so
-   it isn't compared.
+   committed tables byte for byte. `decision_details.csv` comes from 04's `register_numbers.py`, so it isn't
+   compared.
 3. **06's chain:** 05's features → B → F_fb; 06's gps-v1 and gps-v2 features → A → G_v2 → H1_v2, recomputed from
    the rebuild with a scratch MLflow store (seed 0, the recorded commands without `--vs`):
    - the 5 feature tables are identical;
    - the out-of-fold `p` / `raw` of B, F_fb, A, G_v2 and **H1_v2 are identical to the saved files, bit for bit**;
    - the only difference is in A's `info` metadata: the saved file predates the `gps_version` key 06's code added
      later.
-   - The real MLflow store is untouched (05: 54 runs, 06: 28 runs). The six 05 / 06 logs the chain rewrote were
-     restored from git.
+   - The real MLflow store is untouched (05: 54 runs, 06: 28 runs). The six 05 / 06 logs the chain rewrites are
+     restored from git each time.
 4. `pytest tests`: 65 passed. The new `tests/test_bench_v1_frozen.py` checks `verify(v1)` and the sha256 of the 5
    out-of-fold files the gate matched; the recomputation itself stays in `gate_v1.py`.
-- **Deviation from the gate as planned:** the first chain run missed 06's plain `make_gps.py` (gps-v1, which row A
-  reads). It was added and the chain continued from that step (`--start 3`); steps 0–2 (05) had already run once.
+- **Deviation:** the first chain run missed 06's plain `make_gps.py` (gps-v1, which row A reads). It was added, and
+  that run continued from the step (`--start 3`). The re-gate after the revision ran the whole chain from step 0.
+- **The scratch v1 rebuild** (6.7 GB, in the session scratchpad) is kept until the gate has passed after the v2
+  changes. Reminder at stop-point 2: delete it.
 
 #### 3. NOR-TMD test pick with car (to fix after review)
 

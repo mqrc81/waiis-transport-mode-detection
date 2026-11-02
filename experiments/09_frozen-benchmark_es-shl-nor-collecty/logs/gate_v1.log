@@ -1,9 +1,9 @@
 1 verify(v1): intact
 2a rebuild: 23 data files, 23 in the reference; mismatched or extra: none
 2b tables written by the build: 32 committed, differing or missing: none, extra in rebuild: none (not compared, written by other scripts: ['decision_details.csv'])
-3 chain [0] (done before, not rerun): 05_acc-baseline_waiis-bench: make_features.py --workers 4
-3 chain [1] (done before, not rerun): 05_acc-baseline_waiis-bench: cv.py --name B --sub
-3 chain [2] (done before, not rerun): 05_acc-baseline_waiis-bench: cv.py --name F_fb --from-row B --hmm fb
+3 chain [0]: 05_acc-baseline_waiis-bench: make_features.py --workers 4
+3 chain [1]: 05_acc-baseline_waiis-bench: cv.py --name B --sub
+3 chain [2]: 05_acc-baseline_waiis-bench: cv.py --name F_fb --from-row B --hmm fb
 3 chain [3]: 06_gps-acc-baseline_waiis-bench: make_gps.py
 3 chain [4]: 06_gps-acc-baseline_waiis-bench: make_gps.py --version gps-v2
 3 chain [5]: 06_gps-acc-baseline_waiis-bench: run.py --row A
