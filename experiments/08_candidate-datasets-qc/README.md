@@ -73,7 +73,6 @@ This is a quality check. There are no models and no MLflow runs; findings are re
 5. Open decisions added: a ~20% NOR-TMD test set for vehicles and rail; a per-user cap per class (Collecty, check
    NOR-TMD); excluded foot labels kept as unlabelled context minutes; the within-class dataset-identification
    check as a required v2 check.
-6. Verdicts marked Draft — not approved, then committed.
 
 ## Results
 
@@ -404,27 +403,6 @@ window)
 - **v2 reader rule:** every iOS source is converted to the Android axis convention and m/s² in its reader
   (iOS × −9.80665, all three axes), before windows are cut. This covers ExtraSensory iPhones in v2 too.
 
-**Verdicts**
-
-**Draft — not approved** (NOR-TMD and Collecty; MobilitApp's verdict approved 2026-11-02).
-
-- **NOR-TMD: usable for training (Android only); usable as an external test for the vehicle classes only.**
-  - It is the largest addition where v1 is weakest: bus (70 users), subway (27), train (17), plus car (13) and
-    bike (6), from many device models, phone positions and two cities. Timing is clean (no backward steps, few
-    gaps), there are no duplicates, and the top user's share is at most 0.48 (bike), 0.06 for bus.
-  - **iOS is not usable** at the 25 Hz rule (5 Hz, 214 h). There is no still, walk or run.
-  - As a test set it can't give an 8-class or family score, only per-class recall on vehicles and bike.
-  - Commercial use verified (`LICENSES.md`).
-- **Collecty: usable for training as a small addition, not as an external test.**
-  - It adds car (13 users) and some train and bus, at a clean 88 Hz, with gyroscope.
-  - Against it: 5 or fewer users for every class except car, with top-user shares of 0.75–0.98; clock faults
-    handled by the approved repair rules (deviation 4); 15 duplicate files dropped; walk excluded.
-  - Commercial use verified (`LICENSES.md`).
-- **MobilitApp: not usable** (final, approved 2026-11-02).
-  - Gravity is removed and can't be restored (only phones without a linear sensor keep it).
-  - 56% of files have no sample times, and the volume is ~69 h rather than 298 h.
-  - Ids are phones or installations, and identical data appear under different labels.
-
 **Open decisions for v2**
 
 1. **Label mapping for new modes:** without MobilitApp, tram passes the candidate rule (37 users, 2 datasets,
@@ -465,8 +443,6 @@ window)
 10. **Gravity removal** matters only if WAIIS sends linear acceleration (MobilitApp is out either way).
 
 ## Conclusion
-
-**Draft — not approved.**
 
 **Answer.** Of the three candidates, **NOR-TMD (Android only) is the one worth adding to `waiis_bench_v2`**,
 Collecty is a small optional addition, and MobilitApp is out. None of them adds still, walk, iOS or GPS, so v2 still

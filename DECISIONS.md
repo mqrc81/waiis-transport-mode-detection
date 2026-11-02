@@ -203,15 +203,13 @@ pool of ~38 users; 5 draws; no paired bootstrap of the gains; rail can't be meas
 **Evidence.** `experiments/07_user-label-curve_waiis-bench/README.md` (Results, stop-point 2 and review;
 Conclusion).
 
-## 2026-11-02: Candidate data for waiis_bench_v2: NOR-TMD (Android), optionally Collecty; not MobilitApp
-
-**Draft — not approved.**
+## 2026-11-02: Candidate data for waiis_bench_v2: NOR-TMD (Android), Collecty; not MobilitApp
 
 **Decision.**
 - `waiis_bench_v2` adds **NOR-TMD, Android recordings only**, for training, and as a second test set for vehicles
   and rail (~20% of its installations, stratified with a minimum of users per class; picked once, before any v2
   model reads it).
-- **Collecty** may be added for training, with the approved clock repair, dedup and a per-user cap per class.
+- `waiis_bench_v2` adds **Collecty** for training, with the approved clock repair, dedup and a per-user cap per class.
 - **MobilitApp is not used.**
 - v1's 8 classes stay; tram is the only candidate for a new class and waits on which modes WAIIS needs.
 - **Every reader converts iOS accelerometers to the Android axis convention and m/s²** (× −9.80665).
