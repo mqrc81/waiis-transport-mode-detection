@@ -1,6 +1,6 @@
-# Transport mode detection
+# WAIIS Transport mode detection
 
-WAIIS research project: classify a person's transport mode (e.g. still, walk, run, bike, car, bus, train,
+Classify a person's transport mode (e.g. still, walk, run, bike, car, bus, train,
 metro) from smartphone sensor data. The phone records and uploads the data; the model runs on an edge server.
 Work is in Python, organised as one folder per experiment under `experiments/`, with shared code in `src/tmd`.
 
