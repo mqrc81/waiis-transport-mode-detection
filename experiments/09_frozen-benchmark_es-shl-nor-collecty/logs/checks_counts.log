@@ -4,28 +4,28 @@
 0   extrasensory         dev  android    bike     1464      7
 1   extrasensory         dev  android     bus      550     12
 2   extrasensory         dev  android     car     1831     15
-3   extrasensory         dev  android     run      394      9
+3   extrasensory         dev  android     run      107      6
 4   extrasensory         dev  android   still    36340     19
 5   extrasensory         dev  android   train       97      1
 6   extrasensory         dev  android    walk     4852     19
 7   extrasensory         dev      ios    bike     1654     10
 8   extrasensory         dev      ios     bus      798      9
 9   extrasensory         dev      ios     car     6197     23
-10  extrasensory         dev      ios     run       69      8
+10  extrasensory         dev      ios     run       48      6
 11  extrasensory         dev      ios   still    56390     28
 12  extrasensory         dev      ios   train       93      2
 13  extrasensory         dev      ios    walk     8257     28
 14  extrasensory        test  android    bike      230      2
 15  extrasensory        test  android     bus      239      5
 16  extrasensory        test  android     car      765      4
-17  extrasensory        test  android     run       43      3
+17  extrasensory        test  android     run       42      2
 18  extrasensory        test  android   still     6243      6
 19  extrasensory        test  android   train       50      2
 20  extrasensory        test  android    walk     2310      5
 21  extrasensory        test      ios    bike      646      4
 22  extrasensory        test      ios     bus       47      2
 23  extrasensory        test      ios     car     1365      6
-24  extrasensory        test      ios     run       38      2
+24  extrasensory        test      ios     run       32      1
 25  extrasensory        test      ios   still    13041      6
 26  extrasensory        test      ios    walk     1372      6
 27     shl_user1         dev  android    bike     2842      1
@@ -66,10 +66,10 @@
 class                             still  walk   run  bike   car   bus  train  subway  tram    all
 source       split      platform                                                                 
 collecty     dev        android       0     0    60    69  2596   253    252       0   153   3383
-extrasensory dev        android   36340  4852   394  1464  1831   550     97       0     0  45528
-                        ios       56390  8257    69  1654  6197   798     93       0     0  73458
-             test       android    6243  2310    43   230   765   239     50       0     0   9880
-                        ios       13041  1372    38   646  1365    47      0       0     0  16509
+extrasensory dev        android   36340  4852   107  1464  1831   550     97       0     0  45241
+                        ios       56390  8257    48  1654  6197   798     93       0     0  73437
+             test       android    6243  2310    42   230   765   239     50       0     0   9879
+                        ios       13041  1372    32   646  1365    47      0       0     0  16503
 nor_tmd      dev        android       0     0     0   405   405  5356    470    3288  1033  10957
              test       android       0     0     0     0   158  1908    128     738   289   3221
 shl_user1    dev        android    3366  3011  1030  2842  4058  3028   3353    2388     0  23076
@@ -87,7 +87,7 @@ collecty     bike             0.870    2.0        2.0
 extrasensory bike             0.173   23.0       21.0
              bus              0.188   28.0       25.0
              car              0.100   48.0       47.0
-             run              0.520   22.0       13.0
+             run              0.384   15.0        9.0
              still            0.054   59.0       59.0
              train            0.404    5.0        5.0
              walk             0.072   58.0       57.0

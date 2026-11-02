@@ -2,7 +2,7 @@
 
 `waiis_bench_v2` = `waiis_bench_v1` (04's decision register applies unchanged unless a row below says otherwise) plus
 NOR-TMD (Android) and Collecty, 9 fine classes, a six-class primary score and reserved set v3. Built at commit
-`c0956d6` (clean); 32 Parquet files, 5.63 GB; manifest `results/manifests/waiis_bench_v2.json`.
+`6d51dc2` (clean; with the run flag L5); 32 Parquet files, 5.63 GB; manifest `results/manifests/waiis_bench_v2.json`.
 
 - Code: `tmd.bench.build` (v1 section unchanged in effect, v2 section), window rules `tmd.candidates`.
 - Count tables: `results/tables/bench_v2/` (build), `results/tables/checks/` (checks).

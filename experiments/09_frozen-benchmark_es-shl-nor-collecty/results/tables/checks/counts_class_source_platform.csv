@@ -1,9 +1,9 @@
 source,split,platform,still,walk,run,bike,car,bus,train,subway,tram,all
 collecty,dev,android,0,0,60,69,2596,253,252,0,153,3383
-extrasensory,dev,android,36340,4852,394,1464,1831,550,97,0,0,45528
-extrasensory,dev,ios,56390,8257,69,1654,6197,798,93,0,0,73458
-extrasensory,test,android,6243,2310,43,230,765,239,50,0,0,9880
-extrasensory,test,ios,13041,1372,38,646,1365,47,0,0,0,16509
+extrasensory,dev,android,36340,4852,107,1464,1831,550,97,0,0,45241
+extrasensory,dev,ios,56390,8257,48,1654,6197,798,93,0,0,73437
+extrasensory,test,android,6243,2310,42,230,765,239,50,0,0,9879
+extrasensory,test,ios,13041,1372,32,646,1365,47,0,0,0,16503
 nor_tmd,dev,android,0,0,0,405,405,5356,470,3288,1033,10957
 nor_tmd,test,android,0,0,0,0,158,1908,128,738,289,3221
 shl_user1,dev,android,3366,3011,1030,2842,4058,3028,3353,2388,0,23076

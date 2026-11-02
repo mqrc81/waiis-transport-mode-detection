@@ -1,7 +1,7 @@
 {
  "version": "waiis_bench_v2",
  "built": "2026-11-02",
- "git_commit": "c0956d6ab01c41ab79dec6abe53620668d3e641a",
+ "git_commit": "6d51dc247123ac903a457a7533b77b9fafd3099d",
  "git_dirty": false,
  "builder": "experiments/09_frozen-benchmark_es-shl-nor-collecty/build.py (code: tmd.bench.build)",
  "params": {
@@ -42,6 +42,11 @@
    "collecty": [
     "Walk"
    ]
+  },
+  "run_user_flag": {
+   "rule": "user median window std |acc| over labelled run windows < reference",
+   "reference_ms2": 1.7116384506225586,
+   "reference": "ExtraSensory dev official walk windows, median acc_std"
   },
   "session_gap_s": 120,
   "gps_cadence": [
@@ -93,8 +98,8 @@
    "rows": 13427
   },
   "collecty/labels.parquet": {
-   "sha256": "001d4a378a69411022280d7c8c374af5555618cb9111695b116119e33eddab26",
-   "bytes": 338333,
+   "sha256": "6b68b875a1d73557e41f2820352d7bcfed6e166fe06bcc72e62b32e1620cf83b",
+   "bytes": 338881,
    "rows": 14249
   },
   "collecty/sessions.parquet": {
@@ -118,8 +123,8 @@
    "rows": 305747
   },
   "extrasensory/labels.parquet": {
-   "sha256": "ab4e44661cd240facdccd0ad0180680ecc4a99f9e1c3edd17fc9b0fc16bbaa41",
-   "bytes": 5635509,
+   "sha256": "d8ef7d5cdccc3ae9633ea345a03837ef112d1ab5859d3e30a8761b7143015281",
+   "bytes": 5636993,
    "rows": 377346
   },
   "extrasensory/location_features.parquet": {
@@ -143,8 +148,8 @@
    "rows": 17931
   },
   "nor_tmd/labels.parquet": {
-   "sha256": "9df5d3a8ac5a601c6040d009e9b20196b6d94712d4b8b8a66c02cb078a01eb73",
-   "bytes": 632043,
+   "sha256": "f68bd218fac5ec253be79abf0443a5f25dfcff20585c86efb9c1f3767d4362cc",
+   "bytes": 632655,
    "rows": 34969
   },
   "nor_tmd/sessions.parquet": {
@@ -188,8 +193,8 @@
    "rows": 80892
   },
   "shl_user1/labels.parquet": {
-   "sha256": "cbce50cdd4a8e83c357f8f4b89b3298709bbde5df421ccea59a75d4f394bd7dc",
-   "bytes": 797282,
+   "sha256": "26567442fadcdb91bfc4a7e1c7714ae55ecea3b407c7dd35fdfd69a31dfd6266",
+   "bytes": 797890,
    "rows": 36968
   },
   "shl_user1/sessions.parquet": {
@@ -233,8 +238,8 @@
    "rows": 5550
   },
   "shl_user23/labels.parquet": {
-   "sha256": "5d99482ba39e417f068399b0400ecc3852e6ede7b34ecbab08402817ce08b123",
-   "bytes": 79249,
+   "sha256": "f1f0a5a30a98aa86d80c4b5d708c151f38961b57795f30d2e134c30a85c5c887",
+   "bytes": 79788,
    "rows": 3024
   },
   "shl_user23/sessions.parquet": {

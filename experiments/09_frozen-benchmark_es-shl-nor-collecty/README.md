@@ -462,7 +462,8 @@ uv run pytest tests                        # 86 passed
 
 **Build**
 - **`waiis_bench_v2`:** `<data>/processed/waiis_bench_v2/`, 32 Parquet files, 5.63 GB.
-  - Built at commit **`c0956d6`, clean** (`git_dirty: false`).
+  - Built at commit **`c0956d6`, clean** (`git_dirty: false`); **rebuilt at `6d51dc2`** after the review with the
+    run flag. Only the 5 labels tables changed (all other files keep their sha256).
   - Reference manifest: `results/manifests/waiis_bench_v2.json`; `tmd.bench.verify("waiis_bench_v2")` is empty.
 - **Reproducible:** a second build (first one from `4167a7d`, discarded because the manifest was marked dirty by my
   stdout redirect) gave all 32 data files with the same sha256.
@@ -472,21 +473,23 @@ uv run pytest tests                        # 86 passed
   out-of-fold probabilities bit-identical); `verify(v1)` is intact.
 - **Rules and their effects:** `decision_register.md` (V1–V6, A1–A3, R1–R4, K1–K2, L1–L4, C1–C2, P1–P4, F1–F2).
 
-**Official examples** (`checks/counts_class_source_platform.csv`; SHL hips only, the default)
+**Official examples** (`checks/counts_class_source_platform.csv`; SHL hips only, the default; the final build at
+`6d51dc2`, with the run flag)
 
 | Source | Split | Platform | still | walk | run | bike | car | bus | train | subway | tram | all |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| ExtraSensory | dev | Android | 36,340 | 4,852 | 394 | 1,464 | 1,831 | 550 | 97 | – | – | 45,528 |
-| ExtraSensory | dev | iOS | 56,390 | 8,257 | 69 | 1,654 | 6,197 | 798 | 93 | – | – | 73,458 |
-| ExtraSensory | test | Android | 6,243 | 2,310 | 43 | 230 | 765 | 239 | **50** | – | – | 9,880 |
-| ExtraSensory | test | iOS | 13,041 | 1,372 | 38 | 646 | 1,365 | 47 | – | – | – | 16,509 |
+| ExtraSensory | dev | Android | 36,340 | 4,852 | 107 | 1,464 | 1,831 | 550 | 97 | – | – | 45,241 |
+| ExtraSensory | dev | iOS | 56,390 | 8,257 | 48 | 1,654 | 6,197 | 798 | 93 | – | – | 73,437 |
+| ExtraSensory | test | Android | 6,243 | 2,310 | 42 | 230 | 765 | 239 | **50** | – | – | 9,879 |
+| ExtraSensory | test | iOS | 13,041 | 1,372 | 32 | 646 | 1,365 | 47 | – | – | – | 16,503 |
 | SHL User 1 | dev | Android | 3,366 | 3,011 | 1,030 | 2,842 | 4,058 | 3,028 | 3,353 | 2,388 | – | 23,076 |
 | SHL Users 2–3 | rail check | Android | 487 | 427 | 45 | 199 | 339 | 150 | 360 | 358 | – | 2,365 |
 | NOR-TMD | dev | Android | – | – | – | 405 | 405 | 5,356 | 470 | 3,288 | 1,033 | 10,957 |
 | NOR-TMD | **test** | Android | – | – | – | – | 158 | 1,908 | 128 | 738 | 289 | 3,221 |
 | Collecty | dev | Android | – | – | 60 | 69 | 2,596 | 253 | 252 | – | 153 | 3,383 |
 
-- ExtraSensory is v1 minus the 5 windows under 24 Hz (all test user 1DBB0F6F: still 2, bus 1, train 2).
+- ExtraSensory is v1 minus the 5 windows under 24 Hz (all test user 1DBB0F6F: still 2, bus 1, train 2) and minus
+  the run windows of the 7 users the run flag hits (dev 308, test 7).
 - **Six-class view, dev** (all sources; v1 = ExtraSensory + SHL User 1 in parentheses): rail 11,127 (5,931: SHL
   5,741, NOR-TMD 4,791, Collecty 405, ExtraSensory 190), bus 9,985 (4,376), car 15,087 (12,086), bike 6,434 (5,960),
   foot 17,673 (17,613), still 96,096 (96,096).
@@ -697,14 +700,14 @@ windows per platform)
 **Draft — not approved.**
 
 **`waiis_bench_v2` is built and frozen:** `<data>/processed/waiis_bench_v2/`, 32 Parquet files, 5.63 GB, from clean
-commit `c0956d6`.
+commit `6d51dc2` (with the run flag; the stop-point 2 build at `c0956d6` differs only in the labels tables).
 - Reference manifest: `results/manifests/waiis_bench_v2.json`; a second build reproduced every file.
 - Read it with `tmd.bench` and `version="waiis_bench_v2"`; the default stays v1 until v2 is approved.
 - Every rule is in `decision_register.md`.
 
 | Source | Official examples | Role |
 |---|---|---|
-| `extrasensory` | 145,375 (59 users) | dev folds + 12 reserved test users (as v1; iPhone in the Android axis convention; 5 windows under 24 Hz flagged) |
+| `extrasensory` | 145,060 (59 users) | dev folds + 12 reserved test users (as v1; iPhone in the Android axis convention; 5 windows under 24 Hz and 7 run users flagged) |
 | `shl_user1` | 23,076 (+ 5,964 other-position windows, opt-in) | training (uncapped) |
 | `shl_user23` | 2,365 (+ 9,049 other-position windows) | rail check, per position |
 | `nor_tmd` | 14,178 (91 installations): dev 10,957, test 3,221 | training + second reserved test (bus, subway, train, tram, car) |
@@ -721,7 +724,13 @@ commit `c0956d6`.
   - **dataset shortcut:** source identification within class reaches AUC 0.82–0.96 (tram 0.52);
   - SHL User 1 carries 79% of dev train and 66% of run (its weight: an ablation);
   - thin test cells (NOR-TMD train 128 windows / 5 users, car 158 / 4; ExtraSensory train 50 / 2).
-- **Run labels:** 07's dev-vs-test gap comes mostly from one ExtraSensory dev user whose "run" moves like walking;
-  `run_low_energy` is proposed as a flag.
-- **Next:** decide the run flag; then the first model on v2 with SHL's weight as an ablation and a per-source /
-  shortcut report.
+- **Run labels:** 07's dev-vs-test gap came mostly from one ExtraSensory dev user whose "run" moves like walking.
+  Users whose run moves less than a typical walk now have no run labels (7 users; official run dev 463 → 155,
+  test 81 → 74).
+- **Primary score data:** six-class macro-F1 on ExtraSensory dev, pooled out of fold; guard: NOR-TMD dev on bus,
+  car and rail; the other sources reported separately.
+- **Next:** the first model on v2:
+  - rescore 06 on v2's labels as the baseline;
+  - SHL's weight as an ablation;
+  - the shortcut checks (ExtraSensory dev with and without the new datasets, still / walk precision against the
+    vehicles, NOR-TMD transfer).

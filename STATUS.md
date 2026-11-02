@@ -9,7 +9,7 @@
 - Data decisions: [decision register](experiments/04_frozen-benchmark_es-shl/decision_register.md).
 - Splits: [splits/README.md](splits/README.md).
 
-**`waiis_bench_v2`** (experiment 09; built at `c0956d6`, **at stop-point 2, not yet approved**; `tmd.bench`
+**`waiis_bench_v2`** (experiment 09; built at `6d51dc2`, **at stop-point 2, not yet approved**; `tmd.bench`
 `version="waiis_bench_v2"`, default still v1):
 - v1 + NOR-TMD (Android; 14 reserved installations) + Collecty; 9 fine classes (tram added); six-class primary
   score (still, foot, bike, car, bus, rail); reserved set `splits/reserved_test_v3.json`.
@@ -107,7 +107,11 @@ No models, no MLflow runs. Verdicts, Conclusion and DECISIONS.md entry **approve
 at stop-point 2, waiting for review.
 - **v1's references in the six-class score:** 05 test 0.642, dev 0.575; 06 test 0.686, dev 0.642.
 - **Dataset shortcut risk:** within-class source identification from 05's features has AUC 0.82–0.96 (tram 0.52).
-- **Run labels (07's open check):** one ExtraSensory dev user holds 61% of dev run windows, and they look like
-  walking. A flag is proposed (`run_low_energy`, not decided).
+- **Run labels (07's open check):** one ExtraSensory dev user held 61% of dev run windows, which move like walking.
+  Users whose run moves less than a typical walk have no run labels in v2 (7 users; official run dev 463 → 155,
+  test 81 → 74).
+- **Primary score data:** six-class macro-F1 on ExtraSensory dev, pooled out of fold (v1 refs: 05 0.575,
+  06 0.642); guard NOR-TMD dev (bus, car, rail); other sources reported separately.
+- **Before the default switches to v2:** every 04–08 script pins `waiis_bench_v1` (done; v1 gate passed).
 - After v2: the first model on it (InceptionTime + GPS fusion, LIMU-BERT from scratch, or 06 retrained), with SHL
   User 1's weight as an ablation; WAIIS labelling (07). Each has to beat 06 on the same test users and protocol.
