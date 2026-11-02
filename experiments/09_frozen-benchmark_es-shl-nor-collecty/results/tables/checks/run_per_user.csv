@@ -1,0 +1,24 @@
+source,user,platform,windows,std_acc_median,cadence_hz_median,cadence_share_2_3.5hz,05_bus,05_car,05_run,05_still,05_walk,06_bus,06_run,06_still,06_walk
+extrasensory dev,0A986513,iphone,6,2.9,1.9,0.17,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0
+extrasensory dev,1155FF54,android,1,0.28,3.47,1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0
+extrasensory dev,40E170A7,android,3,1.27,0.73,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0
+extrasensory dev,4FC32141,iphone,10,10.51,2.8,0.9,0.0,0.0,0.9,0.1,0.0,0.0,1.0,0.0,0.0
+extrasensory dev,5119D0F8,iphone,28,9.71,2.73,0.82,0.0,0.0,0.79,0.0,0.21,0.0,0.89,0.0,0.11
+extrasensory dev,59818CD2,android,8,11.61,2.8,0.75,0.0,0.0,0.88,0.0,0.12,0.0,0.88,0.0,0.12
+extrasensory dev,61976C24,iphone,1,3.88,2.53,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0
+extrasensory dev,74B86067,android,88,7.11,2.67,0.89,0.0,0.0,0.89,0.0,0.11,0.0,0.89,0.0,0.11
+extrasensory dev,797D145F,android,283,0.95,1.87,0.31,0.0,0.05,0.0,0.32,0.63,0.0,0.0,0.36,0.64
+extrasensory dev,7CE37510,iphone,2,5.58,2.17,0.5,0.0,0.0,0.0,0.0,1.0,0.5,0.0,0.0,0.5
+extrasensory dev,806289BC,android,1,2.34,2.2,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0
+extrasensory dev,A5A30F76,android,3,3.18,1.73,0.33,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0
+extrasensory dev,A76A5AF5,iphone,8,1.09,2.23,0.5,0.0,0.0,0.0,0.75,0.25,0.0,0.0,1.0,0.0
+extrasensory dev,B7F9D634,android,2,2.58,1.8,0.5,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0
+extrasensory dev,B9724848,iphone,13,0.99,1.93,0.38,0.0,0.0,0.0,0.31,0.69,0.0,0.0,0.31,0.69
+extrasensory dev,D7D20E2E,iphone,1,2.64,1.67,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0
+extrasensory dev,F50235E0,android,5,8.92,2.8,1.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0
+extrasensory test,098A72A5,iphone,32,11.83,2.87,0.88,,,,,,,,,
+extrasensory test,0BFC35E2,android,34,6.4,2.47,0.91,,,,,,,,,
+extrasensory test,1DBB0F6F,android,1,0.31,2.2,1.0,,,,,,,,,
+extrasensory test,665514DE,android,8,4.89,2.0,0.62,,,,,,,,,
+extrasensory test,B09E373F,iphone,6,0.42,2.6,0.67,,,,,,,,,
+shl_user1 dev,User1,android,1030,10.7,2.67,0.99,,,,,,,,,

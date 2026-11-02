@@ -1,17 +1,19 @@
-"""Clean-window rules for event-stream datasets (experiment 08; candidates for waiis_bench_v2).
+"""Clean-window rules for event-stream datasets (experiment 08; waiis_bench_v2's window definition, experiment 09).
 
 One definition for every dataset, following waiis_bench_v1 where it has a rule (04 decision register):
 - per clock minute one 15 s window centred in the minute (as for SHL in 04's build.py);
 - **single label** over the window (every event in it has the same label, and the trip covers the whole window);
-- **real accelerometer rate >= 25 Hz** over the window: distinct event times in it / 15 s;
+- **real accelerometer rate >= MIN_RATE_HZ** over the window: distinct event times in it / 15 s. 24 Hz since
+  experiment 09 (tolerance for nominal-25 Hz data with jitter); 08's tables were built at 25 Hz;
 - **no gap > 0.5 s**, including window start -> first event and last event -> window end;
-- resampled as in `tmd.resample`: linear interpolation onto a 100 Hz grid, then `decimate_100_to_25`. Deviation
-  from 04: the grid spans the window +- 1 s, not the whole stretch;
+- resampled as in v1 (04, SHL): every gap-free stretch (no gap > 0.5 s) is interpolated onto a 100 Hz grid from its
+  first event and decimated once (`decimate_100_to_25`); a window is the 375 samples from the first 25 Hz sample at
+  or after its start (`stretches25`). 08's tables used a window +- 1 s grid instead (08 deviation 1);
 - only windows with at least one accelerometer event are rows (empty minutes and tiles are not listed);
 - flags as in 04: `acc_implausible` (window median |acc| outside 7-20 m/s2, U3), `quiet` (std |acc| < 0.03 m/s2),
   `label_implausible` (quiet walk / run / bike, X3). `clean` = all rules met and neither flag set.
-Gyroscope "by the same rule": rate >= 25 Hz and no gap > 0.5 s over the same window. Magnetometer and barometer:
-at least one event in the window.
+Gyroscope "by the same rule": rate >= MIN_RATE_HZ and no gap > 0.5 s over the same window. Magnetometer and
+barometer: at least one event in the window.
 
 Clean hours (beside the minute grid): every trip is tiled into back-to-back 15 s windows from its first event;
 clean hours = clean tiles x 15 s.
@@ -26,9 +28,9 @@ from tmd.resample import DOWN, FS_IN, decimate_100_to_25
 WIN_S = 15.0
 FS = 25
 WIN = int(WIN_S * FS)          # 375
-MIN_RATE_HZ = 25.0
+MIN_RATE_HZ = 24.0
+RATE_STATUS = f"rate_below_{MIN_RATE_HZ:g}hz"
 MAX_GAP_S = 0.5
-PAD_S = 1.0                    # resampling margin on each side of the window
 ACC_PLAUSIBLE = (7.0, 20.0)    # m/s2, window median |acc| (04: U3)
 QUIET_STD = 0.03               # m/s2 (04)
 LABEL_QUIET_CLASSES = ["walk", "run", "bike"]   # 04: X3
@@ -45,15 +47,29 @@ def coverage(t: np.ndarray, lo: float, hi: float) -> tuple[float, float]:
     return len(tt) / (hi - lo), float(gaps.max())
 
 
-def resample_window(t: np.ndarray, xyz: np.ndarray, lo: float) -> np.ndarray:
-    """(375, 3) float32 at 25 Hz for [lo, lo + 15 s): interpolate onto 100 Hz over the window +- PAD_S (clipped to
-    the events), decimate, cut. t sorted, distinct."""
-    a = max(lo - PAD_S, t[0])
-    grid = a + np.arange(int((min(lo + WIN_S + PAD_S, t[-1]) - a) * FS_IN) + 1) / FS_IN
-    x = np.column_stack([np.interp(grid, t, xyz[:, k]) for k in range(3)])
-    x25 = decimate_100_to_25(x)
-    s = int(round((lo - a) * FS))
-    return x25[s:s + WIN]
+def stretches25(t: np.ndarray, xyz: np.ndarray) -> list[tuple[np.ndarray, np.ndarray]]:
+    """The gap-free stretches (no gap > MAX_GAP_S, at least one window long) of sorted, distinct event times t [s],
+    each interpolated onto a 100 Hz grid from its first event and decimated to 25 Hz: [(t25 [s], x25 (n, 3))]."""
+    cut = np.concatenate([[0], np.flatnonzero(np.diff(t) > MAX_GAP_S) + 1, [len(t)]])
+    out = []
+    for lo, hi in zip(cut[:-1], cut[1:]):
+        if t[hi - 1] - t[lo] < WIN_S:
+            continue
+        grid = t[lo] + np.arange(int((t[hi - 1] - t[lo]) * FS_IN) + 1) / FS_IN
+        x = np.column_stack([np.interp(grid, t[lo:hi], xyz[lo:hi, k]) for k in range(3)])
+        out.append((grid[::DOWN], decimate_100_to_25(x)))
+    return out
+
+
+def window_from(stretches: list, lo: float) -> tuple[np.ndarray | None, float]:
+    """The (375, 3) window from the first 25 Hz sample at or after lo, inside one stretch that starts at most
+    MAX_GAP_S after lo (the gap rule's edge tolerance); (None, nan) if none."""
+    for t25, x25 in stretches:
+        if t25[0] <= lo + MAX_GAP_S and t25[-1] >= lo:
+            s = int(np.searchsorted(t25, lo - 1e-9))
+            if s + WIN <= len(x25):
+                return x25[s:s + WIN], float(t25[s])
+    return None, np.nan
 
 
 def distinct(t: np.ndarray, xyz: np.ndarray) -> tuple[np.ndarray, np.ndarray, int, int]:
@@ -87,6 +103,7 @@ def trip_windows(t_acc: np.ndarray, acc: np.ndarray, label_t: np.ndarray, label:
         starts = t0 + np.arange(int((t1 - t0) // WIN_S)) * WIN_S
     # only windows that contain at least one event (a broken clock can make a trip span years)
     starts = starts[np.searchsorted(t, starts + WIN_S) > np.searchsorted(t, starts)]
+    st25 = stretches25(t, xyz)
     rows, wins = [], []
     for lo in starts:
         hi = lo + WIN_S
@@ -107,12 +124,14 @@ def trip_windows(t_acc: np.ndarray, acc: np.ndarray, label_t: np.ndarray, label:
         elif len(labs) != 1:
             r["status"] = "mixed_label" if len(labs) > 1 else "no_events"
         elif r["rate_hz"] < MIN_RATE_HZ:
-            r["status"] = "rate_below_25hz"
+            r["status"] = RATE_STATUS
         elif r["max_gap_s"] > MAX_GAP_S:
             r["status"] = "gap_over_0.5s"
+        elif (w := window_from(st25, lo))[0] is None:
+            r["status"] = "stretch_too_short"         # gap-free, but the 25 Hz grid ends before 375 samples
         else:
+            w, r["t_start_25hz"] = w
             r["status"] = "ok"
-            w = resample_window(t, xyz, lo)
             n = np.linalg.norm(w, axis=1)
             r["acc_median"], r["acc_std"] = float(np.median(n)), float(n.std())
             m = w.mean(0)

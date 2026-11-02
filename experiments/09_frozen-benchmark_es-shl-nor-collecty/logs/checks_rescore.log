@@ -1,0 +1,64 @@
+
+== rescore_per_seed
+   model  seed                         set  six_class_f1  eight_class_f1                     classes_6  recall_still  recall_foot  recall_bike  recall_car  recall_bus  recall_rail
+0     05     0           dev ES pooled OOF      0.578514        0.552105  still,foot,bike,car,bus,rail      0.879639     0.748154     0.762027    0.728824    0.339763     0.058511
+1     05     0  dev SHL User 1 (day folds)      0.948174        0.936318  still,foot,bike,car,bus,rail      0.777184     0.997030     0.996481    0.981518    0.946499     0.970563
+2     05     0                 test ES all      0.653053        0.675751  still,foot,bike,car,bus,rail      0.906492     0.715276     0.827626    0.757746    0.240418     0.403846
+3     05     0              test ES iPhone      0.752233        0.763170       still,foot,bike,car,bus      0.909670     0.809220     0.856037    0.758544    0.425532          NaN
+4     05     0             test ES Android      0.647961        0.669864  still,foot,bike,car,bus,rail      0.899839     0.658693     0.747826    0.775163    0.204167     0.403846
+5     05     0          test SHL Users 2-3      0.921000        0.796707  still,foot,bike,car,bus,rail      0.899384     0.995763     0.964824    0.988201    0.933333     0.855153
+6     05     1           dev ES pooled OOF      0.578429        0.551385  still,foot,bike,car,bus,rail      0.879066     0.746032     0.768786    0.724676    0.330119     0.064516
+7     05     1  dev SHL User 1 (day folds)      0.947751        0.936264  still,foot,bike,car,bus,rail      0.765894     0.997525     0.997537    0.981025    0.949802     0.974569
+8     05     1                 test ES all      0.641676        0.667175  still,foot,bike,car,bus,rail      0.905293     0.727079     0.833333    0.748826    0.216028     0.403846
+9     05     1              test ES iPhone      0.765812        0.773780       still,foot,bike,car,bus      0.909209     0.810638     0.856037    0.763296    0.468085          NaN
+10    05     1             test ES Android      0.642271        0.667316  still,foot,bike,car,bus,rail      0.897094     0.676772     0.769565    0.752941    0.166667     0.403846
+11    05     1          test SHL Users 2-3      0.916119        0.789743  still,foot,bike,car,bus,rail      0.891170     0.995763     0.964824    0.973451    0.893333     0.853760
+12    05     2           dev ES pooled OOF      0.576651        0.549955  still,foot,bike,car,bus,rail      0.880073     0.748467     0.760667    0.723996    0.321958     0.064516
+13    05     2  dev SHL User 1 (day folds)      0.942156        0.930742  still,foot,bike,car,bus,rail      0.730838     0.997278     0.996833    0.981272    0.944518     0.975788
+14    05     2                 test ES all      0.630717        0.656567  still,foot,bike,car,bus,rail      0.901500     0.721867     0.831050    0.746479    0.198606     0.403846
+15    05     2              test ES iPhone      0.734900        0.748182       still,foot,bike,car,bus      0.908059     0.809220     0.860681    0.755056    0.340426          NaN
+16    05     2             test ES Android      0.634156        0.658009  still,foot,bike,car,bus,rail      0.887765     0.669231     0.747826    0.760784    0.170833     0.403846
+17    05     2          test SHL Users 2-3      0.923990        0.798457  still,foot,bike,car,bus,rail      0.911704     0.995763     0.964824    0.985251    0.933333     0.845404
+18    06     0                 test ES all      0.690294        0.711177  still,foot,bike,car,bus,rail      0.949678     0.653734     0.853881    0.772449    0.266667     0.403846
+19    06     0              test ES iPhone      0.754694        0.766277       still,foot,bike,car,bus      0.962656     0.728369     0.888545    0.770696    0.425532          NaN
+20    06     0             test ES Android      0.659025        0.685885  still,foot,bike,car,bus,rail      0.922534     0.609010     0.756522    0.775591    0.235294     0.403846
+21    06     0          test SHL Users 2-3      0.946937        0.861097  still,foot,bike,car,bus,rail      0.856263     0.993644     0.969849    0.994100    0.953333     0.931755
+22    06     1                 test ES all      0.688889        0.709988  still,foot,bike,car,bus,rail      0.951284     0.659846     0.848174    0.763047    0.259649     0.403846
+23    06     1              test ES iPhone      0.762036        0.772367       still,foot,bike,car,bus      0.965954     0.714894     0.883901    0.757509    0.531915          NaN
+24    06     1             test ES Android      0.655465        0.682877  still,foot,bike,car,bus,rail      0.920597     0.626859     0.747826    0.772966    0.205882     0.403846
+25    06     1          test SHL Users 2-3      0.941018        0.831111  still,foot,bike,car,bus,rail      0.870637     0.993644     0.969849    0.985251    0.953333     0.902507
+26    06     2                 test ES all      0.678008        0.700679  still,foot,bike,car,bus,rail      0.950036     0.652936     0.855023    0.763517    0.238596     0.403846
+27    06     2              test ES iPhone      0.738396        0.752679       still,foot,bike,car,bus      0.964037     0.718440     0.891641    0.756044    0.425532          NaN
+28    06     2             test ES Android      0.648295        0.676720  still,foot,bike,car,bus,rail      0.920744     0.613685     0.752174    0.776903    0.201681     0.403846
+29    06     2          test SHL Users 2-3      0.944746        0.848803  still,foot,bike,car,bus,rail      0.876797     0.993644     0.964824    0.982301    0.993333     0.905292
+
+== rescore_dev_oof_per_seed
+   model  seed                         set  six_class_f1_oof  eight_class_f1_oof  examples six_class_ci_seed0
+0     05     0           dev ES pooled OOF          0.575288            0.552105    118986     [0.515, 0.619]
+1     05     0  dev SHL User 1 (day folds)          0.948174            0.936318     23076                NaN
+2     05     1           dev ES pooled OOF          0.574239            0.551385    118986                NaN
+3     05     1  dev SHL User 1 (day folds)          0.947751            0.936264     23076                NaN
+4     05     2           dev ES pooled OOF          0.575409            0.549955    118986                NaN
+5     05     2  dev SHL User 1 (day folds)          0.942156            0.930742     23076                NaN
+6     06     0           dev ES pooled OOF          0.642917            0.613138    118986     [0.583, 0.687]
+7     06     0  dev SHL User 1 (day folds)          0.957090            0.951832     23076                NaN
+8     06     1           dev ES pooled OOF          0.641683            0.615795    118986                NaN
+9     06     1  dev SHL User 1 (day folds)          0.954071            0.948791     23076                NaN
+10    06     2           dev ES pooled OOF          0.639983            0.611416    118986                NaN
+11    06     2  dev SHL User 1 (day folds)          0.953342            0.947506     23076                NaN
+
+== rescore_six_class
+                                  six_class_f1  eight_class_f1  seeds  six_class_f1_oof  eight_class_f1_oof six_class_ci_seed0
+model set                                                                                                                     
+05    dev ES pooled OOF                 0.5779          0.5511    3.0            0.5750              0.5511     [0.515, 0.619]
+      dev SHL User 1 (day folds)        0.9460          0.9344    3.0            0.9460              0.9344                NaN
+      test ES Android                   0.6415          0.6651    3.0               NaN                 NaN                NaN
+      test ES all                       0.6418          0.6665    3.0               NaN                 NaN                NaN
+      test ES iPhone                    0.7510          0.7617    3.0               NaN                 NaN                NaN
+      test SHL Users 2-3                0.9204          0.7950    3.0               NaN                 NaN                NaN
+06    dev ES pooled OOF                    NaN             NaN    NaN            0.6415              0.6134     [0.583, 0.687]
+      dev SHL User 1 (day folds)           NaN             NaN    NaN            0.9548              0.9494                NaN
+      test ES Android                   0.6543          0.6818    3.0               NaN                 NaN                NaN
+      test ES all                       0.6857          0.7073    3.0               NaN                 NaN                NaN
+      test ES iPhone                    0.7517          0.7638    3.0               NaN                 NaN                NaN
+      test SHL Users 2-3                0.9442          0.8470    3.0               NaN                 NaN                NaN

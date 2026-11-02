@@ -73,17 +73,23 @@ def pick_test_groups(counts: pd.DataFrame, n: int, valid: Callable[[pd.Index], b
 # 1: experiments/02_family-baseline_shl-es/splits/reserved_test.json, approved 2026-10-25 (experiment 02), superseded.
 # 2: splits/reserved_test_v2.json, ExtraSensory users re-picked in experiment 04, approved 2026-10-28.
 # The reference. SHL Users 2-3 are the same in both.
+# 3: splits/reserved_test_v3.json, waiis_bench_v2's reserved set (experiment 09): v2's ExtraSensory and SHL users plus
+# NOR-TMD test installations. The default stays 2 until waiis_bench_v2 is approved.
 RESERVED_FILES = {1: "experiments/02_family-baseline_shl-es/splits/reserved_test.json",
-                  2: "splits/reserved_test_v2.json"}
+                  2: "splits/reserved_test_v2.json",
+                  3: "splits/reserved_test_v3.json"}
 RESERVED_VERSION = 2
 
 
 def reserved_test(version: int = RESERVED_VERSION) -> dict[str, pd.DataFrame]:
     """The final-test set no experiment may train, tune or pre-train on: {"shl": user, day; "extrasensory": uuid,
-    platform}. SHL Users 2 and 3 are reserved with all their days and positions. version=1 reads the superseded
-    2026-10-25 set."""
+    platform}; version 3 adds "nor_tmd": user, model. SHL Users 2 and 3 are reserved with all their days and
+    positions. version=1 reads the superseded 2026-10-25 set."""
     import json
 
     from tmd.paths import PROJECT
     d = json.loads((PROJECT / RESERVED_FILES[version]).read_text())
-    return {"shl": pd.DataFrame(d["shl"], dtype=str), "extrasensory": pd.DataFrame(d["extrasensory"])}
+    out = {"shl": pd.DataFrame(d["shl"], dtype=str), "extrasensory": pd.DataFrame(d["extrasensory"])}
+    if "nor_tmd" in d:
+        out["nor_tmd"] = pd.DataFrame(d["nor_tmd"], dtype=str)
+    return out

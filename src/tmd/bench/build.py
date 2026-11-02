@@ -57,6 +57,7 @@ ACC_PLAUSIBLE = (7.0, 20.0)    # m/s2, window median |acc|
 LABEL_QUIET_CLASSES = ["walk", "run", "bike"]   # quiet window = phone not moving with the person
 QUIET_STD = 0.03               # m/s2, std of |acc| over the window
 OTHER_POSITIONS = ["Hand", "Torso", "Bag"]
+OTHER_POSITION_SOURCES = ("shl_user1",)   # sources whose 4phones days get other-position windows (v2: + shl_user23)
 COMPRESSION = "zstd"
 CLS_NAME = {v: k for k, v in CLASS_ID.items()}
 OFFICIAL_ACC = ("ok", "hole_trimmed")
@@ -439,8 +440,8 @@ def build_shl(source: str, workers: int, v0: float) -> None:
     say(f"== {source} ==")
     recs = shl_recordings(source)
     jobs = [(r, s, f, "Hips") for r, s, f in recs]
-    if source == "shl_user1":
-        jobs += [(r, s, f, p) for r, s, f in recs if r.session == "User1_4phones" for p in OTHER_POSITIONS
+    if source in OTHER_POSITION_SOURCES:
+        jobs += [(r, s, f, p) for r, s, f in recs if r.session.endswith("_4phones") for p in OTHER_POSITIONS
                  if p in r.positions]
     hips_s = acc_schema([pa.field("t_start_ms", pa.int64())] + STAT_FIELDS)
     other_s = acc_schema([pa.field("position", pa.string()), pa.field("t_start_ms", pa.int64()),
@@ -451,7 +452,7 @@ def build_shl(source: str, workers: int, v0: float) -> None:
                           ("x", pa.float32()), ("y", pa.float32()), ("z", pa.float32()), ("label", pa.int8())])
     status, locs, n_other = [], [], 0
     wo = (pq.ParquetWriter(out_path(source, "accelerometer_other_positions"), other_s, compression=COMPRESSION)
-          if source == "shl_user1" else None)
+          if source in OTHER_POSITION_SOURCES else None)
     with pq.ParquetWriter(out_path(source, "accelerometer"), hips_s, compression=COMPRESSION) as wh, \
             pq.ParquetWriter(out_path(source, "stream"), stream_s, compression=COMPRESSION) as wst, \
             ProcessPoolExecutor(workers) as ex:
@@ -673,3 +674,464 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# ================================================================ waiis_bench_v2 (experiment 09)
+# v2 runs v1's code above unchanged for ExtraSensory and SHL (into the v2 root), then adds v2's columns and rules
+# (`extend_v1_sources_v2`); NOR-TMD and Collecty enter through `tmd.candidates` (the one window definition) and the
+# same writers, flags and session tables (`build_new`). Rules and numbers: experiment 09's README and
+# decision_register.md.
+
+import pyarrow.compute as pc  # noqa: E402  (v2 only)
+
+V2 = "waiis_bench_v2"
+E09 = PROJECT / "experiments" / "09_frozen-benchmark_es-shl-nor-collecty"
+NEW_FOLDS = E09 / "splits" / "folds_nor_tmd_collecty.csv"     # approved 2026-11-02
+RESERVED_V3 = 3                                              # splits/reserved_test_v3.json
+NEW_SOURCES = ("nor_tmd", "collecty")
+IOS_TO_ANDROID = -1.0          # iOS accelerometers to the Android axis convention, after g -> m/s2 (08's reader rule)
+CAP_TOP_SHARE, CAP_FLOOR = 0.25, 60   # rule R2 (approved): per (dataset, class), dev users only
+NOR_ACC = ("accelerometer", "CMAccelerometerData")           # Android TYPE_ACCELEROMETER (m/s2), iOS (g)
+NOR_FINE = {"bicycle": "bike", "bus": "bus", "car": "car", "metro": "subway", "train": "train", "tram": "tram"}
+NOR_EXCLUDED = {"inside", "outside"}                         # conflict with v1's classes: unlabelled usable minutes
+COL_FINE = {"Run": "run", "Bike": "bike", "Car": "car", "Bus": "bus", "Train": "train", "Tramway": "tram"}
+COL_EXCLUDED = {"Walk"}                                      # includes standing
+
+
+def configure_v2(tables_dir: Path) -> None:
+    """Point the shared writers at the v2 root and v2's tables; SHL Users 2-3 get other-position windows too."""
+    global ROOT, RES, OTHER_POSITION_SOURCES
+    ROOT, RES = bench.root(V2), tables_dir
+    OTHER_POSITION_SOURCES = ("shl_user1", "shl_user23")
+    ROOT.mkdir(parents=True, exist_ok=True)
+    RES.mkdir(parents=True, exist_ok=True)
+
+
+def _negate_lists(tb: pa.Table, rows: np.ndarray) -> pa.Table:
+    """x, y, z list columns negated on the rows where `rows` is true (the iOS -> Android axis convention)."""
+    cols = {}
+    for c in ("x", "y", "z"):
+        col = tb.column(c).combine_chunks()
+        flat = col.flatten().to_numpy(zero_copy_only=False).astype(np.float32)
+        lens = np.asarray(pc.list_value_length(col).to_numpy(zero_copy_only=False), np.int64)
+        sign = np.repeat(np.where(rows, IOS_TO_ANDROID, 1.0).astype(np.float32), lens)
+        vals = pa.array(flat * sign, pa.float32())
+        cols[c] = (pa.FixedSizeListArray.from_arrays(vals, col.type.list_size)
+                   if isinstance(col.type, pa.FixedSizeListType)
+                   else pa.ListArray.from_arrays(pa.array(np.concatenate([[0], np.cumsum(lens)]).astype(np.int32)),
+                                                 vals))
+    for c, arr in cols.items():
+        tb = tb.set_column(tb.schema.get_field_index(c), c, arr)
+    return tb
+
+
+def _rewrite(source: str, table: str, fn) -> None:
+    """Read a v2 table written by v1's code, apply fn(pa.Table) -> pa.Table batch by batch, write it back."""
+    p = out_path(source, table)
+    tmp = p.with_suffix(".tmp.parquet")
+    pf = pq.ParquetFile(p)
+    writer = None
+    for b in pf.iter_batches(1 << 15):
+        t = fn(pa.Table.from_batches([b]))
+        if writer is None:
+            writer = pq.ParquetWriter(tmp, t.schema, compression=COMPRESSION)
+        writer.write_table(t)
+    writer.close()
+    tmp.replace(p)
+
+
+def _add(t: pa.Table, **cols) -> pa.Table:
+    for k, v in cols.items():
+        t = t.append_column(k, pa.array(v))
+    return t
+
+
+def _v2_label_defaults(lab: pd.DataFrame, dataset: str) -> pd.DataFrame:
+    """The columns v2 adds to every labels table, with the defaults for v1's sources (README, schema diff)."""
+    lab["dataset"] = dataset
+    lab["source_platform"] = np.where(lab.platform.eq("iphone"), "ios", lab.platform)
+    lab["sign_converted"] = lab.source_platform.eq("ios")
+    lab["cls_fine"] = lab.cls
+    lab["y_fine"] = lab.y.astype(np.int8)
+    lab["label_raw"] = lab.cls if "majority_cls" not in lab else np.where(lab.cls.ne(""), lab.cls, lab.majority_cls)
+    for c, v in (("label_excluded", False), ("user_capped", False), ("duplicate_dropped", False), ("dup_group", -1),
+                 ("clock_piece", 0), ("time_overlap", False), ("clock_wraps", 0), ("position_default", True)):
+        lab[c] = v
+    if "reason" not in lab:
+        lab["reason"] = ""
+    return lab
+
+
+def _position_draw(lab: pd.DataFrame, other: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+    """One random position per minute among the positions with a window (hips + other positions), seed SEED:
+    (draw for the labels rows, draw for the other-position rows)."""
+    hips = lab.loc[lab.has_acc, ["user", "ts"]].assign(position="hips")
+    cand = pd.concat([hips, other[["user", "ts", "position"]].assign(position=other.position.str.lower())])
+    cand = cand.sort_values(["user", "ts", "position"]).reset_index(drop=True)
+    rng = np.random.default_rng(SEED)
+    pick = cand.groupby(["user", "ts"]).position.transform(lambda s: s.iloc[rng.integers(len(s))])
+    chosen = cand[cand.position == pick].set_index(["user", "ts"]).position
+    key = pd.MultiIndex.from_frame(lab[["user", "ts"]])
+    d_lab = chosen.reindex(key).eq("hips").to_numpy() & lab.has_acc.to_numpy()
+    ko = pd.MultiIndex.from_frame(other[["user", "ts"]])
+    d_oth = chosen.reindex(ko).to_numpy() == other.position.str.lower().to_numpy()
+    return d_lab, d_oth
+
+
+def extend_v1_sources_v2() -> None:
+    """ExtraSensory and SHL in v2: v1's tables (just written by v1's code into the v2 root) plus v2's columns,
+    ExtraSensory iPhone windows and snippets in the Android axis convention, the >= 24 Hz rate rule, and SHL's
+    one-position-per-minute draw."""
+    from tmd import candidates as q
+    say("== v2 columns for ExtraSensory and SHL ==")
+    # ExtraSensory
+    lab = pd.read_parquet(out_path("extrasensory", "labels"))
+    acc = pd.read_parquet(out_path("extrasensory", "accelerometer"), columns=["user", "ts", "raw_rate_hz"])
+    lab = lab.merge(acc, on=["user", "ts"], how="left", validate="one_to_one")
+    lab = _v2_label_defaults(lab, "extrasensory")
+    lab["rate_below_24hz"] = lab.has_acc & (lab.raw_rate_hz < q.MIN_RATE_HZ)
+    lab["position_draw"] = lab.has_acc
+    was = lab.official.copy()
+    lab["official"] = lab.official & ~lab.rate_below_24hz
+    say(f"extrasensory: {int((was & ~lab.official).sum())} official windows below {q.MIN_RATE_HZ:g} Hz; "
+        f"{int(lab.sign_converted.sum())} iPhone minutes converted to the Android axis convention")
+    write(lab.drop(columns="raw_rate_hz"), "extrasensory", "labels")
+    plat = lab.set_index(["user", "ts"]).source_platform
+    pos = lab.set_index(["user", "ts"]).position
+    for table in ("accelerometer", "snippets"):
+        def fn(t, table=table):
+            key = pd.MultiIndex.from_arrays([t.column("user").to_pandas(), t.column("ts").to_pandas()])
+            ios = plat.reindex(key).eq("ios").to_numpy()
+            t = _negate_lists(t, ios)
+            extra = dict(dataset=["extrasensory"] * len(t), source_platform=np.where(ios, "ios", "android"),
+                         sign_converted=ios)
+            if table == "accelerometer":
+                extra["position"] = pos.reindex(key).fillna("").to_numpy()
+            return _add(t, **extra)
+        _rewrite("extrasensory", table, fn)
+    # SHL: hips labels / windows, other positions, draw
+    for src in ("shl_user1", "shl_user23"):
+        lab = _v2_label_defaults(pd.read_parquet(out_path(src, "labels")), "shl")
+        lab["rate_below_24hz"] = False                       # 100 Hz, NaN-free stretches
+        other = pd.read_parquet(out_path(src, "accelerometer_other_positions"),
+                                columns=["user", "ts", "position"])
+        d_lab, d_oth = _position_draw(lab, other)
+        lab["position_draw"] = d_lab
+        write(lab, src, "labels")
+        draw = lab.set_index(["user", "ts"]).position_draw
+        _rewrite(src, "accelerometer", lambda t: _add(
+            t, dataset=["shl"] * len(t), source_platform=["android"] * len(t), sign_converted=[False] * len(t),
+            position=["hips"] * len(t), position_draw=draw.reindex(pd.MultiIndex.from_arrays(
+                [t.column("user").to_pandas(), t.column("ts").to_pandas()])).fillna(False).to_numpy()))
+        state = {"i": 0}
+
+        def fo(t, d=d_oth, state=state):
+            n = len(t)
+            sel = d[state["i"]:state["i"] + n]
+            state["i"] += n
+            return _add(t, dataset=["shl"] * n, source_platform=["android"] * n, sign_converted=[False] * n,
+                        position_default=[False] * n, position_draw=sel)
+        _rewrite(src, "accelerometer_other_positions", fo)
+        say(f"{src}: other-position windows {len(other):,}; position draw keeps hips on "
+            f"{int(d_lab.sum()):,} of {int(lab.has_acc.sum()):,} hips minutes")
+
+
+# ---------------------------------------------------------------- NOR-TMD and Collecty (v2)
+
+def _trip(user, trip, t_ms, xyz, raw_label, meta, stream_ok=True):
+    """One trip (or clock piece): tmd.candidates' minute windows and the 25 Hz stream of its gap-free stretches with
+    a real rate >= the minimum. raw_label per accelerometer event."""
+    from tmd import candidates as q
+    t_ms = np.asarray(t_ms, np.int64)
+    o = np.argsort(t_ms, kind="stable")
+    t, xyz, lab = t_ms[o] / 1e3, np.asarray(xyz, float)[o], np.asarray(raw_label).astype(str)[o]
+    rows, w = q.trip_windows(t, xyz, t, lab, grid="minute")
+    if not len(rows):
+        return None, w, None
+    rows = rows.drop(columns=[c for c in rows.columns if c.startswith(("gyro_", "has_"))]).assign(
+        user=user, trip=trip, **meta)
+    st = None
+    if stream_ok:
+        tt, xx, _, _ = q.distinct(t, xyz)
+        parts = []
+        for k, (t25, x25) in enumerate(q.stretches25(tt, xx)):
+            i, j = np.searchsorted(tt, [t25[0], t25[-1] + 1e-9])
+            if (j - i) / max(t25[-1] - t25[0], 1e-9) < q.MIN_RATE_HZ:
+                continue                                    # e.g. NOR-TMD iOS at 5 Hz: no upsampled stream
+            idx = np.clip(np.searchsorted(t, t25, side="right") - 1, 0, len(lab) - 1)
+            parts.append(pd.DataFrame({"t_ms": np.round(t25 * 1e3).astype(np.int64), "stretch": np.int32(k),
+                                       "x": x25[:, 0], "y": x25[:, 1], "z": x25[:, 2], "raw_label": lab[idx]}))
+        if parts:
+            st = pd.concat(parts, ignore_index=True).assign(user=user, trip=trip)
+    return rows, w, st
+
+
+def nor_tmd_user(user: str):
+    """All trips of one NOR-TMD installation. Android in m/s2 as recorded; iOS from g to m/s2 and to the Android
+    axis convention (x -9.80665)."""
+    from tmd import nor_tmd
+    from tmd.resample import G
+    d = nor_tmd.stream(user, list(NOR_ACC))
+    d["sensor"], d["label"], d["position"] = d.sensor.astype(str), d.label.astype(str).str.lower(), \
+        d.position.astype(str).str.lower()
+    tr = nor_tmd.trips()
+    tr = tr[tr.user == user].groupby(["journey", "trip"]).agg(os=("os", "first"), manufacturer=("manufacturer", "first"),
+                                                              model=("model", "first"))
+    out = []
+    for (j, k), e in d.groupby(["journey", "trip"], observed=True):
+        info = tr.loc[(j, k)] if (j, k) in tr.index else None
+        ios = info is not None and str(info.os).lower() == "ios"
+        xyz = e[["x", "y", "z"]].to_numpy(float) * (IOS_TO_ANDROID * G if ios else 1.0)
+        meta = {"platform": "ios" if ios else "android", "model": "" if info is None else f"{info.manufacturer} {info.model}",
+                "position": e.position.mode().iloc[0] if len(e) else "", "clock_piece": 0, "clock_wraps": 0,
+                "sign_converted": ios, "duplicate_dropped": False, "dup_group": -1}
+        out.append(_trip(user, f"{j}_{k}", e.t_ms, xyz, e.label, meta))
+    return out
+
+
+def collecty_user(user: int):
+    """All trajectories of one Collecty user: total acceleration = acc + grav (stored by the converter), 12 h clock
+    wraps undone and pieces at other backward steps (tmd.collecty.repair_time); windows overlapping another piece's
+    span get status time_overlap; files dropped as duplicates are flagged, not windowed into the stream."""
+    from tmd import collecty
+    f = collecty.files()
+    dup = collecty.duplicates()
+    drop = dup[dup["drop"]].set_index(["user", "traj"]).group.to_dict()
+    groups = dup.set_index(["user", "traj"]).group.to_dict()
+    out = []
+    for traj in sorted(f.traj[f.user == user]):
+        a = collecty.stream(user, traj)
+        ta, piece, wraps, back = collecty.repair_time(a.t_ms.to_numpy())
+        xyz, lab = a[["ax", "ay", "az"]].to_numpy(), a.label.to_numpy()
+        dropped = (user, traj) in drop
+        spans = [(ta[piece == p].min(), ta[piece == p].max()) for p in np.unique(piece)]
+        for p, (lo, hi) in enumerate(spans):
+            k = piece == p
+            if k.sum() < 2:
+                continue
+            meta = {"platform": "android", "model": "", "position": "", "clock_piece": p, "clock_wraps": wraps,
+                    "sign_converted": False, "duplicate_dropped": dropped,
+                    "dup_group": int(groups.get((user, traj), -1))}
+            rows, w, st = _trip(str(user), str(traj), ta[k], xyz[k], lab[k], meta, stream_ok=not dropped)
+            if rows is not None:
+                others = [sp for i, sp in enumerate(spans) if i != p]
+                s0 = rows.t_start.to_numpy() * 1e3
+                ov = np.zeros(len(rows), bool)
+                for o0, o1 in others:
+                    ov |= (s0 < o1) & (s0 + 15_000 > o0)
+                ok_before = rows.status.eq("ok").to_numpy()
+                if (ov & ok_before).any():
+                    w = w[~ov[ok_before]]
+                rows.loc[ov, "status"] = "time_overlap"
+                if st is not None and others:
+                    tms = st.t_ms.to_numpy()
+                    keep = np.ones(len(st), bool)
+                    for o0, o1 in others:
+                        keep &= ~((tms >= o0) & (tms <= o1))
+                    st = st[keep]
+            out.append((rows, w, st))
+    return out
+
+
+def _cap_keep(df: pd.DataFrame, cap: float, rng) -> np.ndarray:
+    """Indices of df (one user, one class) to keep under the cap: a round-robin over the user's trips in a seeded
+    trip order, windows in time order within a trip."""
+    if len(df) <= cap:
+        return df.index.to_numpy()
+    trips = list(df.trip.unique())
+    rng.shuffle(trips)
+    queues = [list(df[df.trip == t].sort_values("ts").index) for t in trips]
+    keep = []
+    while len(keep) < cap:
+        for qu in queues:
+            if qu and len(keep) < cap:
+                keep.append(qu.pop(0))
+    return np.array(keep)
+
+
+def cap_r2(counts: pd.Series) -> float:
+    """Rule R2: the largest per-user cap with top-user share <= CAP_TOP_SHARE, floored at CAP_FLOOR; inf if the top
+    user already holds <= CAP_TOP_SHARE."""
+    if counts.max() / counts.sum() <= CAP_TOP_SHARE:
+        return np.inf
+    for c in range(int(counts.max()), CAP_FLOOR - 1, -1):
+        x = np.minimum(counts, c)
+        if x.max() / x.sum() <= CAP_TOP_SHARE:
+            return float(c)
+    return float(CAP_FLOOR)
+
+
+def build_new(source: str, workers: int) -> None:
+    """NOR-TMD or Collecty: labels (one row per user-minute), sessions, accelerometer, stream."""
+    from tmd import candidates as q
+    from tmd import collecty, nor_tmd
+    from tmd.labels import FINE_ID
+    say(f"== {source} ==")
+    users = nor_tmd.users() if source == "nor_tmd" else sorted(collecty.files().user.unique().tolist())
+    work = nor_tmd_user if source == "nor_tmd" else collecty_user
+    fine, excluded = (NOR_FINE, NOR_EXCLUDED) if source == "nor_tmd" else (COL_FINE, COL_EXCLUDED)
+    stream_s = pa.schema([("user", pa.string()), ("trip", pa.string()), ("stretch", pa.int32()), ("t_ms", pa.int64()),
+                          ("x", pa.float32()), ("y", pa.float32()), ("z", pa.float32()), ("label", pa.int8())])
+    rows = []
+    with pq.ParquetWriter(out_path(source, "stream"), stream_s, compression=COMPRESSION) as wst, \
+            ProcessPoolExecutor(workers) as ex:
+        for user, res in zip(users, ex.map(work, users)):
+            n_ok = 0
+            for r, w, st in res:
+                if r is None:
+                    continue
+                assert r.status.eq("ok").sum() == len(w)
+                rows.append((r, w))
+                n_ok += len(w)
+                if st is not None and len(st):
+                    lab = st.raw_label.map(fine).map(FINE_ID).fillna(0).astype(np.int8)
+                    st = st.assign(user=str(user), label=lab)[["user", "trip", "stretch", "t_ms", "x", "y", "z",
+                                                               "label"]]
+                    wst.write_table(pa.Table.from_pandas(st, schema=stream_s, preserve_index=False))
+            log.info(f"{source} {user}: {n_ok} windows")
+    # one table of rows, windows aligned to the ok rows
+    parts, warr = [], []
+    for r, w in rows:
+        ok = r.status.eq("ok").to_numpy()
+        r = r.copy()
+        r["win"] = -1
+        r.loc[ok, "win"] = np.arange(len(w)) + sum(len(x) for x in warr)
+        warr.append(w)
+        parts.append(r)
+    m = pd.concat(parts, ignore_index=True)
+    W = np.concatenate(warr) if warr else np.zeros((0, WIN, 3), np.float32)
+    m["user"] = m.user.astype(str)
+    m["ts"] = m.ts.astype(np.int64)
+    # one row per user-minute: an ok window wins over the other statuses, then the earlier trip
+    m["_ok"] = m.status.eq("ok")
+    m = m.sort_values(["user", "ts", "_ok", "t_start"], ascending=[True, True, False, True])
+    n_dup = int(m.duplicated(["user", "ts"]).sum())
+    m = m.drop_duplicates(["user", "ts"]).drop(columns="_ok").sort_values(["user", "ts"]).reset_index(drop=True)
+    say(f"{source}: {len(m):,} user-minutes ({n_dup} duplicate minutes across trips / pieces dropped)")
+    lab = pd.DataFrame({"user": m.user, "ts": m.ts, "dataset": source, "platform": m.platform,
+                        "source_platform": m.platform, "position": m.position, "trip": m.trip,
+                        "label_raw": m.label.astype(str), "acc_status": m.status, "t_start_ms":
+                            np.round(m.get("t_start_25hz", m.t_start).fillna(m.t_start) * 1e3).astype(np.int64),
+                        "raw_rate_hz": m.rate_hz.astype(np.float32), "max_gap_s": m.max_gap_s.astype(np.float32),
+                        "acc_median": m.acc_median.astype(np.float32), "acc_std": m.acc_std.astype(np.float32),
+                        "model": m.model, "sign_converted": m.sign_converted.astype(bool),
+                        "duplicate_dropped": m.duplicate_dropped.astype(bool), "dup_group": m.dup_group.astype(np.int32),
+                        "clock_piece": m.clock_piece.astype(np.int32), "clock_wraps": m.clock_wraps.astype(np.int32)})
+    lab["cls_fine"] = lab.label_raw.map(fine).fillna("")
+    lab["cls"] = lab.cls_fine.where(lab.cls_fine.isin(CLASSES), "")
+    lab["label_excluded"] = lab.label_raw.isin(excluded)
+    lab["reason"] = np.select([lab.cls_fine.ne(""), lab.label_excluded, lab.label_raw.str.contains("|", regex=False)],
+                              ["", "excluded:" + lab.label_raw, "mixed_label"], "no_class:" + lab.label_raw)
+    lab["time_overlap"] = lab.acc_status.eq("time_overlap")
+    lab["has_acc"] = lab.acc_status.eq("ok")
+    lab["rate_below_24hz"] = lab.raw_rate_hz < q.MIN_RATE_HZ
+    lab["acc_implausible"] = lab.has_acc & ~lab.acc_median.between(*ACC_PLAUSIBLE)
+    lab["quiet"] = lab.has_acc & (lab.acc_std < QUIET_STD)
+    lab["user_excluded"], lab["user_exclusion_reason"] = False, ""
+    lab["has_location"], lab["location_missing_reason"] = False, "no_gps_in_dataset"
+    lab["position_default"], lab["position_draw"] = True, lab.has_acc
+    # splits: reserved NOR-TMD installations are test; dev folds from the approved file (others -1, never scored)
+    test = set(reserved_test(RESERVED_V3)["nor_tmd"].user) if source == "nor_tmd" else set()
+    folds = pd.read_csv(NEW_FOLDS, dtype={"user": str})
+    folds = folds[folds.dataset == source].set_index("user").fold
+    lab["split"] = np.where(lab.user.isin(test), "test", "dev")
+    lab["fold"] = np.where(lab.split.eq("test"), -1, lab.user.map(folds).fillna(-1)).astype(np.int8)
+    lab["session"] = lab.groupby("user").trip.transform(lambda s: pd.factorize(s)[0]).astype(np.int32)
+    # caps (R2) on dev users, over the windows that would otherwise be official
+    lab["included_pre"] = lab.cls_fine.ne("") & ~lab.label_excluded & ~lab.duplicate_dropped
+    lab["label_implausible"] = lab.has_acc & lab.quiet & lab.cls.isin(LABEL_QUIET_CLASSES)
+    pre = (lab.included_pre & lab.has_acc & ~lab.acc_implausible & ~lab.label_implausible & lab.split.eq("dev"))
+    lab["user_capped"] = False
+    rng = np.random.default_rng(SEED)
+    caps = []
+    for c, g in lab[pre].groupby("cls_fine"):
+        per = g.groupby("user").size()
+        cap = cap_r2(per)
+        kept = 0
+        for u, gu in g.groupby("user"):
+            keep = _cap_keep(gu, cap, rng) if np.isfinite(cap) else gu.index.to_numpy()
+            lab.loc[gu.index.difference(keep), "user_capped"] = True
+            kept += len(keep)
+        caps.append({"dataset": source, "class": c, "dev_users": len(per), "windows": int(per.sum()),
+                     "cap": "" if np.isinf(cap) else int(cap), "kept": kept,
+                     "top_share_before": round(per.max() / per.sum(), 3),
+                     "top_share_after": round(np.minimum(per, cap).max() / np.minimum(per, cap).sum(), 3),
+                     "users_capped": int((per > cap).sum())})
+    table(pd.DataFrame(caps).set_index(["dataset", "class"]), f"{source}_caps", "R2 caps")
+    lab["included"] = lab.included_pre & ~lab.user_capped
+    lab["y"] = np.where(lab.included, lab.cls.map(CLASS_ID).fillna(0), 0).astype(np.int8)
+    lab["y_fine"] = np.where(lab.included, lab.cls_fine.map(FINE_ID).fillna(0), 0).astype(np.int8)
+    official_flags(lab, "included")
+    lead = ["user", "ts", "dataset", "platform", "source_platform", "position", "split", "fold", "session", "trip",
+            "cls", "y", "cls_fine", "y_fine", "official", "included", "has_acc", "acc_implausible",
+            "label_implausible", "user_excluded", "user_exclusion_reason", "acc_status", "quiet", "acc_median",
+            "acc_std", "raw_rate_hz", "max_gap_s", "rate_below_24hz", "label_raw", "label_excluded", "user_capped",
+            "duplicate_dropped", "dup_group", "clock_piece", "time_overlap", "clock_wraps", "sign_converted",
+            "position_default", "position_draw", "has_location", "location_missing_reason", "reason", "model",
+            "t_start_ms"]
+    lab = lab[lead]
+    write(lab, source, "labels")
+    write(sessions_table(lab, ["platform", "split", "fold", "trip"]), source, "sessions")
+    # windows of the has_acc rows, in label order
+    idx = m.win.to_numpy()
+    sel = lab.has_acc.to_numpy()
+    w = W[idx[sel]] if sel.any() else np.zeros((0, WIN, 3), np.float32)
+    meta = lab.loc[sel, ["user", "ts", "dataset", "source_platform", "sign_converted", "position", "raw_rate_hz",
+                         "max_gap_s", "t_start_ms", "acc_median", "acc_std", "acc_implausible", "quiet"]]
+    sch = acc_schema([pa.field("dataset", pa.string()), pa.field("source_platform", pa.string()),
+                      pa.field("sign_converted", pa.bool_()), pa.field("position", pa.string()),
+                      pa.field("raw_rate_hz", pa.float32()), pa.field("max_gap_s", pa.float32()),
+                      pa.field("t_start_ms", pa.int64())] + STAT_FIELDS)
+    with pq.ParquetWriter(out_path(source, "accelerometer"), sch, compression=COMPRESSION) as wa:
+        for s0 in range(0, len(meta), 8192):
+            wa.write_batch(acc_batch(sch, meta.iloc[s0:s0 + 8192], w[s0:s0 + 8192]))
+    new_report(source, lab)
+
+
+def new_report(source: str, lab: pd.DataFrame) -> None:
+    """Count tables for a new source (results/tables of 09)."""
+    from tmd.labels import FINE_CLASSES
+    ex = lab[lab.official]
+    order = [c for c in FINE_CLASSES if c in set(ex.cls_fine)]
+    table(pd.crosstab([ex.split, ex.source_platform], ex.cls_fine, margins=True).reindex(columns=order + ["All"]),
+          f"{source}_class_counts", "official examples")
+    table(pd.crosstab(lab.acc_status, lab.source_platform, margins=True), f"{source}_acc_status", "acc status")
+    ok = lab[lab.has_acc & lab.cls_fine.ne("")]
+    fl = ok.groupby("cls_fine")[["acc_implausible", "quiet", "label_implausible"]].mean().mul(100).round(2)
+    table(fl.reindex([c for c in FINE_CLASSES if c in fl.index]), f"{source}_flag_rates", "flag rates (% of windows)")
+    u = ex.groupby(["cls_fine", "user"]).size()
+    table(pd.DataFrame({"users": u.groupby(level=0).size(), "users_ge5": (u >= 5).groupby(level=0).sum(),
+                        "top_user_share": (u.groupby(level=0).max() / u.groupby(level=0).sum()).round(3)}),
+          f"{source}_users_per_class", "users per class (official)")
+
+
+def write_manifest_v2(commit: str, dirty: bool, v0: float | None) -> None:
+    from tmd import candidates as q
+    files = {}
+    for p in sorted(ROOT.rglob("*.parquet")):
+        rel = str(p.relative_to(ROOT))
+        files[rel] = {"sha256": bench.sha256(p), "bytes": p.stat().st_size, "rows": pq.ParquetFile(p).metadata.num_rows}
+    v1 = bench.reference_manifest("waiis_bench_v1")["files"]
+    same_as_v1 = sorted(f for f in files if f in v1 and files[f]["sha256"] == v1[f]["sha256"])
+    man = {"version": V2, "built": date.today().isoformat(), "git_commit": commit, "git_dirty": dirty,
+           "builder": "experiments/09_frozen-benchmark_es-shl-nor-collecty/build.py (code: tmd.bench.build)",
+           "params": {"rate_hz": FS, "window_samples": WIN, "window_s": WIN / FS, "seed": SEED, "label_rules": "v2",
+                      "fine_classes": "still walk run bike car bus train subway tram",
+                      "score6": "still foot(walk+run) bike car bus rail(train+subway+tram)",
+                      "still_cap": es.RESTING_STILL_MAX_SHARE, "acc_plausible_median_ms2": ACC_PLAUSIBLE,
+                      "quiet_std_ms2": QUIET_STD, "label_quiet_classes": LABEL_QUIET_CLASSES,
+                      "min_rate_hz": q.MIN_RATE_HZ, "max_gap_s": q.MAX_GAP_S, "excluded_users": es.EXCLUDED_USERS,
+                      "ios_to_android": "x (-1) after g -> m/s2", "cap_rule": {"top_share": CAP_TOP_SHARE,
+                                                                               "floor": CAP_FLOOR, "on": "dev users"},
+                      "excluded_labels": {"nor_tmd": sorted(NOR_EXCLUDED), "collecty": sorted(COL_EXCLUDED)},
+                      "session_gap_s": gps.SESSION_GAP_S, "gps_cadence": gps.CADENCE, "blank_v0": v0,
+                      "es_splits": "experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
+                      "shl_splits": "experiments/04_frozen-benchmark_es-shl/splits/shl_days.csv",
+                      "new_splits": "experiments/09_frozen-benchmark_es-shl-nor-collecty/splits/folds_nor_tmd_collecty.csv",
+                      "reserved_test": "splits/reserved_test_v3.json"},
+           "versions": {"numpy": np.__version__, "pandas": pd.__version__, "pyarrow": pa.__version__},
+           "files_identical_to_v1": same_as_v1, "files": files}
+    (ROOT / "manifest.json").write_text(json.dumps(man, indent=1))
+    pd.DataFrame(files).T.to_csv(RES / "manifest_files.csv")
+    say(f"manifest: {len(files)} files, {sum(f['bytes'] for f in files.values()) / 1e9:.2f} GB, commit {commit[:7]}"
+        f"{' (dirty)' if dirty else ''}; identical to v1: {len(same_as_v1)}")

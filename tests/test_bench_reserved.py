@@ -13,6 +13,7 @@ ACCESSORS = {  # accessor -> sources it applies to
     "unlabelled_minutes": bench.SOURCES,
     "snippets": ("extrasensory",),
     "shl_stream": ("shl_user1", "shl_user23"),
+    "stream": ("shl_user1", "shl_user23"),
     "shl_other_positions": ("shl_user1",),
     "shl_gps_1hz": ("shl_user1", "shl_user23"),
     "shl_gps_unblanked": ("shl_user1", "shl_user23"),
@@ -49,8 +50,8 @@ def test_accessor_never_returns_reserved_users(name, source):
         reserved_in_table = users & bench.reserved_users("extrasensory")
         assert reserved_in_table, "test is vacuous: the table has no reserved user to filter"
         got = set(bench.snippets(filters=[("user", "in", sorted(reserved_in_table))]).user)
-    elif name == "shl_stream" and source == "shl_user1":
-        got = set(bench.shl_stream(source, filters=[("rec", "==", "010317")]).user)
+    elif name in ("shl_stream", "stream") and source == "shl_user1":
+        got = set(getattr(bench, name)(source, filters=[("rec", "==", "010317")]).user)
     else:
         got = set(_call(name, source).user)
     assert not got & bench.reserved_users(source)

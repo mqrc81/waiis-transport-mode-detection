@@ -1,0 +1,13 @@
+model,set,six_class_f1,eight_class_f1,seeds,six_class_f1_oof,eight_class_f1_oof,six_class_ci_seed0
+05,dev ES pooled OOF,0.5779,0.5511,3.0,0.575,0.5511,"[0.515, 0.619]"
+05,dev SHL User 1 (day folds),0.946,0.9344,3.0,0.946,0.9344,
+05,test ES Android,0.6415,0.6651,3.0,,,
+05,test ES all,0.6418,0.6665,3.0,,,
+05,test ES iPhone,0.751,0.7617,3.0,,,
+05,test SHL Users 2-3,0.9204,0.795,3.0,,,
+06,dev ES pooled OOF,,,,0.6415,0.6134,"[0.583, 0.687]"
+06,dev SHL User 1 (day folds),,,,0.9548,0.9494,
+06,test ES Android,0.6543,0.6818,3.0,,,
+06,test ES all,0.6857,0.7073,3.0,,,
+06,test ES iPhone,0.7517,0.7638,3.0,,,
+06,test SHL Users 2-3,0.9442,0.847,3.0,,,

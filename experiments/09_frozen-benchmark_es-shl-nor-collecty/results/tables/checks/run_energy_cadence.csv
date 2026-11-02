@@ -1,0 +1,4 @@
+set,windows,users,std_acc_p25_p50_p75,cadence_hz_p25_p50_p75
+extrasensory dev,463,17,0.36 / 2.23 / 6.37,1.67 / 2.33 / 2.73
+extrasensory test,81,5,5.09 / 6.43 / 11.64,2.47 / 2.53 / 2.87
+shl_user1 dev,1030,1,9.52 / 10.70 / 12.17,2.60 / 2.67 / 2.67

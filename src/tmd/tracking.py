@@ -67,6 +67,12 @@ SPLITS = {
     "extrasensory_test_v2": "splits/reserved_test_v2.json",                                  # the reference
     "shl_user23_test_v2": "splits/reserved_test_v2.json",
     "extrasensory_dev_v2_draws07": "experiments/07_user-label-curve_waiis-bench/splits/draws.json",  # user draws
+    # waiis_bench_v2 (experiment 09): reserved set v3 (ExtraSensory + SHL as in v2, + NOR-TMD), new dev folds
+    "extrasensory_test_v3": "splits/reserved_test_v3.json",
+    "shl_user23_test_v3": "splits/reserved_test_v3.json",
+    "nor_tmd_test_v3": "splits/reserved_test_v3.json",
+    "nor_tmd_dev": "experiments/09_frozen-benchmark_es-shl-nor-collecty/splits/folds_nor_tmd_collecty.csv",
+    "collecty_dev": "experiments/09_frozen-benchmark_es-shl-nor-collecty/splits/folds_nor_tmd_collecty.csv",
     "shl_user1_03_training": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",     # legacy (03 only)
     "shl_user1_03_validation": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
     "shl_user1_03_test": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",

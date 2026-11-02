@@ -19,3 +19,17 @@ _FAM_LUT = np.array([0] + [FAMILIES.index(FAMILY_OF[c]) + 1 for c in CLASSES], d
 def to_family(y: np.ndarray) -> np.ndarray:
     """Map class ids (0..8, SHL coding) to family ids (0..5, 0 = Null)."""
     return _FAM_LUT[np.asarray(y)]
+
+# waiis_bench_v2 (experiment 09): 9 fine classes, which models train on (tram added, id 9), and the six-class
+# primary score, merged at scoring time. CLASSES / CLASS_ID above stay v1's 8 classes.
+FINE_CLASSES = CLASSES + ["tram"]
+FINE_ID = {c: i + 1 for i, c in enumerate(FINE_CLASSES)}   # still=1 ... subway=8, tram=9
+SCORE6 = ["still", "foot", "bike", "car", "bus", "rail"]
+SCORE6_OF = {"still": "still", "walk": "foot", "run": "foot", "bike": "bike", "car": "car", "bus": "bus",
+             "train": "rail", "subway": "rail", "tram": "rail"}
+_SCORE6_LUT = np.array([0] + [SCORE6.index(SCORE6_OF[c]) + 1 for c in FINE_CLASSES], dtype=np.int8)
+
+
+def to_score6(y: np.ndarray) -> np.ndarray:
+    """Map fine class ids (0..9, FINE_ID) to six-class ids (0..6, SCORE6 order; 0 stays 0)."""
+    return _SCORE6_LUT[np.asarray(y)]

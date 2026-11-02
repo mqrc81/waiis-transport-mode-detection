@@ -443,6 +443,11 @@ window)
    person on both sides (also for the test set in 5).
 10. **Gravity removal** matters only if WAIIS sends linear acceleration (MobilitApp is out either way).
 
+**Note (2026-11-02, experiment 09):** `tmd.candidates` became waiis_bench_v2's window definition. Its minimum
+rate is now 24 Hz (was 25), and it resamples per gap-free stretch as v1 does (was: window ± 1 s, deviation 1
+above). Rerunning 08's `build_windows.py` / `report.py` therefore gives slightly different numbers from the tables
+above, which were built at commit `4bf8f68`.
+
 ## Conclusion
 
 **Answer.** Of the three candidates, **NOR-TMD (Android only) is the one worth adding to `waiis_bench_v2`**,

@@ -1,0 +1,34 @@
+
+== run_energy_cadence
+                   windows  users   std_acc_p25_p50_p75 cadence_hz_p25_p50_p75
+set                                                                           
+extrasensory dev       463     17    0.36 / 2.23 / 6.37     1.67 / 2.33 / 2.73
+extrasensory test       81      5   5.09 / 6.43 / 11.64     2.47 / 2.53 / 2.87
+shl_user1 dev         1030      1  9.52 / 10.70 / 12.17     2.60 / 2.67 / 2.67
+
+== run_per_user
+                           platform  windows  std_acc_median  cadence_hz_median  cadence_share_2_3.5hz  05_bus  05_car  05_run  05_still  05_walk  06_bus  06_run  06_still  06_walk
+source            user                                                                                                                                                              
+extrasensory dev  0A986513   iphone        6            2.90               1.90                   0.17     0.0    0.00    0.00      0.00     1.00     0.0    0.00      0.00     1.00
+                  1155FF54  android        1            0.28               3.47                   1.00     0.0    0.00    0.00      1.00     0.00     0.0    0.00      1.00     0.00
+                  40E170A7  android        3            1.27               0.73                   0.00     0.0    0.00    0.00      0.00     1.00     0.0    0.00      0.00     1.00
+                  4FC32141   iphone       10           10.51               2.80                   0.90     0.0    0.00    0.90      0.10     0.00     0.0    1.00      0.00     0.00
+                  5119D0F8   iphone       28            9.71               2.73                   0.82     0.0    0.00    0.79      0.00     0.21     0.0    0.89      0.00     0.11
+                  59818CD2  android        8           11.61               2.80                   0.75     0.0    0.00    0.88      0.00     0.12     0.0    0.88      0.00     0.12
+                  61976C24   iphone        1            3.88               2.53                   1.00     0.0    0.00    0.00      0.00     1.00     0.0    0.00      0.00     1.00
+                  74B86067  android       88            7.11               2.67                   0.89     0.0    0.00    0.89      0.00     0.11     0.0    0.89      0.00     0.11
+                  797D145F  android      283            0.95               1.87                   0.31     0.0    0.05    0.00      0.32     0.63     0.0    0.00      0.36     0.64
+                  7CE37510   iphone        2            5.58               2.17                   0.50     0.0    0.00    0.00      0.00     1.00     0.5    0.00      0.00     0.50
+                  806289BC  android        1            2.34               2.20                   1.00     0.0    0.00    0.00      0.00     1.00     0.0    0.00      0.00     1.00
+                  A5A30F76  android        3            3.18               1.73                   0.33     0.0    0.00    0.00      0.00     1.00     0.0    0.00      0.00     1.00
+                  A76A5AF5   iphone        8            1.09               2.23                   0.50     0.0    0.00    0.00      0.75     0.25     0.0    0.00      1.00     0.00
+                  B7F9D634  android        2            2.58               1.80                   0.50     0.0    0.00    0.00      1.00     0.00     0.0    0.00      0.00     1.00
+                  B9724848   iphone       13            0.99               1.93                   0.38     0.0    0.00    0.00      0.31     0.69     0.0    0.00      0.31     0.69
+                  D7D20E2E   iphone        1            2.64               1.67                   0.00     1.0    0.00    0.00      0.00     0.00     1.0    0.00      0.00     0.00
+                  F50235E0  android        5            8.92               2.80                   1.00     0.0    0.00    1.00      0.00     0.00     0.0    1.00      0.00     0.00
+extrasensory test 098A72A5   iphone       32           11.83               2.87                   0.88     NaN     NaN     NaN       NaN      NaN     NaN     NaN       NaN      NaN
+                  0BFC35E2  android       34            6.40               2.47                   0.91     NaN     NaN     NaN       NaN      NaN     NaN     NaN       NaN      NaN
+                  1DBB0F6F  android        1            0.31               2.20                   1.00     NaN     NaN     NaN       NaN      NaN     NaN     NaN       NaN      NaN
+                  665514DE  android        8            4.89               2.00                   0.62     NaN     NaN     NaN       NaN      NaN     NaN     NaN       NaN      NaN
+                  B09E373F   iphone        6            0.42               2.60                   0.67     NaN     NaN     NaN       NaN      NaN     NaN     NaN       NaN      NaN
+shl_user1 dev     User1     android     1030           10.70               2.67                   0.99     NaN     NaN     NaN       NaN      NaN     NaN     NaN       NaN      NaN
