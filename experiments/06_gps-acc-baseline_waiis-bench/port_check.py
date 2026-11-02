@@ -1,4 +1,4 @@
-"""Port check: tmd.lgbm + tmd.minutes (moved from 05's pipeline.py) retrain 05's B (seed 0) and must reproduce 05's
+"""Port check: tmd.models.lgbm + tmd.models.minutes (moved from 05's pipeline.py) retrain 05's B (seed 0) and must reproduce 05's
 saved out-of-fold probabilities bit-identically, before (B) and after the HMM (F_fb).
 
     uv run python port_check.py          # logs/port_check.log
@@ -10,8 +10,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tmd import acc_features as af
-from tmd import lgbm, minutes
+from tmd.features import acc as af
+from tmd.models import lgbm
+from tmd.models import minutes
 from tmd.paths import PROCESSED
 
 BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default

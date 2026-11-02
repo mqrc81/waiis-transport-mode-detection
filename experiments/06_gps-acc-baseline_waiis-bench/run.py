@@ -29,9 +29,10 @@ import mlflow
 import numpy as np
 import pipe
 
-from tmd import acc_features as af
-from tmd import gps_features as gf
-from tmd import lgbm, minutes
+from tmd.features import acc as af
+from tmd.features import gps as gf
+from tmd.models import lgbm
+from tmd.models import minutes
 from tmd.evaluate import scores
 from tmd.progress import Progress
 from tmd.tracking import run

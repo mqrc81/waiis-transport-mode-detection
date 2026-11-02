@@ -58,7 +58,7 @@ def test_accessor_never_returns_reserved_users(name, source):
 
 
 def test_excluded_users_never_official_or_pretraining():
-    from tmd.extrasensory import EXCLUDED_USERS
+    from tmd.readers.extrasensory import EXCLUDED_USERS
     try:
         bench.path("extrasensory", "labels")
     except FileNotFoundError:
@@ -118,7 +118,7 @@ def test_v2_reserved_set_has_nor_tmd_and_keeps_v2_users():
 
 
 def test_v2_excluded_users_never_official_or_pretraining():
-    from tmd.extrasensory import EXCLUDED_USERS
+    from tmd.readers.extrasensory import EXCLUDED_USERS
     if not _v2_built():
         pytest.skip(f"{V2} is not built on this machine")
     assert not set(bench.examples("extrasensory", version=V2).user) & set(EXCLUDED_USERS)

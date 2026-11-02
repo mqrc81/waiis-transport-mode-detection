@@ -9,7 +9,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from tmd.features import CHANNELS, NAMES
+from tmd.features.base import CHANNELS, NAMES
 from tmd.windows import STRIDE_S
 
 HORIZON_S = 60.0

@@ -1,4 +1,4 @@
-"""GPS feature tables (tmd.gps_features, gps-v1 / gps-v2) for every usable minute of 05's feature tables (same rows, same order).
+"""GPS feature tables (tmd.features.gps, gps-v1 / gps-v2) for every usable minute of 05's feature tables (same rows, same order).
 
     uv run python make_gps.py                       # dev: extrasensory, shl_user1
     uv run python make_gps.py --part test           # stop-point 3 only: extrasensory test users, shl_user23
@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from tmd import bench
-from tmd import gps_features as gf
+from tmd.features import gps as gf
 from tmd.paths import PROCESSED
 
 BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default

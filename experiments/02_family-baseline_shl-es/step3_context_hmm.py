@@ -21,10 +21,10 @@ import numpy as np
 import pandas as pd
 
 from eval_tables import es_label_v2, evaluate
-from tmd import hmm
+from tmd.models import hmm
 from context import CTX_NAMES, StreamingContext, context_features, sequence_id, window_time_s
 from tmd.evaluate import inference_latency, latency_ms, model_size_bytes
-from tmd.features import FEATURES_VERSION, NAMES, window_features
+from tmd.features.base import FEATURES_VERSION, NAMES, window_features
 from tmd.paths import PROCESSED
 from tmd.tracking import run
 

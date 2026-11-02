@@ -28,9 +28,11 @@ import lightgbm as lgb
 import matplotlib.pyplot as plt
 import mlflow
 import numpy as np
-from tmd import acc_features as af
-from tmd import bench, lgbm, minutes
-from tmd import gps_features as gf
+from tmd.features import acc as af
+from tmd import bench
+from tmd.models import lgbm
+from tmd.models import minutes
+from tmd.features import gps as gf
 from tmd.evaluate import (
     bootstrap_users_diff,
     bootstrap_users_recall,

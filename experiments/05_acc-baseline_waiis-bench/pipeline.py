@@ -15,8 +15,9 @@ import numpy as np
 import pandas as pd
 from make_features import OUT, table_path
 
-from tmd import acc_features as af
-from tmd import bench, hmm
+from tmd.features import acc as af
+from tmd import bench
+from tmd.models import hmm
 from tmd.evaluate import (
     bootstrap_users_diff,
     bootstrap_users_recall,

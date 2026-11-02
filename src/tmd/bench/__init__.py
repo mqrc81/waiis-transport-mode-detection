@@ -1,8 +1,7 @@
 """Reader for the frozen benchmark waiis_bench_v1 (built by experiments/04_frozen-benchmark_es-shl/build.py).
 
 Package layout (experiment 09): this module is the reader API, unchanged; `tmd.bench.build` holds the build code.
-The per-dataset readers stay top-level modules (`tmd.extrasensory`, `tmd.shl`, `tmd.nor_tmd`, `tmd.collecty`), as do
-the window rules (`tmd.candidates`).
+The per-dataset readers are in `tmd.readers`, the window rules in `tmd.candidates`.
 
     <data>/processed/waiis_bench_v1/manifest.json                 parameters, git commit, sha256 of every file
     <data>/processed/waiis_bench_v1/<source>/<table>.parquet       source in SOURCES
@@ -12,7 +11,7 @@ kept, with flags), `accelerometer` one 15 s window (375 x 3, m/s2, 25 Hz) per mi
 
 Accessors:
 - `examples(source)`: **the official example set** (the `official` column). It includes the reserved test users,
-  marked by `split`, because evaluation needs them. Excluded users (tmd.extrasensory.EXCLUDED_USERS) are never in it.
+  marked by `split`, because evaluation needs them. Excluded users (tmd.readers.extrasensory.EXCLUDED_USERS) are never in it.
 - `pretraining_minutes`, `unlabelled_minutes` and the extras (`snippets`, `shl_stream`, `shl_other_positions`,
   `shl_gps_1hz`, `shl_gps_unblanked`): **exclude the reserved test users by default** (`tmd.splits.reserved_test()`:
   12 ExtraSensory users, SHL Users 2-3; include_reserved=True only for evaluation) and always the excluded users.
@@ -117,7 +116,7 @@ def drop_reserved(df: pd.DataFrame, source: str, version: str = VERSION) -> pd.D
 
 def _guard(df: pd.DataFrame, source: str, include_reserved: bool, version: str = VERSION) -> pd.DataFrame:
     """Drop the reserved test users (unless include_reserved) and, always, the excluded users."""
-    from tmd.extrasensory import EXCLUDED_USERS
+    from tmd.readers.extrasensory import EXCLUDED_USERS
     df = df if include_reserved else drop_reserved(df, source, version)
     return df[~df.user.isin(EXCLUDED_USERS)].reset_index(drop=True)
 

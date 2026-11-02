@@ -22,7 +22,8 @@ import numpy as np
 import pandas as pd
 import pipe
 
-from tmd import lgbm, minutes
+from tmd.models import lgbm
+from tmd.models import minutes
 from tmd.evaluate import bootstrap_users_diff, family_proba, scores
 from tmd.labels import to_family
 from tmd.progress import Progress

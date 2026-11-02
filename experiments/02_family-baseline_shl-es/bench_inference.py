@@ -11,7 +11,7 @@ import mlflow
 import numpy as np
 
 from tmd.evaluate import inference_latency, model_size_bytes
-from tmd.features import FEATURES_VERSION, window_features
+from tmd.features.base import FEATURES_VERSION, window_features
 from tmd.paths import PROCESSED
 from tmd.tracking import TRACKING_URI
 

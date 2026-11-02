@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 
 from tmd.evaluate import bootstrap_users, family_proba, inference_latency, model_size_bytes, plot_cm, scores
-from tmd.features import FEATURES_VERSION, NAMES, window_features
+from tmd.features.base import FEATURES_VERSION, NAMES, window_features
 from tmd.labels import CLASSES, FAMILIES, to_family
 from tmd.paths import PROCESSED
 from tmd.tracking import run

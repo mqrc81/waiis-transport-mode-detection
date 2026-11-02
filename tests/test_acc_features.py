@@ -1,11 +1,11 @@
-"""tmd.acc_features: block sizes, agreement with features v1, and invariance to axis sign and order."""
+"""tmd.features.acc: block sizes, agreement with features v1, and invariance to axis sign and order."""
 import itertools
 
 import numpy as np
 import pytest
 
-from tmd import acc_features as af
-from tmd.features import NAMES, window_features
+from tmd.features import acc as af
+from tmd.features.base import NAMES, window_features
 
 
 def _windows(n=6, t=375, seed=0):

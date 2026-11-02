@@ -12,9 +12,9 @@ import mlflow
 import numpy as np
 import pandas as pd
 
-from tmd import extrasensory as es
+from tmd.readers import extrasensory as es
 from tmd.evaluate import bootstrap_users, family_proba, plot_cm, scores
-from tmd.features import FEATURES_VERSION
+from tmd.features.base import FEATURES_VERSION
 from tmd.labels import CLASSES, FAMILIES, to_family
 from tmd.paths import PROCESSED
 from tmd.tracking import run

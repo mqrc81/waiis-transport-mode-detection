@@ -5,7 +5,8 @@ iOS -> Android transform (all axes negated) and an axis swap, on 500 dev windows
     uv run python sign_check.py      # -> results/tables/es_still_mean_z.csv
 """
 import numpy as np, pandas as pd
-from tmd import bench, acc_features as af
+from tmd import bench
+from tmd.features import acc as af
 
 BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
 e = bench.examples("extrasensory", version=BENCH)

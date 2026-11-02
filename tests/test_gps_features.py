@@ -1,8 +1,8 @@
-"""tmd.gps_features on synthetic one-fix-per-minute tracks."""
+"""tmd.features.gps on synthetic one-fix-per-minute tracks."""
 import numpy as np
 import pandas as pd
 
-from tmd import gps_features as gf
+from tmd.features import gps as gf
 
 LAT0, M_PER_DEG = 50.0, 111_195.0
 

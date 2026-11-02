@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tmd import shl
+from tmd.readers import shl
 from tmd.labels import CLASSES
 
 HERE = Path(__file__).resolve().parent

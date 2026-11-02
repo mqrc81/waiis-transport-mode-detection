@@ -32,8 +32,10 @@ import pandas as pd
 from sklearn.metrics import f1_score
 
 from draws import DRAWS, ES_EXTRA, GPS_V, K, NS, load_draws, train_users
-from tmd import fusion, lgbm, minutes
-from tmd import gps_features as gf
+from tmd.models import fusion
+from tmd.models import lgbm
+from tmd.models import minutes
+from tmd.features import gps as gf
 from tmd.evaluate import CLASS_IDS, FAMILY_IDS, bootstrap_users_recall, family_proba, model_size_bytes, plot_cm, \
     scores
 from tmd.labels import CLASSES, FAMILIES, to_family

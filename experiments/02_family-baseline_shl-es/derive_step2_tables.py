@@ -12,8 +12,8 @@ import argparse
 import numpy as np
 import pandas as pd
 
-from tmd import extrasensory as es_mod
-from tmd.features import FEATURES_VERSION, NAMES
+from tmd.readers import extrasensory as es_mod
+from tmd.features.base import FEATURES_VERSION, NAMES
 from tmd.labels import CLASS_ID
 from tmd.paths import PROCESSED
 

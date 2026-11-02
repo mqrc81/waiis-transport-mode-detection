@@ -3,7 +3,7 @@
     uv run python convert.py collecty [--workers 6]
     uv run python convert.py nor_tmd
 
-Output: <data>/processed/<dataset>_events_*/ (see tmd.collecty, tmd.nor_tmd). Full log in logs/convert_<dataset>.log.
+Output: <data>/processed/<dataset>_events_*/ (see tmd.readers.collecty, tmd.readers.nor_tmd). Full log in logs/convert_<dataset>.log.
 """
 import argparse
 import logging
@@ -30,14 +30,14 @@ def main() -> None:
                         format="%(asctime)s %(message)s")
     t0 = time.time()
     if a.dataset == "collecty":
-        from tmd import collecty as c
+        from tmd.readers import collecty as c
         jobs = c.members()
         prog = Progress(EXP, "convert_collecty", total=len(jobs), log=log)
         files = c.convert(a.workers, progress=lambda r: prog.step(f"{r['user']}_{r['traj']}"))
         out = c.OUT
         summary = f"{len(files)} files, {files.rows.sum():,} rows, {files.acc_events.sum():,} acc events"
     else:
-        from tmd import nor_tmd as n
+        from tmd.readers import nor_tmd as n
         prog = Progress(EXP, "convert_nor_tmd", total=n.ZIP_MEMBER_BYTES // n.CHUNK_BYTES + 1, log=log)
         summary = n.convert(progress=prog.step)
         out = n.OUT

@@ -27,7 +27,7 @@ import pandas as pd
 import pipeline as pl
 from make_features import load_windows
 
-from tmd import acc_features as af
+from tmd.features import acc as af
 from tmd.evaluate import inference_latency, pipeline_latency
 from tmd.tracking import run
 

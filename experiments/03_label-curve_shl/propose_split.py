@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tmd import shl
+from tmd.readers import shl
 from tmd.labels import CLASSES
 from tmd.paths import PROCESSED
 from tmd.splits import pick_test_groups

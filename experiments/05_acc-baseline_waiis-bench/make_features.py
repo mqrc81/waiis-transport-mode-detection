@@ -1,4 +1,4 @@
-"""Feature tables (tmd.acc_features, all blocks) for every usable minute, with and without the 10 Hz low-pass.
+"""Feature tables (tmd.features.acc, all blocks) for every usable minute, with and without the 10 Hz low-pass.
 
 usable = has_acc and not acc_implausible and not user_excluded (no label enters). Development part only: the reserved
 test users are dropped (tmd.bench.drop_reserved); `--part test` (stop-point 3 only) keeps only them.
@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
-from tmd import acc_features as af
+from tmd.features import acc as af
 from tmd import bench
 from tmd.paths import PROCESSED
 

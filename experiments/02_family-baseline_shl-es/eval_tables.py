@@ -8,7 +8,7 @@ still predicted as rail is broken down by carried / not carried / unknown positi
 import numpy as np
 import pandas as pd
 
-from tmd import extrasensory as es
+from tmd.readers import extrasensory as es
 from tmd.evaluate import bootstrap_users, family_proba, plot_cm, scores
 from tmd.labels import CLASSES, FAMILIES, to_family
 

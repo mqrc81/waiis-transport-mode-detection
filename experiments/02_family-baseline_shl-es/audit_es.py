@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tmd import extrasensory as es
+from tmd.readers import extrasensory as es
 from tmd.labels import CLASSES
 from tmd.paths import PROCESSED
 

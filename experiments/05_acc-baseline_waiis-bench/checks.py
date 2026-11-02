@@ -17,7 +17,7 @@ import numpy as np
 import pipeline as pl
 from sklearn.metrics import f1_score, roc_auc_score
 
-from tmd import acc_features as af
+from tmd.features import acc as af
 from tmd.labels import to_family
 from tmd.tracking import run
 

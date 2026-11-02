@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 
 from tmd.evaluate import family_proba, model_size_bytes, scores
-from tmd.features import FEATURES_VERSION, NAMES
+from tmd.features.base import FEATURES_VERSION, NAMES
 from tmd.labels import CLASSES
 from tmd.paths import CHECKPOINTS, PROCESSED
 from tmd.tracking import DataInput, run

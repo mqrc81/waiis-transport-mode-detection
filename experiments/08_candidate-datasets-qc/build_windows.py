@@ -36,15 +36,15 @@ log = logging.getLogger("build_windows")
 # ---------------------------------------------------------------- Collecty
 
 def collecty_jobs() -> list:
-    from tmd import collecty
+    from tmd.readers import collecty
     f = collecty.files()
     return [(int(u), int(t)) for u, t in zip(f.user, f.traj)]
 
 
 def collecty_trip(job):
-    """Per trajectory: 12 h wraps repaired, pieces split at other backward steps (tmd.collecty.repair_time); each
+    """Per trajectory: 12 h wraps repaired, pieces split at other backward steps (tmd.readers.collecty.repair_time); each
     piece is one qc_trip, and windows overlapping another piece's time span get status 'time_overlap'."""
-    from tmd import collecty
+    from tmd.readers import collecty
     user, traj = job
     a, g, m = (collecty.stream(user, traj, k) for k in ("acc", "gyro", "mag"))
     ta, piece, wraps, back = collecty.repair_time(a.t_ms.to_numpy())
@@ -98,7 +98,7 @@ BOOT_CLOCK_BEFORE_MS = 946_684_800_000          # 2000-01-01
 
 
 def nor_tmd_jobs() -> list:
-    from tmd import nor_tmd
+    from tmd.readers import nor_tmd
     return nor_tmd.users()
 
 
@@ -112,7 +112,7 @@ def _pick(d: pd.DataFrame, names) -> pd.DataFrame:
 
 
 def nor_tmd_user(user):
-    from tmd import nor_tmd
+    from tmd.readers import nor_tmd
     d = nor_tmd.stream(user, list(ACC_SENSORS + GYRO_SENSORS + MAG_SENSORS + PRESS_SENSORS))
     d["sensor"] = d.sensor.astype(str)
     tr = nor_tmd.trips()
@@ -149,7 +149,8 @@ DATASETS = {"collecty": (collecty_jobs, collecty_trip), "nor_tmd": (nor_tmd_jobs
 
 
 def to_v1(dataset: str):
-    from tmd import collecty, nor_tmd
+    from tmd.readers import collecty
+    from tmd.readers import nor_tmd
     return (lambda s: collecty.TO_V1.get(s, "")) if dataset == "collecty" else (lambda s: nor_tmd.TO_V1.get(s, ""))
 
 

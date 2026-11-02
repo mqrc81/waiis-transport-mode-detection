@@ -12,7 +12,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tmd import bench, collecty
+from tmd import bench
+from tmd.readers import collecty
 from tmd.paths import PROCESSED
 from tmd.splits import balanced_folds, pick_test_groups
 

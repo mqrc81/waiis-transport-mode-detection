@@ -14,9 +14,9 @@ Every decision is listed in decision_register.md.
 - Accelerometer: raw_acc only, units per snippet, 25 Hz per snippet; holes > 0.5 s -> longest clean stretch;
   non-increasing timestamps repaired but never official; one centred 15 s window per snippet; short snippets kept,
   never official. Flags: acc_implausible (window median |acc| outside 7-20 m/s2), quiet (std |acc| < 0.03 m/s2),
-  label_implausible (quiet walk / run / bike), user_excluded (tmd.extrasensory.EXCLUDED_USERS). `official` = the
+  label_implausible (quiet walk / run / bike), user_excluded (tmd.readers.extrasensory.EXCLUDED_USERS). `official` = the
   official example set.
-- Labels: rules v2 (tmd.extrasensory); splits from splits/es_users_v2.csv, splits/shl_days.csv (here) and
+- Labels: rules v2 (tmd.readers.extrasensory); splits from splits/es_users_v2.csv, splits/shl_days.csv (here) and
   splits/reserved_test_v2.json (project root).
 - GPS: ExtraSensory one fix per minute; SHL at the WAIIS cadence and per minute, speed / bearing blanked with a
   probability that falls with speed (~23% overall).
@@ -36,8 +36,9 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from tmd import bench, gps, shl
-from tmd import extrasensory as es
+from tmd import bench, gps
+from tmd.readers import shl
+from tmd.readers import extrasensory as es
 from tmd.labels import CLASSES, CLASS_ID
 from tmd.paths import PROJECT
 from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_repair_to_25hz, window_stats
@@ -869,7 +870,7 @@ def _trip(user, trip, t_ms, xyz, raw_label, meta, stream_ok=True):
 def nor_tmd_user(user: str):
     """All trips of one NOR-TMD installation. Android in m/s2 as recorded; iOS from g to m/s2 and to the Android
     axis convention (x -9.80665)."""
-    from tmd import nor_tmd
+    from tmd.readers import nor_tmd
     from tmd.resample import G
     d = nor_tmd.stream(user, list(NOR_ACC))
     d["sensor"], d["label"], d["position"] = d.sensor.astype(str), d.label.astype(str).str.lower(), \
@@ -891,9 +892,9 @@ def nor_tmd_user(user: str):
 
 def collecty_user(user: int):
     """All trajectories of one Collecty user: total acceleration = acc + grav (stored by the converter), 12 h clock
-    wraps undone and pieces at other backward steps (tmd.collecty.repair_time); windows overlapping another piece's
+    wraps undone and pieces at other backward steps (tmd.readers.collecty.repair_time); windows overlapping another piece's
     span get status time_overlap; files dropped as duplicates are flagged, not windowed into the stream."""
-    from tmd import collecty
+    from tmd.readers import collecty
     f = collecty.files()
     dup = collecty.duplicates()
     drop = dup[dup["drop"]].set_index(["user", "traj"]).group.to_dict()
@@ -964,7 +965,8 @@ def cap_r2(counts: pd.Series) -> float:
 def build_new(source: str, workers: int) -> None:
     """NOR-TMD or Collecty: labels (one row per user-minute), sessions, accelerometer, stream."""
     from tmd import candidates as q
-    from tmd import collecty, nor_tmd
+    from tmd.readers import collecty
+    from tmd.readers import nor_tmd
     from tmd.labels import FINE_ID
     say(f"== {source} ==")
     users = nor_tmd.users() if source == "nor_tmd" else sorted(collecty.files().user.unique().tolist())

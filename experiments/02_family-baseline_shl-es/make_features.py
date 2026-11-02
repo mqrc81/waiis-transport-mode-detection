@@ -17,9 +17,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tmd import extrasensory as es
-from tmd import shl
-from tmd.features import FEATURES_VERSION, NAMES, window_features
+from tmd.readers import extrasensory as es
+from tmd.readers import shl
+from tmd.features.base import FEATURES_VERSION, NAMES, window_features
 from tmd.paths import PROCESSED
 from tmd.resample import DOWN, decimate_100_to_25, es_snippet_to_25hz
 from tmd.windows import WIN, cut, majority, starts

@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tmd import extrasensory as es
+from tmd.readers import extrasensory as es
 
 AUD = Path(__file__).resolve().parent / "results" / "audit"
 STILL_SRC = ["SITTING", "OR_standing", "LYING_DOWN", "SLEEPING"]

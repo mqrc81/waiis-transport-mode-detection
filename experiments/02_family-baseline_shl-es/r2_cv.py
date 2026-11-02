@@ -21,7 +21,7 @@ import pandas as pd
 
 from eval_tables import es_label_v2, evaluate
 from tmd.evaluate import inference_latency, model_size_bytes
-from tmd.features import FEATURES_VERSION, NAMES, window_features
+from tmd.features.base import FEATURES_VERSION, NAMES, window_features
 from tmd.paths import PROCESSED
 from tmd.tracking import run
 

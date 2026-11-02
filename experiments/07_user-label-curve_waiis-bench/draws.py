@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tmd import gps_features as gf
+from tmd.features import gps as gf
 from tmd.labels import CLASSES
 from tmd.paths import PROCESSED
 

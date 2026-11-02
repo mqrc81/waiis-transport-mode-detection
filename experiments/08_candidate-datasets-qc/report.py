@@ -14,7 +14,8 @@ import pandas as pd
 
 from tmd import bench
 from tmd import candidates as q
-from tmd import collecty, nor_tmd
+from tmd.readers import collecty
+from tmd.readers import nor_tmd
 from tmd.labels import CLASSES
 from tmd.paths import PROCESSED
 
@@ -69,7 +70,7 @@ def pq3(s: pd.Series) -> str:
 def window_dataset(ds: str, name: str, still_t: float) -> dict:
     t = load(ds)
     dropped = 0
-    if ds == "collecty":               # byte-identical files (tmd.collecty.duplicates; proposal in the README)
+    if ds == "collecty":               # byte-identical files (tmd.readers.collecty.duplicates; proposal in the README)
         d = collecty.duplicates()
         drop = {(str(u), str(k)) for u, k in d.loc[d["drop"], ["user", "traj"]].itertuples(index=False)}
         for k in ("minutes", "tiles", "timing", "legs", "clipping", "acc"):

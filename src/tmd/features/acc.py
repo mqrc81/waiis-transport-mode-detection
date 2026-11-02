@@ -1,7 +1,7 @@
 """Accelerometer-only window features for 15 s fragments (experiment 05, version FEATURES_VERSION).
 
 Blocks (each a list of names; `features` returns them in this order):
-    BASE   features v1 (tmd.features) without the gyroscope channel, on the whole window: 4 channels x 29 = 116
+    BASE   features v1 (tmd.features.base) without the gyroscope channel, on the whole window: 4 channels x 29 = 116
     SUB    the same 116 on the 5 sub-windows of 5 s / 2.5 s stride (tmd.windows), then mean / std / min / max = 464
     GRAV   gravity as the window's mean direction g = mean(a) / |mean(a)|: orientation ratio, tilt of the 1 s moving
            mean and of the sub-window directions against g, projections on the fixed g = 21
@@ -18,7 +18,7 @@ import numpy as np
 from scipy.ndimage import uniform_filter1d
 from scipy.signal import butter, sosfiltfilt
 
-from tmd.features import _SOS_GRAV, BANDS, PER_CHANNEL, _channel_features
+from tmd.features.base import _SOS_GRAV, BANDS, PER_CHANNEL, _channel_features
 from tmd.resample import FS
 from tmd.windows import WIN, starts
 
@@ -42,7 +42,7 @@ def lowpass(acc: np.ndarray, hz: float) -> np.ndarray:
 
 
 def channels(acc: np.ndarray) -> np.ndarray:
-    """acc (N, T, 3) m/s2 -> (N, T, 4): |a|, a . g_hat, horizontal |a|, |da/dt| (as tmd.features.channels)."""
+    """acc (N, T, 3) m/s2 -> (N, T, 4): |a|, a . g_hat, horizontal |a|, |da/dt| (as tmd.features.base.channels)."""
     g = sosfiltfilt(_SOS_GRAV, acc, axis=1)
     g_hat = g / np.maximum(np.linalg.norm(g, axis=-1, keepdims=True), 1e-6)
     vert = (acc * g_hat).sum(-1)

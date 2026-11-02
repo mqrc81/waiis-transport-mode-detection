@@ -9,7 +9,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from tmd import bench, hmm
+from tmd import bench
+from tmd.models import hmm
 from tmd.labels import CLASS_ID
 
 K = 5

@@ -1,11 +1,12 @@
-"""The defaults of tmd.hmm and tmd.evaluate.inference_latency reproduce their outputs from before experiment 05 added
+"""The defaults of tmd.models.hmm and tmd.evaluate.inference_latency reproduce their outputs from before experiment 05 added
 step_s / pi / shape (golden values saved at commit 5852704: tests/data/golden_hmm_latency_v0.npz)."""
 import hashlib
 from pathlib import Path
 
 import numpy as np
 
-from tmd import evaluate, hmm
+from tmd import evaluate
+from tmd.models import hmm
 
 G = np.load(Path(__file__).parent / "data" / "golden_hmm_latency_v0.npz")
 

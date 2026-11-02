@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tmd import acc_features as af
+from tmd.features import acc as af
 from tmd import bench
 from tmd.labels import CLASSES, FINE_CLASSES, SCORE6, SCORE6_OF
 from tmd.paths import PROCESSED
