@@ -1,0 +1,6 @@
+dataset,clean v1 windows,clean v1 hours (tiles),users,iOS %,Android %,gyroscope %,GPS coverage %,users per class (>= 5),classes outside v1
+NOR-TMD,12988,219.12916666666666,89,0.0,100.0,78.0566676932553,none,"bike 6, car 13, bus 70, train 17, subway 27","e-scooter, ferry/boat, tram"
+Collecty,9026,150.7,13,0.0,100.0,100.0,none,"run 1, bike 2, car 13, bus 5, train 5","e-scooter, tram"
+MobilitApp (inventory only),– (no windows),–,119,0.0,100.0,all files,none,"ids with >= 1 trip (no windows): still 22, walk 50, run 7, bike 9, car 19, bus 34, train 27, subway 15","e-bike, e-scooter, motorbike, tram"
+"v1 ExtraSensory (official, dev + test)",145380,605.8 (minute grid),59,61.884028064383,38.115971935617004,not in benchmark,83.2,"still 59, walk 57, run 13, bike 21, car 47, bus 26, train 5",– (excluded by label rules)
+v1 SHL User 1 (official),23076,96.2 (minute grid),1,0.0,100.0,not in benchmark,70.3,"still 1, walk 1, run 1, bike 1, car 1, bus 1, train 1, subway 1",– (excluded by label rules)

@@ -1,0 +1,2 @@
+timed trips,rate_hz p5 / median / p95 (trips),dt median ms p5 / median / p95,ids by median rate < 25 / 25-100 / > 100 Hz,repeated per 1k events,trips with backward steps,gaps > 0.5 s per h,regular (median),rate after 5 min / first 5 min (median)
+1170,49.4 / 124 / 126,8 / 8 / 20,4 / 47 / 20,10.416259981920673,0,3.4182414454737713,0.7065296484981796,1.0001593720210349

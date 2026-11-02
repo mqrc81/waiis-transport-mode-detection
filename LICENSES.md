@@ -46,3 +46,43 @@
   | `raw_measurements/ExtraSensory.raw_measurements.proc_gyro.zip` | 9,333,898,324 | `4bcff45bf008414956c5242a605b848813be38984a8f43f5dbcc461c13506e67` |
   | `raw_measurements/ExtraSensory.raw_measurements.raw_magnet.zip` | 4,065,885,563 | `3c1d8eed42eb28ccbd17c8277ec693676356d3bb9df4d1bd8608fb95a63932c9` |
   | `cv5Folds.zip` | 10,803 | `66183635452d8c1b250b570fba3000296bf29e4d54eda6af270d2b4f5a3b9ee6` |
+
+## NOR-TMD (candidate for waiis_bench_v2; experiment 08)
+
+- Used in: `experiments/08_candidate-datasets-qc` (quality check).
+- Source: Kaggle `scholarone/nor-tmd` (https://www.kaggle.com/datasets/scholarone/nor-tmd), version 1, updated
+  2025-01-12; one file `nor_tmd.csv` (73,611,929,573 bytes; zip archive 7,359,659,643 bytes).
+  Location: `<data root>/raw/nor_tmd/nor-tmd.zip` (kept zipped; downloaded 2026-11-02).
+- Licence: the Kaggle page states **CC BY 4.0** (Attribution 4.0 International). The article is CC BY-NC 4.0; that
+  licence covers the article, not the data. The publisher page (tandfonline.com) returned 403, so its data
+  availability statement was not read; the paper's text (thesis copy) says "This dataset has been made publicly
+  available on Kaggle (Skretting & Grønli, 2025)".
+- **Commercial use: verified as permitted on 2026-11-02.** Attribution (below) is required under CC BY 4.0.
+- Credit (requested on the Kaggle page): A. Skretting, T.-M. Grønli, R. R. Mukkamala, "Feature importance from
+  novel dataset for on-device transport mode detection", Journal of Intelligent Transportation Systems 30(4), 2025,
+  doi:10.1080/15472450.2025.2515567. Dataset reference: A. Skretting, T.-M. Grønli (2025), NOR-TMD dataset for
+  transport mode detection, Kaggle.
+
+## MobilitApp Sensor Dataset (candidate for waiis_bench_v2; experiment 08)
+
+- Used in: `experiments/08_candidate-datasets-qc` (inventory only; verdict "not usable", approved 2026-11-02).
+- Source: CORA.RDR (dataverse.csuc.cat), doi:10.34810/data1948, version 1.0 (released 2024-12-24). Location:
+  `<data root>/raw/mobilitapp/` (`MobilitApp-SensorDataset-OK.zip`, `Readme.txt`).
+- Licence: **CC0 1.0** (Dataverse metadata and `Readme.txt`). No attribution required; cite anyway.
+- Credit: M. Aguilar Igartua, G. Caravaca Ibáñez, M. Gotanegra Estañol, "MobilitApp - Mobility sensor dataset",
+  CORA.Repositori de Dades de Recerca, 2024, doi:10.34810/data1948. Related: G. Caravaca Ibáñez, "Exploring the
+  capabilities of deep learning models for transport and human activity recognition", Master's thesis, UPC, 2024,
+  http://hdl.handle.net/2117/400780.
+
+## Collecty dataset (candidate for waiis_bench_v2; experiment 08)
+
+- Used in: `experiments/08_candidate-datasets-qc` (quality check).
+- Source: Kaggle `merdelic/dataset-for-multimodal-transport-analytics`, version 4, updated 2023-07-15,
+  doi:10.34740/kaggle/dsv/4976711 (as given in the article); 454 trajectory files plus a consent form
+  (24,864,805,329 bytes unzipped; zip archive 5,904,835,122 bytes). Location:
+  `<data root>/raw/collecty/collecty.zip` (kept zipped; downloaded 2026-11-02).
+- Licence: the Kaggle page states **"Unknown"**. The data article is CC BY 4.0 (it covers the article; the article
+  says the data "can be downloaded upon registering").
+- **Commercial use: verified as permitted on 2026-11-02** (the Kaggle page still shows "Unknown"). Cite the article.
+- Credit: M. Erdelić, T. Erdelić, T. Carić, "Dataset for multimodal transport analytics of smartphone users -
+  Collecty", Data in Brief 50, 109481, 2023, doi:10.1016/j.dib.2023.109481.

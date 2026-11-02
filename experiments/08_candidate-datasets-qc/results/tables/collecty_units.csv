@@ -1,0 +1,2 @@
+platform,ok_windows,median_acc,rest_windows,median_acc_at_rest,fail_U3_%,fail_U3_low_%
+android,13314,9.8480806350708,1326,9.846619606018066,0.00751089079164789,0.0

@@ -1,0 +1,4 @@
+dataset,"v1 classes, clean",only vehicle classes,other modes present,excluded (conflict)
+NOR-TMD,"bike, car, bus, train, subway",vehicles + bike/run only,"e-scooter, ferry/boat, tram","inside 7.6 h / 29 users, outside 38.8 h / 59 users"
+Collecty,"run, bike, car, bus, train",vehicles + bike/run only,"e-scooter, tram",Walk 62.5 h / 14 users
+MobilitApp (inventory),none (inventory only),–,"e-bike, e-scooter, motorbike, tram",–

@@ -1,0 +1,9 @@
+label,users >= 5 windows,top user share,clean windows,mapping
+Bike,2,0.98,562,bike
+Bus,5,0.75,1705,bus
+Car,13,0.43,3899,car
+E scooter,3,0.95,360,outside v1: e-scooter
+Run,1,1.0,196,run
+Train,5,0.84,2664,train
+Tramway,4,0.62,433,outside v1: tram
+Walk,10,0.49,3494,excluded (conflict)

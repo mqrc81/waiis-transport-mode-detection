@@ -1,0 +1,11 @@
+label,users >= 5 windows,top user share,clean windows,mapping
+bicycle,6,0.48,592,bike
+boat,11,0.24,1060,outside v1: ferry/boat
+bus,70,0.06,7081,bus
+car,13,0.3,804,car
+escooter,1,1.0,191,outside v1: e-scooter
+inside,6,0.77,401,excluded (conflict)
+metro,27,0.15,3908,subway
+outside,37,0.16,1633,excluded (conflict)
+train,17,0.23,603,train
+tram,19,0.17,1274,outside v1: tram

@@ -1,0 +1,4 @@
+platform,edge,gap_over_0.5s,ok,rate_below_25hz,All
+android,1015,66,17548,3110,21739
+ios,576,0,0,12694,13270
+All,1591,66,17548,15804,35009

@@ -1,0 +1,6 @@
+cls,users,windows,top_user,top user share,top 3 users share
+run,1,196,196,1.0,1.0
+bike,2,562,553,0.98,1.0
+car,13,3899,1674,0.43,0.76
+bus,5,1705,1272,0.75,0.96
+train,5,2664,2246,0.84,0.98
