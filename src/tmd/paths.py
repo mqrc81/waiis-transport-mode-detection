@@ -11,8 +11,9 @@ PROCESSED = DATA / "processed"
 CHECKPOINTS = DATA / "checkpoints"
 EXT = PROJECT.parent / "ext"
 
-MLFLOW_DB = PROJECT / "mlflow.db"                 # git-ignored
-MLARTIFACTS = PROJECT / "mlartifacts"             # git-ignored
+# git-ignored; $TMD_MLFLOW_DB / $TMD_MLARTIFACTS redirect them (e.g. a scratch store for a reproduction check)
+MLFLOW_DB = Path(os.getenv("TMD_MLFLOW_DB", PROJECT / "mlflow.db"))
+MLARTIFACTS = Path(os.getenv("TMD_MLARTIFACTS", PROJECT / "mlartifacts"))
 
 SHL_RAW = RAW / "shl" / "release"
 ES_RAW = RAW / "extrasensory"

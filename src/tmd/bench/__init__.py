@@ -1,5 +1,9 @@
 """Reader for the frozen benchmark waiis_bench_v1 (built by experiments/04_frozen-benchmark_es-shl/build.py).
 
+Package layout (experiment 09): this module is the reader API, unchanged; `tmd.bench.build` holds the build code,
+`tmd.bench.sources` the per-dataset readers (extrasensory, shl, nor_tmd, collecty; also importable under their old
+`tmd.<name>` paths), `tmd.bench.rules` the window rules of 08 (old path `tmd.candidates`).
+
     <data>/processed/waiis_bench_v1/manifest.json                 parameters, git commit, sha256 of every file
     <data>/processed/waiis_bench_v1/<source>/<table>.parquet       source in SOURCES
 

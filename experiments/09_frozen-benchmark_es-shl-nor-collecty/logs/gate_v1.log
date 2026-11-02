@@ -1,0 +1,26 @@
+1 verify(v1): intact
+2a rebuild: 23 data files, 23 in the reference; mismatched or extra: none
+2b tables written by the build: 32 committed, differing or missing: none, extra in rebuild: none (not compared, written by other scripts: ['decision_details.csv'])
+3 chain [0] (done before, not rerun): 05_acc-baseline_waiis-bench: make_features.py --workers 4
+3 chain [1] (done before, not rerun): 05_acc-baseline_waiis-bench: cv.py --name B --sub
+3 chain [2] (done before, not rerun): 05_acc-baseline_waiis-bench: cv.py --name F_fb --from-row B --hmm fb
+3 chain [3]: 06_gps-acc-baseline_waiis-bench: make_gps.py
+3 chain [4]: 06_gps-acc-baseline_waiis-bench: make_gps.py --version gps-v2
+3 chain [5]: 06_gps-acc-baseline_waiis-bench: run.py --row A
+3 chain [6]: 06_gps-acc-baseline_waiis-bench: run.py --row G --name G_v2 --gps gps-v2 --lr 0.02 --acc-row A
+3 chain [7]: 06_gps-acc-baseline_waiis-bench: run.py --row H1 --name H1_v2 --gps gps-v2 --acc-row A --gps-row G_v2
+3a features 05 extrasensory_dev_25hz_w15s_acc-v1_lp-none.parquet: (291155, 609) vs (291155, 609), identical True
+3a features 06 extrasensory_dev_gps-v1_w2min.parquet: (291155, 24) vs (291155, 24), identical True
+3a features 05 shl_user1_dev_25hz_w15s_acc-v1_lp-none.parquet: (36806, 609) vs (36806, 609), identical True
+3a features 06 extrasensory_dev_gps-v2_w2min.parquet: (291155, 21) vs (291155, 21), identical True
+3a features 06 shl_user1_dev_gps-v2_w2min.parquet: (36806, 21) vs (36806, 21), identical True
+3b oof 05 B_seed0[p]: identical True
+3b oof 05 F_fb_seed0[p]: identical True
+3b oof 06 A_seed0[info]: identical False
+3b oof 06 A_seed0[p]: identical True
+3b oof 06 A_seed0[raw]: identical True
+3b oof 06 G_v2_seed0[p]: identical True
+3b oof 06 G_v2_seed0[raw]: identical True
+3b oof 06 H1_v2_seed0[p]: identical True
+3b oof 06 H1_v2_seed0[raw]: identical True
+GATE PASSED
