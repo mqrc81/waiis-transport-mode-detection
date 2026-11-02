@@ -1,0 +1,11 @@
+fold,dataset,bike,bus,car,subway,train,tram,run
+0,nor_tmd,1,11,2,6.0,3,2,
+1,nor_tmd,2,12,2,3.0,2,3,
+2,nor_tmd,1,12,2,3.0,2,2,
+3,nor_tmd,1,12,1,5.0,2,3,
+4,nor_tmd,1,12,2,5.0,3,4,
+0,collecty,0,1,3,,1,1,0.0
+1,collecty,0,1,3,,1,1,0.0
+2,collecty,0,1,2,,1,1,0.0
+3,collecty,1,1,3,,1,0,1.0
+4,collecty,1,1,2,,1,1,0.0

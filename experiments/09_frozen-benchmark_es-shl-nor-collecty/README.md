@@ -350,7 +350,7 @@ uv run python gate_v1.py --scratch <scratch>                     # checks; the 0
 - **The scratch v1 rebuild** (6.7 GB, in the session scratchpad) is kept until the gate has passed after the v2
   changes. Reminder at stop-point 2: delete it.
 
-#### 3. NOR-TMD test pick with car (to fix after review)
+#### 3. NOR-TMD test pick with car (fixed 2026-11-02: device-model pick, 8 models, 14 installations)
 
 - **Can installations be linked to persons?** No field does it reliably (`results/tables/nor_tmd_installations.csv`):
   - there is no person key and no area or city field;
@@ -381,7 +381,7 @@ uv run python gate_v1.py --scratch <scratch>                     # checks; the 0
 - Car training users drop from 13 to 9 (661 windows before caps). Train and tram stay at their floor of 5 at
   every size.
 
-#### 5. Rate rule tolerance: ≥ 24 Hz
+#### 5. Rate rule tolerance: ≥ 24 Hz (approved 2026-11-02, everywhere)
 
 | ExtraSensory threshold | Windows flagged | of which official | Official by class | Split | Test train |
 |---|---|---|---|---|---|
@@ -395,7 +395,7 @@ uv run python gate_v1.py --scratch <scratch>                     # checks; the 0
 - 02–05 mention 1DBB0F6F only as a test / train user (and the user with the most snippets under 15 s, 57%, at ~80 Hz
   at other times), never with a rate exception.
 
-#### 6. SHL User 1's other positions: not on disk
+#### 6. SHL User 1's other positions: not on disk (answer: option a)
 
 04's decision register on SHL positions:
 - **S3** | SHL hips: User 1 training source, Users 2–3 rail check | metro and most train data | 25,441 examples |
@@ -414,6 +414,38 @@ days, the ones v1 already stores. **Waiting on a decision:**
 - (b) download User 1's 59 challenge days (2023 training set, 18.0 GB, the only raw-stream variant), then (a) for
   all of them.
 Users 2–3's other positions are on disk for their reserved days and go into the rail check either way.
+
+### Answers after the follow-up (2026-11-02)
+
+1. **Readers:** back to `src/tmd/`, one file each (section 1 above; re-gated, commit `51cf3f3`). No other
+   sub-packages.
+2. **Reserved set fixed: `splits/reserved_test_v3.json`** (`pick_test.py`; refuses to overwrite):
+   - ExtraSensory's 12 test users and SHL Users 2–3 (all days and positions), copied unchanged from
+     `reserved_test_v2.json`;
+   - NOR-TMD: the device-model pick, 8 models (Nokia 8.1, ONEPLUS A6003, SM-A505FN, SM-A725F, SM-G970F, SM-N981B,
+     XQ-AS52, moto g 5G plus), 14 installations. Those are all the installations of those models, of any OS
+     (checked), so the guard is complete.
+   - **NOR-TMD test scores bus, subway, train, tram and car.**
+   - **Linkage guard:** the data have no person field. Installations of one device model are kept on one side, which
+     rules out one person on both sides unless someone changed phones (a limitation, not checkable).
+   - **Thin:** held-out train is **110 windows from 5 users**. Held-out car is 143 windows from 4 users.
+   - Counts at the pick were from 08's window tables (≥ 25 Hz, 08's resampling); v2's counts differ slightly
+     (≥ 24 Hz, v1's resampling).
+3. **Rate ≥ 24 Hz everywhere.** In ExtraSensory it flags 12 windows (5 official), all from test user 1DBB0F6F;
+   **test train = 50**.
+4. **SHL positions: option (a).**
+   - User 1's other positions are the 3 preview days, as opt-in rows. The default stays hips only; one random
+     position per minute when used.
+   - Users 2–3's other positions go into the rail check as a per-position breakdown.
+   - Added to the open decisions for v2: if the first model on v2 shows a clear rail-recall drop off the hip in
+     that breakdown, check whether the 2023 training set's days overlap the 91 hip days, and consider it for a
+     v2.1.
+5. **Scratch v1 rebuild:** kept until the gate has passed after the v2 changes; reminder at stop-point 2.
+- **Dev folds** (`splits/folds_nor_tmd_collecty.csv`, `folds.py`): the approved method, rerun for the final NOR-TMD
+  test set (77 NOR-TMD dev installations, 14 Collecty users; `results/tables/folds_users_per_class.csv`).
+  - NOR-TMD: 11–12 bus users per fold, subway 3–6, train 2–3, tram 2–4, car 1–2, bike 1–2.
+  - Collecty: bus, train, 1 each; car 2–3; tram in 4 folds; bike in folds 3–4; run in fold 3 only.
+  - Installations with no clean labelled window get fold −1 in the build (never scored).
 
 ## Conclusion
 

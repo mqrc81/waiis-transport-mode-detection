@@ -1,0 +1,206 @@
+{
+ "description": "APPROVED 2026-11-02 (experiment 09). ExtraSensory's 12 test users and SHL Users 2-3 unchanged from reserved_test_v2.json; NOR-TMD test installations added (whole device models, scored on bus, subway, train, tram, car). The reserved set of waiis_bench_v2.",
+ "source": "experiments/09_frozen-benchmark_es-shl-nor-collecty/pick_test.py (method, seed, constraints); README, stop-point 1 follow-up, item 3",
+ "shl": [
+  {
+   "user": "User2",
+   "day": "140617"
+  },
+  {
+   "user": "User2",
+   "day": "140717"
+  },
+  {
+   "user": "User2",
+   "day": "180717"
+  },
+  {
+   "user": "User3",
+   "day": "030717"
+  },
+  {
+   "user": "User3",
+   "day": "070717"
+  },
+  {
+   "user": "User3",
+   "day": "140617"
+  }
+ ],
+ "extrasensory": [
+  {
+   "uuid": "098A72A5-E3E5-4F54-A152-BBDA0DF7B694",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "0BFC35E2-4817-4865-BFA7-764742302A2D",
+   "platform": "android"
+  },
+  {
+   "uuid": "1DBB0F6F-1F81-4A50-9DF4-CD62ACFA4842",
+   "platform": "android"
+  },
+  {
+   "uuid": "24E40C4C-A349-4F9F-93AB-01D00FB994AF",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "27E04243-B138-4F40-A164-F40B60165CF3",
+   "platform": "android"
+  },
+  {
+   "uuid": "33A85C34-CFE4-4732-9E73-0A7AC861B27A",
+   "platform": "android"
+  },
+  {
+   "uuid": "665514DE-49DC-421F-8DCB-145D0B2609AD",
+   "platform": "android"
+  },
+  {
+   "uuid": "8023FE1A-D3B0-4E2C-A57A-9321B7FC755F",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "A5CDF89D-02A2-4EC1-89F8-F534FDABDD96",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "A7599A50-24AE-46A6-8EA6-2576F1011D81",
+   "platform": "android"
+  },
+  {
+   "uuid": "B09E373F-8A54-44C8-895B-0039390B859F",
+   "platform": "iphone"
+  },
+  {
+   "uuid": "ECECC2AB-D32F-4F90-B74C-E12A1C69BBE2",
+   "platform": "iphone"
+  }
+ ],
+ "nor_tmd": [
+  {
+   "user": "2f5cf3bf-e6a7-4319-9aae-81898bc29de5",
+   "model": "SM-G970F"
+  },
+  {
+   "user": "678f4bca-b707-40e9-8749-a851fb8cb94b",
+   "model": "SM-G970F"
+  },
+  {
+   "user": "6e07d9a8-312f-453b-93ab-11191e7fb0ab",
+   "model": "ONEPLUS A6003"
+  },
+  {
+   "user": "70b0ce4b-c576-4106-819a-dd9c3684261c",
+   "model": "SM-G970F"
+  },
+  {
+   "user": "7f70e62a-56cb-437e-b7c7-235ea31379f0",
+   "model": "moto g 5G plus"
+  },
+  {
+   "user": "921439a0-1e63-4d18-86e6-306de709da51",
+   "model": "SM-A505FN"
+  },
+  {
+   "user": "967c9d34-03c8-4c4a-b332-1fd0d5de813f",
+   "model": "XQ-AS52"
+  },
+  {
+   "user": "98c4e3ed-5176-485a-98ef-1fea08b942a8",
+   "model": "SM-A505FN"
+  },
+  {
+   "user": "b3a76cea-bec2-415c-9b2e-a6cd11514c0f",
+   "model": "SM-G970F"
+  },
+  {
+   "user": "b8ab590e-a273-4345-ae34-743d66d257a8",
+   "model": "SM-N981B"
+  },
+  {
+   "user": "d7b1d162-4c05-45f6-975a-2e8be32c7dfd",
+   "model": "SM-A505FN"
+  },
+  {
+   "user": "dc4c0206-7765-4ac6-8ee0-a5450b107742",
+   "model": "SM-A725F"
+  },
+  {
+   "user": "e2613ae2-a098-49a8-87d6-350bc0b97133",
+   "model": "Nokia 8.1"
+  },
+  {
+   "user": "f4b5f20e-4d18-4ddd-a8c3-de275eaad092",
+   "model": "XQ-AS52"
+  }
+ ],
+ "nor_tmd_scored_classes": [
+  "bus",
+  "subway",
+  "train",
+  "tram",
+  "car"
+ ],
+ "nor_tmd_pick": {
+  "seed": 0,
+  "models": 8,
+  "draws": 200000,
+  "min_users": {
+   "bus": 5,
+   "subway": 5,
+   "train": 5,
+   "tram": 5,
+   "car": 3
+  },
+  "min_windows_per_user": 5,
+  "models_picked": [
+   "Nokia 8.1",
+   "ONEPLUS A6003",
+   "SM-A505FN",
+   "SM-A725F",
+   "SM-G970F",
+   "SM-N981B",
+   "XQ-AS52",
+   "moto g 5G plus"
+  ],
+  "counts": {
+   "bike": {
+    "held_out_users_ge5": 0,
+    "left_users_ge5": 6,
+    "held_out_windows": 0,
+    "left_windows": 592
+   },
+   "bus": {
+    "held_out_users_ge5": 11,
+    "left_users_ge5": 59,
+    "held_out_windows": 1735,
+    "left_windows": 5346
+   },
+   "car": {
+    "held_out_users_ge5": 4,
+    "left_users_ge5": 9,
+    "held_out_windows": 143,
+    "left_windows": 661
+   },
+   "subway": {
+    "held_out_users_ge5": 5,
+    "left_users_ge5": 22,
+    "held_out_windows": 649,
+    "left_windows": 3259
+   },
+   "train": {
+    "held_out_users_ge5": 5,
+    "left_users_ge5": 12,
+    "held_out_windows": 110,
+    "left_windows": 493
+   },
+   "tram": {
+    "held_out_users_ge5": 5,
+    "left_users_ge5": 14,
+    "held_out_windows": 245,
+    "left_windows": 1029
+   }
+  }
+ }
+}
