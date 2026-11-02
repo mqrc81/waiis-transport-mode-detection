@@ -202,3 +202,34 @@ pool of ~38 users; 5 draws; no paired bootstrap of the gains; rail can't be meas
 
 **Evidence.** `experiments/07_user-label-curve_waiis-bench/README.md` (Results, stop-point 2 and review;
 Conclusion).
+
+## 2026-11-02: Candidate data for waiis_bench_v2: NOR-TMD (Android), optionally Collecty; not MobilitApp
+
+**Draft — not approved.**
+
+**Decision.**
+- `waiis_bench_v2` adds **NOR-TMD, Android recordings only**, for training, and as a second test set for vehicles
+  and rail (~20% of its installations, stratified with a minimum of users per class; picked once, before any v2
+  model reads it).
+- **Collecty** may be added for training, with the approved clock repair, dedup and a per-user cap per class.
+- **MobilitApp is not used.**
+- v1's 8 classes stay; tram is the only candidate for a new class and waits on which modes WAIIS needs.
+- **Every reader converts iOS accelerometers to the Android axis convention and m/s²** (× −9.80665).
+- A within-class dataset-identification check (e.g. bus: ExtraSensory vs NOR-TMD) is required before pooling.
+- Excluded foot labels (NOR-TMD outside / inside, Collecty Walk) stay in sessions as unlabelled minutes for context
+  and the HMM, never as labels.
+
+**Why.**
+- NOR-TMD gives 12,988 clean v1 windows (219 h) in v1's weak classes: bus 70 users, subway 27, train 17, car 13,
+  bike 6; clean timing, no duplicates, top-user share ≤ 0.48. Its iOS data are 5 Hz (214 h not clean).
+- Collecty: 9,026 clean v1 windows, but ≤ 5 users per class except car, top-user shares 0.75–0.98.
+- MobilitApp: gravity removed, 56% of files without sample times, ~69 h instead of the 298 h stated.
+- Both usable sets bring only vehicles plus bike / run: a possible dataset shortcut.
+- iOS accelerometers report with the opposite sign to Android, in NOR-TMD and ExtraSensory (still minutes: iPhone
+  mean z −9.4, Android +9.1 m/s²); v1's features are sign-invariant, raw-axis models are not.
+
+**Limits of the evidence.** A quality check, no models; no candidate has GPS; users are app installations, not
+persons; whether NOR-TMD improves the ExtraSensory test users is not measured.
+
+**Evidence.** `experiments/08_candidate-datasets-qc/README.md` (Results, stop-point 2; Conclusion); commercial use
+of NOR-TMD and Collecty: `LICENSES.md`.

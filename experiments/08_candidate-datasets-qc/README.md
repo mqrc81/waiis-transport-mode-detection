@@ -466,4 +466,44 @@ window)
 
 ## Conclusion
 
-*Not written yet.*
+**Draft — not approved.**
+
+**Answer.** Of the three candidates, **NOR-TMD (Android only) is the one worth adding to `waiis_bench_v2`**,
+Collecty is a small optional addition, and MobilitApp is out. None of them adds still, walk, iOS or GPS, so v2 still
+depends on ExtraSensory and SHL for those.
+
+- **NOR-TMD** adds 12,988 clean v1 windows (219 h) where v1 is weakest: bus 70 users, subway 27, train 17, car
+  13, bike 6. The data are clean (timing, no duplicates, top-user share ≤ 0.48) and come from 57 device models,
+  three phone positions and two cities. Its iOS half (214 h, 44 devices) records at 5 Hz and doesn't pass the
+  25 Hz rule.
+- **Collecty** adds 9,026 clean v1 windows (151 h), but from ≤ 5 users for every class except car (13), with top
+  users holding 0.75–0.98 of a class. It is usable only after the approved clock repair and dedup, and only with
+  a per-user cap.
+- **MobilitApp** is not usable (approved): gravity is removed and can't be restored, 56% of files have no sample
+  times, and the volume is ~69 h, not 298 h.
+
+**What this changes for v2.**
+- **Classes:** v1's 8 classes stay. Tram is the only mode outside v1 with ≥ 10 users across ≥ 2 datasets (37 users,
+  NOR-TMD + Collecty); e-scooter (4), boat (1 dataset) and motorbike (no usable user) are not candidates.
+- **A dataset shortcut is the main risk.** Both usable sets bring only vehicles plus bike / run, so dataset identity
+  can stand for "not still / not walk". The within-class dataset-identification check is required before pooling.
+- **Evaluation:** NOR-TMD can give a second, vehicle and rail test set (~20% of its installations, with a minimum
+  per class). Leave-one-dataset-out works only for car and bus.
+- **iOS convention:** iOS accelerometers (NOR-TMD and ExtraSensory) report with the opposite sign to Android. v1's
+  results are not affected (sign-invariant features), but every v2 reader converts iOS to the Android convention and
+  m/s², which matters for raw-axis models.
+- **GPS:** the candidates' windows can only go through the accelerometer model; 06's fusion stays trained and
+  evaluated on ExtraSensory + SHL.
+
+**Limits.**
+- One quality check, no models: whether NOR-TMD's vehicle windows actually improve bus and train on the
+  ExtraSensory test users is not measured.
+- Users are app installations (NOR-TMD: 152 for 101 participants), so a split by installation may put one person on
+  both sides.
+- Collecty's time of day is unreliable (12-hour clock), and 17,312 of its minute windows are lost to clock
+  overlaps.
+- The labels were taken as given apart from the acc-only flags; without GPS, vehicles at walking speed and walk
+  above 3 m/s could not be checked.
+
+**Next.** The open decisions for v2 (Results): tram, the NOR-TMD test set, per-user caps, iOS track, then the v2
+build with the dataset-identification check.
