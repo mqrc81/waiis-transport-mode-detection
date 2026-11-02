@@ -697,8 +697,6 @@ windows per platform)
 
 ## Conclusion
 
-**Draft — not approved.**
-
 **`waiis_bench_v2` is built and frozen:** `<data>/processed/waiis_bench_v2/`, 32 Parquet files, 5.63 GB, from clean
 commit `6d51dc2` (with the run flag; the stop-point 2 build at `c0956d6` differs only in the labels tables).
 - Reference manifest: `results/manifests/waiis_bench_v2.json`; a second build reproduced every file.

@@ -234,8 +234,6 @@ of NOR-TMD and Collecty: `LICENSES.md`.
 
 ## 2026-11-02: Every model reads waiis_bench_v2; the six-class score is primary
 
-**Draft — not approved.**
-
 **Decision.**
 - Every model from now on reads **`waiis_bench_v2`** (experiment 09). `waiis_bench_v1` stays readable and unchanged
   for 05–07 (`tmd.bench` version argument). The default switches to v2 when this entry is approved.
