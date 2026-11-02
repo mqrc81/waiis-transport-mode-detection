@@ -19,8 +19,9 @@ import numpy as np
 import pandas as pd
 
 from tmd import candidates as q
-from tmd import mobilitapp as mob
 from tmd.progress import Progress
+
+import mobilitapp as mob             # this folder: not used beyond 08
 
 HERE = Path(__file__).resolve().parent
 EXP = HERE.name

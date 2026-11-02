@@ -14,9 +14,11 @@ import pandas as pd
 
 from tmd import bench
 from tmd import candidates as q
-from tmd import collecty, mobilitapp, nor_tmd
+from tmd import collecty, nor_tmd
 from tmd.labels import CLASSES
 from tmd.paths import PROCESSED
+
+import mobilitapp                    # this folder: not used beyond 08
 
 HERE = Path(__file__).resolve().parent
 TABLES = HERE / "results" / "tables"

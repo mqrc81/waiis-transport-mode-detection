@@ -246,7 +246,8 @@ uv run python sign_check.py                # iOS sign check on v1 (dev users onl
 ```
 
 Code: `src/tmd/candidates.py` (window rules, timing, legs, clipping: one definition for all datasets),
-`src/tmd/{nor_tmd,collecty,mobilitapp}.py` (readers), the scripts above.
+`src/tmd/{nor_tmd,collecty}.py` (readers), `mobilitapp.py` here (moved out of `src/tmd` after 08: not used
+beyond it), the scripts above.
 
 **Size check before converting** (answer 1): from the two 4 MB samples, written in the converted schema: NOR-TMD
 8.7 B per kept row, 273 M kept rows ≈ 2.4 GB; Collecty ≈ 3.0 GB. Free space after both zips: ~30 GB, so even at
