@@ -1,0 +1,9 @@
+cls,has_location
+still,0.394
+walk,0.859
+run,0.998
+bike,0.993
+car,0.832
+bus,0.897
+train,0.49
+subway,0.306

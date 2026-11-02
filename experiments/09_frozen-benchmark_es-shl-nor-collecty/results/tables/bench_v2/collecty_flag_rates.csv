@@ -1,0 +1,7 @@
+cls_fine,acc_implausible,quiet,label_implausible
+run,0.51,0.0,0.0
+bike,0.0,0.0,0.0
+car,0.0,2.67,0.0
+bus,0.0,0.58,0.0
+train,0.0,4.17,0.0
+tram,0.0,2.05,0.0

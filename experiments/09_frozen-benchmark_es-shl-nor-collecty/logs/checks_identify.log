@@ -1,0 +1,14 @@
+{'class': 'bus', 'datasets': 'extrasensory vs nor_tmd vs collecty vs shl_user1', 'windows': '1348 / 1537 / 253 / 2000', 'groups': '21 / 62 / 5 / 40', 'cv_folds_by_group': 5, 'macro_auc': 0.824, 'balanced_accuracy': 0.543, 'chance_bacc': 0.25}
+{'class': 'car', 'datasets': 'extrasensory vs nor_tmd vs collecty vs shl_user1', 'windows': '1769 / 405 / 1056 / 2000', 'groups': '38 / 11 / 13 / 27', 'cv_folds_by_group': 5, 'macro_auc': 0.818, 'balanced_accuracy': 0.519, 'chance_bacc': 0.25}
+{'class': 'train', 'datasets': 'shl_user1 vs nor_tmd vs collecty vs extrasensory', 'windows': '2000 / 470 / 252 / 190', 'groups': '27 / 15 / 5 / 3', 'cv_folds_by_group': 3, 'macro_auc': 0.835, 'balanced_accuracy': 0.45, 'chance_bacc': 0.25}
+{'class': 'subway', 'datasets': 'shl_user1 vs nor_tmd', 'windows': '2000 / 1312', 'groups': '16 / 25', 'cv_folds_by_group': 5, 'macro_auc': 0.963, 'balanced_accuracy': 0.891, 'chance_bacc': 0.5}
+{'class': 'tram', 'datasets': 'nor_tmd vs collecty', 'windows': '1033 / 153', 'groups': '17 / 4', 'cv_folds_by_group': 4, 'macro_auc': 0.521, 'balanced_accuracy': 0.505, 'chance_bacc': 0.5}
+
+== dataset_identification
+                                                datasets                   windows             groups  cv_folds_by_group  macro_auc  balanced_accuracy  chance_bacc
+class                                                                                                                                                              
+bus     extrasensory vs nor_tmd vs collecty vs shl_user1  1348 / 1537 / 253 / 2000   21 / 62 / 5 / 40                  5      0.824              0.543         0.25
+car     extrasensory vs nor_tmd vs collecty vs shl_user1  1769 / 405 / 1056 / 2000  38 / 11 / 13 / 27                  5      0.818              0.519         0.25
+train   shl_user1 vs nor_tmd vs collecty vs extrasensory    2000 / 470 / 252 / 190    27 / 15 / 5 / 3                  3      0.835              0.450         0.25
+subway                              shl_user1 vs nor_tmd               2000 / 1312            16 / 25                  5      0.963              0.891         0.50
+tram                                 nor_tmd vs collecty                1033 / 153             17 / 4                  4      0.521              0.505         0.50

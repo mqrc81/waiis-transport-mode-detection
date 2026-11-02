@@ -1,0 +1,7 @@
+dataset,class,dev_users,windows,cap,kept,top_share_before,top_share_after,users_capped
+collecty,bike,2,562,60,69,0.984,0.87,1
+collecty,bus,5,1701,63,253,0.745,0.249,2
+collecty,car,13,3894,649,2596,0.43,0.25,2
+collecty,run,1,196,60,60,1.0,1.0,1
+collecty,train,5,2643,63,252,0.847,0.25,3
+collecty,tram,4,411,60,153,0.645,0.392,2

@@ -231,3 +231,46 @@ persons; whether NOR-TMD improves the ExtraSensory test users is not measured.
 
 **Evidence.** `experiments/08_candidate-datasets-qc/README.md` (Results, stop-point 2; Conclusion); commercial use
 of NOR-TMD and Collecty: `LICENSES.md`.
+
+## 2026-11-02: Every model reads waiis_bench_v2; the six-class score is primary
+
+**Draft — not approved.**
+
+**Decision.**
+- Every model from now on reads **`waiis_bench_v2`** (experiment 09). `waiis_bench_v1` stays readable and unchanged
+  for 05–07 (`tmd.bench` version argument). The default switches to v2 when this entry is approved.
+- **Models train on 9 fine classes** (still, walk, run, bike, car, bus, train, subway, tram).
+- **The primary score is six classes, merged at scoring time:** still, foot (walk + run), bike, car, bus, rail
+  (train + subway + tram). Secondary: 9-class over the classes present in the evaluation set, and family.
+- The reserved set is **`splits/reserved_test_v3.json`**:
+  - v2's 12 ExtraSensory test users and SHL Users 2–3 (all positions; the rail check), unchanged;
+  - 14 NOR-TMD installations (8 whole device models), scored on bus, subway, train, tram and car.
+- v1's reference numbers in the six-class score (no retraining):
+
+  | | 05 | 06 |
+  |---|---|---|
+  | ExtraSensory dev, pooled OOF | 0.575 [0.515, 0.619] | 0.642 [0.583, 0.687] |
+  | ExtraSensory test (iPhone / Android) | 0.642 (0.751 / 0.642) | 0.686 (0.752 / 0.654) |
+  | SHL Users 2–3, rail check | 0.920 | 0.944 |
+
+**Why.**
+- v2 adds NOR-TMD (Android) and Collecty where v1 was weakest:
+  - dev rail 11,127 windows (v1: 5,931), bus 9,985 (4,376);
+  - tram as a class from 26 users in 2 datasets;
+  - a second test set for vehicles and rail from unseen installations.
+- The six-class score scores the separations WAIIS needs first (rail vs road, foot, bike) without depending on
+  walk vs run or train vs subway vs tram, where labels and test support are thin.
+- v1 stays reproducible: v1 rebuilt hash-identical and 06's dev out-of-fold probabilities bit-identical after
+  every v2 change.
+
+**Limits of the evidence.**
+- Within-class dataset identification from 05's features is high (AUC 0.82–0.96, tram 0.52): the new sources bring
+  only vehicles + bike / run, so a dataset shortcut is possible and has to be measured by the first model on v2.
+- NOR-TMD test train is 128 windows from 5 users, car 158 from 4. Installations are not persons (device model as
+  the guard).
+- ExtraSensory dev run is mostly one user whose windows look like walking (flag proposed, not decided).
+- SHL's licence is non-commercial (open).
+
+**Evidence.** `experiments/09_frozen-benchmark_es-shl-nor-collecty/README.md` (Results, stop-point 2) and
+`decision_register.md`; 08's verdicts (2026-11-02 entry above).
+

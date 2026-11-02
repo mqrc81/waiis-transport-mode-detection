@@ -1,0 +1,5 @@
+class,windows,iphone_share,features_identical,platform_auc_v1,platform_auc_v2,cv_folds_by_user
+still,3983,0.499,True,0.819,0.819,5
+walk,3395,0.581,True,0.636,0.636,5
+car,3567,0.487,True,0.607,0.607,5
+bike,3118,0.53,True,0.425,0.425,5

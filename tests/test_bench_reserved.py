@@ -74,3 +74,59 @@ def test_on_disk_manifest_equals_committed_reference():
     except FileNotFoundError:
         pytest.skip(f"{bench.VERSION} is not built on this machine")
     assert bench.manifest() == bench.reference_manifest()
+
+
+# ---------------------------------------------------------------- waiis_bench_v2 (experiment 09)
+
+V2 = "waiis_bench_v2"
+V2_ACCESSORS = {
+    "pretraining_minutes": bench.sources(V2),
+    "unlabelled_minutes": bench.sources(V2),
+    "stream": ("shl_user1", "shl_user23", "nor_tmd", "collecty"),
+    "shl_other_positions": ("shl_user1", "shl_user23"),
+}
+
+
+def _v2_built() -> bool:
+    try:
+        bench.path("nor_tmd", "labels", V2)
+        return True
+    except FileNotFoundError:
+        return False
+
+
+@pytest.mark.parametrize("name,source", [(n, s) for n, ss in V2_ACCESSORS.items() for s in ss])
+def test_v2_accessor_never_returns_reserved_users(name, source):
+    if not _v2_built():
+        pytest.skip(f"{V2} is not built on this machine")
+    f = getattr(bench, name)
+    if name == "shl_other_positions":
+        got = set(f(include_reserved=False, version=V2, source=source).user)
+    elif name == "stream" and source == "shl_user1":
+        got = set(f(source, filters=[("rec", "==", "010317")], version=V2).user)
+    else:
+        got = set(f(source, include_reserved=False, version=V2).user)
+    assert not got & bench.reserved_users(source, V2)
+
+
+def test_v2_reserved_set_has_nor_tmd_and_keeps_v2_users():
+    from tmd.splits import reserved_test
+    r2, r3 = reserved_test(2), reserved_test(3)
+    assert r3["extrasensory"].uuid.tolist() == r2["extrasensory"].uuid.tolist()
+    assert r3["shl"].equals(r2["shl"])
+    assert len(r3["nor_tmd"]) == 14 and bench.reserved_users("nor_tmd", V2) == set(r3["nor_tmd"].user)
+
+
+def test_v2_excluded_users_never_official_or_pretraining():
+    from tmd.extrasensory import EXCLUDED_USERS
+    if not _v2_built():
+        pytest.skip(f"{V2} is not built on this machine")
+    assert not set(bench.examples("extrasensory", version=V2).user) & set(EXCLUDED_USERS)
+    assert not set(bench.pretraining_minutes("extrasensory", version=V2).user) & set(EXCLUDED_USERS)
+
+
+def test_v2_on_disk_manifest_equals_committed_reference():
+    if not _v2_built():
+        pytest.skip(f"{V2} is not built on this machine")
+    assert bench.manifest(V2) == bench.reference_manifest(V2)
+    assert bench.verify(V2) == []

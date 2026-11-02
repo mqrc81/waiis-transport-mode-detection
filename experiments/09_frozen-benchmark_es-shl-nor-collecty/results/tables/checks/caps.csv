@@ -1,0 +1,13 @@
+dataset,class,dev_users,windows,cap,kept,top_share_before,top_share_after,users_capped
+nor_tmd,bike,7,592,101.0,405,0.485,0.249,2
+nor_tmd,bus,62,5356,,5356,0.078,0.078,0
+nor_tmd,car,11,661,101.0,405,0.36,0.249,2
+nor_tmd,subway,25,3288,,3288,0.181,0.181,0
+nor_tmd,train,15,493,117.0,470,0.284,0.249,1
+nor_tmd,tram,17,1033,,1033,0.207,0.207,0
+collecty,bike,2,562,60.0,69,0.984,0.87,1
+collecty,bus,5,1701,63.0,253,0.745,0.249,2
+collecty,car,13,3894,649.0,2596,0.43,0.25,2
+collecty,run,1,196,60.0,60,1.0,1.0,1
+collecty,train,5,2643,63.0,252,0.847,0.25,3
+collecty,tram,4,411,60.0,153,0.645,0.392,2

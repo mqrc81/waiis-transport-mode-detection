@@ -72,7 +72,8 @@ def counts() -> None:
                        version=V2)
         o = o[o.cls.ne("") & ~o.acc_implausible]
         both = pd.concat([lab[["user", "ts", "cls_fine"]].assign(position="hips"),
-                          o.rename(columns={"cls": "cls_fine"})[["user", "ts", "cls_fine", "position"]]])
+                          o.rename(columns={"cls": "cls_fine"})[["user", "ts", "cls_fine", "position"]]],
+                         ignore_index=True)
         both["position"] = both.position.str.lower()
         pos.append(pd.crosstab([both.position], both.cls_fine).assign(source=s).reset_index())
     table(pd.concat(pos).set_index(["source", "position"]), "shl_positions")
@@ -103,12 +104,12 @@ def _sample(e: pd.DataFrame, n: int, rng) -> pd.DataFrame:
     if len(e) <= n:
         return e
     e = e.sample(frac=1, random_state=int(rng.integers(1 << 31)))
-    return e.groupby("user", group_keys=False).apply(lambda g: g.head(max(1, n // e.user.nunique()))).head(n)
+    return e.groupby("user").head(max(1, n // e.user.nunique())).head(n)
 
 
 def _group_auc(X: np.ndarray, y: np.ndarray, groups: np.ndarray) -> tuple[float, float, int]:
-    """Cross-validated identification by user (StratifiedGroupKFold, LightGBM): macro one-vs-rest AUC and balanced
-    accuracy; folds = min(5, users of the smallest group)."""
+    """Cross-validated identification by group (StratifiedGroupKFold, LightGBM; groups = users, SHL User 1's days):
+    macro one-vs-rest AUC and balanced accuracy; folds = min(5, groups of the smallest dataset)."""
     import lightgbm as lgb
     from sklearn.metrics import balanced_accuracy_score, roc_auc_score
     from sklearn.model_selection import StratifiedGroupKFold
@@ -140,14 +141,17 @@ def identify() -> None:
     for cls, srcs in DATASET_CHECKS.items():
         parts = []
         for s in srcs:
-            e = official(s)
+            e = official(s, ["day"] if s.startswith("shl") else None)
             e = e[(e.split == "dev") & (e.cls_fine == cls)]
-            if e.user.nunique() < 2:
-                log.info(f"{cls}/{s}: {e.user.nunique()} dev users, left out")
+            # groups for the cross-validation: users; SHL User 1 is one person, so its recording days (its day folds)
+            e["group"] = e.user if not s.startswith("shl") else "day" + e.day.astype(str)
+            if e.group.nunique() < 2:
+                log.info(f"{cls}/{s}: {e.group.nunique()} groups, left out")
                 continue
             e = _sample(e, PER_SOURCE, rng)
             k, X = _features(s, e)
-            parts.append((s, k.user.to_numpy(), X))
+            k = k.merge(e[["user", "ts", "group"]], on=["user", "ts"])
+            parts.append((s, k.group.to_numpy(), X))
         if len(parts) < 2:
             continue
         X = np.concatenate([p[2] for p in parts])
@@ -156,7 +160,7 @@ def identify() -> None:
         auc, bacc, k = _group_auc(X, y, g)
         rows.append({"class": cls, "datasets": " vs ".join(p[0] for p in parts),
                      "windows": " / ".join(str(len(p[2])) for p in parts),
-                     "users": " / ".join(str(len(set(p[1]))) for p in parts), "cv_folds_by_user": k,
+                     "groups": " / ".join(str(len(set(p[1]))) for p in parts), "cv_folds_by_group": k,
                      "macro_auc": round(auc, 3), "balanced_accuracy": round(bacc, 3),
                      "chance_bacc": round(1 / len(parts), 3)})
         log.info(rows[-1])

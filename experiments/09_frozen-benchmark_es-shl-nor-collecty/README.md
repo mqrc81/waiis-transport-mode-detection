@@ -11,7 +11,7 @@ Build **`waiis_bench_v2`**, frozen like v1 (experiment 04), from v1 plus the dat
 
 ## Plan
 
-*From the brief of 2026-11-02. Not yet approved: stop-point 1 below.*
+*From the brief of 2026-11-02. Approved at stop-point 1 with changes (answers below, in Results).*
 
 **Contents**
 - ExtraSensory: v1's dev folds and test users, unchanged. iPhone windows converted to the Android axis convention
@@ -447,6 +447,222 @@ Users 2–3's other positions are on disk for their reserved days and go into th
   - Collecty: bus, train, 1 each; car 2–3; tram in 4 folds; bike in folds 3–4; run in fold 3 only.
   - Installations with no clean labelled window get fold −1 in the build (never scored).
 
+### Stop-point 2: build, checks, rescoring (2026-11-02)
+
+**Commands** (from this folder; logs in `logs/`, tables in `results/tables/`):
+
+```
+uv run python pick_test.py                 # splits/reserved_test_v3.json (once)
+uv run python folds.py                     # splits/folds_nor_tmd_collecty.csv (once)
+uv run python build.py --workers 3         # <data>/processed/waiis_bench_v2/ (~4.5 min), results/tables/bench_v2/
+uv run python checks.py counts|identify|platform|rescore|run   # results/tables/checks/
+uv run python gate_v1.py --scratch <dir>   # v1 unchanged (README, stop-point 1 follow-up)
+uv run pytest tests                        # 86 passed
+```
+
+**Build**
+- **`waiis_bench_v2`:** `<data>/processed/waiis_bench_v2/`, 32 Parquet files, 5.63 GB.
+  - Built at commit **`c0956d6`, clean** (`git_dirty: false`).
+  - Reference manifest: `results/manifests/waiis_bench_v2.json`; `tmd.bench.verify("waiis_bench_v2")` is empty.
+- **Reproducible:** a second build (first one from `4167a7d`, discarded because the manifest was marked dirty by my
+  stdout redirect) gave all 32 data files with the same sha256.
+- **15 files are byte-identical to v1:** all GPS / location tables, the sessions tables, SHL's streams. GPS is
+  unchanged as planned.
+- **v1 unchanged:** the gate passed again after every v2 code change (v1 rebuild hash-identical, 06's dev
+  out-of-fold probabilities bit-identical); `verify(v1)` is intact.
+- **Rules and their effects:** `decision_register.md` (V1–V6, A1–A3, R1–R4, K1–K2, L1–L4, C1–C2, P1–P4, F1–F2).
+
+**Official examples** (`checks/counts_class_source_platform.csv`; SHL hips only, the default)
+
+| Source | Split | Platform | still | walk | run | bike | car | bus | train | subway | tram | all |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ExtraSensory | dev | Android | 36,340 | 4,852 | 394 | 1,464 | 1,831 | 550 | 97 | – | – | 45,528 |
+| ExtraSensory | dev | iOS | 56,390 | 8,257 | 69 | 1,654 | 6,197 | 798 | 93 | – | – | 73,458 |
+| ExtraSensory | test | Android | 6,243 | 2,310 | 43 | 230 | 765 | 239 | **50** | – | – | 9,880 |
+| ExtraSensory | test | iOS | 13,041 | 1,372 | 38 | 646 | 1,365 | 47 | – | – | – | 16,509 |
+| SHL User 1 | dev | Android | 3,366 | 3,011 | 1,030 | 2,842 | 4,058 | 3,028 | 3,353 | 2,388 | – | 23,076 |
+| SHL Users 2–3 | rail check | Android | 487 | 427 | 45 | 199 | 339 | 150 | 360 | 358 | – | 2,365 |
+| NOR-TMD | dev | Android | – | – | – | 405 | 405 | 5,356 | 470 | 3,288 | 1,033 | 10,957 |
+| NOR-TMD | **test** | Android | – | – | – | – | 158 | 1,908 | 128 | 738 | 289 | 3,221 |
+| Collecty | dev | Android | – | – | 60 | 69 | 2,596 | 253 | 252 | – | 153 | 3,383 |
+
+- ExtraSensory is v1 minus the 5 windows under 24 Hz (all test user 1DBB0F6F: still 2, bus 1, train 2).
+- **Six-class view, dev** (all sources; v1 = ExtraSensory + SHL User 1 in parentheses): rail 11,127 (5,931: SHL
+  5,741, NOR-TMD 4,791, Collecty 405, ExtraSensory 190), bus 9,985 (4,376), car 15,087 (12,086), bike 6,434 (5,960),
+  foot 17,673 (17,613), still 96,096 (96,096).
+- **Users per class and top-user share** (`checks/users_per_class.csv`):
+  - NOR-TMD bus 74 users (top 0.06), subway 30 (0.15), tram 22 (0.16), train 20 (0.20), car 17 (0.18), bike 7
+    (0.25);
+  - Collecty (after caps): car 13 (0.25), bus 5 (0.25), train 5 (0.25), tram 4 (0.39), bike 2 (0.87), run 1;
+  - ExtraSensory and SHL as in v1.
+- **Caps (R2)** (`checks/caps.csv`):
+  - NOR-TMD: bike 592 → 405, car 661 → 405, train 493 → 470; bus / subway / tram uncapped;
+  - Collecty: car 3,894 → 2,596, bus 1,701 → 253, train 2,643 → 252, tram 411 → 153, bike 562 → 69, run 196 → 60.
+  - NOR-TMD car loses the most: 4 of its car users went to the test set, and the 11 left are more concentrated
+    (top share 0.36 before the cap).
+- **SHL positions** (`checks/shl_positions.csv`):
+  - User 1's other positions: 1,988 windows each for hand, torso and bag (3 preview days); `position_draw` keeps
+    hips on 35,354 of 36,825 hips minutes.
+  - Users 2–3: hand, torso, bag and hips have the same per-class counts (2,365 per position, walk 428 vs 427), so
+    the rail check gets a per-position breakdown with equal support.
+- **Unlabelled usable minutes from excluded labels:** NOR-TMD outside 1,636 and inside 401, Collecty Walk 3,529.
+  Also unlabelled: NOR-TMD boat 3,715 and e-scooter 198, Collecty e-scooter 388.
+
+**Plausibility rules across datasets** (`checks/flag_rates.csv`, % of windows with a class)
+- **U3** (median |acc| outside 7–20 m/s²): ≤ 0.81% everywhere except SHL User 1 run (1.6%) and Collecty run
+  (0.5%); 0% in every other NOR-TMD and Collecty class. It behaves the same everywhere.
+- **X3 / `quiet`** behaves differently by dataset:
+  - in ExtraSensory, `quiet` is 9–27% of moving-class windows (walk 15%, run 27%, bike 10%; X3 removes these),
+    versus ≤ 0.2% for walk / bike in SHL and NOR-TMD;
+  - in the vehicles, `quiet` is 1–8% everywhere (NOR-TMD car 7.5%, ExtraSensory car 8.2%).
+  - Reading: in-the-wild phone placement (bag, table) in ExtraSensory, not a rule defect.
+
+**Dataset identification within class** (`checks/dataset_identification.csv`; 05's 580 features, LightGBM,
+cross-validated by group; groups = users, SHL User 1's recording days; dev users only; up to 2,000 windows per
+source; descriptive, the baseline for later shortcut checks)
+
+| Class | Sources | Windows | Groups | Macro AUC | Balanced accuracy (chance) |
+|---|---|---|---|---|---|
+| bus | ExtraSensory / NOR-TMD / Collecty / SHL | 1,348 / 1,537 / 253 / 2,000 | 21 / 62 / 5 / 40 days | 0.824 | 0.543 (0.25) |
+| car | ExtraSensory / NOR-TMD / Collecty / SHL | 1,769 / 405 / 1,056 / 2,000 | 38 / 11 / 13 / 27 days | 0.818 | 0.519 (0.25) |
+| train | SHL / NOR-TMD / Collecty / ExtraSensory | 2,000 / 470 / 252 / 190 | 27 days / 15 / 5 / 3 | 0.835 | 0.450 (0.25) |
+| subway | SHL / NOR-TMD | 2,000 / 1,312 | 16 days / 25 | **0.963** | 0.891 (0.50) |
+| tram | NOR-TMD / Collecty | 1,033 / 153 | 17 / 4 | 0.521 | 0.505 (0.50) |
+
+- **Every vehicle class except tram is clearly identifiable by source from the accelerometer features alone**
+  (AUC 0.82–0.96). Subway is the extreme: SHL's one phone in London against NOR-TMD's Oslo metro.
+- SHL is grouped by day, so its numbers also contain "one person" (identifiable across days); the other sources are
+  grouped by user.
+
+**Platform identification within class, ExtraSensory** (`checks/platform_identification.csv`; dev, up to 2,000
+windows per platform)
+
+| Class | Windows | iPhone share | 05's features v1 = v2 | Platform AUC v1 | Platform AUC v2 |
+|---|---|---|---|---|---|
+| still | 3,983 | 0.50 | identical | 0.819 | 0.819 |
+| walk | 3,395 | 0.58 | identical | 0.636 | 0.636 |
+| car | 3,567 | 0.49 | identical | 0.607 | 0.607 |
+| bike | 3,118 | 0.53 | identical | 0.425 | 0.425 |
+
+- **The sign conversion leaves 05's features exactly unchanged**, so every v1 result and the platform AUCs stay
+  the same.
+- Still is identifiable by platform (0.82) with or without the conversion: iPhone vs Android still windows differ
+  beyond the axis sign (noise floor, rest position).
+
+**v1's reference numbers in the six-class score** (`checks/rescore_six_class.csv`, `rescore_per_seed.csv`,
+`rescore_dev_oof_per_seed.csv`; no retraining; mean of seeds 0–2)
+
+| Set | 05: six-class | 05: 8-class (check) | 06: six-class | 06: 8-class (check) |
+|---|---|---|---|---|
+| ExtraSensory dev, pooled OOF | **0.575** [0.515, 0.619] | 0.551 | **0.642** [0.583, 0.687] | 0.613 |
+| SHL User 1, day folds | 0.946 | 0.934 | 0.955 | 0.949 |
+| ExtraSensory test, all | **0.642** | 0.667 | **0.686** | 0.707 |
+| — iPhone / Android | 0.751 / 0.642 | 0.762 / 0.665 | 0.752 / 0.654 | 0.764 / 0.682 |
+| SHL Users 2–3, rail check | 0.920 | 0.795 | 0.944 | 0.847 |
+
+- The 8-class column reproduces STATUS.md's numbers exactly, which validates the merging.
+- **Deviation:** 06's dev runs logged no confusion matrix as data (only figures). Dev scores therefore come from
+  the saved out-of-fold predictions (`processed/0{5,6}_…/oof/*.npz`) for both models, with a user-bootstrap 95% CI
+  (seed 0).
+  - For 05 both routes exist: 0.578 from the logged matrices vs 0.575 from the predictions. The logged matrices
+    cover only the classes present (no subway), so windows *predicted* as subway drop out of them. Merged into
+    rail, they count.
+  - The test numbers come from the logged matrices (test predictions weren't saved), so they share that small gap.
+- Six-class is lower than 8-class on test: run (high test recall) merges into foot with walk, and the macro
+  average loses that class.
+
+**Run labels** (item 8; `checks/run_energy_cadence.csv`, `run_per_user.csv`; v1's labels)
+
+| Set | Windows | Users | std \|acc\| p25 / p50 / p75 [m/s²] | Cadence p25 / p50 / p75 [Hz] |
+|---|---|---|---|---|
+| ExtraSensory dev run | 463 | 17 | 0.36 / 2.23 / 6.37 | 1.67 / 2.33 / 2.73 |
+| ExtraSensory test run | 81 | 5 | 5.09 / 6.43 / 11.64 | 2.47 / 2.53 / 2.87 |
+| SHL User 1 run | 1,030 | 1 | 9.52 / 10.70 / 12.17 | 2.60 / 2.67 / 2.67 |
+
+- **One dev user, 797D145F (Android), holds 283 of the 463 dev run windows (61%), and they look like walking or
+  standing:**
+  - median std |acc| 0.95 m/s², cadence 1.87 Hz (dev walk median 1.72 m/s², 1.93 Hz);
+  - 05 / 06 predict walk 63–64% and still 32–36% for them, never run.
+- Smaller dev users look similar: B9724848 (13 windows, 0.99 m/s²), A76A5AF5 (8, 1.09), 0A986513, 40E170A7.
+- Users whose run looks like running (std 7–12 m/s², 2.7–2.8 Hz) are recalled at 79–100%: 74B86067 (88 windows),
+  5119D0F8, 59818CD2, 4FC32141, F50235E0.
+- The test run windows come mostly from two such users (098A72A5, 0BFC35E2). **This explains 07's dev run recall
+  of 0.26 against 0.74 on test.**
+- **Flag proposal (not applied):** `run_low_energy`: a run window whose std |acc| is below ExtraSensory dev walk's
+  median (1.73 m/s², i.e. it moves less than a typical walk window). A flag in `labels`, not a deletion; whether
+  `official` excludes it is the decision. Options (thresholds from reference distributions, not fitted to the
+  suspect users):
+
+| Rule | Dev run flagged | Users | Test run flagged | Users | SHL run flagged | 797D145F |
+|---|---|---|---|---|---|---|
+| **std < ExtraSensory dev walk p50 (1.73) (proposed)** | 202 / 463 | 9 | 10 / 81 | 4 | 0 / 1,030 | 175 / 283 |
+| std < walk p75 (3.10) | 278 / 463 | 15 | 17 / 81 | 5 | 0 | 226 / 283 |
+| std < walk p50 and cadence < SHL run p5 (2.53 Hz) | 128 / 463 | 7 | 4 / 81 | 3 | 0 | 106 / 283 |
+| std < SHL run p1 (6.84) | 360 / 463 | 16 | 53 / 81 | 5 | – | – |
+
+**Deviations from the plan** (all recorded here and in the register)
+1. **SHL other positions** are separate `accelerometer_other_positions` tables (as v1's User 1 table), not rows in
+   `labels`, so the `(user, ts)` key stays unique. The labels table carries `position_default` / `position_draw`.
+2. **Duplicate user-minutes** are resolved by keeping one row per user-minute (R3): NOR-TMD 40, Collecty 6,383
+   (mostly sawtooth clock pieces). The dropped rows are not flags. The keeper rule (an ok window first, then the
+   earlier trip) also makes Collecty's within-user duplicate files disappear with their twin's rows (checked: 0
+   rows left from the 11 dropped copies).
+3. **Rescoring of dev** from saved predictions instead of logged matrices (above).
+4. **Window rate for ExtraSensory** is the snippet's real rate (v1's `raw_rate_hz`, over the hole-trimmed snippet,
+   ≥ 15 s), not a rate over the 15 s window. ExtraSensory's raw timestamps are not stored; the snippet is one
+   recording of ~16–40 s.
+5. **`stretch_too_short`:** a window that passes the gap rule but whose stretch's 25 Hz grid ends before 375
+   samples (NOR-TMD 4, Collecty 18), never official.
+6. **The first v2 build** (commit `4167a7d`) is discarded: its manifest was marked dirty by my stdout redirect, and
+   its tables went to `results/tables/build/`, which `.gitignore` matches. Rebuilt at `c0956d6` (same data files).
+
+**Open decisions for v2 and the first model on it**
+1. **Run flag:** adopt `run_low_energy` (proposed rule above) as a flag, and whether `official` excludes it.
+2. **SHL User 1's weight** (1 vs down-weighted) as an ablation in the first model on v2 (approved). It holds 79% of
+   dev train windows and 66% of run.
+3. **Dataset shortcut:** the within-class identification baseline is high (AUC 0.82–0.96). The first v2 model
+   should report whether its predictions depend on the source, e.g. per-source recall, and the identification AUC
+   of its own representation.
+4. **SHL other positions:** if the first model on v2 shows a clear rail-recall drop off the hip in Users 2–3's
+   per-position breakdown, check whether the 2023 training set's days overlap the 91 hip days, and consider it for
+   a v2.1 (item 6).
+5. **Thin test cells:** NOR-TMD test train 128 windows from 5 users, car 158 from 4; ExtraSensory test train 50
+   from 2 users. Per-class results need user-bootstrap CIs.
+6. **Licence:** SHL's non-commercial terms stay open (`LICENSES.md`).
+7. **Scratch v1 rebuild:** the gate has passed after the v2 changes. The scratch copy (6.7 GB, plus the gate's
+   recomputed 05 / 06 files, in the session scratchpad) and the discarded first build's outputs can be deleted.
+   **Your OK, then I delete them.**
+
 ## Conclusion
 
-*Not written yet.*
+**Draft — not approved.**
+
+**`waiis_bench_v2` is built and frozen:** `<data>/processed/waiis_bench_v2/`, 32 Parquet files, 5.63 GB, from clean
+commit `c0956d6`.
+- Reference manifest: `results/manifests/waiis_bench_v2.json`; a second build reproduced every file.
+- Read it with `tmd.bench` and `version="waiis_bench_v2"`; the default stays v1 until v2 is approved.
+- Every rule is in `decision_register.md`.
+
+| Source | Official examples | Role |
+|---|---|---|
+| `extrasensory` | 145,375 (59 users) | dev folds + 12 reserved test users (as v1; iPhone in the Android axis convention; 5 windows under 24 Hz flagged) |
+| `shl_user1` | 23,076 (+ 5,964 other-position windows, opt-in) | training (uncapped) |
+| `shl_user23` | 2,365 (+ 9,049 other-position windows) | rail check, per position |
+| `nor_tmd` | 14,178 (91 installations): dev 10,957, test 3,221 | training + second reserved test (bus, subway, train, tram, car) |
+| `collecty` | 3,383 (14 users), after caps | training |
+
+- **What v2 adds:** dev rail 11,127 windows against v1's 5,931 (NOR-TMD 4,791), bus 9,985 against 4,376, tram as a
+  ninth class, and a vehicle / rail test set from 14 unseen installations.
+- **What it doesn't add:** still, walk, iOS or GPS from the new sources. Those remain ExtraSensory + SHL only.
+- **v1 is unchanged and reproducible:** after every change, v1 rebuilds hash-identical and 06's dev out-of-fold
+  probabilities are bit-identical. The iOS sign conversion leaves 05's features unchanged.
+- **v1's reference numbers in the six-class primary score:** 05 test 0.642 (dev 0.575), 06 test 0.686 (dev 0.642),
+  rail check 0.920 / 0.944.
+- **Risks for the first model on v2:**
+  - **dataset shortcut:** source identification within class reaches AUC 0.82–0.96 (tram 0.52);
+  - SHL User 1 carries 79% of dev train and 66% of run (its weight: an ablation);
+  - thin test cells (NOR-TMD train 128 windows / 5 users, car 158 / 4; ExtraSensory train 50 / 2).
+- **Run labels:** 07's dev-vs-test gap comes mostly from one ExtraSensory dev user whose "run" moves like walking;
+  `run_low_energy` is proposed as a flag.
+- **Next:** decide the run flag; then the first model on v2 with SHL's weight as an ablation and a per-source /
+  shortcut report.

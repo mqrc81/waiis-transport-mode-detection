@@ -1,0 +1,7 @@
+cls_fine,users,users_ge5,top_user_share
+bike,2,2,0.87
+bus,5,5,0.249
+car,13,13,0.25
+run,1,1,1.0
+train,5,5,0.25
+tram,4,4,0.392

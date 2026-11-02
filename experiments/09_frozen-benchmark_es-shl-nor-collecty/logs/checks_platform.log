@@ -1,0 +1,12 @@
+{'class': 'still', 'windows': 3983, 'iphone_share': np.float64(0.499), 'features_identical': True, 'platform_auc_v1': 0.819, 'platform_auc_v2': 0.819, 'cv_folds_by_user': 5}
+{'class': 'walk', 'windows': 3395, 'iphone_share': np.float64(0.581), 'features_identical': True, 'platform_auc_v1': 0.636, 'platform_auc_v2': 0.636, 'cv_folds_by_user': 5}
+{'class': 'car', 'windows': 3567, 'iphone_share': np.float64(0.487), 'features_identical': True, 'platform_auc_v1': 0.607, 'platform_auc_v2': 0.607, 'cv_folds_by_user': 5}
+{'class': 'bike', 'windows': 3118, 'iphone_share': np.float64(0.53), 'features_identical': True, 'platform_auc_v1': 0.425, 'platform_auc_v2': 0.425, 'cv_folds_by_user': 5}
+
+== platform_identification
+       windows  iphone_share  features_identical  platform_auc_v1  platform_auc_v2  cv_folds_by_user
+class                                                                                               
+still     3983         0.499                True            0.819            0.819                 5
+walk      3395         0.581                True            0.636            0.636                 5
+car       3567         0.487                True            0.607            0.607                 5
+bike      3118         0.530                True            0.425            0.425                 5

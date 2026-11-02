@@ -13,6 +13,18 @@
 - Every other split file and name is legacy, kept only for the records of experiments 02 and 03
   (`tmd.tracking.LEGACY`, refused for new runs).
 
+## waiis_bench_v2 (experiment 09; pending approval)
+
+| split | file | `tracking.SPLITS` name |
+|---|---|---|
+| reserved set v3: v2's 12 ExtraSensory users + SHL Users 2–3 (unchanged) + 14 NOR-TMD installations (8 device models) | `splits/reserved_test_v3.json` (here) | `extrasensory_test_v3`, `shl_user23_test_v3`, `nor_tmd_test_v3` |
+| NOR-TMD and Collecty dev folds (5, by user, balancing users per class) | `experiments/09_frozen-benchmark_es-shl-nor-collecty/splits/folds_nor_tmd_collecty.csv` | `nor_tmd_dev`, `collecty_dev` |
+
+- Read it with `tmd.splits.reserved_test(3)`; `tmd.bench` uses it for `version="waiis_bench_v2"`. The default stays 2
+  until v2 is approved.
+- How the NOR-TMD users were picked: `experiments/09_frozen-benchmark_es-shl-nor-collecty/pick_test.py` (whole device
+  models as the linkage guard; ≥ 5 held-out users for bus, subway, train, tram, ≥ 3 for car; no bike users; seed 0).
+
 ## Reserved test set
 
 - `reserved_test_v2.json`: **the reserved final-test set, and the reference for it** (approved on

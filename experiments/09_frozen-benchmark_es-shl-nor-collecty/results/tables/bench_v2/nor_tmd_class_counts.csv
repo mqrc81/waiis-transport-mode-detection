@@ -1,0 +1,4 @@
+split,source_platform,bike,car,bus,train,subway,tram,All
+dev,android,405,405,5356,470,3288,1033,10957
+test,android,0,158,1908,128,738,289,3221
+All,,405,563,7264,598,4026,1322,14178
