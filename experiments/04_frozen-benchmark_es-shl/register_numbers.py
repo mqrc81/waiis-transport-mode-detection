@@ -15,6 +15,8 @@ import pyarrow.parquet as pq
 from tmd import bench
 from tmd.paths import PROJECT
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "results" / "tables" / "decision_details.csv"
 C7 = ["still", "walk", "run", "bike", "car", "bus", "train"]
@@ -103,21 +105,21 @@ def code_line(path, anchor):
 
 
 def main():
-    L = bench.read("extrasensory", "labels")
+    L = bench.read("extrasensory", "labels", version=BENCH)
     ex = L[L.official]
     inc = L[L.included_v2]
-    sn = pq.read_table(bench.path("extrasensory", "snippets"),
+    sn = pq.read_table(bench.path("extrasensory", "snippets", version=BENCH),
                        columns=["user", "ts", "n25", "unit", "raw_rate_hz", "span_s"]).to_pandas()
-    acc = pq.read_table(bench.path("extrasensory", "accelerometer"),
+    acc = pq.read_table(bench.path("extrasensory", "accelerometer", version=BENCH),
                         columns=["user", "ts", "span_s", "start_offset_s"]).to_pandas()
     sn = sn.merge(L[["user", "ts", "platform", "cls", "split"]], on=["user", "ts"])
     acc = acc.merge(L[["user", "ts", "platform", "cls"]], on=["user", "ts"])
-    man = bench.manifest()
+    man = bench.manifest(version=BENCH)
 
     # Sources
     minutes("S1", "minutes", L, f"{len(L):,} min, {L.user.nunique()} users")
     minutes("S2", "official examples of the users without gyroscope", ex[ex.user.str[:8].isin(NO_GYRO)])
-    shl = {s: bench.read(s, "labels") for s in ("shl_user1", "shl_user23")}
+    shl = {s: bench.read(s, "labels", version=BENCH) for s in ("shl_user1", "shl_user23")}
     for s, lab in shl.items():
         minutes("S3", f"{s} official examples", lab[lab.official].assign(platform="android"))
     headline["S3"] = f"{sum(int(l.official.sum()) for l in shl.values()):,} examples"
@@ -226,17 +228,17 @@ def main():
     for k, v in L.location_missing_reason.replace("", "present").value_counts().items():
         add("G2", "minutes per reason", "reason", k, int(v))
     headline["G2"] = f"{int((L.location_missing_reason == 'no_updates').sum()):,} no_updates"
-    g = bench.read("extrasensory", "gps_per_minute").merge(ex[["user", "ts", "cls", "platform"]], on=["user", "ts"])
+    g = bench.read("extrasensory", "gps_per_minute", version=BENCH).merge(ex[["user", "ts", "cls", "platform"]], on=["user", "ts"])
     g["speed_missing"] = g.speed < 0
     g["bearing_missing"] = g.bearing < 0
     share("G3", "official fixes with speed -1", g, "speed_missing")
     headline["G3"] = f"{g.speed_missing.mean():.0%} speed −1"
     share("G4", "official fixes with bearing -1", g, "bearing_missing")
     headline["G4"] = f"{g.bearing_missing.mean():.0%} bearing −1"
-    gp = bench.read("extrasensory", "gps_per_minute")
+    gp = bench.read("extrasensory", "gps_per_minute", version=BENCH)
     add("G5", "interval to previous fix [s], median", "total", "", float(gp.dt_prev_s.median()))
     headline["G5"] = f"median {gp.dt_prev_s.median():.0f} s"
-    ses = bench.read("extrasensory", "sessions")
+    ses = bench.read("extrasensory", "sessions", version=BENCH)
     add("G6", "sessions", "total", "", len(ses))
     add("G6", "minutes per session, median", "total", "", float(ses.minutes.median()))
     headline["G6"] = f"{len(ses):,} sessions"
@@ -250,9 +252,9 @@ def main():
     headline["H1"] = f"{sum(int(l.has_acc.sum()) for l in shl.values()):,} windows"
     headline["H2"] = f"−{sum(int(l.label_status.isin(['mixed', 'null']).sum()) for l in shl.values()):,} min"
     for s in shl:
-        full = len(bench.read(s, "gps_1hz", columns=["time"]))
+        full = len(bench.read(s, "gps_1hz", columns=["time"], version=BENCH))
         for var, i in (("gps_waiis_cadence", "H3"), ("gps_per_minute", "H4")):
-            tr = bench.read(s, var).merge(shl[s][["user", "ts", "cls"]], on=["user", "ts"], how="left")
+            tr = bench.read(s, var, version=BENCH).merge(shl[s][["user", "ts", "cls"]], on=["user", "ts"], how="left")
             add(i, f"{s} fixes", "total", "", len(tr))
             add(i, f"{s} 1 Hz fixes", "total", "", full)
             for c, gg in tr.groupby("cls"):
@@ -260,9 +262,9 @@ def main():
                     float(gg.dt_prev_s.median()))
                 add("H5", f"{s} {var} speed missing share", "class", c or "(none)", round(float((gg.speed < 0).mean()), 3))
             add("H5", f"{s} {var} speed missing share", "total", "", round(float((tr.speed < 0).mean()), 3))
-    w1 = bench.read("shl_user1", "gps_waiis_cadence")
+    w1 = bench.read("shl_user1", "gps_waiis_cadence", version=BENCH)
     headline["H3"] = f"{len(w1):,} fixes (User 1)"
-    headline["H4"] = f"{len(bench.read('shl_user1', 'gps_per_minute')):,} fixes (User 1)"
+    headline["H4"] = f"{len(bench.read('shl_user1', 'gps_per_minute', version=BENCH)):,} fixes (User 1)"
     headline["H5"] = f"{(w1.speed < 0).mean():.0%} speed −1"
     add("H5", "v0 [m/s]", "total", "", man["params"]["blank_v0"])
     for k in ("shl_user1/stream.parquet", "shl_user23/stream.parquet", "shl_user1/accelerometer_other_positions.parquet"):

@@ -46,15 +46,16 @@ def product(p_acc, p_gps, cov):
     return out
 
 
-def session_pool(df: pd.DataFrame, seed: int = 0, n: int = 200) -> list:
-    """n fold-0 ExtraSensory sessions with >= 3 usable minutes: (keys, windows, GPS fixes) per session."""
+def session_pool(df: pd.DataFrame, seed: int = 0, n: int = 200, version: str = bench.VERSION) -> list:
+    """n fold-0 ExtraSensory sessions with >= 3 usable minutes: (keys, windows, GPS fixes) per session. `version`:
+    the benchmark (07 pins v1)."""
     es = df[(df.source == "extrasensory") & (df.fold == 0)]
     cnt = es.groupby(["user", "session"]).size()
     pick = cnt[cnt >= 3].sample(min(n, int((cnt >= 3).sum())), random_state=seed).index
     keep = es.set_index(["user", "session"]).loc[pick].reset_index()[["user", "ts", "session"]]
-    keys, w = bench.load_windows("extrasensory", keep)
+    keys, w = bench.load_windows("extrasensory", keep, version)
     keys = keys.assign(source="extrasensory")
-    gps = bench.read("extrasensory", "gps_per_minute")
+    gps = bench.read("extrasensory", "gps_per_minute", version=version)
     gps = gps[gps.user.isin(set(keep.user))]
     return [(keys.iloc[idx], w[idx], gps[(gps.user == u) & (gps.session == s)])
             for (u, s), idx in keys.groupby(["user", "session"], sort=False).indices.items()]

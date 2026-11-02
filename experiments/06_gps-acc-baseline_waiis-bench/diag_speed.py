@@ -17,14 +17,16 @@ import pandas as pd
 from tmd import bench
 from tmd.labels import CLASSES
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "results"
 
 
 def minutes(src: str) -> pd.DataFrame:
-    e = bench.examples(src)
+    e = bench.examples(src, version=BENCH)
     e = e[e.split == "dev"]
-    g = bench.read(src, "gps_per_minute")
+    g = bench.read(src, "gps_per_minute", version=BENCH)
     m = e.merge(g, on=["user", "ts"], how="inner", suffixes=("", "_g"))
     m["cls"] = m.y.map(lambda i: CLASSES[i - 1])
     m["plat"] = m.platform if src == "extrasensory" else "shl"
@@ -71,9 +73,9 @@ def main():
     lines += ["3. repeated (distance 0) and near-repeated (< 2 m) positions, pairs <= 150 s", t.round(3).to_string(index=False), ""]
 
     # moving minutes: do repeats come in runs followed by a jump (cached fixes)?
-    g = bench.read("extrasensory", "gps_per_minute").sort_values(["user", "session", "time"])
-    g = g[~g.user.isin(bench.reserved_users("extrasensory"))]
-    lab = bench.read("extrasensory", "labels", columns=["user", "ts", "cls", "platform"])
+    g = bench.read("extrasensory", "gps_per_minute", version=BENCH).sort_values(["user", "session", "time"])
+    g = g[~g.user.isin(bench.reserved_users("extrasensory", version=BENCH))]
+    lab = bench.read("extrasensory", "labels", columns=["user", "ts", "cls", "platform"], version=BENCH)
     g = g.merge(lab, on=["user", "ts"], how="left")
     g["rep"] = (g.dist_prev_m == 0) & (g.dt_prev_s <= 150)
     g["next_after_rep"] = g.groupby(["user", "session"]).rep.shift(1).fillna(False).astype(bool) & ~g.rep
@@ -84,7 +86,7 @@ def main():
 
     # within-minute movement (ExtraSensory location features) vs derived speed, car minutes
     lf = bench.read("extrasensory", "location_features",
-                    columns=["user", "ts", "location:num_valid_updates", "location:diameter"])
+                    columns=["user", "ts", "location:num_valid_updates", "location:diameter"], version=BENCH)
     c = es[es.cls.isin(["car", "bus", "train", "walk", "bike"])].merge(lf, on=["user", "ts"], how="left")
     w = c.groupby(["platform", "cls"]).agg(updates_med=("location:num_valid_updates", "median"),
                                            diameter_med_m=("location:diameter", "median"),

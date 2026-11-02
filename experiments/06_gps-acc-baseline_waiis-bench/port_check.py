@@ -14,6 +14,8 @@ from tmd import acc_features as af
 from tmd import lgbm, minutes
 from tmd.paths import PROCESSED
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 P05 = PROCESSED / "05_acc-baseline_waiis-bench"
 
@@ -26,7 +28,7 @@ def main():
     x = df[af.names(True, False)].to_numpy(np.float32)
     trainable = df.official.to_numpy() & (df.fold.to_numpy() >= 0)
     r = lgbm.paired_cv(x, df.y.to_numpy(), df.fold.to_numpy(), trainable, np.ones(len(df)), seed=0, name="B")
-    lab = pd.concat([minutes.labelled_minutes(s) for s in ("extrasensory", "shl_user1")], ignore_index=True)
+    lab = pd.concat([minutes.labelled_minutes(s, version=BENCH) for s in ("extrasensory", "shl_user1")], ignore_index=True)
     fb = minutes.smooth_cv(df, r["p"], lab, "fb")
     lines = []
     for name, p in (("B", r["p"]), ("F_fb", fb)):

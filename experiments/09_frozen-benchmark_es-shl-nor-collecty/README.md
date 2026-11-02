@@ -600,7 +600,7 @@ windows per platform)
 | std < walk p50 and cadence < SHL run p5 (2.53 Hz) | 128 / 463 | 7 | 4 / 81 | 3 | 0 | 106 / 283 |
 | std < SHL run p1 (6.84) | 360 / 463 | 16 | 53 / 81 | 5 | – | – |
 
-**Deviations from the plan** (all recorded here and in the register)
+**Deviations from the plan** (all recorded here and in the register; **accepted 2026-11-02**)
 1. **SHL other positions** are separate `accelerometer_other_positions` tables (as v1's User 1 table), not rows in
    `labels`, so the `(user, ts)` key stays unique. The labels table carries `position_default` / `position_draw`.
 2. **Duplicate user-minutes** are resolved by keeping one row per user-minute (R3): NOR-TMD 40, Collecty 6,383
@@ -617,21 +617,80 @@ windows per platform)
    its tables went to `results/tables/build/`, which `.gitignore` matches. Rebuilt at `c0956d6` (same data files).
 
 **Open decisions for v2 and the first model on it**
-1. **Run flag:** adopt `run_low_energy` (proposed rule above) as a flag, and whether `official` excludes it.
+1. **Run flag:** decided at review, user-level (`run_user_flagged`, below).
 2. **SHL User 1's weight** (1 vs down-weighted) as an ablation in the first model on v2 (approved). It holds 79% of
    dev train windows and 66% of run.
 3. **Dataset shortcut:** the within-class identification baseline is high (AUC 0.82–0.96). The first v2 model
    should report whether its predictions depend on the source, e.g. per-source recall, and the identification AUC
-   of its own representation.
+   of its own representation. In addition:
+   - (a) ExtraSensory dev scored with and without the new datasets in training, including still / walk precision
+     against the vehicle classes (do NOR-TMD's and Collecty's vehicle-only data pull still / walk into vehicles?);
+   - (b) a NOR-TMD transfer score: trained without NOR-TMD, scored on NOR-TMD dev.
 4. **SHL other positions:** if the first model on v2 shows a clear rail-recall drop off the hip in Users 2–3's
    per-position breakdown, check whether the 2023 training set's days overlap the 91 hip days, and consider it for
    a v2.1 (item 6).
 5. **Thin test cells:** NOR-TMD test train 128 windows from 5 users, car 158 from 4; ExtraSensory test train 50
    from 2 users. Per-class results need user-bootstrap CIs.
 6. **Licence:** SHL's non-commercial terms stay open (`LICENSES.md`).
-7. **Scratch v1 rebuild:** the gate has passed after the v2 changes. The scratch copy (6.7 GB, plus the gate's
-   recomputed 05 / 06 files, in the session scratchpad) and the discarded first build's outputs can be deleted.
-   **Your OK, then I delete them.**
+7. **Scratch v1 rebuild:** deleted at review (6.6 GB with the gate's recomputed 05 / 06 files, and the discarded
+   first build's outputs); free space 11 → 17 GB.
+
+### Stop-point 2 review (2026-11-02)
+
+1. Scratch files deleted (open decision 7).
+2. **Run flag, user-level, all sources and splits:**
+   - A user whose median run std |acc| is below ExtraSensory dev walk's median gets all their run windows flagged
+     (`run_user_flagged`).
+   - Flagged windows are never labels: out of `official`, kept as unlabelled usable minutes.
+3. Deviations 1–6 accepted.
+4. **Which data the primary score uses** (below), and open decision 3 extended with (a) and (b).
+5. **Before the default switches to v2:** every 04–08 script pins `version="waiis_bench_v1"`, and the v1 gate is
+   rerun. The default doesn't switch until approval.
+6. Draft markers stay.
+
+#### Run labels: `run_user_flagged` (built into v2)
+
+- **Rule** (`tmd.bench.build.run_user_flag`; register L5):
+  - reference = median window std |acc| over ExtraSensory dev official walk windows = **1.712 m/s²**, computed in
+    the build (the earlier 1.73 was from a 4,000-window sample);
+  - per source and user, the median std |acc| over their labelled run windows (label rules applied; before the
+    plausibility flags and caps);
+  - every run minute of a user below the reference gets `run_user_flagged`: out of `included` / `official`,
+    `y` = `y_fine` = 0, still `has_acc` (an unlabelled usable minute).
+  - Flagged over official windows only, the same 7 users would be flagged.
+- **Flagged users** (`results/tables/bench_v2/run_user_flag.csv`): 7 of 22 ExtraSensory run users; none of SHL's
+  3 or Collecty's 2 run users.
+
+| User | Split | Platform | Median std \|acc\| [m/s²] | Run windows | Official run before → after |
+|---|---|---|---|---|---|
+| 797D145F | dev | Android | 0.95 | 283 | 283 → 0 |
+| B9724848 | dev | iOS | 0.99 | 13 | 13 → 0 |
+| A76A5AF5 | dev | iOS | 0.01 | 88 | 8 → 0 |
+| 40E170A7 | dev | Android | 1.21 | 4 | 3 → 0 |
+| 1155FF54 | dev | Android | 0.28 | 1 | 1 → 0 |
+| B09E373F | test | iOS | 0.01 | 84 | 6 → 0 |
+| 1DBB0F6F | test | Android | 0.31 | 1 | 1 → 0 |
+
+- **Effect on official ExtraSensory run:**
+  - **dev 463 → 155** windows, from 17 → 12 users; users with ≥ 5 windows 9 → 6;
+  - **test 81 → 74**, from 5 → 3 users (098A72A5, 0BFC35E2, 665514DE).
+  - A76A5AF5 and B09E373F have mostly quiet run windows (median 0.01 m/s², phone not carried). Their few
+    non-quiet windows were the official ones (8 and 6).
+- Users kept although their 05 / 06 predictions are mostly walk: 0A986513 (6 windows, median 2.90 m/s²),
+  61976C24, 806289BC, A5A30F76, B7F9D634 (1–3 windows each). Their energy is above walk's median, so the rule keeps
+  them.
+
+#### Which data the primary score uses
+
+- **Primary:** six-class macro-F1 (still, foot, bike, car, bus, rail) on **ExtraSensory dev, pooled out of fold**,
+  with a user-bootstrap 95% CI.
+  - v1's references: 05 **0.575**, 06 **0.642** (scored on v1's labels).
+  - On v2 the run flag removes 308 dev run windows from scoring, so a v2 model's dev score is not directly
+    comparable with these. The first model on v2 rescores 06 on v2's dev labels as its baseline.
+- **Guard:** NOR-TMD dev, on its classes (bus, car, rail), must not drop.
+- **Always reported separately:** Collecty dev; SHL User 1 (day folds); NOR-TMD test (bus, subway, train, tram,
+  car; six-class: bus, car, rail); SHL Users 2–3 rail check, per position.
+- ExtraSensory test stays the final test, reported overall and per platform, as in v1.
 
 ## Conclusion
 

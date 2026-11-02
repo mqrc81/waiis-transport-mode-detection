@@ -22,6 +22,8 @@ from tmd import acc_features as af
 from tmd import bench
 from tmd.paths import PROCESSED
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 EXP = HERE.name
 OUT = PROCESSED / EXP
@@ -34,9 +36,9 @@ def table_path(source: str, part: str, lp: float | None) -> Path:
 
 
 def usable(source: str, part: str) -> pd.DataFrame:
-    lab = bench.read(source, "labels")
+    lab = bench.read(source, "labels", version=BENCH)
     u = lab[lab.has_acc & ~lab.acc_implausible & ~lab.user_excluded]
-    reserved = bench.reserved_users(source)
+    reserved = bench.reserved_users(source, version=BENCH)
     u = u[~u.user.isin(reserved)] if part == "dev" else u[u.user.isin(reserved)]
     return u[KEYS].reset_index(drop=True)
 
@@ -44,7 +46,7 @@ def usable(source: str, part: str) -> pd.DataFrame:
 def load_windows(source: str, keep: pd.DataFrame) -> tuple[pd.DataFrame, np.ndarray]:
     want = set(zip(keep.user, keep.ts))
     keys, arrs = [], []
-    for b in pq.ParquetFile(bench.path(source, "accelerometer")).iter_batches(1 << 14, columns=["user", "ts", "x", "y", "z"]):
+    for b in pq.ParquetFile(bench.path(source, "accelerometer", version=BENCH)).iter_batches(1 << 14, columns=["user", "ts", "x", "y", "z"]):
         u, t = b.column("user").to_numpy(zero_copy_only=False), b.column("ts").to_numpy()
         m = np.fromiter(((a, c) in want for a, c in zip(u, t)), bool, len(t))
         if not m.any():

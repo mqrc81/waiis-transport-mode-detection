@@ -17,14 +17,16 @@ import pandas as pd
 from tmd import bench
 from tmd import gps_features as gf
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 STOP = 1.0
 
 
 def main():
-    lab = bench.read("extrasensory", "labels", columns=["user", "ts", "cls", "platform", "split"])
+    lab = bench.read("extrasensory", "labels", columns=["user", "ts", "cls", "platform", "split"], version=BENCH)
     lab = lab[(lab.split == "dev")]
-    g = bench.read("extrasensory", "gps_per_minute")
+    g = bench.read("extrasensory", "gps_per_minute", version=BENCH)
     g = g[g.user.isin(set(lab.user))]
     f = gf.prepare(g).merge(lab, on=["user", "ts"], how="left")
     same = (f.user.eq(f.user.shift()) & f.session.eq(f.session.shift())).to_numpy()

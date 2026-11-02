@@ -18,6 +18,8 @@ from tmd import bench
 from tmd import gps_features as gf
 from tmd.paths import PROCESSED
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 OUT = PROCESSED / HERE.name
 P05 = PROCESSED / "05_acc-baseline_waiis-bench"
@@ -39,8 +41,8 @@ def main():
     for s in srcs:
         t0 = time.time()
         keys = pd.read_parquet(P05 / f"{s}_{a.part}_25hz_w15s_acc-v1_lp-none.parquet", columns=KEYS)
-        gps = bench.read(s, "gps_per_minute")
-        keep = bench.reserved_users(s)
+        gps = bench.read(s, "gps_per_minute", version=BENCH)
+        keep = bench.reserved_users(s, version=BENCH)
         gps = gps[~gps.user.isin(keep)] if a.part == "dev" else gps[gps.user.isin(keep)]
         f = gf.features(keys, gps, a.version)
         df = pd.concat([keys, pd.DataFrame(f, columns=gf.names(a.version))], axis=1)

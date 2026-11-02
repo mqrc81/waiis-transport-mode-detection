@@ -32,6 +32,8 @@ from tmd.evaluate import bootstrap_users_recall, family_proba, model_size_bytes,
 from tmd.labels import CLASSES, to_family
 from tmd.tracking import TRACKING_URI, DataInput, run
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 SEEDS = (0, 1, 2)
 CFG = pl.Cfg("final", sub=True)
 log = logging.getLogger()
@@ -81,7 +83,7 @@ def main():
     x_te = te[names].to_numpy(np.float32)
     es = ((te.source == "extrasensory") & te.official).to_numpy()
     shl = ((te.source == "shl_user23") & te.official).to_numpy()
-    mb_keys = bench.read("extrasensory", "labels", columns=["user", "ts", "reason"])
+    mb_keys = bench.read("extrasensory", "labels", columns=["user", "ts", "reason"], version=BENCH)
     mb_keys = mb_keys[mb_keys.reason == "check:MOTORBIKE"]
     mb = te.set_index(["user", "ts"]).index.isin(mb_keys.set_index(["user", "ts"]).index) \
         & (te.source == "extrasensory").to_numpy()

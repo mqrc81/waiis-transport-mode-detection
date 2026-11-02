@@ -47,6 +47,8 @@ from tmd.tracking import TRACKING_URI, DataInput, run
 
 import pipe
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 SEEDS = (0, 1, 2)
 GPS_V = "gps-v2"
 MODELS = pipe.OUT / "models"
@@ -107,9 +109,9 @@ def test_pool(te, seed, n=200):
     cnt = es.groupby(["user", "session"]).size()
     pick = cnt[cnt >= 3].sample(min(n, int((cnt >= 3).sum())), random_state=seed).index
     keep = es.set_index(["user", "session"]).loc[pick].reset_index()[["user", "ts", "session"]]
-    keys, w = bench.load_windows("extrasensory", keep)
+    keys, w = bench.load_windows("extrasensory", keep, version=BENCH)
     keys = keys.assign(source="extrasensory")
-    gps = bench.read("extrasensory", "gps_per_minute")
+    gps = bench.read("extrasensory", "gps_per_minute", version=BENCH)
     gps = gps[gps.user.isin(set(keep.user))]
     return [(keys.iloc[idx], w[idx], gps[(gps.user == u) & (gps.session == s)])
             for (u, s), idx in keys.groupby(["user", "session"], sort=False).indices.items()]
@@ -134,7 +136,7 @@ def main():
     xa_te, xg_te = te[pipe.ACC].to_numpy(np.float32), te[pipe.GPS].to_numpy(np.float32)
     es = ((te.source == "extrasensory") & te.official).to_numpy()
     shl = ((te.source == "shl_user23") & te.official).to_numpy()
-    mb_keys = bench.read("extrasensory", "labels", columns=["user", "ts", "reason"])
+    mb_keys = bench.read("extrasensory", "labels", columns=["user", "ts", "reason"], version=BENCH)
     mb_keys = mb_keys[mb_keys.reason == "check:MOTORBIKE"]
     mb = te.set_index(["user", "ts"]).index.isin(mb_keys.set_index(["user", "ts"]).index) & \
         (te.source == "extrasensory").to_numpy()

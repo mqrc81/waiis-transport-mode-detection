@@ -23,6 +23,8 @@ from tmd.evaluate import (bootstrap_users_diff, bootstrap_users_recall, class_li
 from tmd.labels import CLASSES, to_family
 from tmd.tracking import DataInput
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 EXP = HERE.name
 OOF = OUT / "oof"
@@ -55,7 +57,7 @@ def load(part: str = "dev") -> pd.DataFrame:
 
 
 def labelled() -> pd.DataFrame:
-    return pd.concat([minutes.labelled_minutes(s) for s in ("extrasensory", "shl_user1")], ignore_index=True)
+    return pd.concat([minutes.labelled_minutes(s, version=BENCH) for s in ("extrasensory", "shl_user1")], ignore_index=True)
 
 
 def params(lr: float) -> tuple[dict, int, int]:
@@ -185,9 +187,9 @@ def session_pool(df, seed, n=200):
     cnt = es.groupby(["user", "session"]).size()
     pick = cnt[cnt >= 3].sample(min(n, int((cnt >= 3).sum())), random_state=seed).index
     keep = es.set_index(["user", "session"]).loc[pick].reset_index()[["user", "ts", "session"]]
-    keys, w = bench.load_windows("extrasensory", keep)
+    keys, w = bench.load_windows("extrasensory", keep, version=BENCH)
     keys = keys.assign(source="extrasensory")
-    gps = bench.read("extrasensory", "gps_per_minute")
+    gps = bench.read("extrasensory", "gps_per_minute", version=BENCH)
     gps = gps[gps.user.isin(set(keep.user))]
     ses = []
     for (u, s), idx in keys.groupby(["user", "session"], sort=False).indices.items():

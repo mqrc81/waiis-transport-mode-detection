@@ -50,6 +50,7 @@ NOR-TMD (Android) and Collecty, 9 fine classes, a six-class primary score and re
 | L1 | **9 fine classes** (tram = 9); `cls` keeps v1's 8 | tram ≥ 10 users in ≥ 2 datasets | tram official: NOR-TMD 1,322 (dev 1,033, test 289), Collecty 153 | `cls_fine`, `y_fine` | – |
 | L2 | **Six-class primary score** (still, foot, bike, car, bus, rail), merged at scoring time | rail and foot separations are what WAIIS needs first | `tmd.labels.SCORE6` | – | – |
 | L3 | Conflicting labels never labels, kept as unlabelled usable minutes | still inside walk / outside | NOR-TMD inside 401, outside 1,636 usable minutes; Collecty Walk 3,529 | `label_excluded`, `reason` | b: no still / walk from new sources |
+| L5 | **Run users who move like walking are never run labels** (`run_user_flag`, approved 2026-11-02): a user whose median window std \|acc\| over labelled run windows is below ExtraSensory dev walk's median (1.712 m/s²) gets all run minutes flagged; out of `official`, kept as unlabelled usable minutes; every source and split | 07's dev / test run gap: one dev user's "run" moved like walking | 7 ExtraSensory users (5 dev, 2 test); official run dev 463 → 155, test 81 → 74; no SHL or Collecty user | `run_user_flagged` | c: test run 3 users |
 | L4 | Modes outside v1 (boat, e-scooter) unlabelled | no class (08) | NOR-TMD boat 3,715, e-scooter 198 minutes; Collecty e-scooter 388 | `reason` | b: production has them |
 
 ## Caps

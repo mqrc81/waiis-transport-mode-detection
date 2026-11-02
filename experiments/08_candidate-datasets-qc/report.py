@@ -20,6 +20,8 @@ from tmd.paths import PROCESSED
 
 import mobilitapp                    # this folder: not used beyond 08
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 TABLES = HERE / "results" / "tables"
 VEHICLES = {"car", "bus", "train", "subway"}
@@ -320,7 +322,7 @@ def mobilitapp_report(still_t: float) -> dict:
 def v1_rows() -> list[dict]:
     rows = []
     for src, name in (("extrasensory", "v1 ExtraSensory (official, dev + test)"), ("shl_user1", "v1 SHL User 1 (official)")):
-        e = bench.examples(src)
+        e = bench.examples(src, version=BENCH)
         u = e.groupby(["cls", "user"]).size()
         upc = (u >= 5).groupby(level=0).sum()
         rows.append({"dataset": name, "clean v1 windows": len(e), "clean v1 hours (tiles)": f"{len(e) * 15 / 3600:.1f} (minute grid)",
@@ -334,7 +336,7 @@ def v1_rows() -> list[dict]:
 
 def still_threshold() -> float:
     """p95 of window std |acc| over v1's official still examples, dev users only (fixed before the candidates)."""
-    s = pd.concat([bench.examples(src).query("split == 'dev' and cls == 'still'").acc_std
+    s = pd.concat([bench.examples(src, version=BENCH).query("split == 'dev' and cls == 'still'").acc_std
                    for src in ("extrasensory", "shl_user1")])
     return float(s.quantile(0.95))
 

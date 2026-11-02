@@ -27,6 +27,8 @@ from tmd.evaluate import (
 from tmd.labels import CLASS_ID, CLASSES, FAMILIES, to_family
 from tmd.tracking import DataInput
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 EXP = HERE.name
 K = 5
@@ -143,8 +145,8 @@ def load_oof(name: str, seed: int, df: pd.DataFrame) -> np.ndarray:
 def labelled_minutes(source: str) -> pd.DataFrame:
     """All labelled minutes of the dev users, before caps and drops (ExtraSensory `cls`; SHL `cls`, else the
     majority class of mixed minutes). The excluded user is left out."""
-    lab = bench.read(source, "labels")
-    lab = lab[~lab.user.isin(bench.reserved_users(source)) & ~lab.user_excluded]
+    lab = bench.read(source, "labels", version=BENCH)
+    lab = lab[~lab.user.isin(bench.reserved_users(source, version=BENCH)) & ~lab.user_excluded]
     c = lab.cls.astype(str)
     if "majority_cls" in lab:
         c = c.where(c != "", lab.majority_cls.astype(str))

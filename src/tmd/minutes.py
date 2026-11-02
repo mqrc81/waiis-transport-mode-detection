@@ -16,11 +16,11 @@ K = 5
 STEP_S, MAX_GAP_S = 60.0, 600.0
 
 
-def labelled_minutes(source: str) -> pd.DataFrame:
+def labelled_minutes(source: str, version: str = bench.VERSION) -> pd.DataFrame:
     """All labelled minutes of the dev users, before caps and drops (ExtraSensory `cls`; SHL `cls`, else the
-    majority class of mixed minutes). The excluded user is left out."""
-    lab = bench.read(source, "labels")
-    lab = lab[~lab.user.isin(bench.reserved_users(source)) & ~lab.user_excluded]
+    majority class of mixed minutes). The excluded user is left out. `version`: the benchmark (05-07 pin v1)."""
+    lab = bench.read(source, "labels", version=version)
+    lab = lab[~lab.user.isin(bench.reserved_users(source, version)) & ~lab.user_excluded]
     c = lab.cls.astype(str)
     if "majority_cls" in lab:
         c = c.where(c != "", lab.majority_cls.astype(str))

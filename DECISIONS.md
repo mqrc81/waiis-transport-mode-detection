@@ -245,7 +245,16 @@ of NOR-TMD and Collecty: `LICENSES.md`.
 - The reserved set is **`splits/reserved_test_v3.json`**:
   - v2's 12 ExtraSensory test users and SHL Users 2–3 (all positions; the rail check), unchanged;
   - 14 NOR-TMD installations (8 whole device models), scored on bus, subway, train, tram and car.
-- v1's reference numbers in the six-class score (no retraining):
+- **Which data the primary score uses:**
+  - primary: six-class macro-F1 on **ExtraSensory dev, pooled out of fold** (user-bootstrap 95% CI);
+  - guard: **NOR-TMD dev on its classes (bus, car, rail) must not drop**;
+  - always reported separately: Collecty dev, SHL User 1 (day folds), NOR-TMD test, SHL Users 2–3 rail check per
+    position; ExtraSensory test stays the final test (overall and per platform).
+- **Run labels:** a user whose median run std |acc| is below ExtraSensory dev walk's median (1.712 m/s²) has no run
+  labels; their run minutes are unlabelled usable minutes (7 ExtraSensory users; official run dev 463 → 155, test
+  81 → 74).
+- v1's reference numbers in the six-class score (no retraining; scored on v1's labels; on v2's labels the run flag
+  changes the dev set, so the first v2 model rescores 06 on v2 as its baseline):
 
   | | 05 | 06 |
   |---|---|---|
@@ -268,7 +277,10 @@ of NOR-TMD and Collecty: `LICENSES.md`.
   only vehicles + bike / run, so a dataset shortcut is possible and has to be measured by the first model on v2.
 - NOR-TMD test train is 128 windows from 5 users, car 158 from 4. Installations are not persons (device model as
   the guard).
-- ExtraSensory dev run is mostly one user whose windows look like walking (flag proposed, not decided).
+- Dataset-shortcut checks still to run with the first v2 model: ExtraSensory dev with and without the new datasets
+  (incl. still / walk precision against the vehicle classes), and a NOR-TMD transfer score (trained without NOR-TMD,
+  scored on NOR-TMD dev).
+- ExtraSensory test run rests on 3 users after the run flag.
 - SHL's licence is non-commercial (open).
 
 **Evidence.** `experiments/09_frozen-benchmark_es-shl-nor-collecty/README.md` (Results, stop-point 2) and

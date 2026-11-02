@@ -41,6 +41,8 @@ from tmd.paths import PROCESSED
 from tmd.progress import Progress
 from tmd.tracking import TRACKING_URI, DataInput, run
 
+BENCH = "waiis_bench_v1"   # pinned (experiment 09): this script reads waiis_bench_v1 whatever tmd.bench's default
+
 HERE = Path(__file__).resolve().parent
 EXP = HERE.name
 OOF = PROCESSED / EXP / "oof"
@@ -82,7 +84,7 @@ class Data:
         self.iphone = (df.platform == "iphone").to_numpy()
         self.score = self.es & self.off            # scored rows, pooled over folds
         self.is_iphone = dict(zip(df.user[self.es], df.platform[self.es] == "iphone"))
-        self.lab = pd.concat([minutes.labelled_minutes(s) for s in ("extrasensory", "shl_user1")], ignore_index=True)
+        self.lab = pd.concat([minutes.labelled_minutes(s, version=BENCH) for s in ("extrasensory", "shl_user1")], ignore_index=True)
         self.df = df[["source", "user", "session", "ts", "fold"]]
 
 
@@ -254,7 +256,7 @@ def main():
     prog = Progress(EXP, a.curve, len(todo) * (2 * K + 1) + len(lat_at), log)
     print(f"{a.curve}: {len(todo)} runs to do ({len(points(a.curve)) - len(todo)} done)", flush=True)
     D = Data()
-    pool = fusion.session_pool(D.keys.assign(fold=D.fold), 0) if lat_at else None
+    pool = fusion.session_pool(D.keys.assign(fold=D.fold), 0, version=BENCH) if lat_at else None
     OOF.mkdir(parents=True, exist_ok=True)
     with_shl = a.curve != "noshl"
     for n, d in todo:

@@ -3,7 +3,8 @@
     uv run python build.py [--workers 4]
 
 Code: tmd.bench.build. v1's code writes ExtraSensory and SHL into the v2 root, `extend_v1_sources_v2` adds v2's
-columns and rules, `build_new` builds NOR-TMD and Collecty through tmd.candidates, and the manifest goes to
+columns and rules, `build_new` builds NOR-TMD and Collecty through tmd.candidates, `run_user_flag` flags run users who move like
+walking, and the manifest goes to
 <data>/processed/waiis_bench_v2/manifest.json with a committed copy in results/manifests/. Count tables:
 results/tables/bench_v2/; full log: logs/build.log; stdout gets a short summary. Build at a clean commit.
 """
@@ -43,6 +44,7 @@ def main() -> None:
     for s in b.NEW_SOURCES:
         b.build_new(s, a.workers)
         prog.step(s)
+    b.run_user_flag()
     b.write_manifest_v2(commit, dirty, v0)
     (HERE / "results" / "manifests").mkdir(parents=True, exist_ok=True)
     shutil.copy(b.ROOT / "manifest.json", HERE / "results" / "manifests" / f"{b.V2}.json")

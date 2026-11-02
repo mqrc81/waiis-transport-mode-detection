@@ -1124,6 +1124,9 @@ def write_manifest_v2(commit: str, dirty: bool, v0: float | None) -> None:
                       "ios_to_android": "x (-1) after g -> m/s2", "cap_rule": {"top_share": CAP_TOP_SHARE,
                                                                                "floor": CAP_FLOOR, "on": "dev users"},
                       "excluded_labels": {"nor_tmd": sorted(NOR_EXCLUDED), "collecty": sorted(COL_EXCLUDED)},
+                      "run_user_flag": {"rule": "user median window std |acc| over labelled run windows < reference",
+                                        "reference_ms2": RUN_FLAG_REF[0],
+                                        "reference": "ExtraSensory dev official walk windows, median acc_std"},
                       "session_gap_s": gps.SESSION_GAP_S, "gps_cadence": gps.CADENCE, "blank_v0": v0,
                       "es_splits": "experiments/04_frozen-benchmark_es-shl/splits/es_users_v2.csv",
                       "shl_splits": "experiments/04_frozen-benchmark_es-shl/splits/shl_days.csv",
@@ -1135,3 +1138,45 @@ def write_manifest_v2(commit: str, dirty: bool, v0: float | None) -> None:
     pd.DataFrame(files).T.to_csv(RES / "manifest_files.csv")
     say(f"manifest: {len(files)} files, {sum(f['bytes'] for f in files.values()) / 1e9:.2f} GB, commit {commit[:7]}"
         f"{' (dirty)' if dirty else ''}; identical to v1: {len(same_as_v1)}")
+
+
+def run_user_flag() -> None:
+    """Run labels whose user moves like walking (approved 2026-11-02): a user whose median window std |acc| over
+    their labelled run windows is below ExtraSensory dev walk's median (official windows) gets every run minute
+    flagged `run_user_flagged`. Flagged minutes are never labels (out of `included` / `official`, y = 0) and stay
+    as unlabelled usable minutes, like the other conflicting labels. Every source and split, test included."""
+    say("== run_user_flagged ==")
+    es_lab = pd.read_parquet(out_path("extrasensory", "labels"), columns=["split", "cls_fine", "official", "acc_std"])
+    ref = float(es_lab[es_lab.official & (es_lab.split == "dev") & (es_lab.cls_fine == "walk")].acc_std.median())
+    rows = []
+    for src in V2_SOURCES_ALL:
+        lab = pd.read_parquet(out_path(src, "labels"))
+        labelled = lab.included_v2 if "included_v2" in lab else (lab.included | lab.user_capped)
+        run = lab.cls_fine.eq("run") & lab.has_acc & labelled & ~lab.label_excluded & ~lab.duplicate_dropped
+        med = lab[run].groupby("user").acc_std.median()
+        flagged = set(med.index[med < ref])
+        f = lab.cls_fine.eq("run") & lab.user.isin(flagged)
+        before = lab[lab.official & lab.cls_fine.eq("run")].groupby("user").size()
+        lab["run_user_flagged"] = f
+        for c in ("included", "included_v2"):
+            if c in lab:
+                lab[c] &= ~f
+        lab["official"] &= ~f
+        lab["y"] = np.where(f, 0, lab.y).astype(np.int8)
+        lab["y_fine"] = np.where(f, 0, lab.y_fine).astype(np.int8)
+        write(lab, src, "labels")
+        for u in sorted(set(med.index)):
+            g = lab[(lab.user == u) & lab.cls_fine.eq("run")]
+            rows.append({"source": src, "user": u, "split": g.split.iloc[0], "platform": g.source_platform.iloc[0],
+                         "run_windows": int(run[lab.user == u].sum()), "median_std_acc": round(float(med[u]), 3),
+                         "flagged": u in flagged, "official_run_before": int(before.get(u, 0)),
+                         "official_run_after": int((lab.official & lab.cls_fine.eq("run") & (lab.user == u)).sum())})
+    t = pd.DataFrame(rows).set_index(["source", "user"])
+    table(t, "run_user_flag", f"run users vs ExtraSensory dev walk median std |acc| = {ref:.3f} m/s2")
+    say(f"run_user_flagged: reference {ref:.3f} m/s2; {int(t.flagged.sum())} of {len(t)} run users flagged; "
+        f"official run {int(t.official_run_before.sum())} -> {int(t.official_run_after.sum())}")
+    RUN_FLAG_REF[0] = ref
+
+
+V2_SOURCES_ALL = ("extrasensory", "shl_user1", "shl_user23", "nor_tmd", "collecty")
+RUN_FLAG_REF = [np.nan]
