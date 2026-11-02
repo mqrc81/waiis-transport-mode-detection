@@ -1,0 +1,49 @@
+dataset,cls,users,rule,cap,kept,kept_pct,top,users_capped
+NOR-TMD,bike,7,none,,592,100,0.48,0
+NOR-TMD,bike,7,"R1 2x median, >=60",102.0,407,69,0.25,1
+NOR-TMD,bike,7,R2 share<=0.25 (>=60),101,405,68,0.25,2
+NOR-TMD,bike,7,R3 fixed 240 (1 h),240,545,92,0.44,1
+NOR-TMD,bus,74,none,,7081,100,0.06,0
+NOR-TMD,bus,74,"R1 2x median, >=60",105.0,4270,60,0.02,24
+NOR-TMD,bus,74,R2 share<=0.25 (>=60),421,7081,100,0.06,0
+NOR-TMD,bus,74,R3 fixed 240 (1 h),240,6501,92,0.04,10
+NOR-TMD,car,16,none,,804,100,0.3,0
+NOR-TMD,car,16,"R1 2x median, >=60",60,453,56,0.13,3
+NOR-TMD,car,16,R2 share<=0.25 (>=60),173,692,86,0.25,2
+NOR-TMD,car,16,R3 fixed 240 (1 h),240,804,100,0.3,0
+NOR-TMD,subway,30,none,,3908,100,0.15,0
+NOR-TMD,subway,30,"R1 2x median, >=60",200.0,2963,76,0.07,7
+NOR-TMD,subway,30,R2 share<=0.25 (>=60),595,3908,100,0.15,0
+NOR-TMD,subway,30,R3 fixed 240 (1 h),240,3243,83,0.07,7
+NOR-TMD,train,20,none,,603,100,0.23,0
+NOR-TMD,train,20,"R1 2x median, >=60",60,509,84,0.12,2
+NOR-TMD,train,20,R2 share<=0.25 (>=60),140,603,100,0.23,0
+NOR-TMD,train,20,R3 fixed 240 (1 h),240,603,100,0.23,0
+NOR-TMD,tram,22,none,,1274,100,0.17,0
+NOR-TMD,tram,22,"R1 2x median, >=60",71.0,809,64,0.09,6
+NOR-TMD,tram,22,R2 share<=0.25 (>=60),214,1274,100,0.17,0
+NOR-TMD,tram,22,R3 fixed 240 (1 h),240,1274,100,0.17,0
+Collecty,bike,2,none,,562,100,0.98,0
+Collecty,bike,2,"R1 2x median, >=60",562.0,562,100,0.98,0
+Collecty,bike,2,R2 share<=0.25 (>=60),60,69,12,0.87,1
+Collecty,bike,2,R3 fixed 240 (1 h),240,249,44,0.96,1
+Collecty,bus,5,none,,1705,100,0.75,0
+Collecty,bus,5,"R1 2x median, >=60",110.0,347,20,0.32,2
+Collecty,bus,5,R2 share<=0.25 (>=60),63,253,15,0.25,2
+Collecty,bus,5,R3 fixed 240 (1 h),240,607,36,0.4,2
+Collecty,car,13,none,,3899,100,0.43,0
+Collecty,car,13,"R1 2x median, >=60",178.0,1181,30,0.15,5
+Collecty,car,13,R2 share<=0.25 (>=60),651,2604,67,0.25,2
+Collecty,car,13,R3 fixed 240 (1 h),240,1491,38,0.16,5
+Collecty,run,1,none,,196,100,1.0,0
+Collecty,run,1,"R1 2x median, >=60",392.0,196,100,1.0,0
+Collecty,run,1,R2 share<=0.25 (>=60),60,60,31,1.0,1
+Collecty,run,1,R3 fixed 240 (1 h),240,196,100,1.0,0
+Collecty,train,5,none,,2664,100,0.84,0
+Collecty,train,5,"R1 2x median, >=60",264.0,682,26,0.39,1
+Collecty,train,5,R2 share<=0.25 (>=60),63,252,9,0.25,3
+Collecty,train,5,R3 fixed 240 (1 h),240,658,25,0.36,1
+Collecty,tram,4,none,,433,100,0.62,0
+Collecty,tram,4,"R1 2x median, >=60",158.0,324,75,0.49,1
+Collecty,tram,4,R2 share<=0.25 (>=60),60,173,40,0.35,2
+Collecty,tram,4,R3 fixed 240 (1 h),240,406,94,0.59,1

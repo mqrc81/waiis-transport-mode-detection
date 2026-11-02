@@ -59,8 +59,7 @@ Conclusion **drafted, not yet approved** (revised at review). No test users were
 ### Candidate datasets for waiis_bench_v2 (08, quality check)
 
 **08 quality check** of NOR-TMD, Collecty and MobilitApp ([README](experiments/08_candidate-datasets-qc/README.md)).
-No models, no MLflow runs. Stop-point 2 approved 2026-11-02; NOR-TMD and Collecty verdicts **drafted, not yet
-approved**.
+No models, no MLflow runs. Verdicts, Conclusion and DECISIONS.md entry **approved 2026-11-02**.
 - **NOR-TMD** (Oslo, Bodø; 152 installations): usable for training, **Android only**: 12,988 clean v1 windows,
   219 h; bus 70 users, subway 27, train 17, car 13, bike 6. iOS records at 5 Hz, so 214 h aren't clean. As an
   external test it covers vehicles and bike only (open: reserve ~20% of its users as a second test set).
@@ -94,6 +93,8 @@ approved**.
 
 ## 4. Next experiment
 
-Not decided yet. Candidates named in 05 and 06: InceptionTime + GPS fusion, and LIMU-BERT pre-trained from scratch
-(accelerometer only). Each has to beat 06 on the same test users and protocol. 07 (draft) adds: a few WAIIS users per mode
-and platform first, then data aimed at bus and train; and a check of run labels for the next benchmark version.
+**09: frozen benchmark `waiis_bench_v2`** (ExtraSensory + SHL + NOR-TMD Android + Collecty; 9 fine classes, six-class
+primary score; [README](experiments/09_frozen-benchmark_es-shl-nor-collecty/README.md)). At stop-point 1 (plan
+and dry run), waiting for OK. Model candidates named in 05–07 (InceptionTime + GPS fusion, LIMU-BERT from scratch,
+WAIIS labelling) wait for v2. Each has to beat 06 on the same test users and protocol. 07's open check of run
+labels (dev run recall 0.26 against 0.74 on test) belongs to the v2 build.

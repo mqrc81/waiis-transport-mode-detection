@@ -1,0 +1,2 @@
+official,rate_below_25hz,users,by_class,by_platform,raw_rate_p1
+145380,6,1,"{'still': 3, 'train': 2, 'bus': 1}",{'android': 6},31.0
