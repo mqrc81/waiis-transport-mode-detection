@@ -5,7 +5,7 @@
 Code: tmd.bench.build. v1's code writes ExtraSensory and SHL into the v2 root, `extend_v1_sources_v2` adds v2's
 columns and rules, `build_new` builds NOR-TMD and Collecty through tmd.candidates, and the manifest goes to
 <data>/processed/waiis_bench_v2/manifest.json with a committed copy in results/manifests/. Count tables:
-results/tables/build/; full log: logs/build.log; stdout gets a short summary. Build at a clean commit.
+results/tables/bench_v2/; full log: logs/build.log; stdout gets a short summary. Build at a clean commit.
 """
 import argparse
 import logging
@@ -18,7 +18,7 @@ from tmd.progress import Progress
 
 HERE = Path(__file__).resolve().parent
 EXP = HERE.name
-TABLES = HERE / "results" / "tables" / "build"
+TABLES = HERE / "results" / "tables" / "bench_v2"     # not "build/": the .gitignore template ignores it
 
 
 def main() -> None:

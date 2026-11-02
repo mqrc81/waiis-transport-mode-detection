@@ -77,7 +77,7 @@ def counts() -> None:
         pos.append(pd.crosstab([both.position], both.cls_fine).assign(source=s).reset_index())
     table(pd.concat(pos).set_index(["source", "position"]), "shl_positions")
     # top-user shares before / after caps (new sources: from the build's cap tables)
-    caps = pd.concat([pd.read_csv(HERE / "results" / "tables" / "build" / f"{s}_caps.csv") for s in ("nor_tmd", "collecty")])
+    caps = pd.concat([pd.read_csv(HERE / "results" / "tables" / "bench_v2" / f"{s}_caps.csv") for s in ("nor_tmd", "collecty")])
     table(caps.set_index(["dataset", "class"]), "caps")
     # plausibility flag rates per class and source (on windows with a class, before the flags)
     fl = []
