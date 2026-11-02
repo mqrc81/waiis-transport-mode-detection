@@ -449,8 +449,6 @@ can resolve (Conclusion).
 
 ## Conclusion
 
-**Draft — not approved.**
-
 **Main finding: the domain step.** With SHL User 1 as the public base, the first few labelled ExtraSensory users give
 most of the gain; the rest of the pool adds little:
 - SHL User 1 alone: 8-class **0.452**;
