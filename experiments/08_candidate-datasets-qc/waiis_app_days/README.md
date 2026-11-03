@@ -23,8 +23,7 @@ that adds GPS-only candidate datasets: it shows what WAIIS GPS and accelerometer
 - **Units:** metres, m/s, degrees.
 - **Time:** UTC epoch milliseconds, always whole seconds, sorted, no duplicates. Local time is Europe/Madrid, UTC+1
   on these dates (summer time ended 25 Oct). Folders are UTC days.
-- **Platform:** not recorded (only `source = "waiis"`). The phone was probably an iPhone 16 (reported afterwards,
-  not certain).
+- **Platform:** iPhone 16; self-reported, not recorded (only `source = "waiis"`).
 - **The phone's own activity flag is useless:** 93% of fixes say `in_vehicle` with `is_moving = true`, although the
   median speed is 0.8 m/s.
 
