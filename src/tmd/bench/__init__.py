@@ -1,10 +1,11 @@
-"""Reader for the frozen benchmark waiis_bench_v1 (built by experiments/04_frozen-benchmark_es-shl/build.py).
+"""Reader for the frozen benchmarks: waiis_bench_v2, the default (experiments/09_frozen-benchmark_es-shl-nor-collecty/build.py),
+and waiis_bench_v1 (experiments/04_frozen-benchmark_es-shl/build.py), read with version="waiis_bench_v1".
 
 Package layout (experiment 09): this module is the reader API, unchanged; `tmd.bench.build` holds the build code.
 The per-dataset readers are in `tmd.readers`, the window rules in `tmd.candidates`.
 
-    <data>/processed/waiis_bench_v1/manifest.json                 parameters, git commit, sha256 of every file
-    <data>/processed/waiis_bench_v1/<source>/<table>.parquet       source in SOURCES
+    <data>/processed/<version>/manifest.json                 parameters, git commit, sha256 of every file
+    <data>/processed/<version>/<source>/<table>.parquet       source in sources(version)
 
 Tables join on (user, ts): ts is the minute timestamp [unix s]. `labels` has one row per minute (every minute is
 kept, with flags), `accelerometer` one 15 s window (375 x 3, m/s2, 25 Hz) per minute that has one.
@@ -13,8 +14,8 @@ Accessors:
 - `examples(source)`: **the official example set** (the `official` column). It includes the reserved test users,
   marked by `split`, because evaluation needs them. Excluded users (tmd.readers.extrasensory.EXCLUDED_USERS) are never in it.
 - `pretraining_minutes`, `unlabelled_minutes` and the extras (`snippets`, `shl_stream`, `shl_other_positions`,
-  `shl_gps_1hz`, `shl_gps_unblanked`): **exclude the reserved test users by default** (`tmd.splits.reserved_test()`:
-  12 ExtraSensory users, SHL Users 2-3; include_reserved=True only for evaluation) and always the excluded users.
+  `shl_gps_1hz`, `shl_gps_unblanked`): **exclude the reserved test users by default** (v2: `tmd.splits.reserved_test(3)`,
+  12 ExtraSensory users, SHL Users 2-3, 14 NOR-TMD installations; v1: `reserved_test(2)`; include_reserved=True only for evaluation) and always the excluded users.
 - `read(source, table)`: a raw table, no filtering.
 """
 from __future__ import annotations
@@ -28,7 +29,7 @@ import pandas as pd
 from tmd.paths import PROCESSED
 
 VERSIONS = ("waiis_bench_v1", "waiis_bench_v2")
-VERSION = "waiis_bench_v1"         # default (until waiis_bench_v2 is approved)
+VERSION = "waiis_bench_v2"         # default since 2026-11-03; waiis_bench_v1 stays readable with version=
 ROOT = PROCESSED / VERSION
 FS, WIN = 25, 375
 SOURCES = ("extrasensory", "shl_user1", "shl_user23")                  # v1's sources
@@ -97,8 +98,8 @@ def load_windows(source: str, keep: pd.DataFrame, version: str = VERSION) -> tup
 # ---------------------------------------------------------------- reserved test users
 
 def reserved_users(source: str, version: str = VERSION) -> set[str]:
-    """Users of `source` in the reserved final test of a benchmark version (v1: `tmd.splits.reserved_test(2)`, the
-    current set; v2: `reserved_test(3)`, which adds NOR-TMD installations). Collecty has none."""
+    """Users of `source` in the reserved final test of a benchmark version (v1: `tmd.splits.reserved_test(2)`;
+    v2: `reserved_test(3)`, the current set, which adds NOR-TMD installations). Collecty has none."""
     from tmd.splits import reserved_test
     r = reserved_test(RESERVED_BY_VERSION[version])
     if source == "extrasensory":

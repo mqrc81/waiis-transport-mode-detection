@@ -1,7 +1,7 @@
 """The reserved final-test users (tmd.splits.reserved_test(), the current set) must never reach a pre-training accessor of tmd.bench.
 
 Two layers: a synthetic check of the filter itself (always runs), and a check of every accessor on the built
-waiis_bench_v1 (skipped when the data are not on this machine).
+default benchmark (skipped when the data are not on this machine).
 """
 import pandas as pd
 import pytest

@@ -1,23 +1,24 @@
 # Status
 
-*As of 2026-11-02. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
+*As of 2026-11-03. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
 
 ## 1. Data
 
-**`waiis_bench_v1`** is the frozen benchmark every model reads (`tmd.bench`), built at commit `e51ea79`.
-- Contents, counts and rules: [experiment 04's README](experiments/04_frozen-benchmark_es-shl/README.md).
-- Data decisions: [decision register](experiments/04_frozen-benchmark_es-shl/decision_register.md).
-- Splits: [splits/README.md](splits/README.md).
-
-**`waiis_bench_v2`** (experiment 09; built at `6d51dc2`, **at stop-point 2, not yet approved**; `tmd.bench`
-`version="waiis_bench_v2"`, default still v1):
+**`waiis_bench_v2`** is the frozen benchmark every model reads (`tmd.bench` default since 2026-11-03), built at
+commit `6d51dc2` (experiment 09, approved).
 - v1 + NOR-TMD (Android; 14 reserved installations) + Collecty; 9 fine classes (tram added); six-class primary
-  score (still, foot, bike, car, bus, rail); reserved set `splits/reserved_test_v3.json`.
-- Dev rail 11,127 windows (v1: 5,931), bus 9,985 (4,376). iOS converted to the Android axis convention
-  (05 / 06's features unchanged).
-- v1 unchanged: rebuilt hash-identical, 06's dev out-of-fold probabilities bit-identical after every v2 change.
-- Code moved: `tmd.bench` is a package (reader API unchanged, build code in `tmd.bench.build`); readers stay in
-  `src/tmd/`. Draft DECISIONS.md entry (every model reads v2; six-class primary score).
+  score (still, foot, bike, car, bus, rail) on ExtraSensory dev, pooled out of fold; guard NOR-TMD dev (bus, car,
+  rail). Reserved set `splits/reserved_test_v3.json` (`tmd.splits.reserved_test()` default).
+- Dev rail 11,127 windows (v1: 5,931), bus 9,985 (4,376). iOS converted to the Android axis convention.
+- Contents and counts: [experiment 09's README](experiments/09_frozen-benchmark_es-shl-nor-collecty/README.md);
+  decisions: [09's decision register](experiments/09_frozen-benchmark_es-shl-nor-collecty/decision_register.md),
+  which defers to [04's](experiments/04_frozen-benchmark_es-shl/decision_register.md) for ExtraSensory and SHL.
+- Splits: [splits/README.md](splits/README.md).
+- Not rebuildable from raw at the moment: the Collecty and NOR-TMD zips were removed after the build (the build
+  reads `collecty.zip` for the duplicate check). The built files verify against the manifest.
+
+**`waiis_bench_v1`** (experiment 04, built at `e51ea79`) stays readable and unchanged with `version="waiis_bench_v1"`;
+05–08 pin it. Rebuilt hash-identical and 06's dev out-of-fold probabilities bit-identical after every v2 change.
 
 ## 2. Current results
 
@@ -103,15 +104,13 @@ No models, no MLflow runs. Verdicts, Conclusion and DECISIONS.md entry **approve
 
 ## 4. Next experiment
 
-**09: frozen benchmark `waiis_bench_v2`** ([README](experiments/09_frozen-benchmark_es-shl-nor-collecty/README.md)),
-at stop-point 2, waiting for review.
-- **v1's references in the six-class score:** 05 test 0.642, dev 0.575; 06 test 0.686, dev 0.642.
-- **Dataset shortcut risk:** within-class source identification from 05's features has AUC 0.82–0.96 (tram 0.52).
-- **Run labels (07's open check):** one ExtraSensory dev user held 61% of dev run windows, which move like walking.
-  Users whose run moves less than a typical walk have no run labels in v2 (7 users; official run dev 463 → 155,
-  test 81 → 74).
-- **Primary score data:** six-class macro-F1 on ExtraSensory dev, pooled out of fold (v1 refs: 05 0.575,
-  06 0.642); guard NOR-TMD dev (bus, car, rail); other sources reported separately.
-- **Before the default switches to v2:** every 04–08 script pins `waiis_bench_v1` (done; v1 gate passed).
-- After v2: the first model on it (InceptionTime + GPS fusion, LIMU-BERT from scratch, or 06 retrained), with SHL
+**09: frozen benchmark `waiis_bench_v2`** ([README](experiments/09_frozen-benchmark_es-shl-nor-collecty/README.md))
+is closed (approved 2026-11-02). What the first model on v2 starts from:
+- **v1's references in the six-class score:** 05 test 0.642, dev 0.575; 06 test 0.686, dev 0.642 (v1 labels; the
+  first model rescores 06 on v2's dev labels as its baseline).
+- **Dataset shortcut risk:** within-class source identification from 05's features has AUC 0.82–0.96 (tram 0.52);
+  the shortcut checks belong in that model.
+- **Run labels:** users whose run moves less than a typical walk have no run labels in v2 (7 users; official run
+  dev 463 → 155, test 81 → 74).
+- Next: the first model on v2 (InceptionTime + GPS fusion, LIMU-BERT from scratch, or 06 retrained), with SHL
   User 1's weight as an ablation; WAIIS labelling (07). Each has to beat 06 on the same test users and protocol.

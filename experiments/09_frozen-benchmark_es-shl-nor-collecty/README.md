@@ -695,6 +695,14 @@ windows per platform)
   car; six-class: bus, car, rail); SHL Users 2–3 rail check, per position.
 - ExtraSensory test stays the final test, reported overall and per platform, as in v1.
 
+### Default switched (2026-11-03, approved)
+
+- `tmd.bench.VERSION = "waiis_bench_v2"`, `tmd.splits.RESERVED_VERSION = 3` (`src/tmd/bench/__init__.py`,
+  `src/tmd/splits.py`). v1's build code pins `reserved_test(2)` (`src/tmd/bench/build.py`, `RESERVED_V1`), as does
+  04's `register_numbers.py`. CLAUDE.md names `splits/reserved_test_v3.json`.
+- v2 is not rebuildable from raw for now: the Collecty and NOR-TMD zips were removed after the build. A rebuild
+  after the `src/tmd` regrouping gave 24 of 32 files byte-identical to the manifest before it stopped at Collecty.
+
 ## Conclusion
 
 **`waiis_bench_v2` is built and frozen:** `<data>/processed/waiis_bench_v2/`, 32 Parquet files, 5.63 GB, from clean

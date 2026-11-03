@@ -214,7 +214,7 @@ def main():
     for (f, c), v in dv.groupby(["fold", "cls"]).size().items():
         add("P2", "dev examples per fold", f"fold {f}", c, int(v))
     from tmd.splits import reserved_test
-    rs = set(reserved_test()["extrasensory"].uuid)
+    rs = set(reserved_test(2)["extrasensory"].uuid)
     minutes("P3", "minutes with a window kept out of pre-training", L[L.has_acc & L.user.isin(rs)])
     headline["P3"] = f"{len(rs)} + 2 users"
     for s, lab in shl.items():

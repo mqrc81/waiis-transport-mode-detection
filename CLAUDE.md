@@ -4,12 +4,12 @@
 Classify transport mode (still, walk, run, bike, car, bus, train, metro) from phone
 accelerometer only (no gyroscope). Current production rate is 25 Hz. The phone records and uploads the
 sensor data; the model runs on an edge server. Work is in Python, over files.
-Final test: the 12 ExtraSensory test users (`splits/reserved_test_v2.json`); SHL Users 2–3 are for rail checks only.
+Final test: the 12 ExtraSensory test users (`splits/reserved_test_v3.json`); the 14 NOR-TMD test installations are a second test for vehicles and rail; SHL Users 2–3 are for rail checks only.
 
 ## Layout
 - `src/tmd`: shared code. Anything a second experiment would reuse goes here.
 - `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion (human-readable overview). Add `patches/`, `env/`, `results/` or `splits/` (the experiment's own fold files) only when there is something to put in them.
-- `splits/reserved_test_v2.json`: the reserved set (12 ExtraSensory test users, SHL Users 2–3). Every experiment excludes it (`tmd.splits.reserved_test()`). The superseded 2026-10-25 set is `experiments/02_family-baseline_shl-es/splits/reserved_test.json`.
+- `splits/reserved_test_v3.json`: the reserved set of `waiis_bench_v2` (12 ExtraSensory test users, SHL Users 2–3, 14 NOR-TMD installations). Every experiment excludes it (`tmd.splits.reserved_test()`). `splits/reserved_test_v2.json` is v1's (same ExtraSensory and SHL users); the superseded 2026-10-25 set is `experiments/02_family-baseline_shl-es/splits/reserved_test.json`.
 - `mlflow.db`, `mlartifacts/`: MLflow tracking store and run artifacts (git-ignored).
 - `DECISIONS.md`, `LICENSES.md`: project-wide.
 - `log`: my daily logs. **Do not edit.**

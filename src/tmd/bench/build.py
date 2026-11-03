@@ -45,6 +45,7 @@ from tmd.resample import DOWN, centre, decimate_100_to_25, es_acc_repair_to_25hz
 from tmd.splits import reserved_test
 
 VERSION = "waiis_bench_v1"
+RESERVED_V1 = 2                                              # splits/reserved_test_v2.json
 ROOT = bench.root(VERSION)
 HERE = PROJECT / "experiments" / "04_frozen-benchmark_es-shl"    # v1's experiment folder (splits, tables, logs)
 RES = HERE / "results" / "tables"
@@ -139,7 +140,7 @@ def es_minutes() -> pd.DataFrame:
     m["motorbike"] = m.reason == "check:MOTORBIKE"
     m["y"] = np.where(keep, m.y, 0)
     users = pd.read_csv(ES_SPLIT)
-    test = set(reserved_test()["extrasensory"].uuid)
+    test = set(reserved_test(RESERVED_V1)["extrasensory"].uuid)
     assert set(users.uuid[users.partition == "test"]) == test, "es_users_v2.csv test rows differ from reserved_test()"
     assert set(users.uuid) == set(m.user)
     u = users.set_index("uuid")
@@ -298,7 +299,7 @@ def shl_recordings(source: str) -> list[tuple[shl.Recording, str, int]]:
         four = shl.recordings("User1_4phones")
         recs = [r for r in shl.recordings("User1") if r.day not in {f.day for f in four}] + four
         return [(r, "dev", fold[r.day]) for r in recs]
-    test = reserved_test()["shl"]
+    test = reserved_test(RESERVED_V1)["shl"]
     recs = shl.recordings("User2_4phones") + shl.recordings("User3_4phones")
     assert {(r.user, r.day) for r in recs} == set(zip(test.user, test.day))
     return [(r, "rail_check", -1) for r in recs]
