@@ -1,0 +1,12 @@
+,false_rail_not_quiet_no_gps_minutes_within_30min
+orig:ON_A_TRAIN,0
+orig:ON_A_BUS,0
+orig:IN_A_CAR,1
+orig:DRIVE_-_I_M_THE_DRIVER,0
+orig:DRIVE_-_I_M_A_PASSENGER,0
+orig:MOTORBIKE,0
+orig:ON_A_BOAT,0
+orig:ON_A_PLANE,0
+cls_car,1
+cls_bus,0
+cls_train,0

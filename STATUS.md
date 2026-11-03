@@ -77,8 +77,11 @@ once 10 is approved (below).
 - **E2 vs A0:** tied on dev; +0.018 on the test, all on Android rail and bus (2 and 7 users), within A0's test seed
   spread (0.024). Collecty's users +0.07 on dev. A safe addition, not a proven gain.
 - **NOR-TMD (descriptive E1):** NOR-TMD test 0.778 (subway 0.97) and better subway at every SHL position, but
-  ExtraSensory dev −0.013 to −0.020 in every variant: quiet still phones without GPS become subway (a dataset
-  shortcut; GPS fusion overrules it where GPS exists). Not adopted; a follow-up.
+  ExtraSensory dev −0.013 to −0.020 in every variant and seed (seeds don't resample users; E1 −0.013 [−0.032,
+  +0.011]). False rail on still minutes without GPS, concentrated in one Android device without location data
+  (4E98F91F, 115 of 185 minutes) plus scattered sitting minutes; the mechanism is not shown (not a NOR-TMD label
+  convention; fusion overrules it where GPS exists). Also false bus on minutes with GPS (bus precision −0.084).
+  Not adopted; a follow-up.
 - **Tram:** not learnable on v2 without NOR-TMD (Collecty's 4 users: recall 0 on its own held-out users); a balanced
   tiny tram class also halves the acc model's early stopping (found in 10; leave tram out of the stopping fold when
   it is a class: `tmd.models.lgbm.paired_cv(stop_ok=...)`).
@@ -145,10 +148,10 @@ Two unlabelled days of WAIIS app recordings ([report](experiments/08_candidate-d
 
 ## 4. Next experiment
 
-1. **NOR-TMD follow-up (after 10):** keep NOR-TMD's vehicle gains (its test: 0.778 vs 0.469) without the quiet-phone
-   → subway shortcut on ExtraSensory (e.g. NOR-TMD rail only with GPS-like evidence, a lower NOR-TMD weight,
-   ExtraSensory still minutes as hard negatives), with a tram-aware HMM; dev first, ExtraSensory test only for the
-   model it chooses.
+1. **NOR-TMD follow-up (after 10):** keep NOR-TMD's vehicle gains (its test: 0.778 vs 0.469) without the false rail
+   and false bus on ExtraSensory (e.g. a lower NOR-TMD weight, still minutes of many devices as hard negatives;
+   per-user false-rail counts as a check; 4E98F91F's resting signal compared with NOR-TMD's), with a tram-aware HMM;
+   dev first, ExtraSensory test only for the model it chooses.
 2. **Leg suggestions** for the labelling tool (in parallel): `predict_legs` with 10's E2 (06 until 10 is approved),
    E1's saved models alongside, evaluated on SHL, my own labelled WAIIS days and later MobilityNet; harness ready
    for WAIIS labels.

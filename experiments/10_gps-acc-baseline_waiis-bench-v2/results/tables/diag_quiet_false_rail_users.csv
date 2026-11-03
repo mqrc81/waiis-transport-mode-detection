@@ -1,0 +1,11 @@
+user,minutes,sessions,platform,part
+4E98F91F,115,9,android,quiet
+0E6184E1,11,2,android,not_quiet
+2C32C23E,15,1,iphone,not_quiet
+3600D531,2,1,iphone,not_quiet
+4E98F91F,14,6,android,not_quiet
+59818CD2,5,2,android,not_quiet
+61359772,1,1,android,not_quiet
+7D9BB102,10,2,iphone,not_quiet
+83CF687B,11,1,iphone,not_quiet
+B7F9D634,1,1,android,not_quiet

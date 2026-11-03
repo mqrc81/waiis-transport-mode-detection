@@ -294,27 +294,36 @@ of NOR-TMD and Collecty: `LICENSES.md`.
   LightGBM, product fusion, HMM forward-backward), **8 classes**, trained on ExtraSensory + SHL User 1 + Collecty
   (Collecty's tram minutes unlabelled). It replaces 06 as the reference and as the model for leg suggestions.
 - **NOR-TMD is not in the reference model's training**, although v2 adds it for training (2026-11-02 entry). It
-  stays in v2 for evaluation and for a follow-up that removes its dataset shortcut first.
+  stays in v2 for evaluation and for a follow-up that removes its ExtraSensory cost first.
 - **Tram is not a class** of the reference model. The 2026-11-02 entry's "models train on 9 fine classes" doesn't
   hold for it; the six-class primary score is unchanged (tram merges into rail).
-- A model with a small class trained under balanced class weights leaves that class out of the inner early-stopping
-  fold (`tmd.models.lgbm.paired_cv(stop_ok=...)`).
+- When tram is a class, tram windows are left out of the inner early-stopping fold, as in 10's E1
+  (`tmd.models.lgbm.paired_cv(stop_ok=...)`). No general rule for other small classes is set.
 
 **Why.**
 - **E2 costs nothing and adds Collecty:** ExtraSensory dev six-class 0.650 = A0 (06 retrained on v2) over 3 seeds;
   ExtraSensory test 0.685 vs 0.667 (+0.018, Android rail and bus; within A0's test seed spread of 0.024); Collecty
   dev +0.07; no precision cost.
-- **NOR-TMD creates a dataset shortcut:** with it (A1, E1), quiet still phones without GPS become subway on
-  ExtraSensory (115–127 still minutes per row, against 0 without it), and ExtraSensory dev six-class falls 0.013–0.020
-  in every variant and seed, past the pre-registered 0.01 limit. Its own gains are large: NOR-TMD test bus / car /
-  rail 0.778 vs 0.469, subway recall 0.97 vs 0.11.
+- **With NOR-TMD, ExtraSensory dev six-class falls past the pre-registered 0.01 limit:** 0.013–0.020 in every
+  variant and seed (A1, E1). Seeds don't resample users: E1's paired user-bootstrap CI is −0.013 [−0.032, +0.011],
+  and one user carries 62% of its false rail. The rule outcome stands.
+  - False rail on still minutes (E1 185, A0 16), 171 without GPS. Not a label convention: NOR-TMD has fewer quiet
+    vehicle windows than ExtraSensory or SHL (subway 3.3%, bus 0.7%; ExtraSensory vehicles 5.5–11.6%). Not
+    unlabelled rides: no vehicle label within 10 minutes of the not-quiet ones without GPS. Concentrated in one
+    Android device without location data (4E98F91F, 115 of 185 minutes) plus scattered sitting minutes; the mechanism
+    is not shown. Where GPS exists, fusion overrules it.
+  - False bus: E1's ExtraSensory bus precision −0.084 [−0.152, −0.018] (785 false-bus minutes vs A0's 534), 89% of
+    them with GPS.
+  - Its own gains are large: NOR-TMD test bus / car / rail 0.778 vs 0.469, subway recall 0.97 vs 0.11.
 - **Tram isn't learnable without NOR-TMD:** Collecty's 4 tram users give recall 0 on its own held-out users, and the
   balanced tram class halved the acc model's early stopping (18–25 vs ~50 rounds), which cost bus and foot
   precision (A2).
 
 **Limits of the evidence.** One ExtraSensory study for still / walk and the primary score; the test gain rests on 2
 Android train users and 7 bus users; the rules chose on seed 0 and the dev tie appeared with seeds 1–2; NOR-TMD is
-Android only; WAIIS's phones and GPS cadence aren't in the benchmark.
+Android only; WAIIS's phones and GPS cadence aren't in the benchmark. The false-rail failure needs a resting phone
+with no location at all; how often that happens in WAIIS production (records while moving, GPS missing mainly in
+tunnels) is unknown.
 
 **Evidence.** `experiments/10_gps-acc-baseline_waiis-bench-v2/README.md` (Results: stop-points 2 and 3; Conclusion)
 and `results/runs.csv`.

@@ -797,13 +797,78 @@ Full tables: `results/tables/test.md` (each seed with its CI). Mean of 3 seeds:
 **Cost** (E2 / A0): 12.0 ms per single window (p95 13.5 / 13.3), 1.1 ms per window over whole sessions (p95 4.5);
 acc model 1.65 / 1.66 MB, GPS model 4.09 MB; E1's acc model 2.78 MB.
 
+### Descriptive check before approval: what lies behind E1's false rail (2026-11-03)
+
+*Dev only, no retraining; E1 seed 0 after the HMM. `uv run python diag_quiet.py` (`logs/diag_quiet.log`,
+`results/tables/diag_quiet_*.csv`). No decision or rule changes.*
+
+**1. Quiet windows among labelled vehicle windows** (official dev windows; per-user spread over users with ≥ 5
+windows)
+
+| Source | bus | car | train | subway | tram |
+|---|---|---|---|---|---|
+| ExtraSensory | 5.5% (21 users; median 3.7%, max 30%) | 8.5% (38; median 3.6%, IQR 0.5–11%, max 54%) | 11.6% (3; 0 / 0 / 23%) | – | – |
+| SHL User 1 | 2.4% | 1.4% | 6.7% | 6.0% | – |
+| NOR-TMD | **0.7%** (62; median 0, max 12%) | 4.0% (11; max 16%) | 1.7% (15; max 12%) | **3.3%** (25; median 0, max 10%) | 2.0% (17; max 11%) |
+| Collecty | 0.4% | 2.9% | 2.8% | – | 2.0% |
+
+- **NOR-TMD labels fewer quiet vehicle windows than ExtraSensory or SHL, not more.** Its subway has 3.3% quiet
+  windows (108), against SHL's 6.0% and ExtraSensory's own vehicles 5.5–11.6%. A label convention that calls quiet
+  windows "vehicle" is not what NOR-TMD adds.
+
+**2. E1's 185 false-rail still minutes**
+
+| | quiet | not quiet, no GPS | not quiet, GPS |
+|---|---|---|---|
+| minutes | 115 (of 50,845 quiet still) | 56 (of 7,304) | 14 |
+| users | **1** (4E98F91F, Android) | 6 (55% Android; top user 15) | 3 (one iPhone user 11) |
+| sessions / contiguous runs | 9 / 44 (median length 1, max 22) | 14 / 24 (24 minutes in runs ≥ 5) | 3 / 4 |
+| predicted | subway 115 | not quiet together: subway 61, train 9 | |
+| phone position (ExtraSensory tags; not quiet together) | in hand 54%, on table 30% (all quiet still: 5%, 17%) | in hand 46%, on table 9% (all not-quiet still: 13%, 9%) | |
+| context tags | computer work 26%, browsing 21%, sitting 31%, home 24%, location 0% | sitting 80%, talking 20%; not quiet together: eating 11%, home 34% | talking 93% |
+
+- **The quiet part is one device.** User 4E98F91F (Android, fold 3) has no location data at all (GPS coverage 0)
+  and 1,118 still minutes. E1 calls 115 of its 334 quiet minutes subway (A1: 126). **The other 26 users' 9,619
+  quiet still minutes without GPS give 0 false rail** (A1: 1); A0 and E2 give 0 on all of them, 4E98F91F
+  included.
+- The not-quiet minutes are scattered: mostly single minutes, in many sessions, while sitting, talking or eating.
+
+**3. Vehicle labels near the 56 not-quiet false-rail minutes without GPS** (same user; class car / bus / train, or the
+original ON_A_TRAIN / ON_A_BUS / IN_A_CAR / DRIVE tags; ExtraSensory has no trolley or tram label)
+
+| | within ±10 min | within ±30 min | same day (UTC) | own vehicle tag |
+|---|---|---|---|---|
+| 56 false rail, not quiet, no GPS | **0%** | 1.8% (1 minute; a car label) | 73% | 0 |
+| all 7,304 not-quiet still minutes without GPS | 2.4% | 7.4% | 56% | 0 |
+| (14 false rail, not quiet, with GPS) | 43% | 43% | 100% | 0 |
+
+- **No sign of rides:** no vehicle label within 10 minutes of any of the 56, fewer than for still minutes in general,
+  and none tagged as a vehicle themselves. They are still minutes the model misreads, not unlabelled rides.
+- The 14 not-quiet minutes with GPS sit next to labelled rides (43% within 10 min): ride boundaries.
+
+**4. E1's false bus on ExtraSensory dev** (six-class bus predicted on another class; `diag_quiet_false_bus.csv`)
+
+| Row | predicted bus | false bus | with GPS | from still / foot / bike / car / rail |
+|---|---|---|---|---|
+| A0 | 1,104 | 534 | 467 (87.5%) | 172 / 148 / 8 / 193 / 13 |
+| E1 | 1,383 | 785 | 702 (89.4%) | 245 / 173 / 0 / 354 / 13 |
+
+- E1's bus precision drop (−0.084) is +251 false-bus minutes, mostly car (+161) and still (+73). 89% have GPS (all
+  ExtraSensory official minutes: 82%): unlike the false rail, fusion doesn't stop them.
+
+**Reading.** E1's false rail is not a quiet-window label convention in NOR-TMD (1), and not unlabelled rides (3). It
+is **concentrated in one Android device without location data** (4E98F91F, 115 of 185 minutes) **plus scattered
+sitting minutes** (56 minutes, 6 users); **the mechanism is not shown.** Where GPS exists, fusion overrules it. E1's
+false bus is a separate cost, on minutes with GPS (4). Stop-point 2's wording ("quiet still phones without GPS become
+subway") over-generalised from one user; the Conclusion and the DECISIONS.md draft now say what is shown here.
+
 ## Conclusion
 
 **Draft — not approved.**
 
 **Answer.** On `waiis_bench_v2`, 06's configuration retrained on v2's labels (A0) is the reference, and **E2 — A0 +
-Collecty, 8 classes — is the final configuration**. NOR-TMD is not in it: it creates a dataset shortcut on
-ExtraSensory. Tram is not a class.
+Collecty, 8 classes — is the final configuration**. NOR-TMD is not in it: with it, ExtraSensory dev six-class falls
+past the rule's limit, through false rail and false bus. Tram is not a class.
 
 | Mean of 3 seeds | E2 (final) | A0 (reference) | E2 − A0 |
 |---|---|---|---|
@@ -818,8 +883,17 @@ ExtraSensory. Tram is not a class.
   users gain +0.07 on dev at no ExtraSensory cost.
 - **NOR-TMD (A1 / E1):** +0.35 on its dev users and +0.31 on its 14 unseen test installations (bus / car / rail
   0.778; subway 0.97), and better subway at every SHL position. But ExtraSensory dev six-class falls 0.013–0.020 in
-  every variant and seed, because quiet phones without GPS become subway (115–127 still minutes per row). Where there
-  is GPS, the fusion overrules them. By the rules, it isn't adopted.
+  every variant and seed (A1, E1). Seeds don't resample users: E1's paired user-bootstrap CI is −0.013 [−0.032,
+  +0.011], and one user carries 62% of its false rail. By the rules it is past the limit, so it isn't adopted; the
+  rule outcome stands.
+  - **False rail** on ExtraSensory still minutes (E1 185, A0 16), 171 of them without GPS. From the check before
+    approval: not a label convention (NOR-TMD has fewer quiet vehicle windows than ExtraSensory or SHL: subway 3.3%,
+    bus 0.7%) and not unlabelled rides (no vehicle label within 10 minutes of any of the 56 not-quiet ones without
+    GPS). It is **concentrated in one Android device without location data (4E98F91F, 115 of 185 minutes) plus
+    scattered sitting minutes; the mechanism is not shown.** The other 26 users' 9,619 quiet still minutes without
+    GPS give 0. Where GPS exists, fusion overrules it.
+  - **False bus:** E1's ExtraSensory bus precision falls by 0.084 [−0.152, −0.018]: 785 false-bus minutes against
+    A0's 534, mostly from car and still, and 89% of them with GPS, so fusion doesn't stop them.
 - **Tram:** Collecty's 4 tram users don't generalise (recall 0 on its own held-out users), and with balanced class
   weights the tiny tram class cut the acc model's early stopping in half (A2: 18–25 rounds vs ~50), which is what
   cost A2 bus and foot precision. Without NOR-TMD, tram isn't learnable on v2.
@@ -828,8 +902,10 @@ ExtraSensory. Tram is not a class.
   minutes; ~20% of the shift comes from fusion, ~80% from the acc model + HMM). No gain on iPhone. SHL weight 0.5 and
   SHL's other positions add nothing.
 - **Dataset shortcut checks:** within-class source identification from the model's output is lower than from the
-  features (bus 0.65–0.68 from the acc model's probabilities vs 0.82 from its features), and training on a source lowers it. The shortcut that matters
-  is not "which dataset" but "still phone ↔ smooth vehicle" when GPS is missing.
+  features (bus 0.65–0.68 from the acc model's probabilities vs 0.82 from its features), and training on a source
+  lowers it. What costs ExtraSensory with NOR-TMD is across classes: false rail on still minutes without GPS
+  (concentrated in one Android device without location data plus scattered sitting minutes; mechanism not shown)
+  and false bus on minutes with GPS.
 
 **Limits.**
 - One ExtraSensory study (2015 phones) for still / walk and the primary score; the test gain rests on 2 Android train
@@ -839,10 +915,13 @@ ExtraSensory. Tram is not a class.
 - E1's tram class was switched off by its pre-registered HMM rule, so tram recall with NOR-TMD under a tram-aware HMM
   wasn't measured on the test.
 - WAIIS's GPS cadence (~20 s) and phones are not in the benchmark.
+- The false-rail failure needs a resting phone with no location at all (4E98F91F has none). How often that happens
+  in WAIIS production (the app records while moving; GPS is missing mainly in tunnels) is unknown.
 
 **Next.**
-- **A NOR-TMD follow-up on dev:** keep NOR-TMD's vehicle gains without the quiet-phone → subway shortcut (e.g.
-  NOR-TMD rail only on minutes with GPS-like evidence, a lower NOR-TMD weight, or ExtraSensory still minutes as hard
-  negatives), with a tram-aware HMM. Only then the ExtraSensory test for it.
+- **A NOR-TMD follow-up on dev:** keep NOR-TMD's vehicle gains without the false rail and false bus on ExtraSensory
+  (e.g. a lower NOR-TMD weight, or still minutes of many devices as hard negatives), with a tram-aware HMM;
+  per-user false-rail counts as a check (one user carried 62% of E1's); a comparison of 4E98F91F's resting signal
+  with NOR-TMD's (subway and other classes). Only then the ExtraSensory test for it.
 - **Leg suggestions:** E2 is the model for `predict_legs`; E1's saved models run beside it on the labelled WAIIS
   days.

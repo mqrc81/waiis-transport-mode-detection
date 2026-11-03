@@ -1,0 +1,6 @@
+set,minutes,users,sessions,runs,in_runs_ge5,top_user,android_share,sitting,talking,indoors,veh_10min,veh_30min,veh_same_day,own_vehicle_tag
+false_rail,70,9,17,28,32,15,0.457,0.8,0.367,1.0,0.086,0.1,0.786,0.0
+false_rail_no_gps,56,6,14,24,24,15,0.554,0.804,0.196,1.0,0.0,0.018,0.732,0.0
+false_rail_gps,14,3,3,4,8,11,0.071,0.786,0.929,,0.429,0.429,1.0,0.0
+all_not_quiet_still,41885,47,2082,13625,23866,2157,0.391,0.605,0.193,0.941,0.044,0.113,0.591,0.0
+all_not_quiet_still_no_gps,7304,32,994,3056,3177,1806,0.761,0.56,0.199,0.932,0.024,0.074,0.562,0.0

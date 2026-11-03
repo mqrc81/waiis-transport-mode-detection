@@ -1,0 +1,107 @@
+2026-11-03 15:24:38,554 
+      source  class  windows  users  quiet_share  users_ge5  user_median  user_q25  user_q75  user_max  users_any_quiet
+extrasensory    bus     1348     21        0.055         20        0.037     0.000     0.052     0.297               14
+extrasensory    car     8028     38        0.085         37        0.036     0.005     0.112     0.538               30
+extrasensory  train      190      3        0.116          3        0.000     0.000     0.113     0.227                1
+   shl_user1    bus     3028      1        0.024          1        0.024     0.024     0.024     0.024                1
+   shl_user1    car     4058      1        0.014          1        0.014     0.014     0.014     0.014                1
+   shl_user1 subway     2388      1        0.060          1        0.060     0.060     0.060     0.060                1
+   shl_user1  train     3353      1        0.067          1        0.067     0.067     0.067     0.067                1
+     nor_tmd    bus     5356     62        0.007         59        0.000     0.000     0.003     0.120               16
+     nor_tmd    car      405     11        0.040          9        0.000     0.000     0.000     0.164                2
+     nor_tmd subway     3288     25        0.033         22        0.000     0.000     0.009     0.103                8
+     nor_tmd  train      470     15        0.017         12        0.000     0.000     0.035     0.120                5
+     nor_tmd   tram     1033     17        0.020         14        0.007     0.000     0.034     0.111                9
+    collecty    bus      253      5        0.004          5        0.000     0.000     0.000     0.016                1
+    collecty    car     2596     13        0.029         13        0.005     0.000     0.071     0.161                8
+    collecty  train      252      5        0.028          5        0.000     0.000     0.016     0.095                2
+    collecty   tram      153      4        0.020          4        0.017     0.012     0.022     0.040                3
+2026-11-03 15:24:40,100 
+part                                quiet  not_quiet
+still_minutes                   50845.000  41885.000
+false_rail                        115.000     70.000
+users                               1.000      9.000
+sessions                            9.000     17.000
+top_user_share                      1.000      0.214
+android_share                       1.000      0.457
+android_share_all                   0.392      0.391
+gps_share                           0.000      0.200
+runs                               44.000     28.000
+run_len_median                      1.000      1.000
+run_len_max                        22.000     15.000
+in_runs_ge5                        65.000     32.000
+pred_subway                       115.000     61.000
+pred_train                          0.000      9.000
+pos_on_table                        0.304      0.086
+pos_on_table_all                    0.168      0.086
+pos_in_pocket                       0.000      0.029
+pos_in_pocket_all                   0.057      0.172
+pos_in_hand                         0.539      0.457
+pos_in_hand_all                     0.050      0.132
+pos_in_bag                          0.035      0.029
+pos_in_bag_all                      0.045      0.030
+pos_none                            0.122      0.400
+pos_none_all                        0.680      0.580
+PHONE_ON_TABLE                      0.304      0.086
+PHONE_ON_TABLE_all                  0.177      0.093
+PHONE_IN_POCKET                     0.000      0.029
+PHONE_IN_POCKET_all                 0.057      0.172
+PHONE_IN_HAND                       0.539      0.457
+PHONE_IN_HAND_all                   0.052      0.136
+PHONE_IN_BAG                        0.035      0.029
+PHONE_IN_BAG_all                    0.045      0.031
+label:LOC_home                      0.235      0.343
+label:LOC_home_all                  0.418      0.325
+label:LOC_main_workplace            0.000      0.000
+label:LOC_main_workplace_all        0.100      0.110
+label:OR_indoors                    0.443      0.614
+label:OR_indoors_all                0.574      0.482
+label:OR_outside                    0.000      0.000
+label:OR_outside_all                0.012      0.030
+label:SITTING                       0.313      0.800
+label:SITTING_all                   0.639      0.605
+label:LYING_DOWN                    0.026      0.014
+label:LYING_DOWN_all                0.171      0.084
+label:SLEEPING                      0.000      0.000
+label:SLEEPING_all                  0.000      0.000
+label:COMPUTER_WORK                 0.261      0.057
+label:COMPUTER_WORK_all             0.182      0.098
+label:IN_CLASS                      0.096      0.100
+label:IN_CLASS_all                  0.039      0.057
+label:IN_A_MEETING                  0.000      0.000
+label:IN_A_MEETING_all              0.023      0.028
+label:EATING                        0.000      0.114
+label:EATING_all                    0.076      0.098
+label:WATCHING_TV                   0.000      0.000
+label:WATCHING_TV_all               0.053      0.045
+label:SURFING_THE_INTERNET          0.209      0.029
+label:SURFING_THE_INTERNET_all      0.081      0.060
+label:TALKING                       0.130      0.314
+label:TALKING_all                   0.111      0.166
+has_location                        0.000      0.200
+has_location_all                    0.806      0.830
+    user  minutes  sessions platform      part
+4E98F91F      115         9  android     quiet
+0E6184E1       11         2  android not_quiet
+2C32C23E       15         1   iphone not_quiet
+3600D531        2         1   iphone not_quiet
+4E98F91F       14         6  android not_quiet
+59818CD2        5         2  android not_quiet
+61359772        1         1  android not_quiet
+7D9BB102       10         2   iphone not_quiet
+83CF687B       11         1   iphone not_quiet
+B7F9D634        1         1  android not_quiet
+2026-11-03 15:24:40,421 
+                            minutes  users  sessions   runs  in_runs_ge5  top_user  android_share  sitting  talking  indoors  veh_10min  veh_30min  veh_same_day  own_vehicle_tag
+set                                                                                                                                                                              
+false_rail                       70      9        17     28           32        15          0.457    0.800    0.367    1.000      0.086      0.100         0.786              0.0
+false_rail_no_gps                56      6        14     24           24        15          0.554    0.804    0.196    1.000      0.000      0.018         0.732              0.0
+false_rail_gps                   14      3         3      4            8        11          0.071    0.786    0.929      NaN      0.429      0.429         1.000              0.0
+all_not_quiet_still           41885     47      2082  13625        23866      2157          0.391    0.605    0.193    0.941      0.044      0.113         0.591              0.0
+all_not_quiet_still_no_gps     7304     32       994   3056         3177      1806          0.761    0.560    0.199    0.932      0.024      0.074         0.562              0.0
+{'orig:ON_A_TRAIN': 0, 'orig:ON_A_BUS': 0, 'orig:IN_A_CAR': 1, 'orig:DRIVE_-_I_M_THE_DRIVER': 0, 'orig:DRIVE_-_I_M_A_PASSENGER': 0, 'orig:MOTORBIKE': 0, 'orig:ON_A_BOAT': 0, 'orig:ON_A_PLANE': 0, 'cls_car': 1, 'cls_bus': 0, 'cls_train': 0}
+2026-11-03 15:24:40,638 
+     pred_bus  false_bus  false_bus_gps  false_bus_gps_share  es_official_gps_share  from_still  from_foot  from_bike  from_car  from_rail
+row                                                                                                                                       
+A0       1104        534            467                0.875                  0.824         172        148          8       193         13
+E1       1383        785            702                0.894                  0.824         245        173          0       354         13
