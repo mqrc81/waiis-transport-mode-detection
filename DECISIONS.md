@@ -284,3 +284,37 @@ of NOR-TMD and Collecty: `LICENSES.md`.
 **Evidence.** `experiments/09_frozen-benchmark_es-shl-nor-collecty/README.md` (Results, stop-point 2) and
 `decision_register.md`; 08's verdicts (2026-11-02 entry above).
 
+
+## 2026-11-03: The reference model on waiis_bench_v2 is 10's E2: no NOR-TMD, no tram class
+
+**Draft — not approved.**
+
+**Decision.**
+- The reference model on `waiis_bench_v2` is **experiment 10's E2**: 06's configuration (acc LightGBM × gps-v2
+  LightGBM, product fusion, HMM forward-backward), **8 classes**, trained on ExtraSensory + SHL User 1 + Collecty
+  (Collecty's tram minutes unlabelled). It replaces 06 as the reference and as the model for leg suggestions.
+- **NOR-TMD is not in the reference model's training**, although v2 adds it for training (2026-11-02 entry). It
+  stays in v2 for evaluation and for a follow-up that removes its dataset shortcut first.
+- **Tram is not a class** of the reference model. The 2026-11-02 entry's "models train on 9 fine classes" doesn't
+  hold for it; the six-class primary score is unchanged (tram merges into rail).
+- A model with a small class trained under balanced class weights leaves that class out of the inner early-stopping
+  fold (`tmd.models.lgbm.paired_cv(stop_ok=...)`).
+
+**Why.**
+- **E2 costs nothing and adds Collecty:** ExtraSensory dev six-class 0.650 = A0 (06 retrained on v2) over 3 seeds;
+  ExtraSensory test 0.685 vs 0.667 (+0.018, Android rail and bus; within A0's test seed spread of 0.024); Collecty
+  dev +0.07; no precision cost.
+- **NOR-TMD creates a dataset shortcut:** with it (A1, E1), quiet still phones without GPS become subway on
+  ExtraSensory (115–127 still minutes per row, against 0 without it), and ExtraSensory dev six-class falls 0.013–0.020
+  in every variant and seed, past the pre-registered 0.01 limit. Its own gains are large: NOR-TMD test bus / car /
+  rail 0.778 vs 0.469, subway recall 0.97 vs 0.11.
+- **Tram isn't learnable without NOR-TMD:** Collecty's 4 tram users give recall 0 on its own held-out users, and the
+  balanced tram class halved the acc model's early stopping (18–25 vs ~50 rounds), which cost bus and foot
+  precision (A2).
+
+**Limits of the evidence.** One ExtraSensory study for still / walk and the primary score; the test gain rests on 2
+Android train users and 7 bus users; the rules chose on seed 0 and the dev tie appeared with seeds 1–2; NOR-TMD is
+Android only; WAIIS's phones and GPS cadence aren't in the benchmark.
+
+**Evidence.** `experiments/10_gps-acc-baseline_waiis-bench-v2/README.md` (Results: stop-points 2 and 3; Conclusion)
+and `results/runs.csv`.

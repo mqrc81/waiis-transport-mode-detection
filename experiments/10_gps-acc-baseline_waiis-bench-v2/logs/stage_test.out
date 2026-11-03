@@ -1,0 +1,17 @@
+extrasensory test: 65991 rows (26382 official), 580 features, 0.00% NaN, 11s -> extrasensory_test_25hz_w15s_acc-v1-B.parquet
+extrasensory test GPS: 65991 rows, covered 0.814 -> extrasensory_test_gps-v2_w2min.parquet
+shl_user23 test: 3015 rows (2365 official), 580 features, 0.00% NaN, 2s -> shl_user23_test_25hz_w15s_acc-v1-B.parquet
+shl_user23 test GPS: 3015 rows, covered 0.629 -> shl_user23_test_gps-v2_w2min.parquet
+nor_tmd test: 3896 rows (3221 official), 580 features, 0.00% NaN, 2s -> nor_tmd_test_25hz_w15s_acc-v1-B.parquet
+shl_user23_other test: 9047 rows (7095 official), 580 features, 0.00% NaN, 2s -> shl_user23_other_test_25hz_w15s_acc-v1-B.parquet
+shl_user23_other test GPS: 9047 rows, covered 0.629 -> shl_user23_other_test_gps-v2_w2min.parquet
+2026/11/03 14:47:03 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+A0 0 {'test_es_all_six_f1': 0.6547, 'test_es_iphone_six_f1': 0.7544, 'test_es_android_six_f1': 0.6205, 'test_nor_guard_six_f1': 0.4677, 'test_shl23_hips_six_f1': 0.9408}
+E2 0 {'test_es_all_six_f1': 0.6816, 'test_es_iphone_six_f1': 0.7527, 'test_es_android_six_f1': 0.6523, 'test_es_all_six_f1_diff_A0': 0.0268, 'test_nor_guard_six_f1': 0.4602, 'test_nor_guard_six_f1_diff_A0': -0.0075, 'test_shl23_hips_six_f1': 0.9447}
+E1 0 {'test_nor_guard_six_f1': 0.7751, 'test_nor_guard_six_f1_diff_A0': 0.3074, 'test_shl23_hips_six_f1': 0.959}
+A0 1 {'test_es_all_six_f1': 0.6792, 'test_es_iphone_six_f1': 0.7598, 'test_es_android_six_f1': 0.6498, 'test_nor_guard_six_f1': 0.4558, 'test_shl23_hips_six_f1': 0.9423}
+E2 1 {'test_es_all_six_f1': 0.6852, 'test_es_iphone_six_f1': 0.758, 'test_es_android_six_f1': 0.6587, 'test_es_all_six_f1_diff_A0': 0.006, 'test_nor_guard_six_f1': 0.4724, 'test_nor_guard_six_f1_diff_A0': 0.0166, 'test_shl23_hips_six_f1': 0.942}
+E1 1 {'test_nor_guard_six_f1': 0.7828, 'test_nor_guard_six_f1_diff_A0': 0.327, 'test_shl23_hips_six_f1': 0.9622}
+A0 2 {'test_es_all_six_f1': 0.6662, 'test_es_iphone_six_f1': 0.7582, 'test_es_android_six_f1': 0.6302, 'test_nor_guard_six_f1': 0.4664, 'test_shl23_hips_six_f1': 0.9438}
+E2 2 {'test_es_all_six_f1': 0.6878, 'test_es_iphone_six_f1': 0.7566, 'test_es_android_six_f1': 0.6572, 'test_es_all_six_f1_diff_A0': 0.0216, 'test_nor_guard_six_f1': 0.4736, 'test_nor_guard_six_f1_diff_A0': 0.0072, 'test_shl23_hips_six_f1': 0.9492}
+E1 2 {'test_nor_guard_six_f1': 0.776, 'test_nor_guard_six_f1_diff_A0': 0.3096, 'test_shl23_hips_six_f1': 0.9598}

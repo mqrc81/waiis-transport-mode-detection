@@ -716,6 +716,133 @@ user-bootstrap 95% CI.
 **After reading:** no retraining, no change of model, rounds, rules or class lists. Results, a draft Conclusion and
 STATUS.md follow from these runs and the export.
 
+### Stop-point 3: test (2026-11-03, scored once)
+
+Commands (protocol committed at `315422a` before the first one; log `logs/stage_test.out`, `logs/test.log`):
+```
+uv run python make_features.py --part test
+uv run python test.py
+uv run python src/tmd/tracking.py export 10_gps-acc-baseline_waiis-bench-v2      # results/runs.csv
+uv run python tables_test.py                                                     # results/tables/test.md
+```
+- Test features: ExtraSensory 65,991 usable minutes (26,382 official; GPS 0.814), SHL Users 2–3 hips 3,015 (2,365),
+  other positions 9,047 (7,095), NOR-TMD 3,896 (3,221).
+- **No deviation from the protocol.** The 9 test runs are clean at `315422a`. Earlier runs: A0–P, R06 and the tram
+  runs are tagged dirty at `29934ba` (experiment code not yet committed); E1, E2 and `A1_hmmA0` seed 0 clean at
+  `ff07ed5`; the dev seeds 1–2 and the `_acconly` runs dirty at `ff07ed5` (`fusion_gain.py`, `test.py` and the
+  `pipe.load(part)` change uncommitted; none of them changes the dev runs' code path).
+- `tables_test.py` shows a seed in which no tram minute went to a class as 0 (MLflow has no metric for it).
+- Support: ExtraSensory test still 19,284 windows / 12 users, walk 3,682 / 11, run 74 / 3, bike 876 / 6, car 2,130 / 10,
+  bus 286 / 7, train 50 / 2 (Android). NOR-TMD test bus 1,908 / 12, subway 738 / 5, tram 289 / 5, train 128 / 5,
+  car 158 / 6.
+
+Full tables: `results/tables/test.md` (each seed with its CI). Mean of 3 seeds:
+
+**ExtraSensory test, 12 users**
+
+| | E2 (final) | A0 (reference) | E2 − A0, per seed [paired CI] |
+|---|---|---|---|
+| six-class, all | **0.685** | 0.667 | +0.027 [+0.006, +0.037]; +0.006 [−0.021, +0.058]; +0.022 [+0.001, +0.030] |
+| — iPhone | 0.756 | 0.757 | −0.002 [−0.014, +0.009]; −0.002 [−0.008, +0.001]; −0.002 [−0.022, +0.004] |
+| — Android | 0.656 | 0.634 | +0.032 [+0.005, +0.044]; +0.009 [−0.020, +0.060]; +0.027 [+0.014, +0.035] |
+| 9-class, all | 0.727 | 0.711 | +0.013; +0.016; +0.017 |
+| family, all | 0.757 | 0.743 | +0.025; +0.003; +0.013 |
+
+- E2's six-class per seed: 0.682 [0.605, 0.718], 0.685 [0.617, 0.719], 0.688 [0.611, 0.719]. A0's: 0.655, 0.679, 0.666;
+  **A0's test seed spread (0.024) is as large as E2's mean gain (+0.018)**. E2's spread is 0.006.
+- **Where E2's gain sits: Android rail and bus.** Android six-class F1, A0 → E2 (seed mean): rail 0.456 → 0.517,
+  bus 0.228 → 0.276, bike +0.012, car +0.011, still and foot +0.00. Rail is ExtraSensory train: 50 windows from 2
+  users. Rail precision A0 0.38 / 0.70 / 0.48, E2 0.59 / 0.62 / 0.64: E2 is the steadier model there.
+- 9-class recall (E2 / A0): still 0.95 / 0.95, walk 0.65 / 0.65, run 0.79 / 0.80, bike 0.86 / 0.85, car 0.77 / 0.77,
+  **bus 0.29 / 0.25**, train 0.45 / 0.42 (CIs in `test.md`; train and run CIs reach 0).
+- **Walk → still: 989 / 990 of 3,682 walk minutes (27%)**, unchanged from 06's weak spot (06: 981).
+- iPhone: no difference anywhere (as 06: no gain on iPhone test users); on iPhone minutes without GPS both score
+  0.462 six-class.
+- No tram can be predicted (8 classes).
+- Comparison with 06 (v1 labels, rescored by 09): 06's test six-class 0.686, iPhone 0.752, Android 0.654. A0 is 06
+  retrained on v2's labels (run flag: test run 81 → 74); its 0.667 is within its own seed spread of 06's number.
+
+**NOR-TMD test, 14 installations** (bus / car / rail macro-F1, the dev guard)
+
+| | E2 | A0 | E1 (descriptive) |
+|---|---|---|---|
+| bus / car / rail | 0.469 | 0.463 | **0.778** |
+| − A0, per seed [paired CI] | −0.007 [−0.039, +0.024]; +0.017 [−0.023, +0.049]; +0.007 [−0.019, +0.029] | – | +0.307 [+0.123, +0.501]; +0.327 [+0.150, +0.516]; +0.310 [+0.128, +0.497] |
+| bus recall | 0.39 | 0.42 | 0.82 |
+| subway | 0.11 | 0.17 | 0.97 |
+| train | 0.52 | 0.35 | 0.22 |
+| tram | 0 (no class) | 0 (no class) | 0 |
+| car | 0.66 | 0.66 | 0.58 |
+
+- **NOR-TMD's tram minutes (289) are predicted as** train 170, still 55, subway 33, car 22 (E2); train 147, still 67,
+  subway 54 (A0); **subway 262** (E1). E1 has a tram class but its HMM (A0's transitions) almost never enters it
+  (the pre-registered E1 rule); its acc + GPS output calls Oslo trams subway.
+- E1's dev → test: guard 0.677 → 0.778, subway 0.79 → 0.97, bus 0.89 → 0.82. E1 transfers to unseen NOR-TMD
+  installations; E2 and A0 don't (dev 0.343 / 0.324 → test 0.469 / 0.463).
+
+**SHL Users 2–3 rail check** (six-class; mean of 3 seeds; no CI)
+
+| Position | E2 | A0 | E1 | subway recall, E2 / A0 / E1 |
+|---|---|---|---|---|
+| hips | 0.945 | 0.942 | 0.960 | 0.62 / 0.59 / 0.71 |
+| hand | 0.852 | 0.837 | 0.877 | 0.08 / 0.08 / 0.33 |
+| torso | 0.889 | 0.880 | 0.901 | 0.18 / 0.23 / **0.98** |
+| bag | 0.931 | 0.938 | 0.947 | 0.46 / 0.51 / 0.62 |
+
+- Train recall is 0.82–0.99 everywhere; **subway is the weak class off the hips** for E2 / A0 (hand 0.08, torso
+  0.18), and the HMM lowers it on the hand (before the HMM 0.20). E1 (NOR-TMD's metro in training) lifts subway at
+  every position.
+- 06 (v1, rescored): 0.944 hips. E2 0.945.
+
+**Cost** (E2 / A0): 12.0 ms per single window (p95 13.5 / 13.3), 1.1 ms per window over whole sessions (p95 4.5);
+acc model 1.65 / 1.66 MB, GPS model 4.09 MB; E1's acc model 2.78 MB.
+
 ## Conclusion
 
-*Not yet.*
+**Draft — not approved.**
+
+**Answer.** On `waiis_bench_v2`, 06's configuration retrained on v2's labels (A0) is the reference, and **E2 — A0 +
+Collecty, 8 classes — is the final configuration**. NOR-TMD is not in it: it creates a dataset shortcut on
+ExtraSensory. Tram is not a class.
+
+| Mean of 3 seeds | E2 (final) | A0 (reference) | E2 − A0 |
+|---|---|---|---|
+| ExtraSensory test, six-class (12 users) | **0.685** | 0.667 | +0.018 (seed CIs from −0.021 to +0.058) |
+| — iPhone / Android | 0.756 / **0.656** | 0.757 / 0.634 | −0.002 / +0.023 |
+| ExtraSensory dev, six-class (pooled OOF) | 0.650 | 0.650 | −0.001 |
+| NOR-TMD test, bus / car / rail (14 installations) | 0.469 | 0.463 | +0.005 |
+| SHL Users 2–3 rail check, hips six-class | 0.945 | 0.942 | +0.003 |
+
+- **E2 is a safe addition, not a proven improvement.** On dev it ties A0 (0.650 each over 3 seeds). On the test it
+  gains +0.018, all on Android (rail and bus, 2 and 7 users), and A0's own test seed spread is 0.024. Collecty's
+  users gain +0.07 on dev at no ExtraSensory cost.
+- **NOR-TMD (A1 / E1):** +0.35 on its dev users and +0.31 on its 14 unseen test installations (bus / car / rail
+  0.778; subway 0.97), and better subway at every SHL position. But ExtraSensory dev six-class falls 0.013–0.020 in
+  every variant and seed, because quiet phones without GPS become subway (115–127 still minutes per row). Where there
+  is GPS, the fusion overrules them. By the rules, it isn't adopted.
+- **Tram:** Collecty's 4 tram users don't generalise (recall 0 on its own held-out users), and with balanced class
+  weights the tiny tram class cut the acc model's early stopping in half (A2: 18–25 rounds vs ~50), which is what
+  cost A2 bus and foot precision. Without NOR-TMD, tram isn't learnable on v2.
+- **What carried over from 06:** GPS fusion is worth +0.06 to +0.08 six-class on dev in every row (+0.07 to +0.10 on
+  GPS-covered minutes) and is what keeps rail and bus precision up. Walk → still is unchanged (27% of test walk
+  minutes; ~20% of the shift comes from fusion, ~80% from the acc model + HMM). No gain on iPhone. SHL weight 0.5 and
+  SHL's other positions add nothing.
+- **Dataset shortcut checks:** within-class source identification from the model's output is lower than from the
+  features (bus 0.65–0.68 from the acc model's probabilities vs 0.82 from its features), and training on a source lowers it. The shortcut that matters
+  is not "which dataset" but "still phone ↔ smooth vehicle" when GPS is missing.
+
+**Limits.**
+- One ExtraSensory study (2015 phones) for still / walk and the primary score; the test gain rests on 2 Android train
+  users and 7 bus users.
+- NOR-TMD test is Android only; its train (5 users) and car (6 users) cells are thin.
+- The rules fixed at stop-point 1 chose on seed 0; the dev tie between E2 and A0 showed up only with seeds 1–2.
+- E1's tram class was switched off by its pre-registered HMM rule, so tram recall with NOR-TMD under a tram-aware HMM
+  wasn't measured on the test.
+- WAIIS's GPS cadence (~20 s) and phones are not in the benchmark.
+
+**Next.**
+- **A NOR-TMD follow-up on dev:** keep NOR-TMD's vehicle gains without the quiet-phone → subway shortcut (e.g.
+  NOR-TMD rail only on minutes with GPS-like evidence, a lower NOR-TMD weight, or ExtraSensory still minutes as hard
+  negatives), with a tram-aware HMM. Only then the ExtraSensory test for it.
+- **Leg suggestions:** E2 is the model for `predict_legs`; E1's saved models run beside it on the labelled WAIIS
+  days.

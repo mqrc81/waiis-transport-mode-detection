@@ -1,0 +1,7 @@
+2026-11-03 14:46:53,825 extrasensory test: 65991 rows (26382 official), 580 features, 0.00% NaN, 11s -> extrasensory_test_25hz_w15s_acc-v1-B.parquet
+2026-11-03 14:46:56,552 extrasensory test GPS: 65991 rows, covered 0.814 -> extrasensory_test_gps-v2_w2min.parquet
+2026-11-03 14:46:58,059 shl_user23 test: 3015 rows (2365 official), 580 features, 0.00% NaN, 2s -> shl_user23_test_25hz_w15s_acc-v1-B.parquet
+2026-11-03 14:46:58,175 shl_user23 test GPS: 3015 rows, covered 0.629 -> shl_user23_test_gps-v2_w2min.parquet
+2026-11-03 14:46:59,945 nor_tmd test: 3896 rows (3221 official), 580 features, 0.00% NaN, 2s -> nor_tmd_test_25hz_w15s_acc-v1-B.parquet
+2026-11-03 14:47:02,064 shl_user23_other test: 9047 rows (7095 official), 580 features, 0.00% NaN, 2s -> shl_user23_other_test_25hz_w15s_acc-v1-B.parquet
+2026-11-03 14:47:02,424 shl_user23_other test GPS: 9047 rows, covered 0.629 -> shl_user23_other_test_gps-v2_w2min.parquet

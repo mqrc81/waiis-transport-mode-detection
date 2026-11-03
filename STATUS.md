@@ -25,7 +25,8 @@ commit `6d51dc2` (experiment 09, approved).
 **Reference model: experiment 06**, accelerometer + GPS fusion
 ([README](experiments/06_gps-acc-baseline_waiis-bench/README.md), approved 2026-10-30), on `waiis_bench_v1`. It
 replaces **05** (accelerometer only; [README](experiments/05_acc-baseline_waiis-bench/README.md), approved
-2026-10-30), which stays the accelerometer-only baseline. No model has been trained on v2 yet.
+2026-10-30), which stays the accelerometer-only baseline. On `waiis_bench_v2` the reference becomes **10's E2**
+once 10 is approved (below).
 
 | `waiis_bench_v1` | 8-class macro-F1 (06 / 05) | family macro-F1 (06 / 05) |
 |---|---|---|
@@ -56,6 +57,36 @@ replaces **05** (accelerometer only; [README](experiments/05_acc-baseline_waiis-
   GPS, 0.715 → 0.650), no 8-class gain on iPhone test users.
 - **Evaluation:** user-bootstrap CIs redraw resamples that lack a class of the evaluation set
   (`tmd.evaluate.user_resamples`).
+
+### First models on v2 (10; Conclusion **draft, not approved**)
+
+**10 GPS + acc baseline on `waiis_bench_v2`** ([README](experiments/10_gps-acc-baseline_waiis-bench-v2/README.md),
+2026-11-03): 06's configuration on v2 with ablations of the new sources, dataset-shortcut checks, test scored once.
+- **Final configuration E2:** 06's configuration (8 classes) trained on ExtraSensory + SHL User 1 + Collecty
+  (Collecty's tram minutes unlabelled). **Reference A0:** 06 retrained on v2's labels (ExtraSensory + SHL User 1).
+- **No NOR-TMD and no tram class in it.**
+
+| `waiis_bench_v2`, six-class macro-F1, mean of 3 seeds | E2 (final) | A0 (reference) |
+|---|---|---|
+| ExtraSensory test, 12 users | **0.685** | 0.667 |
+| — iPhone / Android | 0.756 / 0.656 | 0.757 / 0.634 |
+| ExtraSensory dev, pooled out-of-fold | 0.650 | 0.650 |
+| NOR-TMD test, bus / car / rail (14 installations) | 0.469 | 0.463 |
+| SHL Users 2–3 rail check, hips | 0.945 | 0.942 |
+
+- **E2 vs A0:** tied on dev; +0.018 on the test, all on Android rail and bus (2 and 7 users), within A0's test seed
+  spread (0.024). Collecty's users +0.07 on dev. A safe addition, not a proven gain.
+- **NOR-TMD (descriptive E1):** NOR-TMD test 0.778 (subway 0.97) and better subway at every SHL position, but
+  ExtraSensory dev −0.013 to −0.020 in every variant: quiet still phones without GPS become subway (a dataset
+  shortcut; GPS fusion overrules it where GPS exists). Not adopted; a follow-up.
+- **Tram:** not learnable on v2 without NOR-TMD (Collecty's 4 users: recall 0 on its own held-out users); a balanced
+  tiny tram class also halves the acc model's early stopping (found in 10; leave tram out of the stopping fold when
+  it is a class: `tmd.models.lgbm.paired_cv(stop_ok=...)`).
+- **Unchanged from 06:** fusion +0.06 to +0.08 six-class on dev in every row; walk → still 27% of test walk minutes;
+  no gain on iPhone; cost 1.65 + 4.09 MB, ~12 ms per window, ~1 ms per window over sessions. SHL weight 0.5 and SHL's
+  other positions: nothing.
+- **Weak spots:** ExtraSensory bus (test recall 0.29) and train (2 users); subway off the hips on SHL (hand 0.08,
+  torso 0.18); NOR-TMD bus / subway without NOR-TMD in training (0.39 / 0.11).
 
 ### Label curve (07, development data only)
 
@@ -114,10 +145,13 @@ Two unlabelled days of WAIIS app recordings ([report](experiments/08_candidate-d
 
 ## 4. Next experiment
 
-1. **06 on v2:** 06 as-is vs retrained with NOR-TMD and Collecty; SHL weight ablation; per-source and shortcut
-   checks (with/without new datasets, NOR-TMD transfer). GPS model unchanged.
-2. **Leg suggestions** for the labelling tool (in parallel): `predict_legs` with 06, evaluated on SHL, my own
-   labelled WAIIS days and later MobilityNet; harness ready for WAIIS labels.
+1. **NOR-TMD follow-up (after 10):** keep NOR-TMD's vehicle gains (its test: 0.778 vs 0.469) without the quiet-phone
+   → subway shortcut on ExtraSensory (e.g. NOR-TMD rail only with GPS-like evidence, a lower NOR-TMD weight,
+   ExtraSensory still minutes as hard negatives), with a tram-aware HMM; dev first, ExtraSensory test only for the
+   model it chooses.
+2. **Leg suggestions** for the labelling tool (in parallel): `predict_legs` with 10's E2 (06 until 10 is approved),
+   E1's saved models alongside, evaluated on SHL, my own labelled WAIIS days and later MobilityNet; harness ready
+   for WAIIS labels.
 3. **GPS track:** Geolife, MTL Trajet, SHL 1 Hz (MOBIS if granted); cadence-robust gps-v3 for WAIIS's ~20 s fixes
    and ~5 min coarse fixes on vehicle legs without good GPS; leg-level classification of vehicle legs.
 
