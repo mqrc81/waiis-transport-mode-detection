@@ -864,8 +864,6 @@ subway") over-generalised from one user; the Conclusion and the DECISIONS.md dra
 
 ## Conclusion
 
-**Draft — not approved.**
-
 **Answer.** On `waiis_bench_v2`, 06's configuration retrained on v2's labels (A0) is the reference, and **E2 — A0 +
 Collecty, 8 classes — is the final configuration**. NOR-TMD is not in it: with it, ExtraSensory dev six-class falls
 past the rule's limit, through false rail and false bus. Tram is not a class.
