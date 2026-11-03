@@ -104,13 +104,12 @@ No models, no MLflow runs. Verdicts, Conclusion and DECISIONS.md entry **approve
 
 ## 4. Next experiment
 
-**09: frozen benchmark `waiis_bench_v2`** ([README](experiments/09_frozen-benchmark_es-shl-nor-collecty/README.md))
-is closed (approved 2026-11-02). What the first model on v2 starts from:
-- **v1's references in the six-class score:** 05 test 0.642, dev 0.575; 06 test 0.686, dev 0.642 (v1 labels; the
-  first model rescores 06 on v2's dev labels as its baseline).
-- **Dataset shortcut risk:** within-class source identification from 05's features has AUC 0.82–0.96 (tram 0.52);
-  the shortcut checks belong in that model.
-- **Run labels:** users whose run moves less than a typical walk have no run labels in v2 (7 users; official run
-  dev 463 → 155, test 81 → 74).
-- Next: the first model on v2 (InceptionTime + GPS fusion, LIMU-BERT from scratch, or 06 retrained), with SHL
-  User 1's weight as an ablation; WAIIS labelling (07). Each has to beat 06 on the same test users and protocol.
+1. **06 on v2:** 06 as-is vs retrained with NOR-TMD and Collecty; SHL weight ablation; per-source and shortcut
+   checks (with/without new datasets, NOR-TMD transfer). GPS model unchanged.
+2. **Leg suggestions** for the labelling tool (in parallel): `predict_legs` with 06, evaluated on SHL, my own
+   labelled WAIIS days and later MobilityNet; harness ready for WAIIS labels.
+3. **GPS track:** Geolife, MTL Trajet, SHL 1 Hz (MOBIS if granted); cadence-robust gps-v3 for WAIIS's ~10 s fixes;
+   leg-level classification of vehicle legs.
+
+Later: InceptionTime / LIMU-BERT on v2, walk-aware fusion, map context for bus vs car, driver vs passenger.
+Open WAIIS questions: recording mode, units and axes per platform, modes needed, GPS at vehicle stops.
