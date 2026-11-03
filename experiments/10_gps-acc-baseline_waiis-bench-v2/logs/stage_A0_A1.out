@@ -1,0 +1,29 @@
+2026/11/03 11:25:10 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+A0 acc {'fold': 0, 'rounds': 59, 'n_trees': 472, 'model_bytes': 1690475, 'hit_cap': False, 'train_rows': 108124}
+A0 acc {'fold': 1, 'rounds': 40, 'n_trees': 320, 'model_bytes': 1133952, 'hit_cap': False, 'train_rows': 114990}
+A0 acc {'fold': 2, 'rounds': 39, 'n_trees': 312, 'model_bytes': 1116619, 'hit_cap': False, 'train_rows': 115365}
+A0 acc {'fold': 3, 'rounds': 55, 'n_trees': 440, 'model_bytes': 1576068, 'hit_cap': False, 'train_rows': 109691}
+A0 acc {'fold': 4, 'rounds': 67, 'n_trees': 536, 'model_bytes': 1903453, 'hit_cap': False, 'train_rows': 118846}
+A0 gps {'fold': 0, 'rounds': 147, 'n_trees': 1176, 'model_bytes': 4089864, 'hit_cap': False, 'train_rows': 86566}
+A0 gps {'fold': 1, 'rounds': 108, 'n_trees': 864, 'model_bytes': 3003204, 'hit_cap': False, 'train_rows': 95183}
+A0 gps {'fold': 2, 'rounds': 155, 'n_trees': 1240, 'model_bytes': 4309272, 'hit_cap': False, 'train_rows': 92319}
+A0 gps {'fold': 3, 'rounds': 138, 'n_trees': 1104, 'model_bytes': 3836976, 'hit_cap': False, 'train_rows': 86094}
+A0 gps {'fold': 4, 'rounds': 186, 'n_trees': 1488, 'model_bytes': 5179134, 'hit_cap': False, 'train_rows': 99314}
+Traceback (most recent call last):
+  File "/Users/ms/Projects/waiis/transport-mode-detection/experiments/10_gps-acc-baseline_waiis-bench-v2/run.py", line 170, in <module>
+    main()
+  File "/Users/ms/Projects/waiis/transport-mode-detection/experiments/10_gps-acc-baseline_waiis-bench-v2/run.py", line 82, in main
+    log.info("metrics %s", json.dumps(m))
+                           ^^^^^^^^^^^^^
+  File "/Users/ms/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/json/__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ms/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ms/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/ms/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable

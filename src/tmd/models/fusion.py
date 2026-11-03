@@ -39,8 +39,23 @@ def load_frame(part: str = "dev", gps_version: str = "gps-v2") -> pd.DataFrame:
     return df
 
 
-def product(p_acc, p_gps, cov):
-    """06's H1: p ∝ p_acc · p_gps on GPS-covered rows; p_acc elsewhere."""
+VEHICLES = [4, 5, 6, 7]                         # columns of car, bus, train, subway (class ids 5..8)
+
+
+def gps_fine(p_gps: np.ndarray, rule: str = "vehicle_mean") -> np.ndarray:
+    """The GPS model's 8 class probabilities plus a tram column (experiment 10; the GPS sources have no tram).
+    vehicle_mean (approved 2026-11-03): the mean of the four vehicle probabilities, so GPS says "a vehicle" and the
+    acc model alone decides tram against the other vehicles. uniform (1/8) and bus are descriptive only."""
+    tram = {"vehicle_mean": lambda p: p[:, VEHICLES].mean(1), "uniform": lambda p: np.full(len(p), 1 / 8),
+            "bus": lambda p: p[:, 5]}[rule](p_gps)
+    return np.column_stack([p_gps, tram])
+
+
+def product(p_acc, p_gps, cov, tram_rule: str = "vehicle_mean"):
+    """06's H1: p ∝ p_acc · p_gps on GPS-covered rows; p_acc elsewhere. A 9-class acc model with the 8-class GPS
+    model: the GPS tram factor from `gps_fine`."""
+    if p_gps.shape[1] < p_acc.shape[1]:
+        p_gps = gps_fine(p_gps, tram_rule)
     out = p_acc.astype(np.float64).copy()
     q = np.maximum(p_acc[cov], 1e-9) * np.maximum(p_gps[cov], 1e-9)
     out[cov] = q / q.sum(1, keepdims=True)

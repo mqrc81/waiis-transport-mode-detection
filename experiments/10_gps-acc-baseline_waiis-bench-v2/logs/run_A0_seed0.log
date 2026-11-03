@@ -1,0 +1,32 @@
+2026-11-03 11:25:29,846 progress 1/23 A0 acc fold 0 early stopping (59 rounds) · 19s · ~6m left
+2026-11-03 11:25:44,250 A0 acc fold {'fold': 0, 'rounds': 59, 'n_trees': 472, 'model_bytes': 1690475, 'hit_cap': False, 'train_rows': 108124}
+2026-11-03 11:25:44,250 progress 2/23 A0 acc fold 0 refit · 34s · ~5m left
+2026-11-03 11:25:58,207 progress 3/23 A0 acc fold 1 early stopping (40 rounds) · 48s · ~5m left
+2026-11-03 11:26:08,700 A0 acc fold {'fold': 1, 'rounds': 40, 'n_trees': 320, 'model_bytes': 1133952, 'hit_cap': False, 'train_rows': 114990}
+2026-11-03 11:26:08,704 progress 4/23 A0 acc fold 1 refit · 58s · ~4m left
+2026-11-03 11:26:22,095 progress 5/23 A0 acc fold 2 early stopping (39 rounds) · 1m · ~4m left
+2026-11-03 11:26:32,502 A0 acc fold {'fold': 2, 'rounds': 39, 'n_trees': 312, 'model_bytes': 1116619, 'hit_cap': False, 'train_rows': 115365}
+2026-11-03 11:26:32,504 progress 6/23 A0 acc fold 2 refit · 1m · ~3m left
+2026-11-03 11:26:49,115 progress 7/23 A0 acc fold 3 early stopping (55 rounds) · 1m · ~3m left
+2026-11-03 11:27:02,580 A0 acc fold {'fold': 3, 'rounds': 55, 'n_trees': 440, 'model_bytes': 1576068, 'hit_cap': False, 'train_rows': 109691}
+2026-11-03 11:27:02,582 progress 8/23 A0 acc fold 3 refit · 1m · ~3m left
+2026-11-03 11:27:21,209 progress 9/23 A0 acc fold 4 early stopping (67 rounds) · 2m · ~3m left
+2026-11-03 11:27:37,889 A0 acc fold {'fold': 4, 'rounds': 67, 'n_trees': 536, 'model_bytes': 1903453, 'hit_cap': False, 'train_rows': 118846}
+2026-11-03 11:27:37,892 progress 10/23 A0 acc fold 4 refit · 2m · ~3m left
+2026-11-03 11:27:48,825 progress 11/23 A0 gps fold 0 early stopping (147 rounds) · 2m · ~2m left
+2026-11-03 11:27:55,349 A0 gps fold {'fold': 0, 'rounds': 147, 'n_trees': 1176, 'model_bytes': 4089864, 'hit_cap': False, 'train_rows': 86566}
+2026-11-03 11:27:55,349 progress 12/23 A0 gps fold 0 refit · 2m · ~2m left
+2026-11-03 11:28:04,695 progress 13/23 A0 gps fold 1 early stopping (108 rounds) · 2m · ~2m left
+2026-11-03 11:28:09,300 A0 gps fold {'fold': 1, 'rounds': 108, 'n_trees': 864, 'model_bytes': 3003204, 'hit_cap': False, 'train_rows': 95183}
+2026-11-03 11:28:09,302 progress 14/23 A0 gps fold 1 refit · 2m · ~1m left
+2026-11-03 11:28:21,055 progress 15/23 A0 gps fold 2 early stopping (155 rounds) · 3m · ~1m left
+2026-11-03 11:28:28,070 A0 gps fold {'fold': 2, 'rounds': 155, 'n_trees': 1240, 'model_bytes': 4309272, 'hit_cap': False, 'train_rows': 92319}
+2026-11-03 11:28:28,071 progress 16/23 A0 gps fold 2 refit · 3m · ~1m left
+2026-11-03 11:28:38,553 progress 17/23 A0 gps fold 3 early stopping (138 rounds) · 3m · ~1m left
+2026-11-03 11:28:44,718 A0 gps fold {'fold': 3, 'rounds': 138, 'n_trees': 1104, 'model_bytes': 3836976, 'hit_cap': False, 'train_rows': 86094}
+2026-11-03 11:28:44,719 progress 18/23 A0 gps fold 3 refit · 3m · ~59s left
+2026-11-03 11:28:58,302 progress 19/23 A0 gps fold 4 early stopping (186 rounds) · 3m · ~48s left
+2026-11-03 11:29:06,330 A0 gps fold {'fold': 4, 'rounds': 186, 'n_trees': 1488, 'model_bytes': 5179134, 'hit_cap': False, 'train_rows': 99314}
+2026-11-03 11:29:06,330 progress 20/23 A0 gps fold 4 refit · 3m · ~35s left
+2026-11-03 11:29:11,317 progress 21/23 evaluation · 4m · ~22s left
+2026-11-03 11:30:50,459 progress 22/23 identification · 5m · ~15s left

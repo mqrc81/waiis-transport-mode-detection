@@ -1,0 +1,6 @@
+class,sources,windows,auc_features_09,auc_acc,auc_final,windows_uncovered,sources_uncovered,auc_final_uncovered
+bus,extrasensory vs nor_tmd vs collecty vs shl_user1,5138,0.824,0.6765041552374484,0.8612432200991809,2179,extrasensory vs nor_tmd vs collecty vs shl_user1,0.8037525132332052
+car,extrasensory vs nor_tmd vs collecty vs shl_user1,5230,0.818,0.6396785774910432,0.7383037272399223,2031,extrasensory vs nor_tmd vs collecty vs shl_user1,0.6328928069998667
+train,shl_user1 vs nor_tmd vs collecty vs extrasensory,2912,0.835,0.6250757890443541,0.745206429076215,1581,shl_user1 vs nor_tmd vs collecty vs extrasensory,
+subway,shl_user1 vs nor_tmd,3312,0.963,0.8677572408536586,0.9881021341463414,2578,shl_user1 vs nor_tmd,0.9898157245790468
+tram,nor_tmd vs collecty,1186,0.521,0.38747477048257184,0.6737214408189865,1186,nor_tmd vs collecty,0.6737214408189865

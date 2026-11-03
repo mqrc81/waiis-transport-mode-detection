@@ -1,0 +1,26 @@
+2026/11/03 11:31:26 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+A1 acc {'fold': 0, 'rounds': 33, 'n_trees': 297, 'model_bytes': 1075061, 'hit_cap': False, 'train_rows': 117220}
+A1 acc {'fold': 1, 'rounds': 46, 'n_trees': 414, 'model_bytes': 1459306, 'hit_cap': False, 'train_rows': 123397}
+A1 acc {'fold': 2, 'rounds': 42, 'n_trees': 378, 'model_bytes': 1342656, 'hit_cap': False, 'train_rows': 124806}
+A1 acc {'fold': 3, 'rounds': 26, 'n_trees': 234, 'model_bytes': 855541, 'hit_cap': False, 'train_rows': 118483}
+A1 acc {'fold': 4, 'rounds': 36, 'n_trees': 324, 'model_bytes': 1162495, 'hit_cap': False, 'train_rows': 126938}
+A1_seed0 {'es_six_f1': 0.6266, 'es_six_f1_lo': 0.5705, 'es_six_f1_hi': 0.6704, 'es_fine_f1': 0.6806, 'es_family_f1': 0.6689, 'es_six_precision_still': np.float64(0.9421), 'es_six_precision_foot': np.float64(0.5833), 'nor_guard_six_f1': 0.6731, 'collecty_six_f1': 0.6269, 'shl_six_f1': 0.9548, 'es_six_f1_diff_A0': -0.02, 'es_six_f1_diff_A0_lo': -0.0374, 'es_six_f1_diff_A0_hi': 0.0018, 'nor_guard_six_f1_diff_A0': 0.3491, 'nor_guard_six_f1_diff_A0_lo': 0.2702, 'nor_guard_six_f1_diff_A0_hi': 0.4354, 'tram_pred_extrasensory_usable_n': 130.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 11.6414, 'lat_pipeline_ms_p50': 1.2572} 259s
+2026/11/03 11:35:47 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+Traceback (most recent call last):
+  File "/Users/ms/Projects/waiis/transport-mode-detection/experiments/10_gps-acc-baseline_waiis-bench-v2/rescore06.py", line 85, in <module>
+    main()
+  File "/Users/ms/Projects/waiis/transport-mode-detection/experiments/10_gps-acc-baseline_waiis-bench-v2/rescore06.py", line 32, in main
+    ix = pos.reindex(pd.MultiIndex.from_frame(v1[["source", "user", "ts"]])).to_numpy()
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/pandas/core/series.py", line 5525, in reindex
+    return super().reindex(
+           ^^^^^^^^^^^^^^^^
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/pandas/core/generic.py", line 5464, in reindex
+    return self._reindex_axes(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/pandas/core/generic.py", line 5486, in _reindex_axes
+    new_index, indexer = ax.reindex(
+                         ^^^^^^^^^^^
+  File "/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 4250, in reindex
+    raise ValueError("cannot handle a non-unique multi-index!")
+ValueError: cannot handle a non-unique multi-index!

@@ -1,0 +1,478 @@
+# 10 GPS + acc baseline on waiis_bench_v2
+
+## Question
+
+How does 06's configuration perform on `waiis_bench_v2`, and what do the new sources (NOR-TMD, Collecty, tram as a
+ninth class) add without creating a dataset shortcut? The result becomes the reference model on v2 and the next
+model for leg suggestions.
+
+## Plan
+
+*From the brief of 2026-11-03. Stop-point 1 approved 2026-11-03 with additions (Results, "Stop-point 1 answers").*
+
+**Model.** 06's final configuration (acc LightGBM, gps-v2 GPS LightGBM, product fusion with acc fallback, HMM
+forward-backward) and 06's settings, including inner early stopping. Only the training data and the class set change.
+- GPS model: unchanged sources (ExtraSensory + SHL User 1, the only ones with GPS). It has no tram. Fusion rule for
+  classes the GPS model lacks: stop-point 1.
+- HMM transitions from all labelled training minutes of the sources in each row.
+
+**Ablation** (seed 0; one MLflow run per row; each data row builds on the best so far)
+- **A0.** 06 retrained on v1's sources (ExtraSensory + SHL User 1) with v2's labels, 8 classes. The reference on v2.
+  Its NOR-TMD and Collecty dev scores are transfer scores: those sources aren't in training.
+- **A1.** + NOR-TMD (9 classes, tram included).
+- **A2.** + Collecty.
+- **S.** SHL User 1 weight 0.5 instead of 1.
+- **P.** + SHL User 1's other positions (opt-in rows, one random position per minute).
+
+**Rules** (fixed before running)
+- Data rows (A1, A2): adopt if ExtraSensory dev six-class doesn't drop by more than 0.01, ExtraSensory still and walk
+  precision don't drop by more than 0.01, and NOR-TMD dev (bus, car, rail) improves by ≥ 0.01. For A2, NOR-TMD dev
+  must not drop by more than 0.01 instead.
+- Other rows (S, P): adopt if ExtraSensory dev six-class gains ≥ 0.01 and NOR-TMD dev (bus, car, rail) doesn't drop
+  by more than 0.01.
+- Every difference with its paired user-bootstrap CI.
+
+**Reported for every row**
+- Six-class, 9-class and family on ExtraSensory dev; NOR-TMD dev, Collecty dev and SHL day folds separately (per
+  class, with the class list).
+- Dataset shortcut:
+  - (a) per-class precision on ExtraSensory dev, A0 vs later rows, especially still and walk against vehicle classes;
+  - (b) NOR-TMD transfer: A0's NOR-TMD dev score next to A1's out-of-fold score;
+  - (c) per-source recall per class;
+  - (d) source identification within class from the model's output probabilities (AUC), next to 09's feature-level
+    baseline.
+- Tram predicted on ExtraSensory and SHL minutes (count and share; there is no tram there).
+- Recall with CIs for bus, car, train, subway and tram.
+- Inference time and model sizes.
+
+**Stop-points**
+1. Plan: the fusion rule for classes the GPS model lacks, the exact rows, run time and free disk space. **Wait for
+   OK.**
+2. Ablation on development data and the proposed final configuration. **Wait for OK before touching any test user.**
+3. Write and commit the test protocol. Then score the final configuration and A0 (3 seeds each) once on:
+   - ExtraSensory test (overall and per platform);
+   - NOR-TMD test (bus, subway, train, tram, car);
+   - the SHL Users 2–3 rail check per position.
+
+   Then Results, draft Conclusion, update STATUS.md.
+
+## Results
+
+### Stop-point 1: plan details (2026-11-03)
+
+#### Fusion rule for tram (the class the GPS model lacks)
+
+**Proposal: a vehicle-neutral GPS factor.** On GPS-covered minutes the GPS model's tram factor is the mean of its
+four vehicle probabilities:
+
+  p_gps(tram) := mean(p_gps(car), p_gps(bus), p_gps(train), p_gps(subway)),
+
+then p ∝ p_acc · p_gps over the 9 classes, renormalised (06's product, 1e-9 floor). Uncovered minutes keep p_acc, as
+in 06.
+- GPS then says whether the minute looks like a vehicle, and nothing about which vehicle is tram. The acc model alone
+  decides tram against the other vehicles.
+- **Why not a uniform factor (1/8):** the GPS model is trained with balanced class weights, so its outputs act as
+  likelihoods. A constant 1/8 would *raise* tram relative to the vehicles whenever GPS is sure the minute is still or
+  walk (vehicle probabilities ≈ 0.01), which creates false tram on exactly the ExtraSensory still / walk minutes the
+  rules protect.
+- **Why not a bus proxy:** tram moves like a bus in GPS, but copying bus ties tram to one class's errors; the mean
+  over the vehicles is the assumption-free version of "a vehicle".
+- **Limit, unavoidable on this benchmark:** tram exists only in NOR-TMD and Collecty, which have no GPS. On dev the
+  rule therefore only acts where tram is never true (ExtraSensory, SHL): it can be checked for false tram (the
+  tram-on-ExtraSensory/SHL count), never for tram recall under GPS. That waits for WAIIS data.
+- **Sensitivity (descriptive, not a choice):** for the final row, false tram on ExtraSensory / SHL and six-class
+  ExtraSensory dev are also reported with the uniform factor and the bus proxy, recombined from the saved
+  probabilities (no retraining).
+
+A0 is 8-class (no tram anywhere in its training data); tram gets probability 0 when it is scored 9-class.
+
+#### The rows exactly
+
+Common to all rows: v2's labels (`cls_fine`, 9 classes; the run flag applied), 05's 580 acc features recomputed
+from v2, 06's gps-v2 features, lr 0.1 with inner early stopping as in 06 (`tmd.models.lgbm.paired_cv`: rounds from
+early stopping on fold (k + 1) mod 5, refit on the 4 training folds), balanced class weights over the source-weighted
+rows, seed 0. Dev folds: ExtraSensory by user, SHL User 1 by day, NOR-TMD and Collecty by user (09's fold files). The
+early-stopping fold contains every training source of the row.
+
+| Row | acc model trained on | GPS model trained on | Classes | HMM transitions from | Builds on |
+|---|---|---|---|---|---|
+| A0 | ES + SHL U1 | ES + SHL U1 (covered minutes) | 8 | labelled minutes of ES + SHL U1 | – |
+| A1 | + NOR-TMD | unchanged (= A0's) | 9 | + NOR-TMD | A0 |
+| A2 | + Collecty | unchanged | 9 | + Collecty | best of A0 / A1 |
+| S | best, SHL U1 weight 0.5 | SHL U1 weight 0.5 (retrained) | as best | as best (counts, not weighted) | best so far |
+| P | best, SHL U1 minutes of the 3 four-phone days use the position in `position_draw` | unchanged (GPS is per minute) | as best | as best | best so far |
+
+- **NOR-TMD and Collecty dev in A0** (transfer): each outer fold k's model scores the NOR-TMD / Collecty dev users of
+  fold k, so every dev user gets a score from a model that never saw that source.
+- **P:** the four-phone days have 5,964 other-position windows. Per minute the frozen `position_draw` picks one of
+  hips / hand / torso / bag, so SHL's row count and weight stay unchanged. SHL day folds are still *scored* on hips,
+  as in every other row.
+- **Not a row, descriptive:** 06 as-is (v1 models' saved out-of-fold probabilities), rescored on v2's labels, as 09
+  asked. It shows how much of A0 − 06 is the label change and how much retraining.
+
+#### Scores
+
+- **Primary:** six-class macro-F1 (still, foot, bike, car, bus, rail) on ExtraSensory dev, pooled out of fold, with
+  user-bootstrap 95% CIs (`tmd.evaluate`). ExtraSensory dev has no subway or tram, so the six-class rail is train.
+- **NOR-TMD dev guard (bus, car, rail):** NOR-TMD dev minutes labelled bus, car, train, subway or tram, six-class
+  predictions (any of the 6), macro-F1 averaged over bus, car and rail. Bike is reported separately, not in the guard.
+- **Precision rule (data rows):** ExtraSensory dev six-class precision of still and of foot (walk + run) — the brief
+  says "walk"; foot is what the six-class score has, and walk precision (9-class) is reported next to it.
+- Paired user-bootstrap CI for every difference: ExtraSensory over its users, NOR-TMD over its installations.
+- SHL User 1 (day folds) and Collecty (14 users, ≤ 5 per class except car): no CI.
+- (d) source identification: 09's protocol (`checks.py`, `_group_auc`: StratifiedGroupKFold by user / SHL day,
+  LightGBM, ≤ 2,000 windows per source, classes bus, car, train, subway, tram), with the model's out-of-fold
+  log-probabilities as input instead of the 580 features. Two inputs:
+  - the **acc model's raw probabilities** (comparable with 09's feature-level baseline);
+  - the **final output** (fused, after the HMM). GPS coverage alone separates ExtraSensory / SHL from the sources
+    without GPS, so this AUC is reported with that caveat.
+  The function moves to `src/tmd/evaluate.py` (second user).
+
+#### Shared code (src/tmd), v1 kept bit-identical
+
+- `tmd.models.lgbm`, `tmd.models.minutes`: number of classes as a parameter (default 8); fine labels (`y_fine`) for
+  the HMM.
+- `tmd.models.fusion`: the product with a missing GPS class (rule above), and a v2 frame loader for all four sources.
+- `tmd.evaluate`: six-class / 9-class scoring helpers, the source-identification AUC.
+- **Port check before the ablation:** 06's H1_v2 seed 0 rerun through the changed code on v1 must give bit-identical
+  out-of-fold probabilities, and 05's acc features recomputed from v2 must equal 05's tables for ExtraSensory and
+  SHL User 1 (09 showed the sign conversion leaves them unchanged).
+
+#### Run time (estimate, from 05 / 06's logs)
+
+| Step | Estimate |
+|---|---|
+| acc features from v2 (ES, SHL U1 + other positions, NOR-TMD, Collecty; dev and test parts) | 10 min |
+| gps-v2 features (ES, SHL; check against 06's tables) | 2 min |
+| port check | 10 min |
+| per row: acc CV (10 fits) + GPS CV (only A0, S) + HMM + evaluation and bootstraps + source AUC | 12–18 min |
+| ablation, 5 rows + 06 rescored + tram sensitivity | 1.5–2 h |
+| final configuration and A0, seeds 1–2 on dev (the test models' rounds come from them, as in 06) | 1 h |
+| test (3 seeds × 2 configurations; ES test, NOR-TMD test, SHL Users 2–3 per position) and latency | 45 min |
+
+All long jobs run in the background with `tmd.progress` and logs under `logs/`.
+
+#### Disk
+
+22 GB free on the data volume (460 GB, 96% used). New files: acc feature tables ~1.5–2 GB (05's took 2.8 GB with
+its low-pass variants, which 10 doesn't need), out-of-fold probabilities and models < 0.5 GB. Enough, but the volume
+is nearly full.
+
+#### Open questions for OK
+
+1. The tram rule above (vehicle mean), with the uniform factor and bus proxy as descriptive sensitivity only.
+2. S halves SHL User 1's weight in **both** models (06 trained both with SHL User 1); the HMM's counts stay
+   unweighted.
+3. The precision rule uses six-class foot for "walk" (walk 9-class reported alongside).
+4. Seeds 1–2 on dev for the final configuration and A0 after stop-point 2 (needed for the test models' rounds).
+
+### Stop-point 1 answers (2026-11-03, approved)
+
+1. **Tram rule: the vehicle mean, approved.** The uniform factor and the bus proxy are descriptive only and **can't
+   replace the rule at stop-point 2**, whatever they score.
+2. **S** halves SHL User 1's weight in both models; the HMM counts stay unweighted.
+3. **Precision rule** on six-class **foot** precision (walk + run); 9-class walk precision reported next to it,
+   descriptive only.
+4. **Seeds 1–2 on dev** for the final configuration and A0: yes.
+5. **Unseen positions (every row, descriptive):** SHL User 1's held-out days among the 3 four-phone days, scored on
+   their hand, torso and bag windows, per position (out of fold: each day by the model of its day fold). A0 gives the
+   baseline for unseen positions. P's rule is unchanged. In P the other positions of the training days are in
+   training, so P's numbers there are positions seen on other days, not unseen positions.
+6. **Mode changes (every row):** per source, the count of labelled transitions (consecutive labelled minutes of
+   different classes within a session, the HMM's own counting), and the diagonal of the HMM transition matrix.
+7. **06's seed spread on dev** (six-class, ExtraSensory, from its existing runs) as context for the 0.01 thresholds.
+8. **(d) on the final output** also on minutes without GPS only.
+9. **Training weight per class (every row):** each source's share of the training weight per class (source weight ×
+   balanced class weight, summed over the training rows of the 5 outer folds).
+
+### Setup and port check (2026-11-03)
+
+**Shared code changed** (default 8 classes, so v1 results are unchanged; checked below):
+- `src/tmd/models/hmm.py`: the number of states from the transition matrix (`transition_matrix(..., n=8)`).
+- `src/tmd/models/lgbm.py`: `class_weights` / `dataset` take `n`; `paired_cv` reads `num_class` from the params.
+- `src/tmd/models/minutes.py`: `labelled_minutes(..., fine=True)` (9 classes from `cls_fine`; excluded foot labels
+  and flagged run users' minutes left out, as v2 makes them unlabelled); `hmm_params(lab, n)`; `smooth_cv` takes the
+  class count from the probabilities.
+- `src/tmd/labels.py`: tram → rail family.
+- `src/tmd/evaluate.py`: levels `fine` and `six`; `six_pred`; `user_draws` (the draws of `user_resamples`, which now
+  uses it); `cm_metrics`, `user_cms`, `bootstrap_cms` (user bootstrap on per-user confusion matrices: same draws and
+  redraw rule, checked equal to the `scores` path on random data); `identification_auc` (copied from 09's
+  `checks.py`, which is left as it is).
+- `src/tmd/models/fusion.py`: `gps_fine` (the tram rule) and `product(..., tram_rule)`.
+
+**Feature tables** (`make_features.py`; 70 s; `<data>/processed/10_gps-acc-baseline_waiis-bench-v2/`, 1.1 GB):
+
+| Source | Usable dev minutes | Official | GPS-covered |
+|---|---|---|---|
+| ExtraSensory | 291,155 | 118,678 | 0.810 |
+| SHL User 1 (hips) | 36,806 | 23,076 | 0.696 |
+| NOR-TMD | 12,968 | 10,957 | – |
+| Collecty | 13,424 | 3,383 | – |
+| SHL User 1 other positions (hand / torso / bag, 3 days) | 5,960 | 2,979 | 0.593 |
+
+- Dev = users in a fold (`fold >= 0`). 1,067 NOR-TMD and 2 Collecty usable minutes of non-reserved users have no fold
+  in 09's fold file and are left out (no official examples).
+- 4 implausible other-position windows are dropped (U3).
+
+**Port check** (`port_check.py`, `logs/port_check.log`): all bit-identical.
+- 10's acc and gps-v2 features from v2 = 05's / 06's tables from v1 on all 291,155 ExtraSensory and 36,806 SHL
+  rows (max abs diff 0).
+- Through the changed shared code: 05's B seed 0 (before and after the HMM) and 06's H1_v2 seed 0 (fused before and
+  after the HMM, GPS model retrained) reproduce the saved out-of-fold probabilities exactly.
+
+**Definitions used in scoring** (fixed before the first row):
+- Six-class prediction = the 9-class argmax merged (09's rescoring of the logged confusion matrices, so v1's
+  reference numbers compare). Family = argmax of the summed probabilities (06's family).
+- 9-class macro-F1 over the classes present in the evaluation set (ExtraSensory dev: no subway, no tram).
+- The identification check (d) reruns 09's sampling with 09's seed, so it uses 09's windows (bus 5,138, car 5,230,
+  train 2,912, subway 3,312, tram 1,186; checked equal) and puts the out-of-fold log-probabilities where 09 had the
+  580 features. With random probabilities it gives AUC ≈ 0.5.
+- Code: `make_features.py`, `pipe.py`, `run.py` (one row = one MLflow run), `rescore06.py` (R06).
+
+**Found while testing (item 6, labelled minutes of all dev users):**
+
+| Source | Labelled 1-min steps | Mode changes |
+|---|---|---|
+| ExtraSensory | 228,560 | 3,157 |
+| SHL User 1 | 22,283 | 173 |
+| NOR-TMD | 22,637 | **0** |
+| Collecty | 9,546 | 6 |
+
+- NOR-TMD has no labelled mode change: each session holds one labelled mode, and the minutes between modes are
+  excluded foot labels or gaps. Adding NOR-TMD raises the HMM's self-transition counts and adds none between
+  vehicles.
+
+### Ablation (in progress, seed 0)
+
+*Running notes; the stop-point 2 tables come from MLflow once every row has run.*
+
+Commands (logs in `logs/`):
+```
+uv run python run.py --row A0 --sources extrasensory shl_user1 --n 8
+uv run python run.py --row A1 --sources extrasensory shl_user1 nor_tmd --gps-from A0 --vs A0
+uv run python rescore06.py
+uv run python run.py --row A2 --sources extrasensory shl_user1 collecty --gps-from A0 --vs A0
+```
+- A0's first run crashed after its MLflow run had finished (a `json.dumps` of an int64 in the log line after it;
+  `run.py:82`, fixed with `default=float`). Its MLflow run and out-of-fold file are complete, so it wasn't rerun.
+- `rescore06.py` failed once on the duplicated (source, user, ts) keys of the other-position rows (fixed as in
+  `pipe.identification`) and was rerun.
+
+**A0** (ExtraSensory + SHL User 1, 8 classes; the reference): ExtraSensory dev six-class 0.647, 9-class 0.672,
+family 0.687; NOR-TMD guard (transfer) 0.324 (bus recall 0.37, subway 0.04, tram 0); Collecty six-class 0.639;
+SHL User 1 0.949; unseen positions six-class hand 0.811, torso 0.923, bag 0.949. No tram predicted (8 classes).
+
+**A1 (+ NOR-TMD): not adopted** under the rule.
+
+| Rule (vs A0) | Difference [paired user-bootstrap 95% CI] | Limit | Pass |
+|---|---|---|---|
+| ExtraSensory dev six-class | **−0.020** [−0.037, +0.002] (0.647 → 0.627) | ≥ −0.01 | **no** |
+| still precision (six-class) | +0.000 [−0.000, +0.001] | ≥ −0.01 | yes |
+| foot precision (six-class) | −0.009 [−0.015, −0.004] | ≥ −0.01 | yes |
+| (walk precision, 9-class; descriptive) | −0.009 [−0.014, −0.004] | – | – |
+| NOR-TMD dev guard (bus, car, rail) | **+0.349** [+0.270, +0.435] (0.324 → 0.673) | ≥ +0.01 | yes |
+
+- **Where the ExtraSensory drop comes from: false rail on still minutes.** Still → rail goes from 16 to 317 minutes
+  (subway 245, tram 54, train 18), so rail F1 falls from 0.278 to 0.191, about −0.015 of the −0.020. Bus F1 0.465
+  → 0.439 is most of the rest. ExtraSensory dev rail is 190 minutes from 3 users, so a few hundred false minutes
+  weigh heavily.
+  - 88% of the false-rail minutes have no GPS (so the GPS model can't overrule them), 40% are `quiet` (still phone),
+    247 of 317 are Android, 142 come from one user (14 users in all).
+  - Reading: from NOR-TMD's metro the acc model learns "very smooth with a little vibration → subway"; without GPS
+    nothing contradicts it. This is the dataset shortcut item (a) is about, in rail precision rather than still
+    precision (still has 92,700 minutes, so its precision barely moves).
+- NOR-TMD per class (A0 → A1): bus 0.37 → 0.87, subway 0.04 → 0.77, tram 0 → 0.35, train 0.24 → 0.29, car 0.64 →
+  0.45.
+- Tram predicted where there is none: ExtraSensory 0.04% of usable minutes, SHL User 1 hips 0, other positions 0.4%.
+- SHL User 1 0.949 → 0.955; unseen positions: hand +0.056, torso +0.028, bag +0.009.
+- **Source identification (d), acc-model probabilities vs 09's features:** bus 0.68 / 0.82, car 0.65 / 0.82, train
+  0.62 / 0.84, subway 0.81 / 0.96, tram 0.33 / 0.52 (A0: 0.67, 0.62, 0.64, 0.87, 0.27). AUCs below 0.5 (tram) come
+  from group cross-validation with 4–17 groups per source (anti-correlated folds), not from information; read them
+  as ≈ 0.5.
+- **Next under the Plan:** A2 builds on the best so far, A0: ExtraSensory + SHL User 1 + Collecty (9 classes,
+  Collecty has tram); A2's rule compares with A0.
+
+**R06 (06 as-is, rescored on v2's labels; `results/tables/rescore06.csv`):** ExtraSensory dev six-class 0.643 /
+0.641 / 0.640 (seeds 0–2; range 0.003; v1 labels 0.643 / 0.642 / 0.640). The run flag barely changes 06's score.
+**06's seed spread (0.003) is a third of the 0.01 thresholds.** A0 − R06 (seed 0) = +0.004: retraining on v2's
+labels changes little.
+
+**A2 (A0 + Collecty): adopted** under the rule, narrowly.
+
+| Rule (vs A0) | Difference [95% CI] | Limit | Pass |
+|---|---|---|---|
+| ExtraSensory dev six-class | −0.008 [−0.024, +0.009] (0.647 → 0.639) | ≥ −0.01 | yes |
+| still precision | +0.001 [−0.000, +0.001] | ≥ −0.01 | yes |
+| foot precision | −0.0096 [−0.013, −0.006] | ≥ −0.01 | yes (0.0004 inside) |
+| (walk precision, 9-class) | −0.009 [−0.013, −0.006] | – | – |
+| NOR-TMD dev guard | +0.032 [+0.006, +0.062] (0.324 → 0.356) | ≥ −0.01 | yes |
+
+- Collecty dev six-class 0.639 → 0.672 (its own users, now out of fold); Collecty tram recall 0 (153 minutes,
+  4 users); 9-class 0.672 → 0.677; family 0.687 → 0.687.
+- ExtraSensory rail precision 0.271 → 0.219 (rail recall 0.28 → 0.37): false rail again, smaller than in A1.
+- No tram predicted on ExtraSensory or SHL.
+- SHL User 1 0.949 → 0.941; unseen positions: hand +0.028, torso +0.031, bag +0.013.
+- **Foot precision falls by about 0.01 in both A1 and A2**, two different added sources.
+
+**S (A2 with SHL User 1 weight 0.5, both models): not adopted.**
+`uv run python run.py --row S --sources extrasensory shl_user1 collecty --shl-weight 0.5 --vs A0 A2`
+
+| Rule (vs A2) | Difference [95% CI] | Limit | Pass |
+|---|---|---|---|
+| ExtraSensory dev six-class | −0.004 [−0.012, +0.009] (0.639 → 0.635) | ≥ +0.01 | **no** |
+| NOR-TMD dev guard | +0.009 [−0.003, +0.021] | ≥ −0.01 | yes |
+
+- Descriptive: still precision +0.003 [+0.002, +0.004], foot precision −0.010 [−0.017, −0.005], rail precision
+  0.219 → 0.189; family −0.007; SHL User 1 0.941 → 0.918; unseen positions: hand +0.005, torso −0.010, bag −0.027.
+
+**P (A2 + SHL User 1's drawn positions): not adopted.**
+`uv run python run.py --row P --sources extrasensory shl_user1 collecty --positions --gps-from A0 --vs A0 A2`
+- vs A2: ExtraSensory dev six-class −0.001 [−0.008, +0.010] (needs ≥ +0.01); NOR-TMD guard +0.003 [−0.008, +0.014].
+
+### Stop-point 2: ablation on development data (2026-11-03)
+
+Full tables: `results/tables/ablation.md` (`uv run python tables.py`, from MLflow; seed 0). Tram sensitivity:
+`uv run python tram_sensitivity.py --row A2 --sources extrasensory shl_user1 collecty` and the same for A1
+(descriptive; MLflow runs `<row>_tram-<rule>_seed0`). All runs are tagged dirty (uncommitted experiment code).
+
+**Scores** (paired user-bootstrap 95% CIs; ExtraSensory over users, NOR-TMD over installations)
+
+| Row | ES dev six-class [CI] | vs A0 | ES 9-class | ES family | NOR-TMD guard [CI] | vs A0 | Collecty six | SHL U1 six | Rule |
+|---|---|---|---|---|---|---|---|---|---|
+| R06 (06 as-is) | 0.643 [0.582, 0.687] | – | 0.675 | 0.682 | – | – | – | 0.957 | – |
+| **A0** | **0.647** [0.582, 0.687] | – | 0.672 | 0.687 | 0.324 [0.255, 0.396] | – | 0.639 | 0.949 | reference |
+| A1 (+ NOR-TMD) | 0.627 [0.571, 0.670] | −0.020 [−0.037, +0.002] | 0.681 | 0.669 | **0.673** [0.578, 0.769] | +0.349 [+0.270, +0.435] | 0.627 | 0.955 | not adopted (ES −0.020) |
+| **A2** (A0 + Collecty) | 0.639 [0.579, 0.677] | −0.008 [−0.024, +0.008] | 0.677 | 0.687 | 0.356 [0.286, 0.425] | +0.032 [+0.006, +0.062] | 0.672 | 0.941 | **adopted** |
+| S (A2, SHL 0.5) | 0.635 [0.577, 0.677] | −0.011 [−0.028, +0.008] | 0.677 | 0.680 | 0.365 [0.291, 0.438] | +0.041 [+0.014, +0.073] | 0.669 | 0.918 | not adopted (vs A2 −0.004) |
+| P (A2 + positions) | 0.638 [0.579, 0.678] | −0.008 [−0.024, +0.008] | 0.676 | 0.681 | 0.359 [0.289, 0.430] | +0.035 [+0.013, +0.062] | 0.643 | 0.944 | not adopted (vs A2 −0.001) |
+
+**(a) ExtraSensory dev six-class precision** (difference vs A0 [paired CI])
+
+| Row | still | foot | bike | car | bus | rail |
+|---|---|---|---|---|---|---|
+| A0 | 0.942 | 0.592 | 0.917 | 0.737 | 0.516 | 0.271 |
+| A1 | +0.000 [−0.000, +0.001] | −0.009 [−0.015, −0.004] | −0.003 | +0.015 | **−0.086** [−0.153, −0.022] | **−0.144** [−0.319, +0.000] |
+| A2 | +0.001 [−0.000, +0.001] | −0.010 [−0.013, −0.006] | −0.004 | +0.011 | **−0.077** [−0.147, −0.019] | −0.052 [−0.183, +0.059] |
+| S | +0.003 [+0.002, +0.005] | −0.020 [−0.026, −0.014] | −0.009 | +0.004 | −0.100 [−0.168, −0.032] | −0.082 |
+| P | +0.000 | −0.011 [−0.016, −0.006] | −0.002 | +0.007 | −0.063 [−0.124, −0.015] | −0.066 |
+
+- Still precision never moves (92,700 still minutes); walk (9-class) precision 0.586 → 0.577–0.578 in A1 / A2.
+- **Every added source costs bus precision (−0.06 to −0.10, CIs exclude 0) and foot precision (−0.01)**; rail
+  precision falls too (A1: false subway on still minutes, see A1 above).
+
+**(b) NOR-TMD transfer:** A0 (never saw NOR-TMD) 0.324 vs A1 out of fold 0.673. Per class (9-class recall, A0 →
+A1): bus 0.37 → 0.87, subway 0.04 → 0.77, tram 0.00 → 0.35, train 0.24 → 0.29, car 0.64 → 0.45, bike 0.88 →
+0.88. **Without NOR-TMD in training (A0, A2, S, P), NOR-TMD subway and tram stay at ≤ 0.07 and bus at ~0.35**:
+SHL's London subway and ExtraSensory's buses don't transfer to Oslo.
+
+**(c) Recall per source** (9-class; `ablation.md` has every row): within the training sources, SHL User 1 is 0.77–1.00
+everywhere; ExtraSensory bus 0.41–0.46, train 0.22–0.33. Collecty tram is 0.00 in every row (A1: 0.07), so tram
+learnt from Collecty's 4 users (A2) doesn't recognise Collecty's own held-out tram users.
+
+**(d) Source identification within class** (AUC on 09's windows; acc-model probabilities / final output / final on
+minutes without GPS)
+
+| Class | 09 features | A0 | A1 | A2 |
+|---|---|---|---|---|
+| bus | 0.824 | 0.67 / 0.85 / 0.79 | 0.68 / 0.80 / 0.66 | 0.68 / 0.86 / 0.80 |
+| car | 0.818 | 0.62 / 0.70 / 0.68 | 0.65 / 0.69 / 0.66 | 0.64 / 0.74 / 0.63 |
+| train | 0.835 | 0.64 / 0.76 / – | 0.62 / 0.76 / – | 0.63 / 0.75 / – |
+| subway | 0.963 | 0.87 / 0.98 / 0.98 | 0.81 / 0.92 / 0.93 | 0.87 / 0.99 / 0.99 |
+| tram | 0.521 | 0.27 / 0.58 / 0.58 | 0.33 / 0.67 / 0.67 | 0.39 / 0.67 / 0.67 |
+
+- The acc model's probabilities identify the source less than its features do (bus 0.68 vs 0.82, subway 0.81–0.87
+  vs 0.96), and adding NOR-TMD to training (A1) **lowers** identification of bus and subway from the final output.
+  The output carries less source information when the source is in training, not more.
+- The final output's AUC is higher than the acc model's: GPS coverage and the HMM differ by source (ExtraSensory /
+  SHL have GPS, the new sources don't). On minutes without GPS it is lower for A1 (bus 0.66) than A0 (0.79).
+- "Train, no GPS": too few ExtraSensory groups without GPS for the cross-validation (NaN). AUCs below 0.5 (tram,
+  acc) come from group cross-validation with 4–17 groups per source; read them as ≈ 0.5.
+
+**Tram predicted where there is none:** A1 130 ExtraSensory minutes (0.04% of usable) and 24 SHL other-position
+minutes (0.4%); A0, A2, S, P none.
+- Tram rule sensitivity (descriptive; can't replace the rule): A1 uniform 149, bus proxy 151 ExtraSensory minutes
+  (bus proxy also 18 on SHL), against 130 with the vehicle mean; ExtraSensory six-class −0.000 / −0.002, NOR guard
+  unchanged. A2: no difference (it predicts almost no tram).
+
+**Recall with CIs** (9-class): ExtraSensory dev bus 0.41–0.46 [CIs ~0.30–0.59], car 0.68–0.71, train 0.22 (A0) →
+0.31–0.33 (later rows) with CIs from 0.00 (3 users); NOR-TMD bus, car, train, subway, tram in (b). All CIs in
+`ablation.md`.
+
+**Unseen positions** (SHL User 1 held-out days, six-class): A0 hand 0.811, torso 0.923, bag 0.949. Every later
+row is higher on hand (+0.02 to +0.06; A1 0.867) and torso (+0.02 to +0.03). P, which trains on the other positions
+of other days, isn't better than A2 there (hand 0.829 vs 0.839).
+
+**HMM:** NOR-TMD adds 22,637 labelled steps and **no** mode change; Collecty 9,546 and 6. Diagonal (A0 → A1): bus
+0.977 → 0.990, subway 0.991 → 0.996; walk 0.920 unchanged. A1's HMM keeps bus and subway longer once entered.
+
+**Training weight per class** (acc model; source shares; `ablation.md`): in A1, NOR-TMD carries 55% of bus, 58% of
+subway, 12% of train, 100% of tram; in A2, Collecty carries 18% of car, 7% of train, 100% of tram. SHL User 1 still
+carries 83–88% of train in every row (S: 79%).
+
+**Cost:** 11.6–12.6 ms for one window (p95 ≤ 13.1), 1.3 ms per window over whole sessions (p95 ~4.5); acc model
+0.8–1.5 MB, GPS model 3.8–4.1 MB.
+
+#### Found at stop-point 2: tram drives the inner early stopping
+
+Rounds of the acc model per outer fold (early stopping on fold (k + 1) mod 5):
+
+| Row | fold 0 | 1 | 2 | 3 | 4 | Tram in the early-stopping fold |
+|---|---|---|---|---|---|---|
+| A0 | 59 | 40 | 39 | 55 | 67 | none (8 classes) |
+| A1 | 33 | 46 | 42 | 26 | 36 | NOR-TMD tram in every fold |
+| A2 | 20 | 19 | **45** | 25 | 18 | Collecty tram in folds 1, 2, 4, 0 (60, 8, 60, 25 minutes); **none in fold 3** (outer fold 2) |
+
+- With balanced class weights, tram (153 Collecty minutes, 4 users, in A2) weighs as much in the early-stopping loss
+  as still. Its validation loss turns up early, so the acc model stops at ~20 rounds instead of ~50 wherever the
+  early-stopping fold holds tram. The one A2 fold without tram stops at 45.
+- So **A1 / A2 / S / P vs A0 mixes two changes: the added data and a model trained half as long.** The rules were
+  applied as fixed, but A1's −0.020 and A2's −0.008 can't be attributed to the data alone.
+- This is 06's early stopping used as specified; 06 never had a class this small.
+
+#### Proposed final configuration
+
+**Under the rules as fixed: A2** (ExtraSensory + SHL User 1 + Collecty, 9 classes, tram rule = vehicle mean, SHL
+weight 1, hips only; GPS model = A0's; HMM from ExtraSensory + SHL User 1 + Collecty).
+
+**Recommendation: don't fix it yet.** The rule outcome rests on a comparison confounded by early stopping, and A2
+differs from A0 by noise-sized amounts (ES −0.008, CI across 0; NOR-TMD +0.032) while costing bus precision. Before
+the test, I propose one pre-registered follow-up on dev (seed 0, rules unchanged, ~30 min):
+- **E1 / E2 = A1 / A2 with the acc model's rounds set by early stopping on the six-class-merged classes' loss**,
+  or, simpler, **with A0's rounds per fold**. Either takes tram out of the stopping decision; the second needs no
+  new code beyond passing the rounds.
+- Then reapply the data-row rules to E1 / E2 (vs A0) and choose between A0, A2 and E1 / E2.
+
+**Open questions**
+1. Accept A2 as final now (the rules as fixed), or run E1 / E2 first? If E1 / E2: rounds from A0 per fold, or
+   early stopping on a loss without tram?
+2. A1's false subway on still minutes without GPS is the dataset shortcut item (a) is about. If E1 still fails on
+   it, is NOR-TMD a follow-up experiment (e.g. a lower NOR-TMD weight, or NOR-TMD rail only where GPS exists),
+   rather than part of 10?
+3. Collecty's tram doesn't transfer even to Collecty's own held-out users (recall 0.00). Keep tram as a ninth class in
+   the final model if NOR-TMD isn't in it?
+
+### Stop-point 2 decisions (2026-11-03): E1 / E2, pre-registered before running
+
+*A2 is not fixed. These rows and rules are fixed before running; they are deviations from the Plan's ablation
+(recorded here).*
+
+1. **E1 = A1** (A0 + NOR-TMD, 9 classes) **with tram excluded from the inner early-stopping loss** (tram windows
+   removed from the stopping fold) and **HMM transitions from ExtraSensory + SHL User 1 only** (A0's matrix).
+2. **E2 = best of A0 / E1 + Collecty.**
+   - E1 not adopted: 8 classes; Collecty's tram minutes are unlabelled usable minutes (no tram class).
+   - E1 adopted: 9 classes; the same stopping and HMM rules as E1.
+3. **Rules:** the data-row rules of A1 / A2, each against the row it builds on (E1 vs A0 as A1; E2 vs its base as
+   A2, with the NOR-TMD guard "no drop over 0.01"). **If neither passes, the final configuration is A0.** No further
+   variants before the test.
+4. Reported: rounds per fold of E1 / E2 next to A0's; E1's ExtraSensory still → rail minutes by quiet / not and
+   with / without GPS (descriptive).
+5. Descriptive, no retraining: **A1 with A0's transition matrix** (ExtraSensory six-class, NOR-TMD guard), the HMM's
+   share of A1's drop.
+6. **S and P are not rerun on the new base.** Both were clearly short of their +0.01 gain rule on A2 (−0.004, −0.001;
+   CIs from −0.012 / −0.008), and the decision bars further variants before the test.
+7. The experiment code and the `src/tmd` changes are committed before running (no push).
+8. Then stop again with the proposed final configuration, before seeds 1–2 and before any test user.
+
+## Conclusion
+
+*Not yet.*

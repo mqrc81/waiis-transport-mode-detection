@@ -11,21 +11,25 @@ import pandas as pd
 
 from tmd import bench
 from tmd.models import hmm
-from tmd.labels import CLASS_ID
+from tmd.labels import CLASS_ID, FINE_ID
 
 K = 5
 STEP_S, MAX_GAP_S = 60.0, 600.0
 
 
-def labelled_minutes(source: str, version: str = bench.VERSION) -> pd.DataFrame:
+def labelled_minutes(source: str, version: str = bench.VERSION, fine: bool = False) -> pd.DataFrame:
     """All labelled minutes of the dev users, before caps and drops (ExtraSensory `cls`; SHL `cls`, else the
-    majority class of mixed minutes). The excluded user is left out. `version`: the benchmark (05-07 pin v1)."""
+    majority class of mixed minutes). The excluded user is left out. `version`: the benchmark (05-07 pin v1).
+    fine (v2): 9 classes from `cls_fine` (tram = 9); labels a v2 rule turned into unlabelled minutes (excluded foot
+    labels, flagged run users) are left out. The class id column stays `y8`."""
     lab = bench.read(source, "labels", version=version)
     lab = lab[~lab.user.isin(bench.reserved_users(source, version)) & ~lab.user_excluded]
-    c = lab.cls.astype(str)
+    c = lab.cls_fine.astype(str) if fine else lab.cls.astype(str)
     if "majority_cls" in lab:
         c = c.where(c != "", lab.majority_cls.astype(str))
-    lab = lab.assign(y8=c.map(CLASS_ID).fillna(0).astype(int))
+    if fine:
+        c = c.where(~(lab.label_excluded | lab.run_user_flagged), "")
+    lab = lab.assign(y8=c.map(FINE_ID if fine else CLASS_ID).fillna(0).astype(int))
     return lab[lab.y8 > 0][["user", "session", "ts", "fold", "y8"]].assign(source=source)
 
 
@@ -33,11 +37,11 @@ def seq_ids(df: pd.DataFrame) -> np.ndarray:
     return pd.factorize(df.source.astype(str) + "/" + df.user.astype(str) + "/" + df.session.astype(str))[0]
 
 
-def hmm_params(lab: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
-    """Transitions per 1-min step (+1 pseudo-count) and initial distribution (class frequencies, +1)."""
+def hmm_params(lab: pd.DataFrame, n: int = 8) -> tuple[np.ndarray, np.ndarray]:
+    """Transitions per 1-min step (+1 pseudo-count) and initial distribution (class frequencies, +1); n classes."""
     a = hmm.transition_matrix(lab.y8.to_numpy(), lab.ts.to_numpy(float), seq_ids(lab), alpha=1.0, step_s=STEP_S,
-                              tol_s=30.5)
-    pi = np.bincount(lab.y8.to_numpy(), minlength=9)[1:] + 1.0
+                              tol_s=30.5, n=n)
+    pi = np.bincount(lab.y8.to_numpy(), minlength=n + 1)[1:] + 1.0
     return a, pi / pi.sum()
 
 
@@ -48,11 +52,12 @@ def smooth(df: pd.DataFrame, p: np.ndarray, a: np.ndarray, pi: np.ndarray, metho
 
 
 def smooth_cv(df: pd.DataFrame, p: np.ndarray, lab: pd.DataFrame, method: str) -> np.ndarray:
-    """Per outer fold k: HMM parameters from the labelled minutes of the training folds, applied to fold k."""
+    """Per outer fold k: HMM parameters from the labelled minutes of the training folds, applied to fold k
+    (classes = p's columns)."""
     out = np.full_like(p, np.nan, dtype=np.float64)
     fold = df.fold.to_numpy()
     for k in range(K):
-        a, pi = hmm_params(lab[(lab.fold != k) & (lab.fold >= 0)])
+        a, pi = hmm_params(lab[(lab.fold != k) & (lab.fold >= 0)], p.shape[1])
         sc = fold == k
         out[sc] = smooth(df[sc], p[sc], a, pi, method)
     return out

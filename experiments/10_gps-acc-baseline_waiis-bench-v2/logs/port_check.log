@@ -1,0 +1,8 @@
+extrasensory acc: rows 05/06 291155, 10 291155, common 291155; identical = True; max abs diff 0
+extrasensory gps-v2: rows 05/06 291155, 10 291155, common 291155; identical = True; max abs diff 0
+shl_user1 acc: rows 05/06 36806, 10 36806, common 36806; identical = True; max abs diff 0
+shl_user1 gps-v2: rows 05/06 36806, 10 36806, common 36806; identical = True; max abs diff 0
+05 B: bit-identical = True; max abs diff 0
+05 F_fb: bit-identical = True; max abs diff 0
+06 H1_v2 raw: bit-identical = True; max abs diff 0
+06 H1_v2 fb: bit-identical = True; max abs diff 0

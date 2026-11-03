@@ -1,0 +1,12 @@
+2026/11/03 11:41:11 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+S acc {'fold': 0, 'rounds': 20, 'n_trees': 180, 'model_bytes': 666129, 'hit_cap': False, 'train_rows': 110803}
+S acc {'fold': 1, 'rounds': 20, 'n_trees': 180, 'model_bytes': 650851, 'hit_cap': False, 'train_rows': 117787}
+S acc {'fold': 2, 'rounds': 50, 'n_trees': 450, 'model_bytes': 1599901, 'hit_cap': False, 'train_rows': 118634}
+S acc {'fold': 3, 'rounds': 24, 'n_trees': 216, 'model_bytes': 790049, 'hit_cap': False, 'train_rows': 111911}
+S acc {'fold': 4, 'rounds': 19, 'n_trees': 171, 'model_bytes': 628376, 'hit_cap': False, 'train_rows': 121413}
+S gps {'fold': 0, 'rounds': 140, 'n_trees': 1120, 'model_bytes': 3897343, 'hit_cap': False, 'train_rows': 86566}
+S gps {'fold': 1, 'rounds': 92, 'n_trees': 736, 'model_bytes': 2558928, 'hit_cap': False, 'train_rows': 95183}
+S gps {'fold': 2, 'rounds': 134, 'n_trees': 1072, 'model_bytes': 3724670, 'hit_cap': False, 'train_rows': 92319}
+S gps {'fold': 3, 'rounds': 138, 'n_trees': 1104, 'model_bytes': 3839353, 'hit_cap': False, 'train_rows': 86094}
+S gps {'fold': 4, 'rounds': 170, 'n_trees': 1360, 'model_bytes': 4735687, 'hit_cap': False, 'train_rows': 99314}
+S_seed0 {'es_six_f1': 0.6353, 'es_six_f1_lo': 0.5767, 'es_six_f1_hi': 0.6766, 'es_fine_f1': 0.6767, 'es_family_f1': 0.6801, 'es_six_precision_still': np.float64(0.9451), 'es_six_precision_foot': np.float64(0.572), 'nor_guard_six_f1': 0.3651, 'collecty_six_f1': 0.6695, 'shl_six_f1': 0.9181, 'es_six_f1_diff_A0': -0.0114, 'es_six_f1_diff_A0_lo': -0.0276, 'es_six_f1_diff_A0_hi': 0.0085, 'es_six_f1_diff_A2': -0.0035, 'es_six_f1_diff_A2_lo': -0.0115, 'es_six_f1_diff_A2_hi': 0.0086, 'nor_guard_six_f1_diff_A0': 0.041, 'nor_guard_six_f1_diff_A0_lo': 0.0141, 'nor_guard_six_f1_diff_A0_hi': 0.0731, 'nor_guard_six_f1_diff_A2': 0.0092, 'nor_guard_six_f1_diff_A2_lo': -0.0032, 'nor_guard_six_f1_diff_A2_hi': 0.0214, 'tram_pred_extrasensory_usable_n': 0.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 11.7478, 'lat_pipeline_ms_p50': 1.27} 324s

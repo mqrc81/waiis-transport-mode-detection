@@ -1,6 +1,6 @@
 """HMM smoothing of per-window class posteriors (experiment 02, step 3).
 
-States = the 8 classes. Emissions = the classifier's posteriors (trained with balanced class weights, so they act as
+States = the classes (8, or 9 with tram; the size of the transition matrix). Emissions = the classifier's posteriors (trained with balanced class weights, so they act as
 scaled likelihoods under a uniform prior). Transitions per step (`step_s`, default the 2.5 s window stride; 60 s for
 one window per minute, experiment 05) are estimated from training sequences only; a gap of k steps uses A^k, and a
 gap over `max_gap_s` restarts the chain from the initial distribution `pi` (default uniform).
@@ -15,10 +15,10 @@ N = 8
 
 
 def transition_matrix(y: np.ndarray, t: np.ndarray, seq: np.ndarray, alpha: float = 1.0,
-                      step_s: float = STRIDE_S, tol_s: float = 0.6) -> np.ndarray:
+                      step_s: float = STRIDE_S, tol_s: float = 0.6, n: int = N) -> np.ndarray:
     """Counts of class i -> j between consecutive labelled windows (one step apart within tol_s, same sequence),
-    plus `alpha` pseudo-counts, row-normalised. y in 1..8 (0 = unlabelled, skipped)."""
-    c = np.full((N, N), alpha)
+    plus `alpha` pseudo-counts, row-normalised. y in 1..n (0 = unlabelled, skipped)."""
+    c = np.full((n, n), alpha)
     order = np.lexsort((t, seq))
     y, t, seq = y[order], t[order], seq[order]
     step = (seq[1:] == seq[:-1]) & (np.abs(np.diff(t) - step_s) < tol_s) & (y[1:] > 0) & (y[:-1] > 0)
@@ -27,7 +27,7 @@ def transition_matrix(y: np.ndarray, t: np.ndarray, seq: np.ndarray, alpha: floa
 
 
 def _powers(a: np.ndarray, kmax: int) -> list[np.ndarray]:
-    p = [np.eye(N), a]
+    p = [np.eye(len(a)), a]
     for _ in range(2, kmax + 1):
         p.append(p[-1] @ a)
     return p
@@ -44,7 +44,7 @@ def forward(p: np.ndarray, t: np.ndarray, seq: np.ndarray, a: np.ndarray, max_ga
     """Causal filtered posteriors P(state_t | windows up to t), same row order as p."""
     out = np.empty_like(p, dtype=np.float64)
     kmax = int(max_gap_s / step_s) + 1
-    pi = np.ones(N) if pi is None else np.asarray(pi, np.float64)
+    pi = np.ones(len(a)) if pi is None else np.asarray(pi, np.float64)
     ap = _powers(a, kmax)
     for s in np.unique(seq):
         idx = np.flatnonzero(seq == s)
@@ -64,7 +64,7 @@ def viterbi(p: np.ndarray, t: np.ndarray, seq: np.ndarray, a: np.ndarray, max_ga
     """Most likely state path per sequence (offline), returned as one-hot rows in p's order."""
     out = np.zeros_like(p, dtype=np.float32)
     kmax = int(max_gap_s / step_s) + 1
-    lpi = np.zeros(N) if pi is None else np.log(np.maximum(np.asarray(pi, np.float64), 1e-300))
+    lpi = np.zeros(len(a)) if pi is None else np.log(np.maximum(np.asarray(pi, np.float64), 1e-300))
     lap = [np.log(np.maximum(m, 1e-300)) for m in _powers(a, kmax)]
     for s in np.unique(seq):
         idx = np.flatnonzero(seq == s)
@@ -73,7 +73,7 @@ def viterbi(p: np.ndarray, t: np.ndarray, seq: np.ndarray, a: np.ndarray, max_ga
         le = np.log(np.maximum(p[idx].astype(np.float64), 1e-9))
         bounds = list(np.flatnonzero(k == 0)) + [len(idx)]
         for b0, b1 in zip(bounds[:-1], bounds[1:]):          # one segment between restarts
-            back = np.zeros((b1 - b0, N), np.int64)
+            back = np.zeros((b1 - b0, len(a)), np.int64)
             d = lpi + le[b0]
             for i in range(b0 + 1, b1):
                 m = d[:, None] + lap[k[i]]
@@ -109,7 +109,7 @@ def fixed_lag(p: np.ndarray, t: np.ndarray, seq: np.ndarray, a: np.ndarray, lag_
         nxt = np.append(r, n)[np.searchsorted(r, np.arange(n), side="right")]  # first restart after i
         hi = np.minimum(hi, nxt - 1)
         L = int((hi - np.arange(n)).max()) if n else 0
-        m = np.ones((n, N))
+        m = np.ones((n, len(a)))
         base = np.arange(n)
         for j in range(L, 0, -1):                                        # backward from t + j down to t + 1
             pos = base + j
@@ -137,7 +137,7 @@ def forward_backward(p: np.ndarray, t: np.ndarray, seq: np.ndarray, a: np.ndarra
         idx = idx[np.argsort(t[idx], kind="stable")]
         k = np.concatenate([[0], _steps(np.diff(t[idx]), max_gap_s, step_s)])
         e = np.maximum(p[idx].astype(np.float64), 1e-9)
-        b = np.ones(N)
+        b = np.ones(len(a))
         for i in range(len(idx) - 1, -1, -1):
             post = alpha[idx[i]] * b
             out[idx[i]] = post / post.sum()
@@ -145,5 +145,5 @@ def forward_backward(p: np.ndarray, t: np.ndarray, seq: np.ndarray, a: np.ndarra
                 b = ap[k[i]] @ (e[i] * b)
                 b /= b.sum()
             elif i:
-                b = np.ones(N)
+                b = np.ones(len(a))
     return out

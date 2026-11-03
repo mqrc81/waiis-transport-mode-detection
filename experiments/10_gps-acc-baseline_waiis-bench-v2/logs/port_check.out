@@ -1,0 +1,22 @@
+extrasensory acc: rows 05/06 291155, 10 291155, common 291155; identical = True; max abs diff 0
+extrasensory gps-v2: rows 05/06 291155, 10 291155, common 291155; identical = True; max abs diff 0
+shl_user1 acc: rows 05/06 36806, 10 36806, common 36806; identical = True; max abs diff 0
+shl_user1 gps-v2: rows 05/06 36806, 10 36806, common 36806; identical = True; max abs diff 0
+B {'fold': 0, 'rounds': 47, 'n_trees': 376, 'model_bytes': 1356260, 'hit_cap': False, 'train_rows': 108149}
+B {'fold': 1, 'rounds': 52, 'n_trees': 416, 'model_bytes': 1497338, 'hit_cap': False, 'train_rows': 115284}
+B {'fold': 2, 'rounds': 47, 'n_trees': 376, 'model_bytes': 1357026, 'hit_cap': False, 'train_rows': 115673}
+B {'fold': 3, 'rounds': 58, 'n_trees': 464, 'model_bytes': 1665835, 'hit_cap': False, 'train_rows': 109988}
+B {'fold': 4, 'rounds': 24, 'n_trees': 192, 'model_bytes': 710040, 'hit_cap': False, 'train_rows': 119154}
+G_v2 {'fold': 0, 'rounds': 139, 'n_trees': 1112, 'model_bytes': 3868210, 'hit_cap': False, 'train_rows': 86587}
+G_v2 {'fold': 1, 'rounds': 122, 'n_trees': 976, 'model_bytes': 3399896, 'hit_cap': False, 'train_rows': 95362}
+G_v2 {'fold': 2, 'rounds': 157, 'n_trees': 1256, 'model_bytes': 4372892, 'hit_cap': False, 'train_rows': 92511}
+G_v2 {'fold': 3, 'rounds': 148, 'n_trees': 1184, 'model_bytes': 4121936, 'hit_cap': False, 'train_rows': 86278}
+G_v2 {'fold': 4, 'rounds': 116, 'n_trees': 928, 'model_bytes': 3229476, 'hit_cap': False, 'train_rows': 99506}
+extrasensory acc: rows 05/06 291155, 10 291155, common 291155; identical = True; max abs diff 0
+extrasensory gps-v2: rows 05/06 291155, 10 291155, common 291155; identical = True; max abs diff 0
+shl_user1 acc: rows 05/06 36806, 10 36806, common 36806; identical = True; max abs diff 0
+shl_user1 gps-v2: rows 05/06 36806, 10 36806, common 36806; identical = True; max abs diff 0
+05 B: bit-identical = True; max abs diff 0
+05 F_fb: bit-identical = True; max abs diff 0
+06 H1_v2 raw: bit-identical = True; max abs diff 0
+06 H1_v2 fb: bit-identical = True; max abs diff 0

@@ -1,4 +1,5 @@
-"""Evaluation: macro-F1, per-class recall, confusion matrices (8 classes and family), user-bootstrap CIs, latency."""
+"""Evaluation: macro-F1, per-class recall, confusion matrices (8 classes, family; v2: 9 fine classes and the six-class
+score), user-bootstrap CIs, latency, identification AUC."""
 from __future__ import annotations
 
 import time
@@ -8,28 +9,37 @@ import matplotlib
 import numpy as np
 from sklearn.metrics import confusion_matrix, f1_score, recall_score
 
-from tmd.labels import CLASSES, FAMILIES, to_family
+from tmd.labels import CLASSES, FAMILIES, FINE_CLASSES, SCORE6, to_family, to_score6
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 CLASS_IDS = list(range(1, 9))
 FAMILY_IDS = list(range(1, 6))
+# level -> (ids, names): "class" = v1's 8, "fine" = v2's 9 (tram = 9), "six" = v2's primary score, "family"
+LEVELS = {"class": (CLASS_IDS, CLASSES), "family": (FAMILY_IDS, FAMILIES),
+          "fine": (list(range(1, 10)), FINE_CLASSES), "six": (list(range(1, 7)), SCORE6)}
 
 
 def family_proba(p8: np.ndarray) -> np.ndarray:
-    """(N, 8) class probabilities (columns = class ids 1..8) -> (N, 5) family probabilities."""
-    fam = to_family(np.arange(1, 9)) - 1
+    """(N, 8 or 9) class probabilities (columns = class ids 1..8, 9 = tram) -> (N, 5) family probabilities."""
+    fam = to_family(np.arange(1, p8.shape[1] + 1)) - 1
     out = np.zeros((len(p8), 5))
-    for j in range(8):
+    for j in range(p8.shape[1]):
         out[:, fam[j]] += p8[:, j]
     return out
+
+
+def six_pred(p: np.ndarray) -> np.ndarray:
+    """Six-class prediction (ids 1..6) from (N, 8 or 9) class probabilities: the class argmax, merged (09's
+    rescoring of the logged confusion matrices, so v1's reference numbers are comparable)."""
+    return to_score6(p.argmax(1) + 1)
 
 
 def scores(y: np.ndarray, pred: np.ndarray, level: str) -> dict:
     """Macro-F1 over the classes present in y (a dataset may lack some, e.g. subway in ExtraSensory),
     accuracy, per-class recall (NaN when absent) and the confusion matrix over all classes."""
-    ids, names = (CLASS_IDS, CLASSES) if level == "class" else (FAMILY_IDS, FAMILIES)
+    ids, names = LEVELS[level]
     present = [i for i in ids if (y == i).any()]
     rec = recall_score(y, pred, labels=ids, average=None, zero_division=0)
     return {
@@ -43,18 +53,17 @@ def scores(y: np.ndarray, pred: np.ndarray, level: str) -> dict:
 
 def class_list(y: np.ndarray, level: str) -> str:
     """The classes (or families) present in y, comma-separated: what a macro-F1 averages over."""
-    ids, names = (CLASS_IDS, CLASSES) if level == "class" else (FAMILY_IDS, FAMILIES)
+    ids, names = LEVELS[level]
     return ",".join(n for i, n in zip(ids, names) if (y == i).any())
 
 
-def user_resamples(y, users, n_boot: int = 1000, seed: int = 0, stats: dict | None = None):
-    """Yield n_boot index arrays, each from drawing the users with replacement. A draw that lacks a class present in
-    y (the full evaluation set's true labels) is redrawn, so every resample is scored over the same classes;
-    `stats["redraw_rate"]` = redraws / (redraws + n_boot)."""
+def user_draws(y, users, n_boot: int = 1000, seed: int = 0, stats: dict | None = None):
+    """Yield n_boot arrays of users (np.unique(users) order), each drawn with replacement. A draw that lacks a class
+    present in y (the full evaluation set's true labels) is redrawn, so every resample is scored over the same
+    classes; `stats["redraw_rate"]` = redraws / (redraws + n_boot)."""
     rng = np.random.default_rng(seed)
     uniq = np.unique(users)
-    idx = {u: np.flatnonzero(users == u) for u in uniq}
-    has = {u: set(np.unique(y[i])) for u, i in idx.items()}
+    has = {u: set(np.unique(y[users == u])) for u in uniq}
     need = set(np.unique(y))
     redraws = 0
     for _ in range(n_boot):
@@ -63,9 +72,16 @@ def user_resamples(y, users, n_boot: int = 1000, seed: int = 0, stats: dict | No
             if need <= set().union(*(has[u] for u in set(draw))):
                 break
             redraws += 1
-        yield np.concatenate([idx[u] for u in draw])
+        yield draw
     if stats is not None:
         stats["redraw_rate"] = redraws / (redraws + n_boot)
+
+
+def user_resamples(y, users, n_boot: int = 1000, seed: int = 0, stats: dict | None = None):
+    """Yield n_boot index arrays, each from drawing the users with replacement (`user_draws`)."""
+    idx = {u: np.flatnonzero(users == u) for u in np.unique(users)}
+    for draw in user_draws(y, users, n_boot, seed, stats):
+        yield np.concatenate([idx[u] for u in draw])
 
 
 def bootstrap_users(y, pred, users, level: str, n_boot: int = 1000, seed: int = 0,
@@ -102,8 +118,70 @@ def bootstrap_users_diff(y, pred_a, pred_b, users, level: str, n_boot: int = 100
     return {"diff": float(d), "lo": float(np.percentile(vals, 2.5)), "hi": float(np.percentile(vals, 97.5))}
 
 
+def cm_metrics(cm: np.ndarray, present: np.ndarray) -> dict:
+    """From a confusion matrix (rows true, columns predicted; ids 1..K in order): macro-F1 over the `present` classes
+    (bool mask; as `scores`, zero_division 0), per-class recall and precision (NaN when undefined)."""
+    tp = np.diag(cm).astype(float)
+    t, p = cm.sum(1).astype(float), cm.sum(0).astype(float)
+    den = t + p
+    f1 = np.divide(2 * tp, den, out=np.zeros_like(tp), where=den > 0)
+    return {"macro_f1": float(f1[present].mean()),
+            "recall": np.divide(tp, t, out=np.full_like(tp, np.nan), where=t > 0),
+            "precision": np.divide(tp, p, out=np.full_like(tp, np.nan), where=p > 0)}
+
+
+def user_cms(y, preds: list, users, level: str) -> tuple[np.ndarray, list]:
+    """Per-user confusion matrices of each prediction in preds (users in np.unique order): (users, [U x K x K])."""
+    ids = LEVELS[level][0]
+    k = len(ids)
+    uniq, inv = np.unique(users, return_inverse=True)
+    out = []
+    for pr in preds:
+        c = np.zeros((len(uniq), k, k), np.int64)
+        np.add.at(c, (inv, np.asarray(y) - 1, np.asarray(pr) - 1), 1)
+        out.append(c)
+    return uniq, out
+
+
+def bootstrap_cms(y, preds: list, users, level: str, n_boot: int = 1000, seed: int = 0,
+                  stats: dict | None = None) -> list[list[dict]]:
+    """User bootstrap on per-user confusion matrices (same draws and redraw rule as `user_resamples`): for each
+    resample, `cm_metrics` of every prediction in preds (same examples, so differences are paired)."""
+    ids = LEVELS[level][0]
+    present = np.isin(ids, np.unique(y))
+    uniq, cms = user_cms(y, preds, users, level)
+    pos = {u: i for i, u in enumerate(uniq)}
+    out = []
+    for draw in user_draws(y, users, n_boot, seed, stats):
+        ix = np.fromiter((pos[u] for u in draw), int, len(draw))
+        out.append([cm_metrics(c[ix].sum(0), present) for c in cms])
+    return out
+
+
+def identification_auc(X: np.ndarray, y: np.ndarray, groups: np.ndarray, seed: int = 0) -> tuple[float, float, int]:
+    """Cross-validated identification by group (from experiment 09's checks.py; StratifiedGroupKFold, LightGBM;
+    groups = users, SHL User 1's days): macro one-vs-rest AUC and balanced accuracy; folds = min(5, groups of the
+    smallest class of y)."""
+    import lightgbm as lgb
+    import pandas as pd
+    from sklearn.metrics import balanced_accuracy_score, roc_auc_score
+    from sklearn.model_selection import StratifiedGroupKFold
+    k = int(min(5, pd.Series(groups).groupby(y).nunique().min()))
+    if k < 2:
+        return np.nan, np.nan, k
+    classes = np.unique(y)
+    p = np.zeros((len(y), len(classes)))
+    for tr, te in StratifiedGroupKFold(k, shuffle=True, random_state=seed).split(X, y, groups):
+        m = lgb.LGBMClassifier(n_estimators=200, learning_rate=0.05, num_leaves=31, class_weight="balanced",
+                               random_state=seed, verbose=-1, n_jobs=8)
+        m.fit(X[tr], y[tr])
+        p[te] = m.predict_proba(X[te])
+    auc = roc_auc_score(y, p, multi_class="ovr", average="macro") if len(classes) > 2 else roc_auc_score(y, p[:, 1])
+    return float(auc), float(balanced_accuracy_score(y, classes[p.argmax(1)])), k
+
+
 def plot_cm(cm: np.ndarray, level: str, title: str):
-    names = CLASSES if level == "class" else FAMILIES
+    names = LEVELS[level][1]
     rown = cm / np.maximum(cm.sum(1, keepdims=True), 1)
     fig, ax = plt.subplots(figsize=(1 + 0.7 * len(names), 0.8 + 0.6 * len(names)))
     ax.imshow(rown, cmap="Blues", vmin=0, vmax=1)

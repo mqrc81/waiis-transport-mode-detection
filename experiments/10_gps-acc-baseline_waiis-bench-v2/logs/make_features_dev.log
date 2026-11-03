@@ -1,0 +1,8 @@
+2026-11-03 11:18:52,252 extrasensory dev: 291155 rows (118678 official), 580 features, 0.00% NaN, 36s -> extrasensory_dev_25hz_w15s_acc-v1-B.parquet
+2026-11-03 11:19:04,006 extrasensory dev GPS: 291155 rows, covered 0.810 -> extrasensory_dev_gps-v2_w2min.parquet
+2026-11-03 11:19:10,508 shl_user1 dev: 36806 rows (23076 official), 580 features, 0.00% NaN, 7s -> shl_user1_dev_25hz_w15s_acc-v1-B.parquet
+2026-11-03 11:19:11,959 shl_user1 dev GPS: 36806 rows, covered 0.696 -> shl_user1_dev_gps-v2_w2min.parquet
+2026-11-03 11:19:14,347 nor_tmd dev: 12968 rows (10957 official), 580 features, 0.00% NaN, 2s -> nor_tmd_dev_25hz_w15s_acc-v1-B.parquet
+2026-11-03 11:19:16,730 collecty dev: 13424 rows (3383 official), 580 features, 0.00% NaN, 2s -> collecty_dev_25hz_w15s_acc-v1-B.parquet
+2026-11-03 11:19:18,634 shl_user1_other dev: 5960 rows (2979 official), 580 features, 0.00% NaN, 2s -> shl_user1_other_dev_25hz_w15s_acc-v1-B.parquet
+2026-11-03 11:19:18,835 shl_user1_other dev GPS: 5960 rows, covered 0.593 -> shl_user1_other_dev_gps-v2_w2min.parquet

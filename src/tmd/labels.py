@@ -10,14 +10,14 @@ NULL = 0
 
 FAMILIES = ["still", "foot", "bike", "road", "rail"]
 FAMILY_OF = {"still": "still", "walk": "foot", "run": "foot", "bike": "bike",
-             "car": "road", "bus": "road", "train": "rail", "subway": "rail"}
+             "car": "road", "bus": "road", "train": "rail", "subway": "rail", "tram": "rail"}
 
-# Lookup table: class id (0..8) -> family id (1..5), 0 stays 0.
-_FAM_LUT = np.array([0] + [FAMILIES.index(FAMILY_OF[c]) + 1 for c in CLASSES], dtype=np.int8)
+# Lookup table: class id (0..9; 9 = tram, waiis_bench_v2) -> family id (1..5), 0 stays 0.
+_FAM_LUT = np.array([0] + [FAMILIES.index(FAMILY_OF[c]) + 1 for c in CLASSES + ["tram"]], dtype=np.int8)
 
 
 def to_family(y: np.ndarray) -> np.ndarray:
-    """Map class ids (0..8, SHL coding) to family ids (0..5, 0 = Null)."""
+    """Map class ids (0..8, SHL coding; 9 = tram) to family ids (0..5, 0 = Null)."""
     return _FAM_LUT[np.asarray(y)]
 
 # waiis_bench_v2 (experiment 09): 9 fine classes, which models train on (tram added, id 9), and the six-class
