@@ -1,0 +1,29 @@
+2026/11/03 12:38:31 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+E2 acc {'fold': 0, 'rounds': 60, 'n_trees': 480, 'model_bytes': 1719819, 'hit_cap': False, 'train_rows': 110675}
+E2 acc {'fold': 1, 'rounds': 37, 'n_trees': 296, 'model_bytes': 1054278, 'hit_cap': False, 'train_rows': 117694}
+E2 acc {'fold': 2, 'rounds': 46, 'n_trees': 368, 'model_bytes': 1311485, 'hit_cap': False, 'train_rows': 118489}
+E2 acc {'fold': 3, 'rounds': 57, 'n_trees': 456, 'model_bytes': 1633955, 'hit_cap': False, 'train_rows': 111758}
+E2 acc {'fold': 4, 'rounds': 71, 'n_trees': 568, 'model_bytes': 2022145, 'hit_cap': False, 'train_rows': 121320}
+E2_seed0 {'es_six_f1': 0.6498, 'es_six_f1_lo': 0.584, 'es_six_f1_hi': 0.6906, 'es_fine_f1': 0.6772, 'es_family_f1': 0.6887, 'es_six_precision_still': np.float64(0.9419), 'es_six_precision_foot': np.float64(0.5911), 'nor_guard_six_f1': 0.3426, 'collecty_six_f1': 0.7058, 'shl_six_f1': 0.9532, 'es_six_f1_diff_A0': 0.0031, 'es_six_f1_diff_A0_lo': -0.003, 'es_six_f1_diff_A0_hi': 0.0084, 'nor_guard_six_f1_diff_A0': 0.0186, 'nor_guard_six_f1_diff_A0_lo': -0.0048, 'nor_guard_six_f1_diff_A0_hi': 0.0444, 'tram_pred_extrasensory_usable_n': 0.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 11.5537, 'lat_pipeline_ms_p50': 1.2793} 280s
+2026/11/03 12:43:12 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+row quiet   gps  still_minutes  to_rail  to_train  to_subway  to_tram  users
+ A0  True  True          40892        0         0          0        0    NaN
+ A0  True False           9953        0         0          0        0    NaN
+ A0 False  True          34581        3         3          0        0    NaN
+ A0 False False           7304       13         2         11        0    NaN
+ A0   all   all          92730       16         5         11        0    6.0
+ A1  True  True          40892        0         0          0        0    NaN
+ A1  True False           9953      127         0        127        0    NaN
+ A1 False  True          34581       37        17         14        6    NaN
+ A1 False False           7304      153         1        104       48    NaN
+ A1   all   all          92730      317        18        245       54   14.0
+ E1  True  True          40892        0         0          0        0    NaN
+ E1  True False           9953      115         0        115        0    NaN
+ E1 False  True          34581       14         3         11        0    NaN
+ E1 False False           7304       56         6         50        0    NaN
+ E1   all   all          92730      185         9        176        0    9.0
+ E2  True  True          40892        0         0          0        0    NaN
+ E2  True False           9953        0         0          0        0    NaN
+ E2 False  True          34581        3         3          0        0    NaN
+ E2 False False           7304       24         7         17        0    NaN
+ E2   all   all          92730       27        10         17        0    8.0

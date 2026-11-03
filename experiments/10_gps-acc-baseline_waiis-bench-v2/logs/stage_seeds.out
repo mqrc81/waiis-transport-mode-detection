@@ -1,0 +1,52 @@
+2026/11/03 13:02:44 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+A0 acc {'fold': 0, 'rounds': 62, 'n_trees': 496, 'model_bytes': 1774673, 'hit_cap': False, 'train_rows': 108124}
+A0 acc {'fold': 1, 'rounds': 39, 'n_trees': 312, 'model_bytes': 1107598, 'hit_cap': False, 'train_rows': 114990}
+A0 acc {'fold': 2, 'rounds': 43, 'n_trees': 344, 'model_bytes': 1223907, 'hit_cap': False, 'train_rows': 115365}
+A0 acc {'fold': 3, 'rounds': 63, 'n_trees': 504, 'model_bytes': 1801321, 'hit_cap': False, 'train_rows': 109691}
+A0 acc {'fold': 4, 'rounds': 66, 'n_trees': 528, 'model_bytes': 1879235, 'hit_cap': False, 'train_rows': 118846}
+A0 gps {'fold': 0, 'rounds': 149, 'n_trees': 1192, 'model_bytes': 4145972, 'hit_cap': False, 'train_rows': 86566}
+A0 gps {'fold': 1, 'rounds': 104, 'n_trees': 832, 'model_bytes': 2890849, 'hit_cap': False, 'train_rows': 95183}
+A0 gps {'fold': 2, 'rounds': 154, 'n_trees': 1232, 'model_bytes': 4281358, 'hit_cap': False, 'train_rows': 92319}
+A0 gps {'fold': 3, 'rounds': 133, 'n_trees': 1064, 'model_bytes': 3697003, 'hit_cap': False, 'train_rows': 86094}
+A0 gps {'fold': 4, 'rounds': 174, 'n_trees': 1392, 'model_bytes': 4843252, 'hit_cap': False, 'train_rows': 99314}
+A0_seed1 {'es_six_f1': 0.6502, 'es_six_f1_lo': 0.585, 'es_six_f1_hi': 0.6929, 'es_fine_f1': 0.6776, 'es_family_f1': 0.689, 'es_six_precision_still': np.float64(0.9418), 'es_six_precision_foot': np.float64(0.5919), 'nor_guard_six_f1': 0.3196, 'collecty_six_f1': 0.6523, 'shl_six_f1': 0.9508, 'tram_pred_extrasensory_usable_n': 0.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 12.8418, 'lat_pipeline_ms_p50': 1.3995} 381s
+2026/11/03 13:09:08 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+E2 acc {'fold': 0, 'rounds': 67, 'n_trees': 536, 'model_bytes': 1915969, 'hit_cap': False, 'train_rows': 110675}
+E2 acc {'fold': 1, 'rounds': 40, 'n_trees': 320, 'model_bytes': 1135130, 'hit_cap': False, 'train_rows': 117694}
+E2 acc {'fold': 2, 'rounds': 44, 'n_trees': 352, 'model_bytes': 1255122, 'hit_cap': False, 'train_rows': 118489}
+E2 acc {'fold': 3, 'rounds': 60, 'n_trees': 480, 'model_bytes': 1718927, 'hit_cap': False, 'train_rows': 111758}
+E2 acc {'fold': 4, 'rounds': 79, 'n_trees': 632, 'model_bytes': 2248307, 'hit_cap': False, 'train_rows': 121320}
+E2_seed1 {'es_six_f1': 0.6505, 'es_six_f1_lo': 0.5848, 'es_six_f1_hi': 0.692, 'es_fine_f1': 0.6759, 'es_family_f1': 0.6884, 'es_six_precision_still': np.float64(0.9419), 'es_six_precision_foot': np.float64(0.5913), 'nor_guard_six_f1': 0.3393, 'collecty_six_f1': 0.6923, 'shl_six_f1': 0.9577, 'es_six_f1_diff_A0': 0.0003, 'es_six_f1_diff_A0_lo': -0.0069, 'es_six_f1_diff_A0_hi': 0.0075, 'nor_guard_six_f1_diff_A0': 0.0197, 'nor_guard_six_f1_diff_A0_lo': -0.0022, 'nor_guard_six_f1_diff_A0_hi': 0.0442, 'tram_pred_extrasensory_usable_n': 0.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 11.5024, 'lat_pipeline_ms_p50': 1.3268} 4112s
+2026/11/03 14:17:42 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+E1 acc {'fold': 0, 'rounds': 88, 'n_trees': 792, 'model_bytes': 2813691, 'hit_cap': False, 'train_rows': 117220}
+E1 acc {'fold': 1, 'rounds': 58, 'n_trees': 522, 'model_bytes': 1842841, 'hit_cap': False, 'train_rows': 123397}
+E1 acc {'fold': 2, 'rounds': 93, 'n_trees': 837, 'model_bytes': 2960827, 'hit_cap': False, 'train_rows': 124806}
+E1 acc {'fold': 3, 'rounds': 69, 'n_trees': 621, 'model_bytes': 2214296, 'hit_cap': False, 'train_rows': 118483}
+E1 acc {'fold': 4, 'rounds': 94, 'n_trees': 846, 'model_bytes': 2997179, 'hit_cap': False, 'train_rows': 126938}
+E1_seed1 {'es_six_f1': 0.6348, 'es_six_f1_lo': 0.5733, 'es_six_f1_hi': 0.6836, 'es_fine_f1': 0.6787, 'es_family_f1': 0.684, 'es_six_precision_still': np.float64(0.9416), 'es_six_precision_foot': np.float64(0.5901), 'nor_guard_six_f1': 0.6807, 'collecty_six_f1': 0.6556, 'shl_six_f1': 0.9634, 'es_six_f1_diff_A0': -0.0154, 'es_six_f1_diff_A0_lo': -0.0354, 'es_six_f1_diff_A0_hi': 0.0067, 'nor_guard_six_f1_diff_A0': 0.3611, 'nor_guard_six_f1_diff_A0_lo': 0.2686, 'nor_guard_six_f1_diff_A0_hi': 0.4525, 'tram_pred_extrasensory_usable_n': 1.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 11.5045, 'lat_pipeline_ms_p50': 1.3605} 456s
+2026/11/03 14:25:19 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+A0 acc {'fold': 0, 'rounds': 56, 'n_trees': 448, 'model_bytes': 1605066, 'hit_cap': False, 'train_rows': 108124}
+A0 acc {'fold': 1, 'rounds': 43, 'n_trees': 344, 'model_bytes': 1216911, 'hit_cap': False, 'train_rows': 114990}
+A0 acc {'fold': 2, 'rounds': 53, 'n_trees': 424, 'model_bytes': 1512074, 'hit_cap': False, 'train_rows': 115365}
+A0 acc {'fold': 3, 'rounds': 68, 'n_trees': 544, 'model_bytes': 1941935, 'hit_cap': False, 'train_rows': 109691}
+A0 acc {'fold': 4, 'rounds': 75, 'n_trees': 600, 'model_bytes': 2129406, 'hit_cap': False, 'train_rows': 118846}
+A0 gps {'fold': 0, 'rounds': 144, 'n_trees': 1152, 'model_bytes': 4006300, 'hit_cap': False, 'train_rows': 86566}
+A0 gps {'fold': 1, 'rounds': 111, 'n_trees': 888, 'model_bytes': 3086059, 'hit_cap': False, 'train_rows': 95183}
+A0 gps {'fold': 2, 'rounds': 148, 'n_trees': 1184, 'model_bytes': 4114524, 'hit_cap': False, 'train_rows': 92319}
+A0 gps {'fold': 3, 'rounds': 134, 'n_trees': 1072, 'model_bytes': 3724986, 'hit_cap': False, 'train_rows': 86094}
+A0 gps {'fold': 4, 'rounds': 184, 'n_trees': 1472, 'model_bytes': 5123698, 'hit_cap': False, 'train_rows': 99314}
+A0_seed2 {'es_six_f1': 0.6533, 'es_six_f1_lo': 0.5857, 'es_six_f1_hi': 0.6953, 'es_fine_f1': 0.6778, 'es_family_f1': 0.6933, 'es_six_precision_still': np.float64(0.9416), 'es_six_precision_foot': np.float64(0.5927), 'nor_guard_six_f1': 0.3352, 'collecty_six_f1': 0.6531, 'shl_six_f1': 0.9543, 'tram_pred_extrasensory_usable_n': 0.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 11.626, 'lat_pipeline_ms_p50': 1.1743} 502s
+2026/11/03 14:33:42 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+E2 acc {'fold': 0, 'rounds': 55, 'n_trees': 440, 'model_bytes': 1578314, 'hit_cap': False, 'train_rows': 110675}
+E2 acc {'fold': 1, 'rounds': 39, 'n_trees': 312, 'model_bytes': 1107957, 'hit_cap': False, 'train_rows': 117694}
+E2 acc {'fold': 2, 'rounds': 45, 'n_trees': 360, 'model_bytes': 1287518, 'hit_cap': False, 'train_rows': 118489}
+E2 acc {'fold': 3, 'rounds': 60, 'n_trees': 480, 'model_bytes': 1716947, 'hit_cap': False, 'train_rows': 111758}
+E2 acc {'fold': 4, 'rounds': 74, 'n_trees': 592, 'model_bytes': 2106809, 'hit_cap': False, 'train_rows': 121320}
+E2_seed2 {'es_six_f1': 0.6476, 'es_six_f1_lo': 0.5837, 'es_six_f1_hi': 0.69, 'es_fine_f1': 0.6756, 'es_family_f1': 0.6843, 'es_six_precision_still': np.float64(0.9418), 'es_six_precision_foot': np.float64(0.5889), 'nor_guard_six_f1': 0.3411, 'collecty_six_f1': 0.7087, 'shl_six_f1': 0.955, 'es_six_f1_diff_A0': -0.0057, 'es_six_f1_diff_A0_lo': -0.0164, 'es_six_f1_diff_A0_hi': 0.0041, 'nor_guard_six_f1_diff_A0': 0.0059, 'nor_guard_six_f1_diff_A0_lo': -0.0139, 'nor_guard_six_f1_diff_A0_hi': 0.0266, 'tram_pred_extrasensory_usable_n': 0.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 11.6662, 'lat_pipeline_ms_p50': 1.1692} 300s
+2026/11/03 14:38:44 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+E1 acc {'fold': 0, 'rounds': 87, 'n_trees': 783, 'model_bytes': 2783566, 'hit_cap': False, 'train_rows': 117220}
+E1 acc {'fold': 1, 'rounds': 63, 'n_trees': 567, 'model_bytes': 1997734, 'hit_cap': False, 'train_rows': 123397}
+E1 acc {'fold': 2, 'rounds': 104, 'n_trees': 936, 'model_bytes': 3311353, 'hit_cap': False, 'train_rows': 124806}
+E1 acc {'fold': 3, 'rounds': 68, 'n_trees': 612, 'model_bytes': 2181901, 'hit_cap': False, 'train_rows': 118483}
+E1 acc {'fold': 4, 'rounds': 103, 'n_trees': 927, 'model_bytes': 3282712, 'hit_cap': False, 'train_rows': 126938}
+E1_seed2 {'es_six_f1': 0.6357, 'es_six_f1_lo': 0.5736, 'es_six_f1_hi': 0.6821, 'es_fine_f1': 0.6837, 'es_family_f1': 0.6781, 'es_six_precision_still': np.float64(0.9416), 'es_six_precision_foot': np.float64(0.5909), 'nor_guard_six_f1': 0.6765, 'collecty_six_f1': 0.6479, 'shl_six_f1': 0.9637, 'es_six_f1_diff_A0': -0.0176, 'es_six_f1_diff_A0_lo': -0.0384, 'es_six_f1_diff_A0_hi': 0.0062, 'nor_guard_six_f1_diff_A0': 0.3413, 'nor_guard_six_f1_diff_A0_lo': 0.2475, 'nor_guard_six_f1_diff_A0_hi': 0.4328, 'tram_pred_extrasensory_usable_n': 0.0, 'tram_pred_shl_user1_usable_n': 0.0, 'lat_inference_ms_p50': 11.6617, 'lat_pipeline_ms_p50': 1.1863} 384s

@@ -33,6 +33,7 @@ ACC = af.names(True, False)                     # 05's B: 580 features
 GPS = gf.names(GPS_VERSION)                     # gps-v2: 13
 SOURCES = ("extrasensory", "shl_user1", "nor_tmd", "collecty")
 OTHER = "shl_user1_other"
+TEST_SOURCES, TEST_OTHER = ("extrasensory", "shl_user23", "nor_tmd"), "shl_user23_other"   # stop-point 3 only
 GPS_SOURCES = ("extrasensory", "shl_user1")     # the GPS model's training sources (hips only for SHL)
 ACC_FIT = 0.1, 1000, 30                         # 06's acc model: lr, max rounds, patience
 GPS_FIT = 0.02, 10000, 150                      # 06's G_v2
@@ -60,20 +61,23 @@ class Row:
 
 # ---------------------------------------------------------------- frame
 
-def load() -> pd.DataFrame:
+def load(part: str = "dev") -> pd.DataFrame:
+    """dev: the frame above. test (stop-point 3 only): the reserved users of ExtraSensory, SHL Users 2-3 (hips, then
+    other positions as `shl_user23_other`) and NOR-TMD, same columns."""
+    srcs, other = (SOURCES, OTHER) if part == "dev" else (TEST_SOURCES, TEST_OTHER)
     d = []
-    for s in SOURCES + (OTHER,):
-        a = pd.read_parquet(acc_path(s, "dev"))
-        if s in GPS_SOURCES + (OTHER,):
-            g = pd.read_parquet(gps_path(s, "dev"))
+    for s in srcs + (other,):
+        a = pd.read_parquet(acc_path(s, part))
+        if s in ("extrasensory", "shl_user1", "shl_user23", OTHER, TEST_OTHER):
+            g = pd.read_parquet(gps_path(s, part))
             assert (a.user.to_numpy() == g.user.to_numpy()).all() and (a.ts.to_numpy() == g.ts.to_numpy()).all()
             a = pd.concat([a, g[GPS]], axis=1)
         else:
             a = a.assign(**{c: np.float32(np.nan) for c in GPS})
-        if s == "shl_user1":
+        if s in ("shl_user1", "shl_user23"):
             lab = bench.read(s, "labels", columns=["user", "ts", "position_draw"], version=BENCH)
             a = a.merge(lab, on=["user", "ts"], how="left", validate="1:1").assign(position="hips")
-        elif s == OTHER:
+        elif s in (OTHER, TEST_OTHER):
             a = a.assign(session=a.session.astype(str) + "/" + a.position)    # one HMM sequence per position
         else:
             a = a.assign(position="", position_draw=True)
