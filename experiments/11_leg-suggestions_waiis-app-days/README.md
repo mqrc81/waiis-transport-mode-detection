@@ -237,6 +237,10 @@ One JSON file per model per day: `<data>/processed/11_leg-suggestions_waiis-app-
 - Review sheet per day (HTML or PNG plus a CSV, under `<data>/processed/11_.../waiis/`): a timeline of E1's and E2's legs against the
   diary, with confidence, coverage and GPS speed (derived and reported; no map); counts of legs that match the diary
   (same mode, IoU ≥ 0.5 with the diary leg), missed, or extra. Each leg is then reviewed as right / wrong / unsure.
+- **Tram legs in the diaries** (added at the OK of stop-point 2): for each diary tram leg, per model, the top-level
+  mode, the sub-mode hint, the minute shares of tram / train / subway / bus / car (argmax fine class per minute) and
+  the GPS coverage of its minutes. E2 has no tram class: a tram leg is right at the top level only if it becomes rail.
+  E1's first tram check with GPS. Descriptive; no model choice is made from it.
 - Descriptive: the package's own predictions (`predictions/*.parquet`: `fusion_late__hmm_viterbi`, `lightgbm_gps`,
   `inceptiontime_acc(_25hz)`, `hart_acc`, `rules_speed`, 18 s rows) mapped to the top level, against the diary, beside E1
   and E2.
@@ -473,7 +477,9 @@ as stays a reasoned guess (car).
    split the user wouldn't make (found by `tests/test_legs.py::test_edits_counted`).
 2. *Constraint (b)*: read as "not more than 0.01 below the raw HMM legs"; a rule set that improves ExtraSensory by more
    than 0.01 is not excluded.
-3. *Day key*: ExtraSensory has no recording day; edits per day use user + UTC date.
+3. *Day key*: ExtraSensory has no recording day; edits per day use user + UTC date. UTC midnight is about 16:00 local
+   for most ExtraSensory users (US West Coast), so a user-day is cut in the afternoon. This affects only edits per day,
+   not the objective (edits per hour).
 4. *Internal boundaries*: a truth leg end counts for boundary errors only where the next truth leg starts at exactly
    that minute; ends at unlabelled time or data gaps don't. On SHL User 1 that is 172 boundaries.
 
@@ -550,14 +556,49 @@ moved 568 of 1,022 slow / fast boundaries (E2).
 Boundaries stay on the minute grid. A 20 s pair speed crossing halfway between leg speeds is noisier than the
 minute-level HMM boundary.
 
-#### Open for OK at stop-point 2
+#### E1 vs E2 on dev (seeds 0–2; E2 with its chosen rules, E1 with the raw HMM legs as approved)
 
-1. **GPS input: C1** (fix nearest the minute centre); the SHL evidence is weak (near ceiling).
-2. **Leg rules:** E2 `s_veh` 0, `s_other` 3, `g` 10, `l_min` 2; E1 `s_veh` 0, `s_other` 0, `g` 2, `l_min` 3 (chosen by
-   the pre-set rule; E1's costs 4% edits on ExtraSensory). The gains over the raw legs are within seed spread.
-3. **Low-confidence threshold `c` 0.5:** in effect almost no unknown legs. The SHL-only constraint (a) doesn't bind,
-   and on ExtraSensory no threshold reaches 5%. Options: keep 0.5 as chosen, or fix (a) on ExtraSensory too and
-   accept that it can't be met (wrong legs are confidently wrong).
-4. **Second mode:** no `τ2` meets the 50% rule, so the "show" flag stays off (top-2 still in the output).
-5. **No 20 s boundary refinement.**
-6. Readings and deviations 1–4 above (edit tie-break, (b) one-sided, ExtraSensory day key, internal boundaries).
+| mean [min, max] | E2 SHL User 1 | E1 SHL User 1 | E2 ExtraSensory | E1 ExtraSensory |
+|---|---|---|---|---|
+| edits / h | 0.893 [0.886, 0.896] | **0.858** [0.843, 0.879] | **1.382** [1.379, 1.384] | 1.405 [1.404, 1.406] |
+| time-weighted accuracy | 0.954 [0.952, 0.956] | **0.964** [0.963, 0.965] | 0.916 | 0.915 |
+| time wrong and unflagged | 4.6% [4.4, 4.8] | **3.6%** [3.5, 3.7] | 8.3% | 8.5% |
+| leg F1 | 0.827 | 0.830 | 0.720 | 0.717 |
+| time recall still / rail | 0.82 / 0.974 | **0.90** / 0.976 | 0.960 / 0.29 | 0.959 / 0.40 |
+
+**E1 is better on SHL User 1 in every seed** (edits per hour, time accuracy, wrong unflagged time). The gain is in
+**still**, not rail: still time recall 0.90 vs 0.82, rail equal (0.976 vs 0.974), and E1's subway minute recall is
+lower (0.87–0.88 vs 0.92–0.93). E1's NOR-TMD-trained acc model reads SHL User 1's still minutes better. **On
+ExtraSensory they are tied** (E2 −0.02 edits per hour; E1's rail time recall 0.40 vs 0.29 rests on 37 rail legs).
+No choice between them is made on dev; both run on the WAIIS days.
+
+#### Confidence does not catch the main errors
+
+On ExtraSensory about **8% of labelled time is wrong and unflagged** (E2 8.3%, E1 8.5%). The errors are mainly
+**walking read as still** (walking time recall 0.57) and **bus** (0.43). Most of these minutes are confident: `c` 0.9
+would flag 19.5% of legs and 2.8% of time for only −1.5 points of wrong unflagged time (8.3% → 6.8%; E2). On SHL User
+1 the threshold has nothing to do (raw legs 4.8% / 3.5%). **A high-confidence suggestion is not a checked one:** `c`
+0.5 marks almost no leg unknown, and a one-click accept of a confident leg can still store a wrong mode.
+
+#### Stop-point 2 approved 2026-11-04
+
+1. **GPS input C1** (fix nearest the minute centre); **second mode off** (top-2 still in the output); **no 20 s
+   boundary refinement**.
+2. **Leg rules:** E2 as chosen (`s_veh` 0, `s_other` 3, `g` 10, `l_min` 2, `c` 0.5). **E1 uses the raw HMM legs**
+   (`g` 10, no other rule) with `c` 0.5.
+3. **Threshold `c` 0.5** for both models, with the caveat above.
+4. Readings 1–4 accepted (with the UTC note on ExtraSensory user-days).
+
+**Deviation 5 (from the Plan's per-model choice, `leg_grid.py` / `results/tables/leg_choice.json`):** E1's leg rules
+chosen by the objective (`s_veh` 0, `s_other` 0, `g` 2, `l_min` 3) are not used. They gain 0.6% edits per hour on SHL
+User 1 (within seed spread) and cost 4% edits per hour (1.40 → 1.46) and 0.009 leg F1 on ExtraSensory. E1 uses the
+raw HMM legs instead, with `c` 0.5.
+
+**Open questions:**
+- Platform and phone model should come from the app or the data build once more users label. Until then the reader
+  uses `metadata/waiis_devices.csv`.
+- Axis signs of the WAIIS iPhone: a face-up recording (no effect on E1 / E2).
+- Device selection in the data build (`selected_device_rule = greatest_data_object_bytes`) with a second device.
+
+**Next (stop-point 3), after the diaries:** E1 and E2 on the three WAIIS days with these rules, review sheets
+(including the tram check), SHL Users 2–3 once.
