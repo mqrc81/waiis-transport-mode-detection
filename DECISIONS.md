@@ -314,6 +314,12 @@ of NOR-TMD and Collecty: `LICENSES.md`.
     is not shown. Where GPS exists, fusion overrules it.
   - False bus: E1's ExtraSensory bus precision −0.084 [−0.152, −0.018] (785 false-bus minutes vs A0's 534), 89% of
     them with GPS.
+  - 4E98F91F's accelerometer is ordinary in rate, units, gravity level and quantisation (nothing like BEF6C611's X8
+    jumps), but its noise floor is the lowest of the 19 ExtraSensory Android users and within NOR-TMD's subway range
+    (descriptive; any exclusion would be a later benchmark decision).
+  - Without 4E98F91F, E1 − A0 on ExtraSensory dev six-class is −0.000 [−0.016, +0.015] (seeds 1–2: −0.004, −0.005)
+    while bus precision still falls (−0.078 [−0.147, −0.013]); descriptive, since leaving a user out after the result
+    isn't a rule, so the rule outcome stands.
   - Its own gains are large: NOR-TMD test bus / car / rail 0.778 vs 0.469, subway recall 0.97 vs 0.11.
 - **Tram isn't learnable without NOR-TMD:** Collecty's 4 tram users give recall 0 on its own held-out users, and the
   balanced tram class halved the acc model's early stopping (18–25 vs ~50 rounds), which cost bus and foot

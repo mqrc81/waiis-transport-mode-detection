@@ -1,6 +1,6 @@
 # Status
 
-*As of 2026-11-03. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
+*As of 2026-11-04. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
 
 ## 1. Data
 
@@ -22,11 +22,13 @@ commit `6d51dc2` (experiment 09, approved).
 
 ## 2. Current results
 
-**Reference model: experiment 06**, accelerometer + GPS fusion
-([README](experiments/06_gps-acc-baseline_waiis-bench/README.md), approved 2026-10-30), on `waiis_bench_v1`. It
-replaces **05** (accelerometer only; [README](experiments/05_acc-baseline_waiis-bench/README.md), approved
-2026-10-30), which stays the accelerometer-only baseline. On `waiis_bench_v2` the reference becomes **10's E2**
-once 10 is approved (below).
+**Reference model on `waiis_bench_v2`: experiment 10's E2** (below; Conclusion approved 2026-11-03, its DECISIONS.md
+entry still **draft, not approved**): 06's configuration trained on ExtraSensory + SHL User 1 + Collecty.
+
+**On `waiis_bench_v1`: experiment 06**, accelerometer + GPS fusion
+([README](experiments/06_gps-acc-baseline_waiis-bench/README.md), approved 2026-10-30). It replaced **05**
+(accelerometer only; [README](experiments/05_acc-baseline_waiis-bench/README.md), approved 2026-10-30), which stays
+the accelerometer-only baseline. E2 keeps 06's model, fusion and smoothing (below).
 
 | `waiis_bench_v1` | 8-class macro-F1 (06 / 05) | family macro-F1 (06 / 05) |
 |---|---|---|
@@ -58,7 +60,7 @@ once 10 is approved (below).
 - **Evaluation:** user-bootstrap CIs redraw resamples that lack a class of the evaluation set
   (`tmd.evaluate.user_resamples`).
 
-### First models on v2 (10; Conclusion **draft, not approved**)
+### First models on v2 (10; Conclusion approved 2026-11-03)
 
 **10 GPS + acc baseline on `waiis_bench_v2`** ([README](experiments/10_gps-acc-baseline_waiis-bench-v2/README.md),
 2026-11-03): 06's configuration on v2 with ablations of the new sources, dataset-shortcut checks, test scored once.
@@ -81,7 +83,8 @@ once 10 is approved (below).
   +0.011]). False rail on still minutes without GPS, concentrated in one Android device without location data
   (4E98F91F, 115 of 185 minutes) plus scattered sitting minutes; the mechanism is not shown (not a NOR-TMD label
   convention; fusion overrules it where GPS exists). Also false bus on minutes with GPS (bus precision −0.084).
-  Not adopted; a follow-up.
+  Descriptive: 4E98F91F's accelerometer has the lowest noise floor of the ExtraSensory Android users, otherwise
+  ordinary; without it E1 − A0 is −0.000 to −0.005 on dev, the bus precision cost stays. Not adopted; a follow-up.
 - **Tram:** not learnable on v2 without NOR-TMD (Collecty's 4 users: recall 0 on its own held-out users); a balanced
   tiny tram class also halves the acc model's early stopping (found in 10; leave tram out of the stopping fold when
   it is a class: `tmd.models.lgbm.paired_cv(stop_ok=...)`).
@@ -148,11 +151,11 @@ Two unlabelled days of WAIIS app recordings ([report](experiments/08_candidate-d
 
 ## 4. Next experiment
 
-1. **NOR-TMD follow-up (after 10):** keep NOR-TMD's vehicle gains (its test: 0.778 vs 0.469) without the false rail
+1. **NOR-TMD follow-up:** keep NOR-TMD's vehicle gains (its test: 0.778 vs 0.469) without the false rail
    and false bus on ExtraSensory (e.g. a lower NOR-TMD weight, still minutes of many devices as hard negatives;
-   per-user false-rail counts as a check; 4E98F91F's resting signal compared with NOR-TMD's), with a tram-aware HMM;
+   per-user false-rail counts as a check; 4E98F91F's resting signal against NOR-TMD's other classes), with a tram-aware HMM;
    dev first, ExtraSensory test only for the model it chooses.
-2. **Leg suggestions** for the labelling tool (in parallel): `predict_legs` with 10's E2 (06 until 10 is approved),
+2. **Leg suggestions** for the labelling tool (in parallel): `predict_legs` with 10's E2,
    E1's saved models alongside, evaluated on SHL, my own labelled WAIIS days and later MobilityNet; harness ready
    for WAIIS labels.
 3. **GPS track:** Geolife, MTL Trajet, SHL 1 Hz (MOBIS if granted); cadence-robust gps-v3 for WAIIS's ~20 s fixes

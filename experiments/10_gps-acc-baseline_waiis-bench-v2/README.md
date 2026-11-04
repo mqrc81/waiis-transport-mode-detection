@@ -862,6 +862,60 @@ sitting minutes** (56 minutes, 6 users); **the mechanism is not shown.** Where G
 false bus is a separate cost, on minutes with GPS (4). Stop-point 2's wording ("quiet still phones without GPS become
 subway") over-generalised from one user; the Conclusion and the DECISIONS.md draft now say what is shown here.
 
+**5. Is 4E98F91F's accelerometer abnormal?** (added 2026-11-04; `uv run python diag_device.py`, `logs/diag_device.log`,
+`results/tables/diag_device_*.csv`.) Still windows of the 19 ExtraSensory Android dev users (official windows; for
+BEF6C611, excluded in 04 by X8, all its still windows) and NOR-TMD's 25 subway dev installations (all Android). Window
+statistics from the benchmark tables (25 Hz, 15 s); raw rate, timestamp jitter, quantisation step and raw noise from
+the raw recordings, up to 60 windows per user, quiet ones first. Other users: median [min, max] over users with ≥ 20
+windows (all 18 other ExtraSensory users; 18 of NOR-TMD's 25).
+
+| | 4E98F91F | other ES Android (18) | BEF6C611 | NOR-TMD subway (18) |
+|---|---|---|---|---|
+| real sampling rate [Hz] | 49.95 | 49.98 [41.6, 50.5] | 49.89 | 50.01 [49.8, 100] |
+| timestamp jitter (CV of Δt) | 0.016 | 0.050 [0.002, 0.45] | 0.055 | 0.32 [0.16, 2.6] |
+| units | m/s² only | m/s² only | **58% of snippets in g** | m/s² |
+| median \|acc\| (p5–p95) [m/s²] | 9.80 (9.59–10.02) | 9.80 [8.96, 10.30] | **6.97 (2.89–23.1)** | 9.84 [9.43, 9.98] |
+| windows outside 7–20 m/s² | 0 (of all 3,231 windows: 0; range 9.18–11.66) | 0 (official windows: excluded by construction) | **62%** | 0 (by construction) |
+| quantisation step [m/s²] | 0.0006 | 0.0012 [< 0.0001, 0.039] | 0.0024 | 0.0024 [< 0.0001, 0.0048] |
+| quiet share of still windows | 30% | 55% [0, 77%] | 14% | 0 [0, 10%] (of subway windows) |
+| **noise floor: std of \|acc\| in quiet windows** (25 Hz) | **0.0070** | 0.0144 [0.0108, 0.0296] | 0.0214 | 0.0194 [0.0060, 0.0276] (8 users with quiet windows) |
+| raw std of \|acc\| in quiet windows | **0.0112** | 0.0210 [0.0142, 0.0445] | 0.0339 | 0.0250 [0.0089, 0.0370] |
+
+- **Nothing of X8's kind:** rate, jitter, units, gravity level and quantisation are ordinary (its step of
+  0.0006 m/s² is shared by 6 other ExtraSensory Android users). BEF6C611's unit and level jumps don't occur.
+- **Its noise floor is the lowest of the 19 ExtraSensory Android users** (quiet-window std 0.0070 vs 0.0108–0.0296),
+  half the median, and within NOR-TMD's subway range (its lowest installation, 31a04ca6 (Samsung SM-G960F) with 10%
+  quiet subway windows: 0.0060). Its still windows are either very quiet or not quiet at all (quiet share 30%, the
+  median std of all its still windows is the highest of the 19).
+- **E1's 115 false-rail minutes are its quietest:** quiet-window std 0.0056 (raw 0.0088), against 0.0095 (raw 0.0164)
+  for its 219 other quiet still minutes; rate, jitter and quantisation the same (`diag_device_4e98_rail.csv`).
+- Report only: whether such a device is excluded is a later benchmark decision, not part of 10.
+
+**6. E1 vs A0 on ExtraSensory dev without 4E98F91F** (descriptive; added 2026-11-04; `diag_device_without_4e98.csv`).
+Pooled out-of-fold, six-class, E1 − A0 with the paired user-bootstrap 95% CI (1,000 draws).
+
+| Seed | all users | without 4E98F91F |
+|---|---|---|
+| 0 | −0.013 [−0.032, +0.011] | **−0.000** [−0.016, +0.015] |
+| 1 | −0.015 [−0.035, +0.007] | −0.004 [−0.020, +0.010] |
+| 2 | −0.018 [−0.038, +0.006] | −0.005 [−0.020, +0.010] |
+
+Per class, E1 − A0, seed 0 (seeds 1 / 2), without 4E98F91F (all users in brackets for rail):
+
+| Class | F1 | precision | recall |
+|---|---|---|---|
+| rail | +0.026 (+0.028 / −0.007) [all: −0.043] | −0.015 [−0.144, +0.078] (−0.030 / −0.079) [all: −0.100] | +0.090 (+0.121 / +0.090) |
+| bus | −0.024 (−0.047 / −0.023) | **−0.078 [−0.147, −0.013]** (−0.085 / −0.063) | +0.022 (−0.015 / +0.011) |
+| car | −0.008 (−0.010 / −0.004) | +0.011 | −0.026 |
+| bike | +0.006 | +0.001 | +0.010 |
+| foot / still | −0.002 / −0.001 | −0.003 / −0.001 | −0.001 / −0.001 |
+
+- **Without this one user, E1's six-class cost on ExtraSensory dev is within the 0.01 limit on all 3 seeds**
+  (−0.000 / −0.004 / −0.005). Its rail F1 turns positive on seeds 0–1 and its rail precision cost mostly goes away.
+- **The bus precision cost stays** (−0.078 [−0.147, −0.013]); it is the cost not tied to 4E98F91F.
+- Descriptive: the rule was fixed on all ExtraSensory dev users, and leaving a user out after seeing the result isn't
+  a rule. **The rule outcome stands** (E1 not adopted; E2 final).
+
 ## Conclusion
 
 **Answer.** On `waiis_bench_v2`, 06's configuration retrained on v2's labels (A0) is the reference, and **E2 — A0 +
@@ -892,6 +946,12 @@ past the rule's limit, through false rail and false bus. Tram is not a class.
     GPS give 0. Where GPS exists, fusion overrules it.
   - **False bus:** E1's ExtraSensory bus precision falls by 0.084 [−0.152, −0.018]: 785 false-bus minutes against
     A0's 534, mostly from car and still, and 89% of them with GPS, so fusion doesn't stop them.
+  - **4E98F91F's accelerometer** (descriptive, 2026-11-04): ordinary in rate, units, gravity level and quantisation
+    (nothing like BEF6C611's X8 jumps), but its noise floor is the lowest of the 19 ExtraSensory Android users (0.0070
+    vs 0.0108–0.0296), within NOR-TMD's subway range, and its 115 false-rail minutes are its quietest.
+  - **Without 4E98F91F** (descriptive): E1 − A0 six-class is −0.000 [−0.016, +0.015] (seeds 1–2: −0.004, −0.005),
+    within the limit, while bus precision still falls (−0.078 [−0.147, −0.013]); leaving a user out after the result
+    isn't a rule, so the rule outcome stands.
 - **Tram:** Collecty's 4 tram users don't generalise (recall 0 on its own held-out users), and with balanced class
   weights the tiny tram class cut the acc model's early stopping in half (A2: 18–25 rounds vs ~50), which is what
   cost A2 bus and foot precision. Without NOR-TMD, tram isn't learnable on v2.
@@ -919,7 +979,7 @@ past the rule's limit, through false rail and false bus. Tram is not a class.
 **Next.**
 - **A NOR-TMD follow-up on dev:** keep NOR-TMD's vehicle gains without the false rail and false bus on ExtraSensory
   (e.g. a lower NOR-TMD weight, or still minutes of many devices as hard negatives), with a tram-aware HMM;
-  per-user false-rail counts as a check (one user carried 62% of E1's); a comparison of 4E98F91F's resting signal
-  with NOR-TMD's (subway and other classes). Only then the ExtraSensory test for it.
+  per-user false-rail counts as a check (one user carried 62% of E1's); 4E98F91F's resting signal against NOR-TMD's other
+  classes (subway done in the check before approval, 5). Only then the ExtraSensory test for it.
 - **Leg suggestions:** E2 is the model for `predict_legs`; E1's saved models run beside it on the labelled WAIIS
   days.

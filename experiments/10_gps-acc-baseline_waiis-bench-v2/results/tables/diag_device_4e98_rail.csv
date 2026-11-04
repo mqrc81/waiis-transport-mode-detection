@@ -1,0 +1,3 @@
+rail,minutes,acc_median,acc_std_median,raw_std_median,quant_step,raw_rate_hz,dt_cv
+False,219,9.837,0.0095,0.0164,0.0006,49.9514,0.0166
+True,115,9.7709,0.0056,0.0088,0.0006,49.9512,0.0145
