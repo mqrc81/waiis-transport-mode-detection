@@ -12,7 +12,8 @@ that adds GPS-only candidate datasets: it shows what WAIIS GPS and accelerometer
   one burst with std |acc| < 0.05 m/s².
 - **Scripts** (here; `uv run python <script>`, data path as optional argument): `describe.py` (all GPS and
   accelerometer tables), `gaps.py` (gaps by speed across, coarse fixes), `imu_timing.py` (step and drift detail,
-  GPS–accelerometer overlap). They print summaries only, never coordinates.
+  GPS–accelerometer overlap), `noise_floor.py` (accelerometer noise floor against the benchmark sources, added
+  2026-11-04). They print summaries only, never coordinates.
 
 ## GPS (388 + 364 fixes)
 
@@ -116,7 +117,59 @@ isolated. The speed across the gap, from the displacement between its two end fi
   - To confirm: a 30 s recording with the phone face-up on a table (expected z ≈ −9.8 if iOS's signs are kept),
     and the phone model stored with the data.
 
-## For a GPS-only benchmark or baseline
+## Accelerometer noise floor (added 2026-11-04)
+
+Asked after experiment 10, where one ExtraSensory Android user without location data (4E98F91F), with the lowest
+noise floor of the ExtraSensory Android users, carried most of a NOR-TMD-trained model's false rail on still minutes.
+Descriptive; no models.
+
+- **Method:** `uv run python noise_floor.py`, with the definitions of 10's `diag_device.py`, now
+  `tmd.resample.raw_window_stats`.
+  - **Windows:** as `waiis_bench_v2`, one 15 s window per clock minute at 25 Hz (`tmd.candidates.trip_windows`,
+    status ok). Back-to-back 15 s tiles are a second count.
+  - **Quiet:** std |acc| < 0.03 m/s². The **noise floor** is the median std |acc| over quiet windows.
+  - **Raw statistics:** quantisation step and raw std from each window's raw samples.
+  - **References:** ExtraSensory Android, 4E98F91F and NOR-TMD subway come from 10's `diag_device_users.csv`.
+    ExtraSensory iPhone (28 dev users, still windows) is computed the same way here. Groups are users with ≥ 20
+    windows; values are the median [min, max] over users.
+- **GPS stretch:** consecutive fixes ≤ 60 s apart. A window whose centre falls in a longer interval lies between
+  stretches, and the gap is split by the speed across it as in `gaps.py`.
+
+| | WAIIS (2 days, 1 phone) | ES iPhone (28) | ES Android, other (18) | 4E98F91F | NOR-TMD subway (18) |
+|---|---|---|---|---|---|
+| windows | 257 (tiles 968) | | | 1,118 still | |
+| quiet windows | **3 (1.2%)**; tiles 9 (0.9%) | still: 54% [25, 73%] | still: 55% [0, 77%] | still: 30% | subway: 0 [0, 10%] |
+| real rate [Hz] | 24.9 | 34.2 [31.5, 35.0] | 50.0 [42.1, 50.6] | 50.0 | 49.9 [29.3, 99.4] |
+| median \|acc\| [m/s²] | 9.82 (quiet: 9.73) | 9.81 [9.57, 10.26] | 9.80 [8.96, 10.30] | 9.80 | 9.84 [9.43, 9.98] |
+| **noise floor** (quiet-window std \|acc\|, 25 Hz) [m/s²] | **0.019** (0.017–0.024) | 0.011 [0.008, 0.020] | 0.014 [0.011, 0.030] | **0.0070** | 0.019 [0.006, 0.028] |
+| raw std \|acc\|, quiet windows [m/s²] | 0.022 | 0.016 [0.011, 0.027] | 0.021 [0.014, 0.045] | 0.011 | 0.025 [0.009, 0.037] |
+| quantisation step [m/s²] | **0.002** (every value is a multiple of 0.002) | 0.0001 | 0.0012 [< 0.0001, 0.039] | 0.0006 | 0.0024 [< 0.0001, 0.0048] |
+
+- **The WAIIS phone is not in 4E98F91F's low-noise regime.** Its quiet-window noise is 0.019 m/s², 2.7× 4E98F91F's.
+  That is above 27 of the 28 ExtraSensory iPhone users, near the NOR-TMD subway median and within the ExtraSensory
+  Android range. It rests on only 3 quiet minute windows (9 tiles), so it is a rough figure.
+- **The values come on a 0.002 m/s² grid** (the app or the platform rounds them). That's coarser than ExtraSensory's
+  iPhones (0.0001) and like NOR-TMD's Samsung phones (0.0024). It is still 10× below the quiet threshold of 0.03.
+- **Quiet windows are rare, because the app records only while moving:** 3 of 257 minute windows, against about
+  half of ExtraSensory's still windows.
+
+**Where the quiet windows lie relative to GPS:**
+
+| Place of the window centre | all minute windows | quiet minute windows | all tiles | quiet tiles |
+|---|---|---|---|---|
+| inside a stretch, fix state still | 110 | 2 | 407 | 4 |
+| inside a stretch, walk | 89 | 1 | 331 | 1 |
+| inside a stretch, vehicle / 2.5–4 m/s / unknown | 28 | 0 | 105 | 0 |
+| between stretches, moving gap (≥ 2 m/s across) | 24 | 0 | 96 | 0 |
+| between stretches, 0.5–2 m/s gap | 5 | 0 | 21 | 0 |
+| between stretches, stationary gap | 1 | 0 | 8 | 2 |
+
+- **All 3 quiet minute windows lie inside GPS-covered stretches** (2 at still fixes, 1 at a walk fix). The 2 quiet
+  tiles between stretches lie in a stationary gap.
+- **No quiet window in a moving gap** (the likely underground legs, 24 minute windows). On these two days, a resting
+  phone with no location at all, E1's false-rail case in 10, does not occur. Two days of one phone can't say how often
+  it occurs in production.
+
 
 - **Cadence:** production GPS is one fix per ~20 s while recording, denser than the benchmarks' one fix per minute.
   Candidate GPS-only datasets with 1 Hz trajectories should be subsampled to ~20 s (and to 60 s for comparison).

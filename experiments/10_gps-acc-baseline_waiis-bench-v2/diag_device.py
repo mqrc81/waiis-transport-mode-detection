@@ -24,7 +24,7 @@ from tmd import bench
 from tmd.evaluate import cm_metrics
 from tmd.readers import extrasensory as es
 from tmd.readers import nor_tmd
-from tmd.resample import G
+from tmd.resample import G, raw_window_stats as raw_stats
 
 OUT = pipe.HERE / "results" / "tables"
 DEV = "4E98F91F-4654-42EF-B908-A3389443F2E7"
@@ -33,24 +33,6 @@ WIN_S = 15
 RAW_N = 60
 NOR_ACC = ["accelerometer", "CMAccelerometerData"]
 log = logging.getLogger()
-
-
-def raw_stats(t: np.ndarray, xyz: np.ndarray) -> dict:
-    """One raw window: rate, timestamp jitter, quantisation step (median over axes of the smallest step between
-    distinct values), std of |acc|."""
-    dt = np.diff(t)
-    steps = []
-    for k in range(3):
-        u = np.unique(xyz[:, k])
-        d = np.diff(u)
-        d = d[d > 1e-9]
-        if len(d):
-            steps.append(d.min())
-    n = np.linalg.norm(xyz, axis=1)
-    return {"raw_rate_hz": (len(t) - 1) / (t[-1] - t[0]) if t[-1] > t[0] else np.nan,
-            "dt_cv": dt.std() / dt.mean() if len(dt) and dt.mean() > 0 else np.nan,
-            "quant_step": np.median(steps) if steps else np.nan, "distinct_share": np.mean(
-                [len(np.unique(xyz[:, k])) / len(xyz) for k in range(3)]), "raw_std": n.std(), "raw_median": np.median(n)}
 
 
 def pick(d: pd.DataFrame, rng) -> pd.DataFrame:

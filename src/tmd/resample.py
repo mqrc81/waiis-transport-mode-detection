@@ -127,3 +127,22 @@ def window_stats(w: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Median and standard deviation of |acc| per window; w is (n, m, 3)."""
     n = np.linalg.norm(w, axis=-1)
     return np.median(n, axis=-1), n.std(axis=-1)
+
+
+def raw_window_stats(t: np.ndarray, xyz: np.ndarray) -> dict:
+    """One raw (not resampled) window, t [s] sorted, xyz m/s2: real rate, timestamp jitter (CV of the steps),
+    quantisation step (median over axes of the smallest step between distinct values), share of distinct values,
+    std and median of |acc| (10's diag_device.py)."""
+    dt = np.diff(t)
+    steps = []
+    for k in range(3):
+        u = np.unique(xyz[:, k])
+        d = np.diff(u)
+        d = d[d > 1e-9]
+        if len(d):
+            steps.append(d.min())
+    n = np.linalg.norm(xyz, axis=1)
+    return {"raw_rate_hz": (len(t) - 1) / (t[-1] - t[0]) if t[-1] > t[0] else np.nan,
+            "dt_cv": dt.std() / dt.mean() if len(dt) and dt.mean() > 0 else np.nan,
+            "quant_step": np.median(steps) if steps else np.nan, "distinct_share": np.mean(
+                [len(np.unique(xyz[:, k])) / len(xyz) for k in range(3)]), "raw_std": n.std(), "raw_median": np.median(n)}
