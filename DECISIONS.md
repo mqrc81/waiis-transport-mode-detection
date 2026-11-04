@@ -176,16 +176,15 @@ decision after it).
 
 ## 2026-10-30: WAIIS labelling starts with a few users per mode and platform, then targets bus and train
 
-**Draft — not approved.**
-
 **Decision.**
-- 06 is WAIIS's starting point (n = 0). The first WAIIS labels go to **a few users per mode and per platform**
+- The reference model is WAIIS's starting point (n = 0): 06 on `waiis_bench_v1`; on `waiis_bench_v2`, 10's E2
+  (entry 2026-11-03). The first WAIIS labels go to **a few users per mode and per platform**
   (iPhone, Android).
 - After that, labelling **targets bus and train** rather than more users in general. A better model, or a public base
   with rail and bus, is weighed against further labelling.
 - Public base data (SHL User 1) stays in training for both models.
-- Run is not used to judge models until the dev / test difference in run recall is understood (a question for the
-  next benchmark version).
+- Run: the dev / test difference in run recall was explained by 09 (one dev user whose run moves like walking);
+  `waiis_bench_v2` drops run labels of such users and scores run inside foot (entry 2026-11-02).
 
 **Why.**
 - **The domain step:** on top of SHL User 1, 3 ExtraSensory users raise 8-class dev F1 from 0.452 to 0.586 (+0.13);
@@ -198,10 +197,11 @@ decision after it).
 - **Run:** dev recall 0.26 at every n, unchanged by 13 ExtraSensory run users, against 0.74 on the test users (06).
 
 **Limits of the evidence.** ExtraSensory users (2015 phones and app), not WAIIS employees; development data only, a
-pool of ~38 users; 5 draws; no paired bootstrap of the gains; rail can't be measured (2–3 ExtraSensory train users).
+pool of ~38 users; 5 draws; no paired bootstrap of the gains; rail can't be measured (2–3 ExtraSensory train users). Labelling per platform needs the platform (and phone model)
+stored with each WAIIS recording; the app doesn't record it yet (08's WAIIS app-days report).
 
 **Evidence.** `experiments/07_user-label-curve_waiis-bench/README.md` (Results, stop-point 2 and review;
-Conclusion).
+Conclusion). Updated 2026-11-04 (starting model, run, platform) and approved 2026-11-04.
 
 ## 2026-11-02: Candidate data for waiis_bench_v2: NOR-TMD (Android), Collecty; not MobilitApp
 

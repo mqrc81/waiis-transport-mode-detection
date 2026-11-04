@@ -103,8 +103,9 @@ approved 2026-11-02. No test users were read.
 - Without SHL User 1: 0.544 with all ~38 users; at that point 59% of the gap is train (6 non-rail classes: 0.635 vs
   0.668).
 - Still gaining at the end: **bus** (most), walk, bike. Flat: still, car, run. Rail can't be measured.
-- Reading for WAIIS: label a few users per mode and per platform first (06 is WAIIS's n = 0), then target bus and
-  train. The DECISIONS.md entry is still **draft, not approved**.
+- Reading for WAIIS: label a few users per mode and per platform first (the reference model is WAIIS's n = 0), then
+  target bus and train. DECISIONS.md entry 2026-10-30, approved 2026-11-04; per platform needs the platform stored
+  with each recording.
 - Its open run question (dev recall 0.26 vs 0.74 on test) was traced in 09 to one dev user whose run moves like
   walking; v2 drops run labels of such users.
 
