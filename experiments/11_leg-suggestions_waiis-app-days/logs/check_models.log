@@ -1,0 +1,13 @@
+2026-11-04 17:07:22,254 shl_user1 E2 seed 0: max |diff| acc 2.98e-08 gps 2.98e-08 raw 1.76e-07 p 1.64e-07; six-class F1 official 0.9532 (saved 0.9532)
+2026-11-04 17:07:23,278 shl_user1 E1 seed 0: max |diff| acc 2.98e-08 gps 2.98e-08 raw 2.01e-07 p 1.12e-07; six-class F1 official 0.9631 (saved 0.9631)
+2026-11-04 17:07:24,427 shl_user1 E2 seed 1: max |diff| acc 2.98e-08 gps 2.98e-08 raw 1.68e-07 p 1.08e-07; six-class F1 official 0.9577 (saved 0.9577)
+2026-11-04 17:07:25,392 shl_user1 E1 seed 1: max |diff| acc 2.98e-08 gps 2.98e-08 raw 1.95e-07 p 1.12e-07; six-class F1 official 0.9634 (saved 0.9634)
+2026-11-04 17:07:26,532 shl_user1 E2 seed 2: max |diff| acc 2.98e-08 gps 2.98e-08 raw 1.71e-07 p 1.36e-07; six-class F1 official 0.9550 (saved 0.9550)
+2026-11-04 17:07:27,509 shl_user1 E1 seed 2: max |diff| acc 2.98e-08 gps 2.98e-08 raw 2.09e-07 p 1.03e-07; six-class F1 official 0.9637 (saved 0.9637)
+2026-11-04 17:07:32,712 extrasensory E2 seed 0: max |diff| acc 2.98e-08 gps 2.98e-08 raw 1.89e-07 p 1.59e-07; six-class F1 official 0.6498 (saved 0.6498)
+2026-11-04 17:07:36,208 extrasensory E1 seed 0: max |diff| acc 2.98e-08 gps 2.98e-08 raw 2.29e-07 p 1.30e-07; six-class F1 official 0.6340 (saved 0.6340)
+2026-11-04 17:07:40,471 extrasensory E2 seed 1: max |diff| acc 2.98e-08 gps 2.98e-08 raw 1.83e-07 p 1.19e-07; six-class F1 official 0.6505 (saved 0.6505)
+2026-11-04 17:07:43,885 extrasensory E1 seed 1: max |diff| acc 2.98e-08 gps 2.98e-08 raw 2.26e-07 p 1.47e-07; six-class F1 official 0.6348 (saved 0.6348)
+2026-11-04 17:07:48,089 extrasensory E2 seed 2: max |diff| acc 2.98e-08 gps 2.98e-08 raw 1.87e-07 p 9.61e-08; six-class F1 official 0.6476 (saved 0.6476)
+2026-11-04 17:07:51,589 extrasensory E1 seed 2: max |diff| acc 2.98e-08 gps 2.98e-08 raw 2.25e-07 p 9.58e-08; six-class F1 official 0.6357 (saved 0.6357)
+2026-11-04 17:07:51,589 worst max |diff| {'acc': 2.9802304069015406e-08, 'gps': 2.980226365689731e-08, 'raw': 2.2902523100221117e-07, 'p': 1.6435796490466004e-07}; reproduced (< 1e-6): True
