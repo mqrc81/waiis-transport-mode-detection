@@ -1,0 +1,15 @@
+date=2026-10-30 dt 40/41 share 0.9974, 39 0.0009, <39 156, 42-200 198, >200 6
+   drift from 40 ms grid within burst [ms]: p1 12 p50 800 p99 4065
+   short steps at sample index within burst: median 3682 n 156
+   GPS fixes within 30 s of an IMU burst, by state: {'still': 0.98, 'unknown': 0.18, 'vehicle': 0.98, 'walk': 0.96}
+   GPS (UTC) 12:27–23:24, IMU 16:09–22:57
+date=2026-10-31 dt 40/41 share 0.9980, 39 0.0007, <39 108, 42-200 133, >200 1
+   drift from 40 ms grid within burst [ms]: p1 13 p50 670 p99 2674
+   short steps at sample index within burst: median 3945 n 108
+   GPS fixes within 30 s of an IMU burst, by state: {'2.5-4': 0.6, 'still': 0.98, 'unknown': 0.06, 'vehicle': 0.57, 'walk': 0.96}
+   GPS (UTC) 01:22–22:30, IMU 12:14–20:28
+date=2026-11-03 dt 40/41 share 0.9970, 39 0.0010, <39 201, 42-200 263, >200 7
+   drift from 40 ms grid within burst [ms]: p1 12 p50 723 p99 6317
+   short steps at sample index within burst: median 3280 n 201
+   GPS fixes within 30 s of an IMU burst, by state: {'2.5-4': 0.97, 'still': 0.97, 'unknown': 0.0, 'vehicle': 0.99, 'walk': 0.92}
+   GPS (UTC) 07:18–23:03, IMU 12:33–21:14

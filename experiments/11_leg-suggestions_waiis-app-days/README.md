@@ -1,0 +1,410 @@
+# 11 Leg suggestions on the WAIIS app days
+
+## Question
+
+What leg suggestions (start, end, mode) do E1 and E2 give on the WAIIS app days, how good are they on dev, and how
+should WAIIS GPS feed them? The result is the first suggestion engine for the WAIIS labelling tool, adapted to the
+tool's format once its repo is available.
+
+## Plan
+
+Models: 10's **E2** (final) and **E1** (descriptive in 10; has a tram class), as saved; no retraining. Minute
+probabilities → HMM (forward-backward, as in 10) → legs. Dev data: SHL User 1 (hips, day folds, out of fold) and
+ExtraSensory dev (out of fold); ExtraSensory's label timing is coarse, so its boundaries are reported, never tuned on.
+WAIIS days are review days, not a test set.
+
+**Stop-point 1 approved 2026-11-04:** all proposals as written, with four changes (platform confirmed; the WAIIS app
+days described here as one dataset; the speed across in the reason of moving GPS-only legs; the device-selection
+note as what the manifest records). "Proposed" below marks the approved proposals.
+
+### Stop-points
+
+1. **Inventory and plan** (this section and Results, stop-point 1). Wait for OK.
+2. **Dev results:** GPS input rule, leg rules and thresholds, both models. Wait for OK and for the diaries before any
+   model runs on the WAIIS days.
+3. **WAIIS days:** E1 and E2 on the three days, review sheets; SHL Users 2–3 once (leg metrics, descriptive). Wait for
+   the review. Then Results, draft Conclusion, STATUS.md.
+
+### Models as saved (experiment 10, `<data>/processed/10_gps-acc-baseline_waiis-bench-v2/models/`)
+
+| Use | E2 | E1 |
+|---|---|---|
+| dev, out of fold | acc `E2_seed<k>_fold<f>.txt`, GPS `A0_gps_seed<k>_fold<f>.txt` (E2's GPS model is A0's), HMM refit per fold by `tmd.models.minutes.hmm_params` (deterministic) | acc `E1_seed<k>_fold<f>.txt`, same GPS models, HMM from ExtraSensory + SHL User 1 (9 states) |
+| saved out-of-fold probabilities | `oof/E2_seed<k>.npz` (acc, gps, raw, p; 360,313 rows) | `oof/E1_seed<k>.npz` |
+| WAIIS days, SHL Users 2–3 | `test_E2_seed0.txt`, `test_gps_seed0.txt`, `test_E2_seed0_hmm.npz` | `test_E1_seed0.txt`, same GPS, `test_E1_seed0_hmm.npz` |
+
+- All fold models were saved, so **no refit is needed**. Still, before any dev run, the loaded fold models are checked
+  against 10's saved out-of-fold probabilities (acc and GPS, seed 0, SHL User 1 and ExtraSensory rows; expected
+  bit-identical or within float tolerance).
+- **Seed** (proposed, approved): seed 0 is *the* model (one model id per output file); dev choices are made on seed 0, and seeds
+  1–2 are reported as spread. (An average of the 3 seeds would be a new model.)
+- Fusion and smoothing exactly as 10: product fusion on GPS-covered minutes, acc model elsewhere; E1's GPS tram factor
+  = vehicle mean (`tmd.models.fusion.product`); HMM forward-backward, 60 s step, restart after 10 min
+  (`tmd.models.minutes.smooth`).
+
+### WAIIS input
+
+**Reader** `tmd.readers.waiis` (new): one day folder (`<data>/raw/waiis/user=<key>/date=<YYYY-MM-DD>/`) → accelerometer
+(t [s], xyz in the Android convention, m/s²), GPS fixes, sessions, minute windows.
+
+- **Platform:** not recorded anywhere in the data (Results). The reader takes it from the project-level device table
+  `metadata/waiis_devices.csv` (in git; layout in `metadata/README.md`): one row per user key and device period
+  (`valid_from` / `valid_to`), with platform, phone model and the axis convention kept apart from its evidence. It
+  fails when a recorded day has no row or several. Current row: `sub_0c0b…`, iphone, iPhone 16, axis convention
+  `ios` (strongly indicated, not confirmed by a face-up recording), confirmed 2026-11-04. When the app stores the
+  platform, the reader takes it from the data.
+- **Axis signs:** v2's rule A1 (iOS → Android convention). WAIIS iPhone data are already in m/s², and iOS's signs
+  kept is strongly indicated given the iPhone, not confirmed by a face-up recording (Results), so the rule is `× −1`
+  (`tmd.readers.waiis.axis_sign`, from the device table's `axis_convention`). E1's and E2's features are invariant
+  to it. `tests/test_waiis_sign_invariance.py` checks that end to end on a WAIIS day (minute windows flip exactly,
+  identical 580 features, identical E1 / E2 acc-model probabilities); `tests/test_acc_features.py` already covers the
+  feature functions on synthetic windows.
+- **Resampling and windows:** as `waiis_bench_v2`: the whole day's samples go through `tmd.candidates.trip_windows`
+  (distinct times, gap-free stretches resampled 100 Hz → 25 Hz, one 15 s window per clock minute, real rate ≥ 24 Hz, no
+  gap > 0.5 s); only status `ok` windows become model minutes. Features: `tmd.features.acc.features(w, sub=True,
+  grav=False)` (05's 580).
+- **Bursts → sessions** (proposed, approved): bursts whose pause is **≤ 120 s** join into one session; a longer pause starts a
+  new one. The count is the same for any pause from 10 s to 120 s on all three days (pauses are either 1–10 s or many
+  minutes; Results), and 120 s is `tmd.gps.SESSION_GAP_S`. Within a session the HMM bridges missing minutes with Aᵏ (≤
+  10 min, as 10). GPS fixes belong to the session whose span ± 150 s (gps-v2's half window) contains them.
+
+**GPS → E2's GPS input.** What gps-v2 actually uses (`tmd.features.gps`): only `time`, `lat`, `lon` per fix, grouped by
+(user, session), with each fix assigned to a minute `ts`. From those it derives pair speeds (consecutive fixes ≤ 150 s
+apart), acceleration, stop count (1.0 m/s threshold), turn angles (bearings over displacements ≥ 20 m), over the fixes
+in [ts − 150, ts + 150] s. **It never reads reported speed, heading, accuracy or fix counts.** So:
+- WAIIS's missing reported speed (29%) doesn't matter to the model. Reported speed is used only on the review sheets,
+  next to derived speed.
+- Accuracy matters only in two places: fixes with accuracy > 500 m are dropped (missing) before every rule, and it is
+  the ranking key for the best-accuracy rules. **14.25 m** (a third of WAIIS fixes, probably a default) is kept as a
+  value; ties are broken by distance to the minute centre. SHL has no such default, so the dev choice can't test this
+  quirk. On the WAIIS days, how often a 14.25 m fix is picked over a fix with a real value is reported (descriptive).
+
+Candidates (one fix, or one position, per minute `ts`, minute centre `ts + 30`):
+
+| | Rule | Fix time used |
+|---|---|---|
+| C1 | fix nearest the minute centre, within the minute | its own |
+| C2 | best-accuracy fix within ±7.5 s of the centre (SHL's training rule, `tmd.bench.build.shl_tracks`) | its own |
+| C3 | best-accuracy fix within the minute | its own |
+| C4 | median lat and median lon of the minute's fixes | median of their times |
+| C5 | every fix as it comes, each assigned to its clock minute (comparison only; expected worse) | its own |
+| ref | 10's per-minute GPS from SHL's 1 Hz track (what the model was trained on) | upper reference |
+| ref | no GPS (acc model + HMM) | lower reference |
+
+- **Dev set for the choice:** SHL User 1's 1 Hz track (`tmd.bench.shl_gps_1hz`) thinned per recording to a fixed 20 s
+  cadence (`tmd.gps.thin` with a constant 20 s interval: first fix, then each fix ≥ 20 s after the last kept; natural
+  dropouts stay gaps), sessions from the bench labels. Features are gps-v2. E2's GPS model is used out of fold (A0's GPS
+  fold models), fused with E2's saved out-of-fold acc probabilities, HMM per fold.
+- **Choice:** the highest **six-class macro-F1 on SHL User 1 (official minutes) after fusion and HMM**, seed 0, with
+  seeds 1–2 as spread. Within 0.005 of the best, the candidate with more GPS-covered minutes wins, then the simpler one
+  (C1 < C3 < C2 < C4). Also reported: GPS-model-alone six-class F1 on covered minutes, coverage, and raw-HMM edits per
+  hour. ExtraSensory has no dense GPS and keeps its own per-minute GPS.
+
+**Optional boundary refinement with the 20 s fixes (leg rules only, never model input).** A boundary between a slow
+leg (still, walking) and a fast one (bike, car, bus, rail) is moved, within ±1 min of the minute boundary, to the 20 s
+fix where derived speed crosses halfway between the two legs' median speeds. **Margin, fixed now:** adopted only if, on
+the same 20 s SHL dev with SHL's per-sample labels (`stream.parquet`) as truth at 1 s resolution, it lowers the
+median boundary error of matched legs by **≥ 0.5 min** and edits per hour by **≥ 5%**, with constraints (a) and (b) still met.
+Otherwise boundaries stay on the minute grid.
+
+**Stretches without accelerometer data** (the app records only while moving). Rule as given: no data, no leg.
+- **GPS only, speed across < 0.5 m/s** (proposed, approved): **emit a `still` leg, coverage "GPS only", flagged**, model id
+  `rule:gps_only_still`. Conditions: no accelerometer minute in the stretch; fixes with accuracy ≤ 500 m at both ends;
+  displacement / time across the stretch < 0.5 m/s; length ≥ 5 min. The leg ends at the neighbouring legs (or at the
+  last / first fix). Not checked on dev (SHL and ExtraSensory have no such stretches); the diaries are its first check,
+  which is why it is flagged. Overnight stretches are clipped to the UTC day of the file.
+- **GPS only, moving (≥ 0.5 m/s across), not in the brief** (proposed, approved). On the three days, 16 / 35 / 19
+  minutes have a fix but no accelerometer: mostly isolated fixes, plus the rail-like legs with only coarse fixes.
+  Each such stretch becomes **an `unknown` leg, coverage "GPS only", with no mode and no top-2**, so the timeline
+  shows that a trip happened. **Its flag reason carries the GPS speed across the stretch** (displacement between its
+  end fixes / time, m/s), e.g. `{"code": "gps_only_moving", "speed_across_mps": 7.9}`. The GPS model alone is never
+  used for a suggestion (10 never evaluated it alone).
+
+### Labels (the tool's tree, from memory; one mapping table in the adapter)
+
+- Top level, one per leg: still, walking, running, bike, e_scooter, motorcycle, car, bus, rail, unknown.
+- Mapping: still → still, walk → walking, run → running, bike → bike, car → car, bus → bus, train / subway / tram →
+  rail. **Top-level minute probability = sum of the fine probabilities mapped to it.** Legs are built on the top level,
+  so a train / subway flip doesn't split a leg; walk / run does.
+- **Sub-mode hint** (rail only): train / metro (= subway) / tram, the largest of them, with its share of the rail
+  probability over the leg. E2 has no tram, so its hint is train or metro; E1's can be tram.
+- **Blind spots (never predicted):** walking purposes, car driver / passenger, train types, e_scooter, motorcycle,
+  phone position.
+  - e_scooter: no training data. Most likely **bike**: road vibration without a pedalling rhythm and bike-like speeds.
+    car is the second candidate.
+  - motorcycle: ExtraSensory has a `motorbike` flag. Stop-point 2 reports E2's predictions on those dev minutes, if
+    any; expected **car**.
+- **unknown:** a leg whose confidence is below the threshold gets mode = unknown, with its top-2 modes still listed,
+  so a one-click accept never stores a guess.
+
+### Legs and leg rules
+
+**Raw HMM legs** (the reference for constraint b): per minute the top-level argmax of the forward-backward posterior;
+a leg = a run of one mode within a session, broken by a gap > 10 min without minutes. No other rule, no unknown.
+
+**Rules, applied in this order** (one set per model; dev only):
+1. **Stops inside vehicle legs:** a still run of ≤ `S_veh` min between two legs of the same vehicle mode (car, bus,
+   rail) is absorbed into it. Grid `S_veh` ∈ {0, 2, 5, 10}.
+2. **How stays split legs:** a still run of ≤ `S_other` min between two legs of the same non-vehicle mode (walking,
+   running, bike) is absorbed; longer still runs are stays and split. Grid `S_other` ∈ {0, 1, 2, 3}. A data gap
+   (no minutes) between two legs of one mode joins them if ≤ `G` min, else splits them. Grid `G` ∈ {2, 10}.
+3. **Minimum leg length:** legs shorter than `L_min` min are merged, shortest first, into the neighbour whose mode has
+   the higher mean probability over the short leg's minutes. If both neighbours have the same mode, all three join.
+   A short leg without a neighbour (gap on both sides) stays and is flagged `short`. Grid `L_min` ∈ {1, 2, 3, 5}.
+4. **Confidence** of a leg = the mean over its minutes of its mode's top-level probability. Below `c` → mode unknown,
+   flag reason `low_confidence`. Grid `c` ∈ {off, 0.5, 0.6, 0.7, 0.8, 0.9}.
+5. **Second mode shown** when its leg probability ≥ `τ2`, `τ2` ∈ {0.1, 0.2, 0.3}. Chosen after rules 1–4: the highest
+   `τ2` that shows the true mode for ≥ 50% of SHL legs whose top-1 is wrong. The output always lists top-2; `τ2` only
+   sets the "show" flag.
+
+Other flag reasons (informational, they don't set unknown): `short` (< 3 min), `no_gps` on a car / bus / rail leg (road
+vs rail from the accelerometer alone is weak), `rail_hint_uncertain` (hint share < 0.6), `gps_only_still` (GPS-only
+still legs). GPS-only moving legs are unknown by construction, with reason `gps_only_moving` and the speed across.
+
+**Grid:** 4 × 4 × 2 × 4 × 6 = 768 combinations per model, then `τ2`. **Objective:** fewest edits per hour on SHL User
+1 (seed 0), subject to
+- (a) time with a wrong, unflagged mode ≤ 5% (SHL User 1);
+- (b) ExtraSensory leg F1 and time-weighted accuracy within 0.01 of the raw HMM legs. **Reading (proposed, approved):** (b) scores
+  the top-1 mode of every leg, including unknown legs. It checks that merging and minimum length don't damage
+  ExtraSensory. The threshold `c` only flags and is governed by (a) and edits. Scoring unknown as wrong in (b) would
+  allow almost no threshold. Both versions are reported.
+
+Ties within 1% of the fewest edits go to the simpler combination: smaller `S_veh`, `S_other`, `L_min`, `G`, in that
+order, then the higher `c` (more flagging). If no combination meets (a), that is the stop-point 2 result; nothing is
+relaxed without OK.
+
+### Metric definitions (dev; legs on the top level; minutes = 1-min model steps)
+
+- **Truth legs:** labelled minutes (`tmd.models.minutes.labelled_minutes(fine=True)`; SHL mixed minutes by majority)
+  mapped to the top level, cut into legs by the same run and gap rules as the raw HMM legs. Unlabelled minutes are
+  never scored. Predicted legs may extend over them.
+- **Matched legs:** same top-level mode and **IoU ≥ 0.5** over labelled minutes, one-to-one, greedy by IoU (segmental
+  F1@0.5). Leg precision, recall, F1. Unknown legs never match.
+- **Boundary error** of matched legs: |start difference| and |end difference| in minutes, median and p90, excluding
+  ends where the truth leg meets a session edge or a data gap. SHL also in seconds against `stream.parquet` labels
+  for the refinement check. ExtraSensory: reported, never tuned on.
+- **Extra / missed legs per hour:** unmatched predicted / unmatched truth legs per hour of labelled time.
+- **Time-weighted accuracy:** share of labelled minutes whose leg mode equals the truth mode. Reported with unknown
+  counting as wrong and on top-1.
+- **Edits** (per hour and per day; SHL day = recording day, ExtraSensory day = user-day). Per session, each predicted leg
+  is mapped to the truth leg it overlaps most, and each truth leg to the predicted leg it overlaps most:
+  - merges = Σ over truth legs of (predicted legs mapped to it − 1);
+  - splits = Σ over predicted legs of (truth legs mapped to it − 1);
+  - mode changes = truth legs whose mapped predicted leg has another mode (unknown included);
+  - boundary moves = internal truth boundaries between two truth legs mapped to different predicted legs whose
+    predicted boundary is off by > 1 min (a split places its own boundary, so no extra move).
+- **Wrong but unflagged:** minutes in non-unknown legs whose mode ≠ truth (share of labelled time); legs whose
+  majority truth mode ≠ their mode; share of legs flagged (unknown).
+- Reported for **short truth legs (< 5 min)** and **per mode** (recall by truth mode, precision by predicted mode,
+  boundary errors).
+- **Range mode:** each truth leg as a selected range; the mean of its minutes' top-level probabilities; top-1 and top-2
+  accuracy; calibration of the top-1 probability (reliability table, 10 bins, ECE; Brier score).
+- **SHL Users 2–3 (stop-point 3, once):** 10's saved test probabilities (`oof/test_E{1,2}_seed0.npz`, per-minute GPS) and the chosen 20 s
+  rule (test GPS model on SHL 2–3's thinned track), all positions, leg metrics with the fixed rules.
+
+**Run time:** per WAIIS day, the wall time of reading, windows, features, both models, HMM and legs, single thread,
+with minutes of data. Inference latency and model size per CLAUDE.md come from 10 (the models are unchanged) and are
+repeated only for the WAIIS path.
+
+### Output (provisional; `tmd.legs_adapter` is the only module that knows the format)
+
+One JSON file per model per day: `<data>/processed/11_leg-suggestions_waiis-app-days/waiis/user=<key>/date=<day>/legs_<model>.json`
+(personal data, never in git).
+
+```
+{"format": "tmd-legs/0.1", "user_key": ..., "date": "2026-11-03", "time": "UTC epoch ms",
+ "model": {"id": "E2", "version": "10:test_E2_seed0", "rules": "legs-v1 (11)", "code_commit": "..."},
+ "input": {"platform": "iphone", "platform_source": "self-reported", "gps_rule": "C?", "acc_rate_hz": 25},
+ "legs": [{"start_ms", "end_ms", "mode", "sub_mode_hint": {"mode": "metro", "share": 0.71} | null,
+           "top2": [{"mode", "p"}, {"mode", "p"}], "show_second": bool, "confidence",
+           "low_confidence": bool, "flag_reasons": [{"code", ...details, e.g. "speed_across_mps"}], "coverage": "acc+gps" | "acc" | "gps",
+           "n_minutes", "model_id", "model_version"}],
+ "minutes": [{"t_ms", "coverage", "p": {top-level mode: prob}, "p_fine": {class: prob}}]}
+```
+
+- `tmd.legs` (new): `predict_legs(minutes, probs, rules)` and the leg metrics (reusable for MobilityNet and WAIIS
+  labels later). `tmd.readers.waiis` (new): the reader. Scripts in this folder: `inventory.py`, `app_days/`, then
+  `check_models.py`, `gps_candidates.py`, `leg_grid.py`, `waiis_days.py`, `review_sheet.py` (names provisional).
+- MLflow (experiment `11_leg-suggestions_waiis-app-days`): one run per GPS candidate and seed, one per leg-rule grid
+  and model (the full grid as an artifact table), one per WAIIS day and model, one for SHL Users 2–3. Datasets:
+  `shl_user1_dev`, `extrasensory_dev_v2`, `shl_user23_test_v3`. The WAIIS days get a new `tracking.SPLITS` entry backed
+  by `splits/waiis_days.json` in this folder (user key and dates only).
+
+### WAIIS days (stop-point 3)
+
+- Before any model runs on them: a rough diary per day (approximate times and modes, no places), written by the person
+  who recorded the days.
+- Review sheet per day (HTML or PNG plus a CSV, under `<data>/processed/11_.../waiis/`): a timeline of E1's and E2's legs against the
+  diary, with confidence, coverage and GPS speed (derived and reported; no map); counts of legs that match the diary
+  (same mode, IoU ≥ 0.5 with the diary leg), missed, or extra. Each leg is then reviewed as right / wrong / unsure.
+- Descriptive: the package's own predictions (`predictions/*.parquet`: `fusion_late__hmm_viterbi`, `lightgbm_gps`,
+  `inceptiontime_acc(_25hz)`, `hart_acc`, `rules_speed`, 18 s rows) mapped to the top level, against the diary, beside E1
+  and E2.
+- No rule or threshold changes because of these days without a re-check on dev, recorded as a deviation.
+
+### Run-time estimate
+
+| Step | Compute (estimate) |
+|---|---|
+| model check against 10's saved probabilities | ~5 min |
+| GPS candidates: 5 rules × SHL User 1 (~37k minutes) gps-v2 features, 3 seeds × 5 folds, fusion, HMM | ~30–45 min |
+| leg-rule grid: 768 combinations × 2 models on SHL User 1 + ExtraSensory dev (291k minutes), seed 0; seeds 1–2 for the chosen rules | ~1 h |
+| boundary refinement (optional), range mode, per-mode tables | ~15 min |
+| WAIIS days: 3 days × 2 models (2–3 h of accelerometer per day) | < 1 min per day |
+| SHL Users 2–3 once | ~15 min |
+
+Long steps run in the background with `tmd.progress`, and the log path is given at launch.
+
+## Results
+
+### Stop-point 1: the WAIIS app days (2026-11-04; approved 2026-11-04)
+
+Three unlabelled days of WAIIS app recordings, **one dataset**: one person, one phone, UTC days 2026-10-30, 10-31 and
+11-03. Descriptive; no models, no MLflow runs. Figures are pooled over the three days unless a day is named; per-day
+figures are in the last table.
+
+**Commands** (outputs in `logs/`; summaries and local times of gaps, never coordinates):
+```
+cd experiments/11_leg-suggestions_waiis-app-days/app_days     # data path as optional argument
+uv run python {describe,gaps,imu_timing,noise_floor}.py              > ../logs/app_days_<script>.log
+# per day: describe, gaps, imu_timing on a temp folder holding one symlinked day  > ../logs/app_days_<script>_<day>.log
+cd .. && uv run python inventory.py                                  > logs/inventory.log
+```
+The four `app_days/` scripts were moved here from 08's WAIIS day scripts before stop-point 2; reading, fix states
+and sessions now come from `tmd.readers.waiis`. Rerun on the committed code, their output equals the first run's except
+one gap distance on 10-31 (2,438.8 → 2,438.9 m: `tmd.gps.haversine_m` uses the mean Earth radius 6,371,008.8 m, the
+old copy 6,371,000 m); no count changes.
+Definitions (the scripts' own): a fix's **state** comes from its derived speed over a 60 s baseline (displacement to
+the first fix ≥ 60 s ahead, else behind, at most 180 s away): still < 0.5 m/s, walk 0.5–2.5, 2.5–4, vehicle > 4,
+unknown without a baseline. **Still 5 s blocks:** 125 samples inside one burst with std |acc| < 0.05 m/s². **Minute
+windows** as `waiis_bench_v2` (one 15 s window per clock minute, 25 Hz, `tmd.candidates.trip_windows`); **quiet:**
+std |acc| < 0.03 m/s².
+
+#### Files and fields
+
+- **Layout** per UTC day, `<data>/raw/waiis/user=<key>/date=<YYYY-MM-DD>/`: `gps.parquet`, `imu.parquet`
+  (`t_ms, ax, ay, az, gap`), `_manifest.json` (build provenance: source objects, hashes, `nominal_hz` /
+  `effective_hz` 25), `segments/h3r10_dwell_sandwich-1-1.parquet` (stays / trips), `context/osm*.parquet`
+  (OpenStreetMap context per fix and segment), `predictions/*.parquet` (the package's own models, 18 s rows:
+  `fusion_late__hmm_viterbi`, `lightgbm_gps__hmm_viterbi`, `inceptiontime_acc__hmm_viterbi`,
+  `inceptiontime_acc_25hz__hmm_viterbi`, `hart_acc__hmm_viterbi`, `rules_speed__majority_window`; classes still /
+  walking / running / bike / car / bus / subway / train; plus `point_quality_rules_v1`). One user key; no README.
+- **GPS columns:** `t_ms`, `lat`, `lon`, `accuracy_m`, `speed_mps`, `speed_accuracy_mps`, `heading_deg`,
+  `altitude_m`, `source`, `activity`, `activity_confidence`, `is_moving`, `event`. Always empty:
+  `speed_accuracy_mps`, `activity_confidence`, `event`. Heading missing for 31%. Units m, m/s, degrees.
+- **Time:** UTC epoch ms, GPS always whole seconds, sorted, no duplicates. Local time Europe/Madrid, UTC+1 on these
+  dates. Folders are UTC days.
+- **The phone's own activity flag is useless:** 95% of fixes say `in_vehicle` with `is_moving = true`; the median
+  reported speed is 1.0 m/s.
+- **Platform and phone model:** iPhone 16, confirmed 2026-11-04 (`metadata/waiis_devices.csv`). **Not recorded in the data:**
+  not in the manifest, the parquet columns or the parquet key-value metadata; GPS `source` is always `waiis`.
+- **Device selection:** the manifest records `selected_device_rule = greatest_data_object_bytes`. With one user and
+  one phone, what happens with a second device is not observable here; open question for the data build.
+
+#### GPS (1,243 fixes)
+
+- **Cadence: a fixed ~20 s while recording.** 80% of intervals are 20–30 s, 5.6% under 20 s; median 20 s in every
+  state.
+
+  | State (fixes) | p50 | p75 | p95 | share ≤ 20 s |
+  |---|---|---|---|---|
+  | still (474) | 20 s | 24 s | 79 s | 0.62 |
+  | walk (475) | 20 | 20 | 31 | 0.86 |
+  | 2.5–4 m/s (80) | 20 | 20 | 47 | 0.86 |
+  | vehicle (157) | 20 | 24 | 102 | 0.68 |
+  | unknown (57) | 588 | 1,013 | 8,167 | 0.04 |
+
+- **Gaps over 60 s: 103**, split by the speed across the gap (displacement between its two end fixes / time):
+
+  | Speed across | Gaps | Median length | Total | Ending at a coarse fix (> 500 m) |
+  |---|---|---|---|---|
+  | < 0.5 m/s, stationary | 52 | 17.5 min | 37.5 h | 2 |
+  | 0.5–2 m/s | 13 | 3.3 min | 0.9 h | 6 |
+  | ≥ 2 m/s, moving | 38 | 4.8 min | 2.8 h | 26 |
+
+  - Stationary gaps are still periods: overnight and long stays show isolated fixes every 10–20 min.
+  - Moving gaps are vehicle legs without good GPS, mostly ending at a **coarse fix** every ~4–5 min (32 coarse fixes,
+    all without speed; 1,414 m ten times, 2,000 m twice, probably a cap). The pattern fits underground rail; there
+    are no labels to confirm it.
+  - Short vehicle stops don't show as gaps; they stay on the 20 s cadence.
+- **Reported speed:** missing for 26% of fixes (still 35%, walk 12%, 2.5–4 m/s 11%, vehicle 27%, every coarse fix).
+  Where present it agrees with derived speed: correlation 0.93 against consecutive fixes ≤ 30 s apart, median
+  difference −0.08 m/s. Medians, reported vs 60 s derived: still 0.1 / 0.1, walk 1.1 / 1.1, 2.5–4 m/s 3.1 / 3.1,
+  vehicle 7.4 / 6.5 m/s. Maximum reported 26.1 m/s.
+- **Accuracy:** median 14.2 m, p95 107 m, 9.5% over 50 m. In a vehicle either very good or very poor (p25 6.6 m, p75
+  44 m, p95 937 m; 24% over 50 m). **33% of fixes report exactly 14.25 m** (407 of 1,243; 14.24 m another 25), which
+  looks like a default rather than an estimate.
+
+#### Accelerometer (627,618 samples, 7.0 h)
+
+- **Unit and gravity:** m/s², phone frame, gravity included. Median |acc| over 158 still 5 s blocks is 9.73 m/s²
+  (per day 9.73 / 9.73 / 9.74), about 0.8% below 9.81, a small scale offset.
+- **Rate:** 24.9 Hz real rate in every burst (p5 24.8). Integer-ms timestamps, 99.7–99.8% of steps 40 or 41 ms, so
+  samples drift from a 40 ms grid over a burst (median 0.7–0.8 s, p99 2.7–6.3 s per day). Outside that: 465 steps
+  under 39 ms, 594 of 42–200 ms, 14 over 200 ms; the largest step inside a burst is 0.97 s.
+- **Bursts:** 91, median ~5 min (capped near 300 s, a few ~600 s), pauses of a few seconds between bursts while
+  moving (median 3.2–3.8 s per day), then minutes to hours when the app stops. Recording only while moving.
+- **Saturation (±65.5 m/s²):** 40 samples (6 / 6 / 28 per day).
+- **Values on a 0.002 m/s² grid** (the app or the platform rounds them); 10× below the quiet threshold.
+- **Noise floor** (median std |acc| of quiet minute windows, 25 Hz): **0.019 m/s²**, from only 3 quiet minute windows
+  (9 quiet 15 s tiles), all inside GPS-covered stretches (2 at still fixes, 1 at a walk fix), none in a moving gap.
+  For scale (same definitions, `noise_floor.py`): ExtraSensory iPhone dev users median 0.011 (WAIIS is above 27 of
+  28), ExtraSensory Android 0.014, the low-noise Android user 4E98F91F 0.0070, NOR-TMD subway 0.019. So the WAIIS
+  phone is not in 4E98F91F's low-noise regime (10's false-rail case), and a resting phone without any location did
+  not occur on these days.
+- **Axis signs: iOS signs kept (scaled to m/s², not converted to Android's) is strongly indicated given the iPhone,
+  not confirmed by a face-up recording.**
+  - Still blocks by gravity axis: y negative 102 of 158, z negative 27, z positive 22, x positive 7.
+  - Upright (top up), Android gives y = +9.8 and raw iOS y negative: y ≈ −9.8, the most common still orientation,
+    fits iOS signs with an upright phone; on Android it would need the phone mostly upside down.
+  - Flat blocks: z negative in 28 of 44, positive in 16. Face up, Android gives z = +9.8 and raw iOS z negative; face
+    down reverses both, so the flat blocks alone can't tell the conventions apart.
+  - To confirm: a 30 s recording with the phone face up on a table (expected z ≈ −9.8 if iOS signs are kept).
+  - v2's rule A1 (iOS × −9.80665 to the Android convention) applies to this phone as `× −1`. E1's and E2's features
+    are invariant to it (test planned).
+
+#### GPS and accelerometer together
+
+- **Minutes** (clock minutes; GPS = a fix with accuracy ≤ 500 m): 383 with both an `ok` accelerometer window and GPS,
+  34 with an accelerometer window only, 70 with GPS but no accelerometer sample. Minute windows: 417 `ok`, 10 with a
+  real rate below 24 Hz, 1 with a gap > 0.5 s, 1 at the edge.
+- **Vehicle-state fixes with accelerometer data within 30 s:** 98% / 57% / 99% per day. On 10-31 most vehicle legs
+  lie in moving GPS gaps; walk and still fixes have accelerometer data nearby on every day (92–98%).
+- **Bursts → sessions:** the pause between bursts is either a few seconds or many minutes, so any joining limit from
+  10 s to 120 s gives the same sessions (8 / 8 / 9 per day; 6 / 8 / 8 with 600 s).
+
+#### Per day
+
+| | 2026-10-30 | 2026-10-31 | 2026-11-03 |
+|---|---|---|---|
+| GPS fixes | 388 | 364 | 491 |
+| GPS span / accelerometer span (UTC) | 12:27–23:24 / 16:09–22:57 | 01:22–22:30 / 12:14–20:28 | 07:18–23:03 / 12:33–21:14 |
+| interval p50; share 20–30 s; share < 20 s | 20 s; 83%; 4.9% | 20 s; 75%; 3.3% | 20 s; 82%; 8.0% |
+| fixes by state: still / walk / 2.5–4 m/s / vehicle / unknown | 163 / 143 / 0 / 65 / 17 | 166 / 141 / 5 / 21 / 31 | 145 / 191 / 75 / 71 / 9 |
+| median 60 s derived speed, vehicle-state fixes with reported speed | 18.8 m/s | (1 fix) | 5.4 m/s |
+| gaps > 60 s: stationary / 0.5–2 m/s / moving | 16 (8.1 h) / 2 / 8 (0.5 h) | 21 (17.1 h) / 4 / 24 (1.8 h) | 15 (12.3 h) / 7 / 6 (0.4 h) |
+| coarse fixes (> 500 m); moving gaps ending at one | 9; 5 of 8 | 14; 17 of 24 | 9; 4 of 6 |
+| reported speed missing | 23% | 36% | 22% |
+| reported vs consecutive-fix derived speed, corr. | 0.97 | 0.63 | 0.64 |
+| accuracy exactly 14.25 m | 33% | 32% | 33% |
+| accuracy p50 / p95; share > 50 m | 14.2 / 66 m; 5.9% | 14.2 / 154 m; 12.9% | 14.2 / 87 m; 9.8% |
+| accelerometer samples; hours | 206,333; 2.3 h | 180,893; 2.0 h | 240,392; 2.7 h |
+| bursts; median length; median pause | 30; 295 s; 3.2 s | 26; 262 s; 3.8 s | 35; 297 s; 3.2 s |
+| largest step inside a burst | 0.90 s | 0.20 s | 0.97 s |
+| saturated samples | 6 | 6 | 28 |
+| still 5 s blocks; median \|acc\| | 27; 9.73 | 89; 9.73 | 42; 9.74 |
+| still blocks by gravity axis | y− 21, z+ 6 | y− 55, z− 27, x+ 7 | y− 26, z+ 16 |
+| flat still blocks: z sign | 6 of 6 positive | 26 of 26 negative | 10 of 12 positive |
+| vehicle-state fixes with accelerometer within 30 s | 98% | 57% | 99% |
+| minute windows `ok`; other | 138; 3 rate | 119; 3 rate, 1 gap, 1 edge | 160; 4 rate |
+| minutes: acc + GPS / acc only / GPS only | 123 / 15 / 16 | 108 / 11 / 35 | 152 / 8 / 19 |
+| sessions (pauses ≤ 10 s / 120 s / 600 s join) | 8 / 8 / 6 | 8 / 8 / 8 | 9 / 9 / 8 |
+| quiet minute windows; noise floor | 1; 0.017 | 2; 0.022 | 0; – |
+
+- **10-30** has the fast vehicle legs with good GPS (vehicle median 18.8 m/s, reported and derived speed agree at 0.97).
+- **10-31** is the hard day for coverage: 24 moving gaps (1.8 h), 17 of them ending at coarse fixes, only 57% of
+  vehicle-state fixes with accelerometer data nearby, and 35 GPS-only minutes.
+- **11-03** has slow movement: 75 fixes at 2.5–4 m/s and vehicle-state fixes at a median of 5.4 m/s, which fits
+  cycling or slow urban traffic (the diary will tell). It has few moving gaps (0.4 h) and the most sub-20 s intervals (8%).
+- The lower reported / derived correlation on 10-31 and 11-03 comes with little speed range and consecutive-fix noise;
+  gps-v2 doesn't read reported speed (Plan).

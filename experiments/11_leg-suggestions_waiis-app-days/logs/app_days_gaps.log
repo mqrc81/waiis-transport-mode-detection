@@ -1,0 +1,7 @@
+fixes without a 60 s baseline: 57
+                  n  len_med  len_sum_h  coarse_end
+kind                                               
+stationary <0.5  52   1049.0       37.5           2
+0.5-2            13    197.0        0.9           6
+moving >=2       38    287.5        2.8          26
+fixes >500 m: 32 speed null: 1.0 interval to next p50: 203.0 values: {1414.0: 10, 2000.0: 2, 1000.0: 1, 961.0: 1, 977.0: 1, 1053.0: 1}

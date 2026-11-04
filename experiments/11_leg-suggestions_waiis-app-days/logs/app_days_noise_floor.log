@@ -1,0 +1,53 @@
+== WAIIS windows (ok status), per day and grid
+                   windows  quiet
+day        grid                  
+2026-10-30 minute      138      1
+           tile        504      0
+2026-10-31 minute      119      2
+           tile        464      7
+2026-11-03 minute      160      0
+           tile        611      2
+           group  windows  quiet_share  rate_hz  acc_median  acc_median_quiet  std_quiet_median std_quiet_p10_p90  quant_step  distinct_share  raw_std_quiet_median
+WAIIS 2026-10-30      138       0.0072  24.8846      9.8142            9.7114            0.0173     0.0173-0.0173       0.002          0.8956                0.0216
+WAIIS 2026-10-31      119       0.0168  24.8849      9.8291            9.7845            0.0221     0.0197-0.0244       0.002          0.8948                0.0260
+WAIIS 2026-11-03      160       0.0000  24.8879      9.8296               NaN               NaN           nan-nan       0.002          0.8913                   NaN
+      WAIIS both      417       0.0072  24.8863      9.8250            9.7327            0.0191     0.0177-0.0239       0.002          0.8945                0.0225
+
+== reference groups (users with >= 20 windows; median, min, max over users)
+                  quiet_share                  rate_hz                   acc_median                  std_quiet_median                 quant_step                 raw_std_quiet_median                 users
+                       median     min     max   median      min      max     median     min      max           median     min     max     median     min     max               median     min     max      
+group                                                                                                                                                                                                      
+4E98F91F               0.2987  0.2987  0.2987  49.9512  49.9512  49.9512     9.7963  9.7963   9.7963           0.0070  0.0070  0.0070     0.0006  0.0006  0.0006               0.0112  0.0112  0.0112     1
+ES Android, other      0.5497  0.0000  0.7694  49.9756  42.0657  50.5726     9.8027  8.9563  10.3015           0.0144  0.0108  0.0296     0.0012  0.0000  0.0392               0.0210  0.0142  0.0445    18
+ES iPhone              0.5361  0.2471  0.7313  34.2202  31.5195  34.9654     9.8072  9.5681  10.2557           0.0108  0.0078  0.0198     0.0001  0.0001  0.0001               0.0160  0.0111  0.0272    28
+NOR-TMD subway         0.0000  0.0000  0.1028  49.9333  29.3333  99.3667     9.8387  9.4301   9.9822           0.0194  0.0060  0.0276     0.0024  0.0000  0.0048               0.0250  0.0089  0.0370    18
+
+WAIIS quiet std median 0.0191: below 11 of 53 reference users with quiet windows; ES iPhone users below it: 27 of 28
+
+== where the quiet windows lie relative to GPS (minute and tile grids)
+grid                     minute  tile
+where                                
+between: stationary gap       0     2
+inside: still                 2     6
+inside: walk                  1     1
+
+all windows by place:
+grid                     minute  tile   All
+where                                      
+between: 0.5-2 m/s gap        9    36    45
+between: moving gap          26   103   129
+between: stationary gap       7    33    40
+inside: 2.5-4                25    95   120
+inside: still               157   587   744
+inside: unknown               2     4     6
+inside: vehicle              46   177   223
+inside: walk                145   544   689
+All                         417  1579  1996
+
+quiet minute windows by day and place:
+day            2026-10-30  2026-10-31
+where                                
+inside: still           1           1
+inside: walk            0           1
+
+quiet std by place (minute grid): {'inside: still': 0.0182, 'inside: walk': 0.025}

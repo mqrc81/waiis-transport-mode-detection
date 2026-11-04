@@ -124,15 +124,16 @@ approved 2026-11-02. No models.
 
 ### WAIIS app data (own days, descriptive)
 
-Two unlabelled days of WAIIS app recordings ([report](experiments/08_candidate-datasets-qc/waiis_app_days/README.md),
-2026-11-03; no models).
-- **GPS:** a fixed ~20 s cadence while recording (79% of intervals 20–30 s), not one fix per minute. Vehicle legs
+Three unlabelled days of WAIIS app recordings (2026-10-30, 10-31, 11-03; one person, one iPhone 16), described as one
+dataset in [experiment 11's README](experiments/11_leg-suggestions_waiis-app-days/README.md) (Results, stop-point 1).
+- **GPS:** a fixed ~20 s cadence while recording (80% of intervals 20–30 s), not one fix per minute. Vehicle legs
   without good GPS (likely underground rail) get only a coarse fix (> 500 m) every ~5 min with no speed. Short
-  vehicle stops stay on the 20 s cadence. Reported speed is missing for 29% of fixes (40% in vehicles) and matches
-  derived speed where present; `activity` / `is_moving` are useless; 33% of accuracies are exactly 14.25 m.
-- **Accelerometer:** m/s², gravity included, 24.9 Hz real rate in ~5 min bursts while moving. Platform isn't
-  recorded; the phone was probably an iPhone 16 (not certain). If so, the app keeps iOS's axis signs (scaled to
-  m/s², not converted to Android's), so v2's iOS sign rule would apply to WAIIS iPhone data. Unconfirmed.
+  vehicle stops stay on the 20 s cadence. Reported speed is missing for 26% of fixes and matches derived speed where
+  present; `activity` / `is_moving` are useless; 33% of accuracies are exactly 14.25 m.
+- **Accelerometer:** m/s², gravity included, 24.9 Hz real rate in ~5 min bursts while moving.
+- **Platform:** iPhone 16, confirmed 2026-11-04; not recorded in the data. **Axis signs:** iOS signs kept (scaled to
+  m/s², not converted to Android's) is strongly indicated given the iPhone, not confirmed by a face-up recording. v2's
+  iOS sign rule applies to WAIIS iPhone data as `× −1`; E1 / E2's features are sign-invariant.
 
 ## 3. Superseded experiments
 
@@ -163,6 +164,7 @@ Two unlabelled days of WAIIS app recordings ([report](experiments/08_candidate-d
    and ~5 min coarse fixes on vehicle legs without good GPS; leg-level classification of vehicle legs.
 
 Later: InceptionTime / LIMU-BERT on v2, walk-aware fusion, map context for bus vs car, driver vs passenger.
-Open WAIIS questions: axes and platform (not recorded; probably iOS signs on an iPhone 16, to confirm with a
-face-up recording and the phone model stored with the data), modes needed. Answered by the app-days report: recording in ~5 min bursts while moving, m/s² with gravity, GPS stays on
-the 20 s cadence at vehicle stops.
+Open WAIIS questions: axis signs (iOS signs strongly indicated on the confirmed iPhone 16, to confirm with a
+face-up recording); platform and phone model stored with the data; modes needed. Answered by the app-days
+description (11): recording in ~5 min bursts while moving, m/s² with gravity, GPS stays on the 20 s cadence at
+vehicle stops.

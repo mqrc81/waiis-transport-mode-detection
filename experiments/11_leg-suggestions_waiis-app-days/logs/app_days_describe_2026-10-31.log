@@ -1,0 +1,113 @@
+== GPS
+columns: ['t_ms', 'lat', 'lon', 'accuracy_m', 'speed_mps', 'speed_accuracy_mps', 'heading_deg', 'altitude_m', 'source', 'activity', 'activity_confidence', 'is_moving', 'event']
+2026-10-31: 364 fixes, local 02:22–23:30 (CET), t_ms whole seconds: True
+activity x is_moving: {('in_vehicle', True): 328, ('still', False): 36}
+null share: {'accuracy_m': 0.0, 'speed_mps': 0.363, 'speed_accuracy_mps': 1.0, 'heading_deg': 0.407, 'altitude_m': 0.0, 'activity_confidence': 1.0, 'event': 1.0}
+
+-- interval to next fix [s], overall: n=363 p5=20.0 p25=20.0 p50=20.0 p75=24.5 p95=434.1
+dt_next
+[0.0, 2.0)           0
+[2.0, 5.0)           2
+[5.0, 10.0)          3
+[10.0, 15.0)         3
+[15.0, 20.0)         4
+[20.0, 30.0)       274
+[30.0, 60.0)        28
+[60.0, 300.0)       16
+[300.0, 1800.0)     24
+[1800.0, inf)        9
+by state of the fix (60 s baseline):
+  2.5-4    n=5 p5=23.0 p25=23.0 p50=44.0 p75=133.0 p95=320.2  share<=20s=0.00
+  still    n=166 p5=20.0 p25=20.0 p50=20.0 p75=23.0 p95=41.5  share<=20s=0.66
+  unknown  n=30 p5=25.1 p25=305.0 p50=358.0 p75=1025.0 p95=7103.8  share<=20s=0.03
+  vehicle  n=21 p5=24.0 p25=38.0 p50=80.0 p75=120.0 p95=305.0  share<=20s=0.05
+  walk     n=141 p5=20.0 p25=20.0 p50=20.0 p75=20.0 p95=31.0  share<=20s=0.84
+state counts: {'still': 166, 'walk': 141, 'unknown': 31, 'vehicle': 21, '2.5-4': 5}
+
+-- gaps > 60 s
+49 gaps; length n=49 p5=94.0 p25=197.0 p50=316.0 p75=1082.0 p95=6495.6
+len_s
+[60.0, 120.0)       6
+[120.0, 300.0)     10
+[300.0, 900.0)     20
+[900.0, 3600.0)     7
+[3600.0, inf)       6
+before -> after: {('2.5-4', 'unknown'): 1, ('2.5-4', 'vehicle'): 1, ('still', 'still'): 1, ('still', 'unknown'): 3, ('still', 'vehicle'): 1, ('still', 'walk'): 3, ('unknown', '2.5-4'): 1, ('unknown', 'still'): 2, ('unknown', 'unknown'): 22, ('unknown', 'vehicle'): 4, ('unknown', 'walk'): 3, ('vehicle', 'still'): 1, ('vehicle', 'unknown'): 4, ('vehicle', 'vehicle'): 1, ('walk', 'still'): 1}
+       day start  len_s  v_before  v_after  across_m  v_across  rep_before  rep_after  acc_before   acc_after st_before st_after
+2026-10-31 02:22   5736       NaN      NaN       0.0       0.0         NaN        NaN   18.700001   18.700001   unknown  unknown
+2026-10-31 03:58    783       NaN      NaN       0.1       0.0         NaN        NaN   14.600000    6.100000   unknown  unknown
+2026-10-31 04:11  15224       NaN      NaN       0.0       0.0         NaN        NaN    6.100000    5.900000   unknown  unknown
+2026-10-31 08:25   1778       NaN      NaN       0.7       0.0         NaN        NaN    5.900000    6.200000   unknown  unknown
+2026-10-31 08:54   2831       NaN      NaN       0.5       0.0         NaN        NaN    6.200000    7.700000   unknown  unknown
+2026-10-31 09:42   2287       NaN      NaN       0.1       0.0         NaN        NaN    7.700000    6.100000   unknown  unknown
+2026-10-31 10:20   8223       NaN      NaN       0.0       0.0         NaN        NaN    6.100000   10.800000   unknown  unknown
+2026-10-31 12:38    854       NaN      NaN       2.1       0.0         0.0        NaN    7.800000    6.800000   unknown  unknown
+2026-10-31 12:52   1087       NaN      NaN      40.2       0.0         NaN        NaN    6.800000   26.000000   unknown  unknown
+2026-10-31 13:10    197       NaN      1.1     203.7       1.0         NaN        NaN   26.000000   23.900000   unknown     walk
+2026-10-31 13:24   1871       0.1      0.8     161.1       0.1         0.0        NaN   14.200000   15.400000     still     walk
+2026-10-31 14:04    303       0.1      4.3      93.5       0.3         0.1        NaN   14.200000   21.900000     still  vehicle
+2026-10-31 14:09    120       NaN      4.5     511.1       4.3         NaN        NaN   21.900000  194.000000   unknown  vehicle
+2026-10-31 14:12    237       4.5      NaN    2438.9      10.3         NaN        NaN  871.799988 1414.000000   vehicle  unknown
+2026-10-31 14:16    310       NaN      NaN    1572.2       5.1         NaN        NaN 1414.000000 1414.000000   unknown  unknown
+2026-10-31 14:21    337       NaN      NaN    2487.4       7.4         NaN        NaN 1414.000000  104.500000   unknown  unknown
+2026-10-31 14:27    214       NaN      0.0    1597.3       7.5         NaN        NaN  104.500000   41.299999   unknown    still
+2026-10-31 15:03   4284       0.1      NaN     134.1       0.0         0.0        NaN   14.200000   31.100000     still  unknown
+2026-10-31 16:14    789       NaN      3.5    2201.5       2.8         NaN        NaN   31.100000 2000.000000   unknown    2.5-4
+2026-10-31 16:27    133       NaN      NaN     468.2       3.5         NaN        NaN 2000.000000   39.299999   unknown  unknown
+2026-10-31 16:30    367       3.5      NaN      86.7       0.2         NaN        0.4   39.299999   19.700001     2.5-4  unknown
+2026-10-31 16:36    350       NaN      NaN      29.3       0.1         0.4        NaN   19.700001   22.600000   unknown  unknown
+2026-10-31 16:42   1082       NaN      NaN      32.2       0.0         NaN        NaN   22.600000   19.700001   unknown  unknown
+2026-10-31 17:00    560       NaN      0.2     147.6       0.3         NaN        NaN   19.700001   29.799999   unknown    still
+2026-10-31 17:09    160       NaN      NaN      24.2       0.2         NaN        NaN   29.799999   18.900000   unknown  unknown
+2026-10-31 17:12   1444       0.2      1.3     202.7       0.1         NaN        NaN   18.900000   37.000000     still     walk
+2026-10-31 17:56    100       3.3      4.9     574.1       5.7         NaN        NaN  915.599976 1333.500000     2.5-4  vehicle
+2026-10-31 17:58    165       5.7      NaN     805.4       4.9         NaN        NaN 1333.500000 1257.099976   vehicle  unknown
+2026-10-31 18:00    426       4.9      8.8    3361.4       7.9         NaN        NaN 1257.099976   70.000000   vehicle  vehicle
+2026-10-31 18:08     94       NaN      7.9     828.4       8.8         NaN        1.5   70.000000   57.700001   unknown  vehicle
+2026-10-31 18:09     94       8.8      0.0     746.6       7.9         1.5        NaN   57.700001  154.199997   vehicle    still
+2026-10-31 18:18   7002       0.4      0.6     196.0       0.0         0.0        NaN   10.400000   17.400000     still     walk
+2026-10-31 20:16     72       0.4      0.2       5.6       0.1         NaN        NaN   95.800003   83.500000     still    still
+2026-10-31 20:20     95       0.0      NaN     684.3       7.2         NaN        NaN  151.100006   58.000000     still  unknown
+2026-10-31 20:22    305       8.7      NaN    2226.2       7.3         NaN        NaN  281.799988 1414.000000   vehicle  unknown
+2026-10-31 20:27    304       NaN      NaN    1144.5       3.8         NaN        NaN 1414.000000   41.500000   unknown  unknown
+2026-10-31 20:32    308       NaN      NaN     182.2       0.6         NaN        NaN   41.500000   19.900000   unknown  unknown
+2026-10-31 20:38    315       NaN      8.1     462.2       1.5         NaN        NaN   31.299999 1022.500000   unknown  vehicle
+2026-10-31 20:43     80       NaN      8.7     650.4       8.1         NaN        NaN 1022.500000 1377.900024   unknown  vehicle
+2026-10-31 20:47    203       6.9      NaN    1150.9       5.7         NaN        NaN  908.700012  166.500000   vehicle  unknown
+2026-10-31 20:50    435       NaN      1.8    1595.1       3.7         NaN        NaN  166.500000   74.900002   unknown     walk
+2026-10-31 20:57    154       NaN      1.2     282.1       1.8         NaN        NaN   74.900002   39.599998   unknown     walk
+2026-10-31 21:11    181       0.9      0.4     797.8       4.4         NaN        NaN  107.500000   51.200001      walk    still
+2026-10-31 21:28   5325       0.0      NaN     849.1       0.2         NaN        NaN   15.400000  131.399994     still  unknown
+2026-10-31 22:57    316       NaN      NaN    1718.8       5.4         NaN        NaN  131.399994 1183.000000   unknown  unknown
+2026-10-31 23:02    301       NaN      NaN    1079.2       3.6         NaN        1.9 1183.000000   11.500000   unknown  unknown
+2026-10-31 23:07    687       NaN      NaN    2346.3       3.4         1.9        NaN   11.500000 1414.000000   unknown  unknown
+2026-10-31 23:18    366       NaN      NaN    1543.2       4.2         NaN        NaN 1414.000000 1297.199951   unknown  unknown
+2026-10-31 23:24    308       NaN      NaN     969.0       3.1         NaN        NaN 1297.199951   22.900000   unknown  unknown
+
+-- speed_mps missing by state: {'2.5-4': 1.0, 'still': 0.34, 'unknown': 0.9, 'vehicle': 0.95, 'walk': 0.16}
+   missing by activity: {'in_vehicle': 0.3, 'still': 0.92}
+reported vs derived (consecutive fixes <= 30 s apart, n=221): corr=0.63, median(rep - der)=-0.10 m/s
+reported vs 60 s baseline (n=229): corr=0.37
+  still    n=110 reported n=110 p25=0.0 p50=0.1 p75=0.7 | derived60 n=110 p25=0.1 p50=0.2 p75=0.3
+  vehicle  n=  1 reported n=1 p25=1.5 p50=1.5 p75=1.5 | derived60 n=1 p25=7.9 p50=7.9 p75=7.9
+  walk     n=118 reported n=118 p25=0.5 p50=0.9 p75=1.1 | derived60 n=118 p25=0.7 p50=0.9 p75=1.1
+reported speed range: n=232 p50=0.7 p90=1.3 p99=1.9 p100=4.3
+
+-- accuracy_m by state
+  2.5-4    n=5 p5=23.9 p25=39.3 p50=64.6 p75=73.5 p95=1614.7  >50m=0.60
+  still    n=166 p5=5.0 p25=14.2 p50=14.2 p75=18.0 p95=51.2  >50m=0.07
+  unknown  n=31 p5=6.1 p25=11.2 p50=21.6 p75=117.9 p95=1414.0  >50m=0.29
+  vehicle  n=21 p5=22.6 p25=58.0 p50=151.1 p75=908.7 p95=1333.5  >50m=0.81
+  walk     n=141 p5=4.1 p25=14.2 p50=14.2 p75=15.4 p95=46.5  >50m=0.05
+overall n=364 p5=4.7 p25=14.2 p50=14.2 p75=22.5 p95=153.8  >50m=0.129; ==2000 m: 1
+top accuracy values: {14.25: 118, 14.239999771118164: 4, 1414.0: 4, 4.75: 3, 14.229999542236328: 3}
+
+== Accelerometer
+date=2026-10-31: 180893 samples, 26 bursts, gap rows 25, dup t 0, sorted True
+  dt in bursts [ms]: {25.0: 1, 27.0: 1, 31.0: 3, 32.0: 9, 33.0: 4, 34.0: 8, 35.0: 21, 36.0: 15, 37.0: 18, 38.0: 28, 39.0: 127, 40.0: 147026} … p1=40 p99=41 max=201 >1000: 0
+  burst duration [s] n=26 p5=116.4 p25=213.0 p50=262.0 p75=297.6 p95=581.2; real rate per burst [Hz] n=26 p5=24.9 p25=24.9 p50=24.9 p75=24.9 p95=24.9
+  gaps between bursts [s] n=25 p5=1.7 p25=2.8 p50=3.8 p75=743.2 p95=6017.0
+  saturated samples 6 (0.0000); null 0
+  5 s blocks 1437, still (std|acc|<0.05) 89; median |acc| still = 9.726 m/s2 (p5 9.717, p95 9.842); all samples median 9.77
+  still & flat (|az|>9.3, |ax|,|ay|<1.5): 26 blocks, az median -9.78, az>0 in 0
+  still blocks by dominant axis and sign: {'ax+': 7, 'ay-': 55, 'az-': 27} | all blocks with sd<0.3: 361

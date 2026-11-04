@@ -1,0 +1,5 @@
+date=2026-11-03 dt 40/41 share 0.9970, 39 0.0010, <39 201, 42-200 263, >200 7
+   drift from 40 ms grid within burst [ms]: p1 12 p50 723 p99 6317
+   short steps at sample index within burst: median 3280 n 201
+   GPS fixes within 30 s of an IMU burst, by state: {'2.5-4': 0.97, 'still': 0.97, 'unknown': 0.0, 'vehicle': 0.99, 'walk': 0.92}
+   GPS (UTC) 07:18–23:03, IMU 12:33–21:14

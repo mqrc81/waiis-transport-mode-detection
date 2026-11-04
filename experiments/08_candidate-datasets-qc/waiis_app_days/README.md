@@ -24,7 +24,7 @@ that adds GPS-only candidate datasets: it shows what WAIIS GPS and accelerometer
 - **Units:** metres, m/s, degrees.
 - **Time:** UTC epoch milliseconds, always whole seconds, sorted, no duplicates. Local time is Europe/Madrid, UTC+1
   on these dates (summer time ended 25 Oct). Folders are UTC days.
-- **Platform:** iPhone 16; self-reported, not recorded (only `source = "waiis"`).
+- **Platform:** iPhone 16 (confirmed 2026-11-04); not recorded in the data (only `source = "waiis"`).
 - **The phone's own activity flag is useless:** 93% of fixes say `in_vehicle` with `is_moving = true`, although the
   median speed is 0.8 m/s.
 
@@ -98,8 +98,8 @@ isolated. The speed across the gap, from the displacement between its two end fi
 - **GPS fixes with accelerometer data within 30 s:** walk 96%, still 98% (still periods inside trips), vehicle 98%
   on the 30th but only 57% on the 31st.
 - **Saturation (±65.5):** 6 samples per day.
-- **Axis convention:** not settled by the data alone; if the phone was the iPhone 16, it looks like **iOS's
-  convention scaled to m/s², not converted to Android's**. Only a few still blocks exist, since the app records only
+- **Axis convention:** not settled by the data alone. The phone is an iPhone 16, so **iOS's
+  convention scaled to m/s², not converted to Android's** is strongly indicated; not confirmed by a face-up recording. Only a few still blocks exist, since the app records only
   while moving.
 
   | Day | Lying flat and still | Other still blocks |
@@ -114,8 +114,8 @@ isolated. The speed across the gap, from the displacement between its two end fi
     face-up phone; on Android they would need the phone mostly upside down and face down.
   - So with an iPhone, the app multiplies by +9.81 (median |acc| still 9.73 m/s²) and keeps iOS's signs. v2's rule
     A1 (iOS × −9.80665, to the Android convention) would then apply to WAIIS iPhone data as `× −1`.
-  - To confirm: a 30 s recording with the phone face-up on a table (expected z ≈ −9.8 if iOS's signs are kept),
-    and the phone model stored with the data.
+  - To confirm the signs: a 30 s recording with the phone face-up on a table (expected z ≈ −9.8 if iOS's signs are
+    kept). The phone model should also be stored with the data.
 
 ## Accelerometer noise floor (added 2026-11-04)
 
@@ -180,4 +180,5 @@ Descriptive; no models.
   fixes (40% in vehicles); derived speed matches it where both exist. An accuracy of exactly 14.25 m is not a real
   estimate.
 - **Accelerometer:** 24.9 Hz in ~5 min bursts with gravity fits the 15 s windows. The iOS-to-Android sign rule needs
-  the platform, which the data don't record; on the probable iPhone 16 the signs look like iOS's (see above).
+  the platform, which the data don't record. The phone is an iPhone 16; iOS's signs kept is
+  strongly indicated, not confirmed by a face-up recording (see above).

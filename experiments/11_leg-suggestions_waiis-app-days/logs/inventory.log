@@ -1,0 +1,20 @@
+2026-10-30 window status: {'ok': 138, 'rate_below_24hz': 3}
+2026-10-31 window status: {'ok': 119, 'rate_below_24hz': 3, 'gap_over_0.5s': 1, 'edge': 1}
+2026-11-03 window status: {'ok': 160, 'rate_below_24hz': 4}
+day                      2026-10-30  2026-10-31  2026-11-03
+imu_h                          2.32        2.03         2.7
+minutes_with_acc_events      147.00      131.00       170.0
+minute_windows_ok            138.00      119.00       160.0
+gps_minutes                  147.00      152.00       179.0
+both                         123.00      108.00       152.0
+acc_only                      15.00       11.00         8.0
+gps_only_no_acc_events        16.00       35.00        19.0
+sessions_join<=10s             8.00        8.00         9.0
+sessions_join<=30s             8.00        8.00         9.0
+sessions_join<=120s            8.00        8.00         9.0
+sessions_join<=600s            6.00        8.00         8.0
+gps_only_unknown              11.00       22.00         7.0
+gps_only_walk                  2.00        5.00         9.0
+gps_only_still                 2.00        2.00         2.0
+gps_only_vehicle               1.00        5.00         0.0
+gps_only_2.5-4                 0.00        1.00         1.0
