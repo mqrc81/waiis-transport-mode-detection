@@ -408,3 +408,71 @@ std |acc| < 0.03 m/s².
   cycling or slow urban traffic (the diary will tell). It has few moving gaps (0.4 h) and the most sub-20 s intervals (8%).
 - The lower reported / derived correlation on 10-31 and 11-03 comes with little speed range and consecutive-fix noise;
   gps-v2 doesn't read reported speed (Plan).
+
+### Stop-point 2: dev results (2026-11-04)
+
+Commits before the runs: `2082bd3` (stop-point 1 state), `0309cdf` (`tmd.legs`, dev helpers, checks), `c19774c` (grid
+script). MLflow experiment `11_leg-suggestions_waiis-app-days`; outputs under `<data>/processed/11_.../` (minute
+probabilities, GPS features) and `results/tables/` (git-ignored until the export).
+
+**Before the dev runs** (as asked at the OK of stop-point 1):
+- `app_days/`: the four WAIIS day scripts moved here from 08 and rewired to `tmd.readers.waiis` (Results, stop-point 1).
+- Device table moved to `metadata/waiis_devices.csv` (project level, in git; one row per user key and device period;
+  layout in `metadata/README.md`). Reader `tmd.readers.waiis` and tests `tests/test_waiis_reader.py`,
+  `tests/test_waiis_sign_invariance.py`.
+- **Sign invariance passes** on a WAIIS day (10-30, first 40 minute windows): windows read with and without the
+  `× −1` rule are exact negatives; the 580 features and E1 / E2's acc-model probabilities are identical (tolerance
+  1e-9).
+
+#### Step 0: 10's saved fold models (`check_models.py`, `logs/check_models.log`)
+
+Loaded fold models (acc `E2/E1_seed<k>_fold<f>`, GPS `A0_gps_seed<k>_fold<f>`) predicting 10's dev frame, then fusion +
+HMM per fold, against 10's saved out-of-fold arrays, ExtraSensory dev and SHL User 1, seeds 0–2: **reproduced**, worst
+max |difference| acc / GPS 3.0e-8, raw 2.3e-7, p 1.6e-7 (float32 storage); six-class F1 identical to 4 decimals in
+all 12 cases (e.g. SHL User 1 E2 seed 0: 0.9532; ExtraSensory E2 seed 0: 0.6498). No refit was needed.
+
+#### Step 1: WAIIS GPS → E2's GPS input (`gps_candidates.py`, `logs/gps_candidates.log`, MLflow `gps_<rule>_seed<k>`)
+
+SHL User 1's 1 Hz track (1,377,605 fixes) thinned per recording to 20 s: 70,259 fixes (median interval 20.1 s; 96%
+of intervals 20–21 s); none above 500 m. 10's per-minute GPS features recomputed from the bench table equal its saved
+features (sanity check). E2's acc probabilities = 10's saved out-of-fold; GPS model out of fold; HMM per fold.
+
+Six-class macro-F1 on SHL User 1 official minutes after fusion + HMM (seed 0 decides; mean and range over seeds 0–2):
+
+| Rule | seed 0 | mean [min, max] | E1 (mean) | before HMM (mean) | GPS model alone, covered minutes | GPS-covered official minutes | raw legs: edits / h, leg F1 (mean) |
+|---|---|---|---|---|---|---|---|
+| **C1** nearest the centre | 0.9529 | 0.9547 [0.9529, 0.9562] | 0.9642 | 0.8566 | 0.703 | 75.5% | 0.90, 0.826 |
+| C2 best accuracy ±7.5 s | **0.9550** | 0.9560 [0.9550, 0.9567] | 0.9660 | 0.8369 | 0.680 | 58.2% | 0.91, 0.822 |
+| C3 best accuracy in the minute | 0.9533 | 0.9534 [0.9523, 0.9544] | 0.9623 | 0.8553 | 0.693 | 75.5% | 0.92, 0.818 |
+| C4 median position | 0.9537 | 0.9542 [0.9537, 0.9552] | 0.9638 | 0.8560 | 0.703 | 75.5% | 0.90, 0.825 |
+| C5 every fix | 0.9487 | 0.9498 [0.9487, 0.9520] | 0.9596 | 0.8427 | 0.601 | 76.4% | 1.01, 0.807 |
+| ref: 10's per-minute GPS (1 Hz, training rule) | 0.9532 | 0.9553 [0.9532, 0.9577] | 0.9634 | 0.8547 | 0.710 | 73.9% | 0.93, 0.820 |
+| ref: no GPS | 0.9493 | 0.9505 [0.9493, 0.9512] | 0.9659 | 0.7878 | – | 0% | 0.97, 0.808 |
+
+- **Chosen: C1** (fix nearest the minute centre) by the pre-set rule: C1–C4 lie within 0.005 of the best (C2, 0.9550);
+  C1, C3 and C4 have the most GPS-covered minutes (75.5%); C1 is the simplest.
+- **The choice carries little signal.** SHL User 1 is near its ceiling after the HMM: all one-fix rules are within
+  0.002 of the per-minute reference (mean over seeds), and even no GPS is only 0.005 below. Before the HMM, GPS is worth
+  +0.07 (0.79 → 0.86) and C1 / C3 / C4 match the reference. C2 loses a quarter of the covered minutes (a 20 s fix
+  falls within ±7.5 s of the centre only ~3 minutes in 4) and is the worst one-fix rule before the HMM; it wins by
+  0.002 after the HMM on seed 0.
+- **C5 (every fix) is worse, as expected:** the GPS model alone drops from 0.70 to 0.60 on covered minutes (bus recall
+  after HMM 0.91 vs 0.94), and raw legs need 11% more edits. That is the cost of feeding 20 s features to a model
+  trained on one fix per minute.
+- E1 gains nothing from GPS on SHL User 1 (no GPS 0.966, C1 0.964): its acc model alone is already at the ceiling there.
+- Limits: one SHL person (hips) and its 1 Hz GPS thinned to a clean 20 s cadence; WAIIS's coarse fixes, 14.25 m
+  accuracies and dropouts aren't in it.
+
+**Motorcycle** (`motorbike.py`, `logs/motorbike.log`): no ExtraSensory dev minute is flagged `motorbike`. The only
+flagged minutes (86, one user) are in the reserved test set, so they are not used. What a motorcycle would be predicted
+as stays a reasoned guess (car).
+
+**Deviations and readings so far:**
+1. *Edits, tie-break* (`src/tmd/legs.py`, `score`): when two legs overlap the leg they are mapped to by the same number
+   of minutes, the one with the same mode wins, then the earlier. Without it, a tie could count a mode change and a
+   split the user wouldn't make (found by `tests/test_legs.py::test_edits_counted`).
+2. *Constraint (b)*: read as "not more than 0.01 below the raw HMM legs"; a rule set that improves ExtraSensory by more
+   than 0.01 is not excluded.
+3. *Day key*: ExtraSensory has no recording day; edits per day use user + UTC date.
+4. *Internal boundaries*: a truth leg end counts for boundary errors only where the next truth leg starts at exactly
+   that minute; ends at unlabelled time or data gaps don't. On SHL User 1 that is 172 boundaries.
