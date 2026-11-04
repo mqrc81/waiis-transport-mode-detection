@@ -1,0 +1,22 @@
+/Users/ms/Projects/waiis/transport-mode-detection/src/tmd/evaluate.py:128: RuntimeWarning: Mean of empty slice
+  return {"macro_f1": float(f1[present].mean()),
+/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/Users/ms/Projects/waiis/transport-mode-detection/src/tmd/evaluate.py:128: RuntimeWarning: Mean of empty slice
+  return {"macro_f1": float(f1[present].mean()),
+/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/Users/ms/Projects/waiis/transport-mode-detection/src/tmd/evaluate.py:128: RuntimeWarning: Mean of empty slice
+  return {"macro_f1": float(f1[present].mean()),
+/Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+                six_f1  e1_six_f1  gps_alone_six_f1_covered  covered_official  rawlegs_edits_per_h  rawlegs_leg_f1  six_f1_seed_min  six_f1_seed_max
+rule                                                                                                                                                
+C1              0.9529     0.9652                    0.7030            0.7550               0.9092          0.8227           0.9529           0.9562
+C2              0.9550     0.9660                    0.6802            0.5819               0.9323          0.8181           0.9550           0.9567
+C3              0.9533     0.9631                    0.6932            0.7550               0.9323          0.8149           0.9523           0.9544
+C4              0.9537     0.9635                    0.7027            0.7549               0.9118          0.8202           0.9537           0.9552
+C5              0.9487     0.9605                    0.6012            0.7644               1.0373          0.8017           0.9487           0.9520
+ref_minute_1hz  0.9532     0.9631                    0.7113            0.7388               0.9451          0.8149           0.9532           0.9577
+no_gps          0.9493     0.9655                       NaN            0.0000               0.9784          0.8058           0.9493           0.9512
+chosen: C1 (best six-class F1 0.9550; within 0.005: ['C1', 'C2', 'C3', 'C4'])
