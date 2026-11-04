@@ -1,14 +1,16 @@
 # CLAUDE.md
 
 ## Project
+
 Classify transport mode (still, walk, run, bike, car, bus, train, metro) from phone
 accelerometer only (no gyroscope). Current production rate is 25 Hz. The phone records and uploads the
 sensor data; the model runs on an edge server. Work is in Python, over files.
 Final test: the 12 ExtraSensory test users (`splits/reserved_test_v3.json`); the 14 NOR-TMD test installations are a second test for vehicles and rail; SHL Users 2–3 are for rail checks only.
 
 ## Layout
+
 - `src/tmd`: shared code. Anything a second experiment would reuse goes here.
-- `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion (human-readable overview). Add `patches/`, `env/`, `results/` or `splits/` (the experiment's own fold files) only when there is something to put in them.
+- `experiments/NN_question_dataset/`: one folder per experiment. `README.md` holds Question / Plan / Results / Conclusion. Add `patches/`, `env/`, `results/` or `splits/` (the experiment's own fold files) only when there is something to put in them.
 - `splits/reserved_test_v3.json`: the reserved set of `waiis_bench_v2` (12 ExtraSensory test users, SHL Users 2–3, 14 NOR-TMD installations). Every experiment excludes it (`tmd.splits.reserved_test()`). `splits/reserved_test_v2.json` is v1's (same ExtraSensory and SHL users); the superseded 2026-10-25 set is `experiments/02_family-baseline_shl-es/splits/reserved_test.json`.
 - `mlflow.db`, `mlartifacts/`: MLflow tracking store and run artifacts (git-ignored).
 - `DECISIONS.md`, `LICENSES.md`: project-wide.
@@ -16,12 +18,14 @@ Final test: the 12 ExtraSensory test users (`splits/reserved_test_v3.json`); the
 - Outside git: data in the data root `data` (`raw/`, `processed/`, `checkpoints/`; absolute path in `CLAUDE.local.md`), upstream clones in `../ext/`. Paths are relative to project root.
 
 ## Working on an experiment
-- Every session reads `STATUS.md` and `DECISIONS.md` first. `STATUS.md` is updated whenever an experiment closes.
+
+- Every session reads `STATUS.md` and `DECISIONS.md` first. `STATUS.md` is updated whenever an experiment closes; outdated information gets removed.
 - Follow the README's Plan, including its stop-points.
 - At every stop-point, update the Results section: commands run, numbers, deviations, open questions. A fresh session must be able to resume from the README alone.
-- At the end, draft the Conclusion and, if it changes direction, a `DECISIONS.md` entry. Write them from the Results section and the exported `runs.csv` only, and mark both **Draft — not approved**. I approve them by removing the marker.
+- At the end, draft the Conclusion (human-readable overview) and, if it changes direction, a `DECISIONS.md` entry. Write them from the Results section and the exported `runs.csv` only, and mark both **Draft — not approved**. I approve them by removing the marker.
 
 ## Rules
+
 - Documents and comments never mention "Marc" or "supervisor": approval is person-independent (e.g. "approved 2026-10-28").
 - Data, checkpoints and environments never go in git.
 - Edit files in `../ext` only when needed. Save them with git diff > experiments/NN_name/patches/<repo>.patch, and record the upstream commit hash in the README. Before another experiment uses the same clone, reset it (`git checkout .`) and apply that experiment's patch.
@@ -32,6 +36,7 @@ Final test: the 12 ExtraSensory test users (`splits/reserved_test_v3.json`); the
 - Our code runs with uv. Upstream repos are reproduced in the environment their README specifies (conda if so), exported to the experiment's `env/`. Porting adopted upstream code into the uv env is a separate step, verified against the shipped-env numbers.
 
 ## Evaluation conventions
+
 - Split by user; by day only when there is a single user, and say so. Never random window splits.
 - Normalisation statistics and hyperparameter choices come from training data only, never from a set reported as test.
 - Report exactly these metrics:
@@ -47,6 +52,7 @@ Final test: the 12 ExtraSensory test users (`splits/reserved_test_v3.json`); the
   - Test results are reported overall and per platform (iPhone, Android).
 
 ## Logging results
+
 - Log every run through `src/tmd/tracking.py`: `with run(experiment, params):`, then `mlflow.log_metrics` and `mlflow.log_figure`. The experiment name is the experiment folder name.
 - Pass `datasets=[DataInput(...)]` to `run()`: one per dataset part used (e.g. `shl_user1_dev`, `extrasensory_dev_v2`), context `training` or `evaluation`, with label rules and feature set; a new split file gets a new entry in `tracking.SPLITS`.
 - Params include model, dataset, rate_hz, class_set, seed, and anything the Plan varies.
@@ -58,6 +64,7 @@ Final test: the 12 ExtraSensory test users (`splits/reserved_test_v3.json`); the
 - Experiment 01 predates MLflow and keeps its own CSV.
 
 ## Keeping context small
+
 - Scripts print a short summary. Full output goes to a log file in the experiment folder.
 - On failure, read the tail of the log, not all of it.
 - Use a subagent to read large upstream code. Bring back a short summary, written to the README if it's worth keeping.
