@@ -476,3 +476,88 @@ as stays a reasoned guess (car).
 3. *Day key*: ExtraSensory has no recording day; edits per day use user + UTC date.
 4. *Internal boundaries*: a truth leg end counts for boundary errors only where the next truth leg starts at exactly
    that minute; ends at unlabelled time or data gaps don't. On SHL User 1 that is 172 boundaries.
+
+#### Step 2: leg rules and thresholds (`leg_grid.py`, `logs/leg_grid.log`, MLflow `leg_grid_E2`, `leg_grid_E1`)
+
+Minute probabilities: SHL User 1 with C1 (20 s), ExtraSensory dev with its own per-minute GPS (10's saved `p`). 768
+combinations per model on seed 0, then the chosen rules and the raw legs on seeds 1–2. Full grids in
+`results/tables/leg_grid_<model>.csv`; per mode in `leg_per_mode_<model>.csv`; seeds in `leg_chosen_seeds_<model>.csv`.
+
+**Chosen (by the pre-set objective and tie rules):**
+
+| | E2 | E1 |
+|---|---|---|
+| rules | `s_veh` 0, `s_other` 3, `g` 10, `l_min` 2, `c` 0.5 | `s_veh` 0, `s_other` 0, `g` 2, `l_min` 3, `c` 0.5 |
+| combinations meeting (a) | 736 of 768 | 768 of 768 |
+| second mode shown (`τ2`) | none reaches the 50% rule | none |
+
+**Seed 0, raw HMM legs → chosen rules** (seeds 1–2: chosen SHL edits / h 0.886–0.896 for E2, 0.838–0.871 for E1;
+ExtraSensory 1.379–1.384 and 1.456–1.461):
+
+| | E2 SHL User 1 | E2 ExtraSensory | E1 SHL User 1 | E1 ExtraSensory |
+|---|---|---|---|---|
+| hours of labelled time; days | 390 h; 74 | 4,045 h; 354 user-days | 390 h; 74 | 4,045 h; 354 |
+| truth legs (short < 5 min) | 1,016 (149) | 10,379 (5,384) | 1,016 (149) | 10,379 (5,384) |
+| **edits / h** | 0.909 → **0.896** | 1.398 → 1.384 | 0.843 → **0.838** | 1.404 → 1.461 |
+| edits / day | 4.80 → 4.73 | 15.97 → 15.81 | 4.45 → 4.42 | 16.04 → 16.69 |
+| merges / splits / mode changes / boundary moves | 173 / 76 / 91 / 10 | 1,181 / 1,942 / 2,022 / 452 | 166 / 71 / 82 / 8 | 1,448 / 1,962 / 2,035 / 464 |
+| leg F1 (top-1) | 0.823 → 0.824 (0.824) | 0.718 → 0.718 (0.722) | 0.830 → 0.836 (0.838) | 0.718 → 0.705 (0.709) |
+| time-weighted accuracy (top-1) | 0.952 → 0.952 (0.952) | 0.917 → 0.916 (0.917) | 0.965 → 0.964 (0.965) | 0.915 → 0.915 (0.915) |
+| boundary error median / p90 [min] | 0 / 3 | 1.9 / 13.6 | 0 / 3 | 2.0 / 15.8 |
+| extra / missed legs per h | 0.60 / 0.36 | 0.60 / 0.79 | 0.56 / 0.33 | 0.67 / 0.81 |
+| **time wrong and unflagged** | 4.8% | 8.3% | 3.5% | 8.5% |
+| legs wrong and unflagged | 139 | 1,727 | 129 | 1,729 |
+| legs flagged (unknown) | 0.0% | 1.0% | 0.3% | 1.0% |
+| short-leg recall | 0.58 | 0.66 | 0.58 | 0.66 |
+| range mode: top-1 / top-2 | 0.912 / 0.957 | 0.808 / 0.943 | 0.921 / 0.960 | 0.808 / 0.942 |
+| range mode: ECE / Brier | 0.049 / 0.158 | 0.118 / 0.335 | 0.042 / 0.142 | 0.119 / 0.335 |
+
+**What the grid shows:**
+- **The leg rules hardly matter.** Over the whole grid, SHL edits per hour range 0.889–1.370 (E2), but the chosen
+  rules gain only 1.4% (E2) and 0.6% (E1) on the raw HMM legs, about the size of the seed spread. The HMM already
+  removes the short flips the rules target. Larger `l_min` (5) and `c` 0.9 cost edits.
+- **E1's choice costs on ExtraSensory:** edits +4% (1.40 → 1.46), leg F1 top-1 −0.009, just inside (b). Rules chosen on
+  one SHL person don't carry over. E2's choice is neutral there (−1% edits).
+- **Constraint (a) doesn't bind on SHL User 1:** the raw legs are at 4.8% (E2) and 3.5% (E1). So the objective picks the
+  lowest threshold, `c` 0.5, which flags almost nothing (0–1% of legs). **On ExtraSensory, wrong legs are mostly
+  confidently wrong:** with E2, `c` 0.9 flags 19.5% of legs and 2.8% of time, yet only takes wrong-unflagged time from
+  8.3% to 6.8%. No threshold in the grid reaches 5% there.
+- **The second mode rarely holds the truth** when top-1 is wrong: SHL 37% / 14% / 7% of those legs at `τ2` 0.1 / 0.2 /
+  0.3 (ExtraSensory 25% / 14% / 7%), so no `τ2` meets the 50% rule. Top-2 is still listed in the output; the "show"
+  flag would stay off.
+- **Range mode** (the user selects a true leg): top-1 0.91 / top-2 0.96 on SHL, 0.81 / 0.94 on ExtraSensory. Averaged
+  minute probabilities are calibrated on SHL (ECE 0.05) and overconfident on ExtraSensory (0.12).
+- **Per mode** (E2, chosen, `results/tables/leg_per_mode_E2.csv`):
+  - SHL User 1: leg recall ≥ 0.92 for walking, running, bike, car, bus; rail 0.84, still 0.67 (short stills inside
+    trips: short-leg recall 0.22). Precision lowest for car (0.69), rail (0.72) and walking (0.72): extra short legs.
+  - ExtraSensory: still 0.82; walking 0.37 (walk read as still: time recall 0.57), bus 0.32, rail 0.41 (37 legs),
+    car 0.55, bike 0.52. Boundary p90 of still legs 30 min (coarse label timing; reported, not tuned on).
+- **Edits per day:** about 5 on SHL User 1 (5.3 h of labelled time per day), about 16 per ExtraSensory user-day (11
+  h, many short self-reported legs).
+
+#### Step 3: 20 s boundary refinement (`refine.py`, `logs/refine.log`, MLflow `refine_E2`, `refine_E1`)
+
+1 s truth for all 172 internal SHL truth boundaries (median shift from the minute boundary 10.5 s, max 29 s). The rule
+moved 568 of 1,022 slow / fast boundaries (E2).
+
+| E2 (E1) against the 1 s truth | minute boundaries | refined |
+|---|---|---|
+| boundary error median [min] | 0.35 (0.33) | 0.55 (0.49) |
+| boundary error p90 [min] | 2.81 (3.08) | 2.84 (3.02) |
+| edits / h | 0.940 (0.866) | 0.955 (0.881) |
+
+**Not adopted:** it makes boundaries worse (median +0.21 min, edits +1.6%), against a margin of −0.5 min and −5%.
+Boundaries stay on the minute grid. A 20 s pair speed crossing halfway between leg speeds is noisier than the
+minute-level HMM boundary.
+
+#### Open for OK at stop-point 2
+
+1. **GPS input: C1** (fix nearest the minute centre); the SHL evidence is weak (near ceiling).
+2. **Leg rules:** E2 `s_veh` 0, `s_other` 3, `g` 10, `l_min` 2; E1 `s_veh` 0, `s_other` 0, `g` 2, `l_min` 3 (chosen by
+   the pre-set rule; E1's costs 4% edits on ExtraSensory). The gains over the raw legs are within seed spread.
+3. **Low-confidence threshold `c` 0.5:** in effect almost no unknown legs. The SHL-only constraint (a) doesn't bind,
+   and on ExtraSensory no threshold reaches 5%. Options: keep 0.5 as chosen, or fix (a) on ExtraSensory too and
+   accept that it can't be met (wrong legs are confidently wrong).
+4. **Second mode:** no `τ2` meets the 50% rule, so the "show" flag stays off (top-2 still in the output).
+5. **No 20 s boundary refinement.**
+6. Readings and deviations 1–4 above (edit tie-break, (b) one-sided, ExtraSensory day key, internal boundaries).
