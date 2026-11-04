@@ -287,8 +287,6 @@ of NOR-TMD and Collecty: `LICENSES.md`.
 
 ## 2026-11-03: The reference model on waiis_bench_v2 is 10's E2: no NOR-TMD, no tram class
 
-**Draft — not approved.**
-
 **Decision.**
 - The reference model on `waiis_bench_v2` is **experiment 10's E2**: 06's configuration (acc LightGBM × gps-v2
   LightGBM, product fusion, HMM forward-backward), **8 classes**, trained on ExtraSensory + SHL User 1 + Collecty
