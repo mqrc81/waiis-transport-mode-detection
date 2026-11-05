@@ -1,0 +1,104 @@
+2026/11/05 13:03:07 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+rule off reproduces 11's legs: True 
+            vehicle_legs  vehicle_right  vehicle_found  vehicle_wrong  vehicle_no_data  vehicle_core_minute_accuracy  other_legs  other_right  other_found  other_wrong  other_no_data  other_core_minute_accuracy  bike_legs  bike_right  bike_no_data  bus_legs  bus_right  bus_no_data  car_legs  car_right  car_no_data  rail_legs  rail_right  rail_no_data  rail_no_data_with_gap_hint  rail_no_data_gap_leg_share_mean  rail_with_gap_hint  extra_vehicle_legs  extra_rail_legs  extra_gap_legs  run_seconds_per_day_mean  run_seconds_per_day_max
+model rule                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+E2    off           19.0            6.0            6.0            8.0              5.0                      0.698795         9.0          4.0          4.0          1.0            4.0                     0.73913        3.0         3.0           0.0       1.0        1.0          0.0       1.0        1.0          0.0       14.0         1.0           5.0                         0.0                         0.000000                 0.0                 0.0              0.0             0.0                  0.152234                 0.185649
+      on            19.0            6.0            6.0            8.0              5.0                      0.698795         9.0          4.0          4.0          1.0            4.0                     0.73913        3.0         3.0           0.0       1.0        1.0          0.0       1.0        1.0          0.0       14.0         1.0           5.0                         4.0                         0.630979                 7.0                 0.0              0.0             0.0                  0.150914                 0.178376
+E1    off           19.0            8.0            8.0            6.0              5.0                      0.807229         9.0          4.0          4.0          1.0            4.0                     0.73913        3.0         3.0           0.0       1.0        1.0          0.0       1.0        1.0          0.0       14.0         3.0           5.0                         0.0                         0.000000                 0.0                 0.0              0.0             0.0                  0.154402                 0.182317
+      on            19.0            8.0            8.0            6.0              5.0                      0.807229         9.0          4.0          4.0          1.0            4.0                     0.73913        3.0         3.0           0.0       1.0        1.0          0.0       1.0        1.0          0.0       14.0         3.0           5.0                         4.0                         0.630979                 7.0                 0.0              0.0             0.0                  0.155349                 0.182642
+
+vehicle legs, status by model and rule:
+ model                                   E1                E2         
+rule                                   off       on      off       on
+date       diary_id mode sub_mode                                    
+2026-10-30 D10      car              right    right    right    right
+           D3       rail metro     no data  no data  no data  no data
+           D5       rail metro       wrong    wrong    wrong    wrong
+           D8       rail metro       right    right    wrong    wrong
+2026-10-31 D10      rail metro     no data  no data  no data  no data
+           D11      rail metro     no data  no data  no data  no data
+           D2       rail metro     no data  no data  no data  no data
+           D3       rail metro     no data  no data  no data  no data
+           D4       rail metro       right    right    right    right
+           D5       rail metro       wrong    wrong    wrong    wrong
+           D7       rail metro       wrong    wrong    wrong    wrong
+           D9       rail metro       wrong    wrong    wrong    wrong
+2026-11-03 D1       rail metro       right    right    wrong    wrong
+           D2       bike             right    right    right    right
+           D3       rail tram        wrong    wrong    wrong    wrong
+           D4       rail metro       wrong    wrong    wrong    wrong
+           D5       bus              right    right    right    right
+           D6       bike             right    right    right    right
+           D7       bike             right    right    right    right
+
+rail legs:
+       date diary_id sub_mode model rule  status  gap_leg_share                model_legs
+2026-10-30       D3    metro    E2  off no data           0.00                          
+2026-10-30       D5    metro    E2  off   wrong           0.00                walking 5m
+2026-10-30       D8    metro    E2  off   wrong           0.00               walking 13m
+2026-10-30       D3    metro    E2   on no data           1.00                          
+2026-10-30       D5    metro    E2   on   wrong           0.00                walking 5m
+2026-10-30       D8    metro    E2   on   wrong           0.00               walking 13m
+2026-10-30       D3    metro    E1  off no data           0.00                          
+2026-10-30       D5    metro    E1  off   wrong           0.00                walking 5m
+2026-10-30       D8    metro    E1  off   right           0.00 rail/metro 9m; walking 4m
+2026-10-30       D3    metro    E1   on no data           1.00                          
+2026-10-30       D5    metro    E1   on   wrong           0.00                walking 5m
+2026-10-30       D8    metro    E1   on   right           0.00 rail/metro 9m; walking 4m
+2026-10-31       D2    metro    E2  off no data           0.00                          
+2026-10-31       D3    metro    E2  off no data           0.00                          
+2026-10-31       D4    metro    E2  off   right           0.00 rail/train 4m; walking 2m
+2026-10-31       D5    metro    E2  off   wrong           0.00                  still 5m
+2026-10-31       D7    metro    E2  off   wrong           0.00                  still 9m
+2026-10-31       D9    metro    E2  off   wrong           0.00                walking 4m
+2026-10-31      D10    metro    E2  off no data           0.00                          
+2026-10-31      D11    metro    E2  off no data           0.00                          
+2026-10-31       D2    metro    E2   on no data           0.71                          
+2026-10-31       D3    metro    E2   on no data           0.00                          
+2026-10-31       D4    metro    E2   on   right           0.62 rail/train 4m; walking 2m
+2026-10-31       D5    metro    E2   on   wrong           0.57                  still 5m
+2026-10-31       D7    metro    E2   on   wrong           0.00                  still 9m
+2026-10-31       D9    metro    E2   on   wrong           0.00                walking 4m
+2026-10-31      D10    metro    E2   on no data           0.45                          
+2026-10-31      D11    metro    E2   on no data           1.00                          
+2026-10-31       D2    metro    E1  off no data           0.00                          
+2026-10-31       D3    metro    E1  off no data           0.00                          
+2026-10-31       D4    metro    E1  off   right           0.00 rail/train 4m; walking 2m
+2026-10-31       D5    metro    E1  off   wrong           0.00                  still 5m
+2026-10-31       D7    metro    E1  off   wrong           0.00                  still 9m
+2026-10-31       D9    metro    E1  off   wrong           0.00                walking 4m
+2026-10-31      D10    metro    E1  off no data           0.00                          
+2026-10-31      D11    metro    E1  off no data           0.00                          
+2026-10-31       D2    metro    E1   on no data           0.71                          
+2026-10-31       D3    metro    E1   on no data           0.00                          
+2026-10-31       D4    metro    E1   on   right           0.62 rail/train 4m; walking 2m
+2026-10-31       D5    metro    E1   on   wrong           0.57                  still 5m
+2026-10-31       D7    metro    E1   on   wrong           0.00                  still 9m
+2026-10-31       D9    metro    E1   on   wrong           0.00                walking 4m
+2026-10-31      D10    metro    E1   on no data           0.45                          
+2026-10-31      D11    metro    E1   on no data           1.00                          
+2026-11-03       D1    metro    E2  off   wrong           0.00                    car 7m
+2026-11-03       D3     tram    E2  off   wrong           0.00                    bus 8m
+2026-11-03       D4    metro    E2  off   wrong           0.00      walking 4m; still 2m
+2026-11-03       D1    metro    E2   on   wrong           0.65                    car 7m
+2026-11-03       D3     tram    E2   on   wrong           0.00                    bus 8m
+2026-11-03       D4    metro    E2   on   wrong           0.00      walking 4m; still 2m
+2026-11-03       D1    metro    E1  off   right           0.00             rail/metro 7m
+2026-11-03       D3     tram    E1  off   wrong           0.00                    bus 8m
+2026-11-03       D4    metro    E1  off   wrong           0.00      walking 4m; still 2m
+2026-11-03       D1    metro    E1   on   right           0.65             rail/metro 7m
+2026-11-03       D3     tram    E1   on   wrong           0.00                    bus 8m
+2026-11-03       D4    metro    E1   on   wrong           0.00      walking 4m; still 2m
+
+extra legs:
+ Empty DataFrame
+Columns: [date, model, rule, kind, mode, start_local, end_local, minutes]
+Index: []
+
+run time per day [s]:
+              mean    max
+model rule              
+E1    off   0.154  0.182
+      on    0.155  0.183
+E2    off   0.152  0.186
+      on    0.151  0.178

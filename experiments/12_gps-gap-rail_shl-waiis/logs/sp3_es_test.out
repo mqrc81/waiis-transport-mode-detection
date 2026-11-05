@@ -1,0 +1,14 @@
+2026/11/05 12:50:07 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /Users/ms/Projects/waiis/transport-mode-detection/.venv/lib/python3.11/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+model rule    part  false_rail_nonrail  false_rail_min  false_rail_still  false_rail_walk  false_rail_car  false_rail_bus  extra_rail_legs_per_h  edits_per_h  in_gap_minutes     hours
+   E2  off     all             0.00068              33           0.00069          0.00000         0.00136         0.00697                0.00618      1.31007               0 809.11667
+   E2  off  iphone             0.00000               0           0.00000          0.00000         0.00000         0.00000                0.00000      0.99852               0 438.65000
+   E2  off android             0.00149              33           0.00154          0.00000         0.00354         0.00833                0.01350      1.67896               0 370.46667
+   E2   on     all             0.00070              34           0.00071          0.00000         0.00136         0.00697                0.00618      1.31007              90 809.11667
+   E2   on  iphone             0.00000               0           0.00000          0.00000         0.00000         0.00000                0.00000      0.99852               0 438.65000
+   E2   on android             0.00153              34           0.00160          0.00000         0.00354         0.00833                0.01350      1.67896              90 370.46667
+   E1  off     all             0.00181              88           0.00118          0.00000         0.01717         0.00697                0.01236      1.32985               0 809.11667
+   E1  off  iphone             0.00061              16           0.00000          0.00000         0.01172         0.00000                0.00228      1.01904               0 438.65000
+   E1  off android             0.00325              72           0.00264          0.00000         0.02594         0.00833                0.02429      1.69786               0 370.46667
+   E1   on     all             0.00227             110           0.00118          0.00530         0.01717         0.00697                0.01483      1.33232              90 809.11667
+   E1   on  iphone             0.00061              16           0.00000          0.00000         0.01172         0.00000                0.00228      1.01904               0 438.65000
+   E1   on android             0.00424              94           0.00264          0.00838         0.02594         0.00833                0.02969      1.70326              90 370.46667
