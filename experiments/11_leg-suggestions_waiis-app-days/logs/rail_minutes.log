@@ -1,21 +1,21 @@
-diary rail legs 15; model minutes inside them: {'E1': 69, 'E2': 69}
+diary rail legs 14; model minutes inside them: {'E1': 63, 'E2': 63}
 
 E1 metro: 55 minutes in 6 legs; GPS-covered 0.76; mean p(rail) 0.37
   argmax fine: {'walk': 19, 'subway': 16, 'still': 16, 'train': 4}
   argmax top: {'rail': 20, 'walking': 19, 'still': 16}
   by GPS coverage, argmax top: {False: {'rail': 9, 'still': 3, 'walking': 1}, True: {'walking': 18, 'still': 13, 'rail': 11}}
 
-E1 tram: 14 minutes in 2 legs; GPS-covered 1.00; mean p(rail) 0.00
-  argmax fine: {'bus': 8, 'bike': 6}
-  argmax top: {'bus': 8, 'bike': 6}
-  by GPS coverage, argmax top: {True: {'bus': 8, 'bike': 6}}
+E1 tram: 8 minutes in 1 legs; GPS-covered 1.00; mean p(rail) 0.00
+  argmax fine: {'bus': 8}
+  argmax top: {'bus': 8}
+  by GPS coverage, argmax top: {True: {'bus': 8}}
 
 E2 metro: 55 minutes in 6 legs; GPS-covered 0.76; mean p(rail) 0.11
   argmax fine: {'walk': 28, 'still': 16, 'car': 7, 'train': 4}
   argmax top: {'walking': 28, 'still': 16, 'car': 7, 'rail': 4}
   by GPS coverage, argmax top: {False: {'walking': 10, 'still': 3}, True: {'walking': 18, 'still': 13, 'car': 7, 'rail': 4}}
 
-E2 tram: 14 minutes in 2 legs; GPS-covered 1.00; mean p(rail) 0.00
-  argmax fine: {'bus': 8, 'bike': 6}
-  argmax top: {'bus': 8, 'bike': 6}
-  by GPS coverage, argmax top: {True: {'bus': 8, 'bike': 6}}
+E2 tram: 8 minutes in 1 legs; GPS-covered 1.00; mean p(rail) 0.00
+  argmax fine: {'bus': 8}
+  argmax top: {'bus': 8}
+  by GPS coverage, argmax top: {True: {'bus': 8}}

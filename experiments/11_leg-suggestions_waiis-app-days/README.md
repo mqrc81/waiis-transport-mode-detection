@@ -47,8 +47,9 @@ note as what the manifest records). "Proposed" below marks the approved proposal
 **Reader** `tmd.readers.waiis` (new): one day folder (`<data>/raw/waiis/user=<key>/date=<YYYY-MM-DD>/`) → accelerometer
 (t [s], xyz in the Android convention, m/s²), GPS fixes, sessions, minute windows.
 
-- **Platform:** not recorded anywhere in the data (Results). The reader takes it from the project-level device table
-  `metadata/waiis_devices.csv` (in git; layout in `metadata/README.md`): one row per user key and device period
+- **Platform:** not recorded anywhere in the data (Results). The reader takes it from the device table
+  `<data>/processed/waiis/metadata/waiis_devices.csv` (outside git since 2026-11-05; layout in the README next to it):
+  one row per user key and device period
   (`valid_from` / `valid_to`), with platform, phone model and the axis convention kept apart from its evidence. It
   fails when a recorded day has no row or several. Current row: `sub_0c0b…`, iphone, iPhone 16, axis convention
   `ios` (strongly indicated, not confirmed by a face-up recording), confirmed 2026-11-04. When the app stores the
@@ -300,7 +301,7 @@ std |acc| < 0.03 m/s².
   dates. Folders are UTC days.
 - **The phone's own activity flag is useless:** 95% of fixes say `in_vehicle` with `is_moving = true`; the median
   reported speed is 1.0 m/s.
-- **Platform and phone model:** iPhone 16, confirmed 2026-11-04 (`metadata/waiis_devices.csv`). **Not recorded in the data:**
+- **Platform and phone model:** iPhone 16, confirmed 2026-11-04 (`<data>/processed/waiis/metadata/waiis_devices.csv`). **Not recorded in the data:**
   not in the manifest, the parquet columns or the parquet key-value metadata; GPS `source` is always `waiis`.
 - **Device selection:** the manifest records `selected_device_rule = greatest_data_object_bytes`. With one user and
   one phone, what happens with a second device is not observable here; open question for the data build.
@@ -422,7 +423,8 @@ probabilities, GPS features) and `results/tables/` (git-ignored until the export
 **Before the dev runs** (as asked at the OK of stop-point 1):
 - `app_days/`: the four WAIIS day scripts moved here from 08 and rewired to `tmd.readers.waiis` (Results, stop-point 1).
 - Device table moved to `metadata/waiis_devices.csv` (project level, in git; one row per user key and device period;
-  layout in `metadata/README.md`). Reader `tmd.readers.waiis` and tests `tests/test_waiis_reader.py`,
+  layout in `metadata/README.md`); moved again on 2026-11-05 to `<data>/processed/waiis/metadata/` (outside git;
+  commit `b7afa68`). Reader `tmd.readers.waiis` and tests `tests/test_waiis_reader.py`,
   `tests/test_waiis_sign_invariance.py`.
 - **Sign invariance passes** on a WAIIS day (10-30, first 40 minute windows): windows read with and without the
   `× −1` rule are exact negatives; the 580 features and E1 / E2's acc-model probabilities are identical (tolerance
@@ -596,7 +598,7 @@ raw HMM legs instead, with `c` 0.5.
 
 **Open questions:**
 - Platform and phone model should come from the app or the data build once more users label. Until then the reader
-  uses `metadata/waiis_devices.csv`.
+  uses `<data>/processed/waiis/metadata/waiis_devices.csv`.
 - Axis signs of the WAIIS iPhone: a face-up recording (no effect on E1 / E2).
 - Device selection in the data build (`selected_device_rule = greatest_data_object_bytes`) with a second device.
 
@@ -605,8 +607,8 @@ raw HMM legs instead, with `c` 0.5.
 
 ### Stop-point 3: the WAIIS days and SHL Users 2–3 (2026-11-05)
 
-**Diaries** (written by the recording person before any model ran on the days; received 2026-11-05): 28 legs (10 /
-11 / 7), saved as `<processed>/11_.../waiis/diaries/<date>.csv` (local time, tool top level, rail sub-mode, `gt` =
+**Diaries** (written by the recording person before any model ran on the days; received 2026-11-05; one leg corrected
+the same day, deviation 9): 28 legs (10 / 11 / 7), saved as `<processed>/11_.../waiis/diaries/<date>.csv` (local time, tool top level, rail sub-mode, `gt` =
 start / end / both confirmed by public transport card validation). Rough times otherwise. Metro / train validation
 can come a few minutes before boarding, bus / tram a few minutes after; for public transport only the start is known.
 **Walking was not tracked from 10-31 on** (beyond the listed legs), so walking / running legs on 10-31 and 11-03 are
@@ -627,7 +629,13 @@ with empty `review` / `review_note` columns for right / wrong / unsure), `review
 7. *Diary times parsed at second resolution* (`review.py`, `diary`): the first dry run (no MLflow) matched nothing
    because pandas parsed the times at second resolution; fixed before any logged run.
 8. *Walking on 11-03*: the first logged runs counted walking legs on 11-03 as extra; the diary note says walking
-   wasn't tracked from 10-31 on. Re-run; the six first runs are kept in MLflow with tag `superseded`.
+   wasn't tracked from 10-31 on. Re-run.
+9. *Diary correction* (2026-11-05, by the recording person): 11-03 14:01–14:10 "tram" was a bicycle ride, 14:02–14:10
+   (GT both); there is no tram leg there. Re-run (`waiis_days.py`, `rail_minutes.py`); the leg suggestions themselves
+   don't change, only the diary-based counts. The 11-03 diary now has one tram leg (16:57–17:05).
+10. *Removed runs*: all superseded `waiis_*` runs (deviations 8 and 9, and one re-run whose 6 runs were dirty because
+    the device-table move wasn't committed yet) were deleted from MLflow (soft delete; out of the experiment and the
+    export). The 6 remaining `waiis_<date>_<model>` runs are clean, at commit `b7afa68`.
 
 #### Run time (single thread, `logs/waiis_days.log`)
 
@@ -643,19 +651,21 @@ are 10's (unchanged models).
 | model legs | 11 / 13 | 10 / 10 | 21 / 21 |
 | GPS-only legs: still / moving (unknown) | 4 / 3 | 4 / 5 | 5 / 4 |
 | model legs below `c` 0.5 (unknown) | 0 / 0 | 0 / 0 | 0 / 0 |
-| diary legs matched (same mode, IoU ≥ 0.5) | 2 / **5** of 10 | 0 / 0 of 11 | 2 / 2 of 7 |
-| extra legs (moving mode, < 50% inside a same-mode diary leg) | 2 / 2 | 1 / 1 | 3 / 2 |
-| package (`fusion_late__hmm_viterbi`): matched, extra | 3, 5 | 0, 1 | 1, 10 |
+| diary legs matched (same mode, IoU ≥ 0.5) | 2 / **5** of 10 | 0 / 0 of 11 | 3 / 3 of 7 |
+| extra legs (moving mode, < 50% inside a same-mode diary leg) | 2 / 2 | 1 / 1 | 2 / 1 |
+| package (`fusion_late__hmm_viterbi`): matched, extra | 3, 5 | 0, 1 | 2, 9 |
+
+**All three days: E2 5 of 28 diary legs matched, E1 8 of 28, the package 5 of 28.**
 
 **By diary mode, all three days** (E2 / E1; same-mode share = share of the diary leg's time under legs of its mode;
 data = share under model legs, i.e. with accelerometer minutes):
 
 | diary mode | legs | matched | same-mode share | data |
 |---|---|---|---|---|
-| rail (13 metro, 2 tram) | 15 | **0 / 1** | 0.02 / 0.09 | 0.48 |
+| rail (13 metro, 1 tram) | 14 | **0 / 1** | 0.02 / 0.09 | 0.47 |
 | walking | 8 | 1 / 3 | 0.42 / 0.40 | 0.46 |
 | bus | 1 | 0 / 0 | 0.46 / 0.45 | 0.51 |
-| bike | 2 | 2 / 2 | 0.78 | 0.81 |
+| bike | 3 | 3 / 3 | 0.77 | 0.79 |
 | car | 1 | 1 / 1 | 0.95 | 0.95 |
 | running | 1 | 0 / 0 | 0 | 0 |
 
@@ -669,25 +679,25 @@ data = share under model legs, i.e. with accelerometer minutes):
   (E2 28, E1 19) and still (16 / 16). Some walking minutes are likely real: a GT start is the card validation, before
   the walk to the platform. Without GPS, E1 says rail on 9 of 13 minutes. The one E1-matched metro is 10-30 21:39–21:52
   (hint metro); E2 has a 4 min rail leg on 10-31 17:54 (IoU too small to match).
-- **Bike and car are right** (both bike legs and the car leg matched by both models, 0.95–1.00 confidence where data
-  exist). **Bus** (11-03, 18:05–19:10, rough times) is found as two bus legs (18:31–18:39, 18:47–19:09) split by a
+- **Bike and car are right** (all three bike legs and the car leg matched by both models, 0.95–1.00 confidence where
+  data exist). **Bus** (11-03, 18:05–19:10, rough times) is found as two bus legs (18:31–18:39, 18:47–19:09) split by a
   6 min GPS-only gap; IoU 0.34, not matched.
-- **Confident errors, as on dev:** the extras are confident (bike 0.95, bus 0.93–0.95 for the trams; car 0.68 at the
-  start of the 11-03 metro; walking ≥ 0.90 near the 10-30 car trip, plausibly unlisted walks). No model leg fell below
+- **Confident errors, as on dev:** the extras are confident (bus 0.93–0.95 for the tram; car 0.68 at the start of the
+  11-03 metro; walking ≥ 0.90 near the 10-30 car trip, plausibly unlisted walks). No model leg fell below
   `c` 0.5 on any day.
-- **The package** (`fusion_late__hmm_viterbi`, 18 s rows; descriptive): 4 of 28 matched (E2 4, E1 7); no rail at all,
-  more extra legs on 11-03 (10, mostly short flips).
+- **The package** (`fusion_late__hmm_viterbi`, 18 s rows; descriptive): 5 of 28 matched (E2 5, E1 8); no rail at all,
+  more extra legs on 11-03 (9, mostly short flips).
 
 #### Tram check (`review/tram_check.csv`; descriptive, no model choice)
 
 | diary tram leg (11-03) | model minutes; GPS | E2: leg, minute argmax | E1: leg, minute argmax |
 |---|---|---|---|
-| 14:01–14:10 (GT start) | 6; 100% | bike; bike 6 | bike; bike 6 |
 | 16:57–17:05 (GT start) | 8; 100% | bus; bus 8 | bus; bus 8 |
 
-- **Neither tram leg is right at the top level** (both should be rail). E1, with a tram class and GPS, gives tram 0 of
-  14 minutes (mean rail probability 0.00); the share of tram / train / subway is 0 in both legs for both models.
-- This is E1's first tram check with GPS: on these two legs its tram class doesn't fire.
+- **The tram leg is not right at the top level** (it should be rail): both models give bus on all 8 minutes. E1, with a
+  tram class and GPS, gives tram 0 of 8 minutes (mean rail probability 0.00).
+- This is E1's first tram check with GPS: one leg, 8 minutes; its tram class doesn't fire. (The second diary "tram"
+  leg, 14:01–14:10, was a bicycle ride, deviation 9; both models matched it as bike.)
 
 #### SHL Users 2–3, once (`shl23.py`, `logs/shl23.log`, `results/tables/shl23_legs.csv`, MLflow `shl23_E2/E1`)
 
