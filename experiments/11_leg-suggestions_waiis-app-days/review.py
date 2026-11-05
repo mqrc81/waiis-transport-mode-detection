@@ -7,7 +7,8 @@ against each model's legs (model legs + GPS-only legs) and the package's own pre
   dominant predicted mode;
 - missed: diary legs not matched;
 - extra: model legs of a moving mode (not still / unknown) with < 50% of their time inside diary legs of the same
-  mode. On 2026-10-31 walking was not tracked, so walking / running legs there are "not in diary", not extra.
+  mode. From 2026-10-31 on walking was not tracked, so walking / running legs on those days are "not in diary",
+  not extra.
 Tram check (added at the OK of stop-point 2): per diary tram leg and model, the minute shares of the argmax fine
 class (tram / train / subway / bus / car / other), the GPS coverage of those minutes and the sub-mode hint.
 """
@@ -22,7 +23,7 @@ from tmd.paths import PROCESSED
 TZ = "Europe/Madrid"
 OUT = PROCESSED / "11_leg-suggestions_waiis-app-days" / "waiis"
 DIARIES = OUT / "diaries"
-WALK_UNTRACKED = {"2026-10-31"}
+WALK_UNTRACKED = {"2026-10-31", "2026-11-03"}   # from 10-31 on, walking was not tracked (diary note)
 MOVING = {"walking", "running", "bike", "car", "bus", "rail"}
 PKG_TOP = {"still": "still", "walking": "walking", "running": "running", "bike": "bike", "car": "car", "bus": "bus",
            "subway": "rail", "train": "rail", "tram": "rail"}
