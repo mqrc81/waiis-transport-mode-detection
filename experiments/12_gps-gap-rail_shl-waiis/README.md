@@ -484,6 +484,26 @@ day: 2, 7 and 2 (of 22, 39 and 24 gaps). They hold only 11, 8 and 3 model minute
   - Run time 0.15–0.16 s per day.
 - **Export:** 84 runs, all clean.
 
+**All models on the WAIIS days** (`lenient_all.py`, added 2026-11-05 at the user's request; descriptive). This is
+11's lenient comparison for the engine (E1 + R1), E2 (11) and every model in the day folders' `predictions/` (the
+package's `frozen_run`; training data unknown). The scored minutes are the same accelerometer minutes for all
+models. The 19 vehicle legs are 3 bike, 1 car, 1 bus and 14 rail; the 9 other legs are walking and running.
+
+| Model | Vehicle right / wrong / no data | Core-minute accuracy | Bike / car / bus / rail right | Other right / wrong / no data | Extra vehicle legs |
+|---|---|---|---|---|---|
+| **E1 + R1** | **8 / 6 / 5** | **0.81** | 3 / 1 / 1 / **3** | 4 / 1 / 4 | 0 |
+| E2 | 6 / 8 / 5 | 0.70 | 3 / 1 / 1 / 1 | 4 / 1 / 4 | 0 |
+| fusion_late__hmm_viterbi | 5 / 9 / 5 | 0.54 | 3 / 1 / 1 / 0 | 5 / 0 / 4 | 0 |
+| inceptiontime_acc__hmm_viterbi | 4 / 10 / 5 | 0.39 | 3 / 1 / 0 / 0 | 5 / 0 / 4 | 13 |
+| inceptiontime_acc_25hz__hmm_viterbi | 4 / 10 / 5 | 0.39 | 3 / 1 / 0 / 0 | 5 / 0 / 4 | 6 |
+| hart_acc__hmm_viterbi | 6 / 8 / 5 | 0.35 | 3 / 0 / 0 / 3 | 5 / 0 / 4 | 15 |
+| lightgbm_gps__hmm_viterbi | 4 / 10 / 5 | 0.54 | 2 / 1 / 1 / 0 | 4 / 1 / 4 | 1 |
+| rules_speed__majority_window | 3 / 11 / 5 | 0.22 | 2 / 1 / 0 / 0 | 3 / 2 / 4 | 0 |
+
+- No model shows rail anywhere in the 5 metro legs without accelerometer data, not even the GPS-only ones.
+  E1 + R1 marks 4 of them with an `unknown` `underground_rail` gap leg, which isn't counted as rail.
+- `hart_acc` gets 3 rail legs right but adds 15 vehicle legs that aren't in the diary.
+
 ### Deviations
 
 1. **R1 also covers stretches 11 left without a leg** (stop-point 2): a gap leg is made even when the stretch had

@@ -54,3 +54,9 @@ wc += ["rail_legs", "rail_right", "rail_no_data", "rail_no_data_with_gap_hint", 
        "rail_with_gap_hint", "extra_vehicle_legs", "extra_rail_legs", "extra_gap_legs", "run_seconds_per_day_mean",
        "run_seconds_per_day_max"]
 print("## WAIIS days, lenient comparison (11's), rule off / on\n\n" + md(w[wc].T) + "\n")
+
+la = r[r.step == "lenient_all_models"].set_index("model")
+print("## WAIIS days, lenient comparison, every model (E1 + R1, E2, package predictions)\n\n" + md(la[[
+    "vehicle_right", "vehicle_wrong", "vehicle_no_data", "vehicle_core_minute_accuracy", "bike_right", "car_right",
+    "bus_right", "rail_right", "rail_no_data_shown_as_rail", "other_right", "other_wrong", "other_no_data",
+    "other_core_minute_accuracy", "extra_vehicle_legs"]]) + "\n")

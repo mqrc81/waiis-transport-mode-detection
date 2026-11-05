@@ -188,3 +188,18 @@ run_seconds_per_day_mean          0.1705   0.1544           0.1553           0.1
 run_seconds_per_day_max           0.1976   0.1823           0.1826           0.1997   0.1959   0.1856           0.1784           0.1945
 ```
 
+## WAIIS days, lenient comparison, every model (E1 + R1, E2, package predictions)
+
+```
+                                                           vehicle_right  vehicle_wrong  vehicle_no_data  vehicle_core_minute_accuracy  bike_right  car_right  bus_right  rail_right  rail_no_data_shown_as_rail  other_right  other_wrong  other_no_data  other_core_minute_accuracy  extra_vehicle_legs
+model                                                                                                                                                                                                                                                                                                    
+E1 + R1                                                              8.0            6.0              5.0                        0.8072         3.0        1.0        1.0         3.0                         0.0          4.0          1.0            4.0                      0.7391                 0.0
+E2                                                                   6.0            8.0              5.0                        0.6988         3.0        1.0        1.0         1.0                         0.0          4.0          1.0            4.0                      0.7391                 0.0
+package fusion_late__hmm_viterbi (descriptive)                       5.0            9.0              5.0                        0.5422         3.0        1.0        1.0         0.0                         0.0          5.0          0.0            4.0                      0.8261                 0.0
+package inceptiontime_acc__hmm_viterbi (descriptive)                 4.0           10.0              5.0                        0.3855         3.0        1.0        0.0         0.0                         0.0          5.0          0.0            4.0                      0.8696                13.0
+package inceptiontime_acc_25hz__hmm_viterbi (descriptive)            4.0           10.0              5.0                        0.3855         3.0        1.0        0.0         0.0                         0.0          5.0          0.0            4.0                      0.9565                 6.0
+package hart_acc__hmm_viterbi (descriptive)                          6.0            8.0              5.0                        0.3494         3.0        0.0        0.0         3.0                         0.0          5.0          0.0            4.0                      0.8261                15.0
+package lightgbm_gps__hmm_viterbi (descriptive)                      4.0           10.0              5.0                        0.5422         2.0        1.0        1.0         0.0                         0.0          4.0          1.0            4.0                      0.6957                 1.0
+package rules_speed__majority_window (descriptive)                   3.0           11.0              5.0                        0.2169         2.0        1.0        0.0         0.0                         0.0          3.0          2.0            4.0                      0.6522                 0.0
+```
+
