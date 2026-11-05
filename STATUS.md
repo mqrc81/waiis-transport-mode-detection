@@ -2,6 +2,11 @@
 
 *As of 2026-11-05. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
 
+**Parked 2026-11-05.** No further experiments run here; the work continues in a company-internal repository. This
+file is the final state: sections 1–3 describe what was reached, section 4 the next steps. Still open in this
+repository: experiment 12's Conclusion is a draft, not approved. Data, checkpoints and the MLflow store stay outside
+git (`<data root>`, `mlflow.db`, `mlartifacts/`); exported runs are in each experiment's `results/runs.csv`.
+
 ## 1. Data
 
 **`waiis_bench_v2`** is the frozen benchmark every model reads (`tmd.bench` default since 2026-11-03), built at
@@ -187,7 +192,12 @@ dataset in [experiment 11's README](experiments/11_leg-suggestions_waiis-app-day
   - Outdated: a same-person day split, acc + gyro.
   - Still holds: the curve hadn't flattened by k = 1000, and the remaining gain is in the vehicle classes.
 
-## 4. Next experiment
+## 4. Next steps (to continue in the company-internal repository)
+
+**Suggestion engine:** `tmd.suggest` / `tmd.legs` / `tmd.legs_adapter` (11, 12): E1 with R1 GPS-gap hints, output
+format `tmd-legs/0.1`; to be adapted to the labelling tool's label tree and format there (11's Conclusion).
+
+**Next experiments** (as planned here, to run there):
 
 1. **E1 + Collecty**, then with labelled WAIIS days added (11's draft). Chosen on `waiis_bench_v2` dev, not on the
    three WAIIS days used in 11. Carries the NOR-TMD follow-up: keep NOR-TMD's vehicle gains (its test 0.778 vs 0.469)
