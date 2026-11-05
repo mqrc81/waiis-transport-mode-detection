@@ -505,8 +505,6 @@ day: 2, 7 and 2 (of 22, 39 and 24 gaps). They hold only 11, 8 and 3 model minute
 
 ## Conclusion
 
-**Draft — not approved.**
-
 **Question.** Can GPS loss while moving mark underground rail, so the suggestion engine proposes metro where it
 showed unknown GPS-only legs or read metro minutes as walking or still?
 
