@@ -5,7 +5,7 @@ GPS input (11, rule C1, approved 2026-11-04): fixes with accuracy <= 500 m, assi
 accelerometer span +- 150 s contains them, one fix per minute nearest the minute centre, gps-v2 features.
 Leg rules (11, approved 2026-11-04): E2 s_veh 0, s_other 3, g 10, l_min 2, c 0.5; E1 raw HMM legs, c 0.5.
 Moving GPS gaps (12, approved 2026-11-05): `Spec.gap` (a `tmd.legs.GapRule`; None = off), for both models gap
->= 5 min, speed across 2-25 m/s, k = 2. Gaps are found on the day's good fixes (accuracy <= 500 m). R2 boosts the
+>= 5 min, speed across 2-25 m/s, k = 1 (R2 off: k = 2 was chosen on dev and switched off after 12's once-check). Gaps are found on the day's good fixes (accuracy <= 500 m). R2 boosts the
 raw train and subway probabilities of model minutes in a moving gap by k before the HMM; R1 adds GPS-only gap legs
 (unknown, hint underground_rail).
 """
@@ -31,7 +31,7 @@ GPS_VERSION = "gps-v2"
 RULES_VERSION = "legs-v2 (12)"
 
 
-GAP_RULE = L.GapRule(g_min_s=300.0, v_lo=2.0, v_hi=25.0, k=2.0)   # 12, approved 2026-11-05 (both models)
+GAP_RULE = L.GapRule(g_min_s=300.0, v_lo=2.0, v_hi=25.0, k=1.0)   # 12: R1 only (k = 2 switched off after the once-check)
 
 
 @dataclass(frozen=True)
