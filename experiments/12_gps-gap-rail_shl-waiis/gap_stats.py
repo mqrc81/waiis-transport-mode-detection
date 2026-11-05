@@ -13,20 +13,17 @@ Per gap: its majority class (labelled minute centres inside it).
     uv run python gap_stats.py        # log: logs/gap_stats.log; tables: results/tables/gap_*.csv
 """
 import logging
-import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 from tmd import bench
 from tmd import gps as tgps
 from tmd.labels import FINE_CLASSES
+from tmd.models import e10 as d11
 from tmd.models import minutes
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parent / "11_leg-suggestions_waiis-app-days"))
-import dev as d11  # noqa: E402  (11's dev helpers, read-only; to move to src/tmd before 12's dev runs)
 
 log = logging.getLogger()
 TABLES = HERE / "results" / "tables"
@@ -236,7 +233,7 @@ def main():
     e_m, e_g, e_a = es()
     pc = pd.concat([per_class(s_m, "shl_user1"), per_class(e_m, "extrasensory_dev")])
     pc.to_csv(TABLES / "gap_by_class.csv", index=False)
-    (sg, sgg), (eg, egg) = per_gap(s_g, s_m, "shl_user1"), per_gap(e_g, e_m, "extrasensory_dev")
+    (sg, sgg), (eg, _egg) = per_gap(s_g, s_m, "shl_user1"), per_gap(e_g, e_m, "extrasensory_dev")
     pg = pd.concat([sg, eg])
     pg.to_csv(TABLES / "gap_by_majority_class.csv", index=False)
     s_a.to_csv(TABLES / "gap_shl_accuracy_by_class.csv", index=False)

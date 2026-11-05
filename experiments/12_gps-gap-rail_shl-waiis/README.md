@@ -39,7 +39,8 @@ on the 20 s track that WAIIS records.
 ### Stop-points
 
 1. **Plan** (this section; Results, stop-point 1). Approved 2026-11-05.
-2. **Dev results** and the proposed `k` per model. Wait for OK.
+2. **Dev results** and the proposed `k` per model. Approved 2026-11-05: `k` = 2 for both models, rule on; train and
+   subway boosted, not tram; re-run clean with that change, which must keep `k` = 2 within all three limits.
 3. **Once:** SHL Users 2–3 (all positions), false rail time on the ExtraSensory test users, and the three WAIIS app
    days with 11's lenient diary comparison (descriptive). Then Results, draft Conclusion, update STATUS.md.
 
@@ -63,7 +64,9 @@ minutes.
   - Mode `rail` flagged would be proposed only if the gap setting's rail precision on SHL User 1 (GPS only) were
     ≥ 0.8. It is 0.770, so R1 stays `unknown`.
 - **R2, minutes with accelerometer data in a moving gap.** Before the HMM decodes, the raw fused probabilities of
-  all rail columns (train and subway, plus tram for E1) are multiplied by `k`, then renormalised.
+  the train and subway columns are multiplied by `k`, then renormalised. Tram is not boosted (changed at the
+  stop-point 2 approval: mostly above ground, not checkable on dev, E1's tram class barely fires). There is one `k`
+  for both columns: the top level is rail either way, and the gap doesn't separate metro from train.
   - The rail sub-mode hint is the model's, as in 11.
   - A leg that contains gap minutes gets the reason `gps_gap_moving`.
 - **R3:** both.
@@ -263,3 +266,116 @@ recomputed on leg modes):
 - **Late first fix.** The first good fix after a subway ride can come minutes after leaving the station. The gap
   then ends late and lowers the speed across (subway p10 0.6 m/s). `v_lo` = 1 keeps most of these; 2–3 drops a
   quarter to a third of the subway gap minutes.
+
+### Stop-point 2 (2026-11-05): code, dev results, proposed `k`
+
+**Code** (approved moves).
+- **`src/tmd/models/e10.py`:** 11's `dev.py` helpers and `gps_candidates.thinned_track` (as `shl_thinned_track`).
+  11's `dev.py` now keeps its folder constants and re-exports the moved helpers, so 11's scripts run unchanged.
+- **Move check** (`check_move.py old|new`, `logs/check_move_{old,new}.json`): run on 11's code before the move and
+  on `tmd.models.e10` after it.
+  - Inputs: SHL User 1 hips with C1 at 20 s, recomputed end to end, plus ExtraSensory dev; E1 and E2, seed 0.
+  - Leg scores (11's approved rules and raw legs): all 50 values identical.
+  - The recomputed probabilities differ from 11's saved ones by at most 3e-8.
+- **New code:**
+  - `tmd.gps.gaps` / `minute_gaps`;
+  - `tmd.legs.GapRule`, `boost_rail`, the `in_gap` argument of `predict_legs` (reason `gps_gap_moving` with
+    `gap_model_minutes`), and R1 in `gps_only_legs(..., gap_rule)`;
+  - `tmd.suggest`: `Spec.gap`, `in_gap`, gaps per day; `RULES_VERSION` `legs-v2 (12)`;
+  - `tmd.legs_adapter`: `REASON_CODES`, and `RULE_VERSION` per rule source.
+- **Off by default:** with `gap=None` (still the default in `SPECS`) every output is as in 11.
+- **Tests:** `tests/test_gaps.py` (7) covers gaps, speed across, group boundaries, minute assignment, the moving
+  rule, the boost (k = 1 is the identity) and the R1 gap leg with its reason. The full suite passes (125).
+- **R1 detail, not a deviation:** the gap part of a stretch without model minutes becomes a gap leg even when 11
+  made no leg for that stretch (fewer than 2 fixes inside: a metro trip with neither accelerometer data nor GPS).
+  The parts of the stretch before and after the gap leg get 11's legs if they qualify (≥ 5 min, ≥ 2 fixes).
+
+**Dev run.** `uv run python dev_k.py grid` (log `logs/dev_k.log`, table `results/tables/dev_k.csv`, choice
+`dev_k_choice.json`), then `uv run python dev_k.py sensitivity` (`sensitivity.csv`).
+- 72 MLflow runs (`dev_k_<model>_k<k>_seed<s>`, `sens_<model>_<rule>`). **All are dirty:** the code above was not
+  committed when they ran. They are to be re-run clean after the code is committed (about 3 min).
+- Checks before scoring:
+  - The other positions and ExtraSensory reproduce 10's saved `p` exactly from 10's saved raw arrays (max |diff| 0;
+    one HMM sequence per position).
+  - SHL hips at `k` = 1 reproduces 11 (E1 edits per hour 0.8427).
+- Moving gaps (approved definition): SHL User 1 has 143 of 1,091 gaps. Hips: 3,463 minutes in them, 1,174 of them
+  subway. ExtraSensory dev has 11 of 53,454 gaps (48 minutes).
+- Truth: 70 subway legs pooled: 61 on hips and 3 per other position (the 4phones days).
+
+**`k` grid, SHL User 1, all positions pooled, seed 0** (the choice). False rail is the share of the class's minutes
+inside rail legs. The ExtraSensory column is the mean of seeds 0–2.
+
+| Model | k | Edits / h | Time accuracy | Subway leg recall | Rail leg precision | Extra rail legs / h | False rail car | False rail bus | ExtraSensory false rail |
+|---|---|---|---|---|---|---|---|---|---|
+| E1 | 1 | 0.903 | 0.958 | 0.686 | 0.738 | 0.007 | 0.28% | 0 | 0.22% |
+| E1 | **2** | **0.876** | 0.962 | 0.771 | 0.801 | 0.009 | 0.28% | 0.17% | 0.22% |
+| E1 | 4 | 0.887 | 0.961 | 0.771 | 0.787 | 0.016 | 0.92% ✗ | 0.28% | 0.22% |
+| E1 | 8 | 0.887 | 0.959 | 0.757 | 0.772 | 0.023 | 1.49% ✗ | 0.62% ✗ | 0.22% |
+| E1 | 16 | 0.932 | 0.950 | 0.757 | 0.742 | 0.045 | 4.98% ✗ | 2.44% ✗ | 0.23% |
+| E1 | 32 | 0.937 | 0.941 | 0.757 | 0.729 | 0.052 ✗ | 9.48% ✗ | 4.02% ✗ | 0.23% |
+| E2 | 1 | 0.962 | 0.946 | 0.686 | 0.692 | 0.030 | 0.44% | 0.17% | 0.09% |
+| E2 | **2** | **0.950** | 0.948 | 0.743 | 0.714 | 0.032 | 0.72% | 0.20% | 0.09% |
+| E2 | 4 | 0.923 | 0.949 | 0.814 | 0.758 | 0.034 | 2.01% ✗ | 0.25% | 0.09% |
+| E2 | 8 | 0.944 | 0.948 | 0.786 | 0.743 | 0.041 | 2.27% ✗ | 0.53% | 0.09% |
+| E2 | 16 | 0.960 | 0.943 | 0.786 | 0.727 | 0.052 | 4.70% ✗ | 1.24% ✗ | 0.09% |
+| E2 | 32 | 0.994 | 0.931 | 0.743 | 0.692 | 0.070 ✗ | 9.86% ✗ | 3.65% ✗ | 0.09% |
+
+✗ = breaks a constraint ((b): extra rail legs per hour up > 0.05; (c): false rail on a class up > 0.5 pp).
+False rail on still: E1 2.39% → 2.51% at `k` = 2 and 2.90% from `k` = 4 (+0.51 pp, just over the limit); E2 9.70% →
+9.83–10.14%. Walking ≤ 0.4% at every `k`.
+
+**Proposed: `k` = 2 for both models.** It is the only `k` > 1 that meets all constraints, and it beats `k` = 1 for
+both. The rule is on.
+
+| Seed-0 choice, mean of seeds 0–2 | E1 k = 1 | E1 k = 2 | E2 k = 1 | E2 k = 2 |
+|---|---|---|---|---|
+| Edits per hour (seeds 0 / 1 / 2) | 0.903 / 0.910 / 0.941 | 0.876 / 0.894 / 0.910 | 0.962 / 0.955 / 0.964 | 0.950 / 0.939 / 0.944 |
+| Edits per hour, mean | 0.918 | 0.893 | 0.960 | 0.944 |
+| Time accuracy | 0.958 | 0.962 | 0.947 | 0.950 |
+| Wrong unflagged time | 4.19% | 3.82% | 5.27% | 4.98% |
+| Leg F1 | 0.821 | 0.830 | 0.816 | 0.821 |
+| Subway leg recall (70 legs) | 0.710 | 0.776 | 0.695 | 0.752 |
+| Subway legs with hint `metro` (matched) | 0.94 | 0.91 | 0.99 | 0.94 |
+| Rail leg recall / precision | 0.829 / 0.750 | 0.859 / 0.799 | 0.820 / 0.699 | 0.846 / 0.720 |
+| Extra rail legs per hour | 0.008 | 0.009 | 0.028 | 0.032 |
+| ExtraSensory false rail (minutes) | 0.22% (533) | 0.22% (533) | 0.09% (206) | 0.09% (206) |
+
+**Per position, seed 0, E1, `k` 1 → 2** (subway legs: hips 61, each other position 3):
+
+| Position | Edits per hour | Subway leg recall | Time accuracy |
+|---|---|---|---|
+| hips | 0.843 → 0.835 | 0.721 → 0.754 | 0.965 → 0.966 |
+| hand | 1.782 → 1.545 | 1 → 2 of 3 | 0.835 → 0.876 |
+| torso | 1.193 → 0.954 | 1 → 3 of 3 | 0.932 → 0.969 |
+| bag | 1.129 → 1.069 | 2 → 3 of 3 | 0.947 → 0.948 |
+
+E2, `k` 1 → 2: hips 0.896 → 0.894, hand 2.139 → 2.139 (0 → 1 of 3 subway legs), torso 1.312 → 1.074, bag
+0.951 → 0.951.
+
+**Sensitivity** (`k` = 2, seed 0; all 18 settings: `g_min` 3, 5, 10 × `v_lo` 1, 2, 3 × `v_hi` 15, 25):
+- E1 edits per hour 0.873–0.878 (approved setting 0.876), E2 0.946–0.953 (0.950).
+- Subway leg recall is the same in every setting (E1 0.771, E2 0.743).
+- Extra rail legs and false rail on car / bus are within ±0.002 / ±0.0007.
+- At `k` = 2 the result doesn't depend on the gap definition.
+
+**Readings.**
+1. **The gain is real but small, and carried by few legs.**
+   - E1, `k` = 2: −0.025 edits per hour (−2.7%, every seed), subway leg recall +0.07 (+3 to +6 of 70 legs by seed).
+   - Most of the per-position gain is on torso, hand and bag, but that is 3 subway legs each (the 4phones days).
+     Hips gains little (subway legs 44 → 46 of 61), as stop-point 1 expected.
+   - E2 gains less (−0.016 edits per hour).
+2. **Car limits `k`.** SHL User 1's long car GPS outages (stop-point 1, reading 3) turn into rail from `k` = 4 (E1
+   car false rail 0.3% → 0.9%; at 32, 9.5%). Bus follows at higher `k`. Constraint (c) binds; without it, E2 would
+   take `k` = 4 (0.923 edits per hour, subway recall 0.81).
+3. **ExtraSensory is untouched.** With only 11 moving gaps, false rail time doesn't change at any `k` ≤ 8 (E1 0.22%,
+   E2 0.09%; +0.01 pp at 16–32). The guard never binds. Missing GPS in ExtraSensory is not movement across a gap.
+4. **Hint.** Among matched subway legs, `metro` drops slightly with the boost (E1 0.94 → 0.91), because boosting all
+   rail columns also raises train. The top level is unaffected.
+5. **R1 isn't exercised on dev** (SHL has accelerometer data throughout). Its evidence stays the stop-point 1
+   GPS-only reading for the approved setting: rail precision 0.770, subway recall 0.485, 31 ExtraSensory minutes.
+
+### Open questions (stop-point 2)
+
+- **Clean re-run.** Committing the code and re-running `dev_k.py grid` and `sensitivity` (about 3 min) would make
+  the 72 runs clean. The dirty ones would then be deleted from MLflow, as in 11.
+- **`k` per model:** both get 2 here. `tmd.suggest.SPECS` gets `gap=GapRule(k=2)` for E1 and E2 only after the OK.

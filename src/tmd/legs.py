@@ -391,12 +391,16 @@ GPS_ONLY_STILL_MPS = 0.5
 FINE_RAIL = [FINE_CLASSES.index(c) for c in ("train", "subway", "tram")]
 
 
-def predict_legs(seq: np.ndarray, ts: np.ndarray, p: np.ndarray, covered: np.ndarray, rules: Rules) -> pd.DataFrame:
+def predict_legs(seq: np.ndarray, ts: np.ndarray, p: np.ndarray, covered: np.ndarray, rules: Rules,
+                 in_gap: np.ndarray | None = None) -> pd.DataFrame:
     """Leg suggestions from model minutes (any order). p: (N, 8 or 9) fine minute probabilities after the HMM;
-    covered: GPS-covered minutes. Returns `build`'s table plus sub-mode hint, coverage and flag_reasons;
+    covered: GPS-covered minutes; in_gap (12): minutes in a moving GPS gap (`GapRule.moving`), which add the reason
+    `gps_gap_moving` to their leg. Returns `build`'s table plus sub-mode hint, coverage and flag_reasons;
     times in seconds. Minutes in the returned `minutes` attribute order: sorted by (seq, ts)."""
     order = np.lexsort((ts, seq))
     seq, ts, p, covered = np.asarray(seq)[order], np.asarray(ts, np.int64)[order], p[order], covered[order]
+    in_gap = np.zeros(len(order), bool) if in_gap is None else np.asarray(in_gap, bool)[order]
+    gap_cum = np.concatenate([[0], np.cumsum(in_gap)])
     p9 = p if p.shape[1] == 9 else np.column_stack([p, np.zeros(len(p))])
     q = top_probs(p9)
     lg = build(seq, ts, q, rules)
@@ -422,21 +426,49 @@ def predict_legs(seq: np.ndarray, ts: np.ndarray, p: np.ndarray, covered: np.nda
             f.append({"code": "no_gps", "gps_covered_share": round(float(r.gps_covered_share), 3)})
         if r.hint and r.hint_share < HINT_UNCERTAIN:
             f.append({"code": "rail_hint_uncertain", "share": round(float(r.hint_share), 3)})
+        n_gap = int(gap_cum[r.i1] - gap_cum[r.i0])
+        if n_gap:
+            f.append({"code": "gps_gap_moving", "gap_model_minutes": n_gap})
         flags.append(f)
     lg["flag_reasons"] = flags
     lg["source"] = "model"
-    lg.attrs["minutes"] = pd.DataFrame({"seq": seq, "ts": ts, "covered": covered, **{f"p_{m}": q[:, j] for j, m in
+    lg.attrs["minutes"] = pd.DataFrame({"seq": seq, "ts": ts, "covered": covered, "in_gap": in_gap, **{f"p_{m}": q[:, j] for j, m in
                                                                                    enumerate(MODES)},
                                         **{f"pf_{c}": p9[:, j] for j, c in enumerate(FINE_CLASSES)}})
     return lg
 
 
-def gps_only_legs(legs: pd.DataFrame, fixes: pd.DataFrame, day_lo: float, day_hi: float) -> pd.DataFrame:
+def _gps_only_leg(a: float, b: float, t, la, lo) -> dict | None:
+    """11's GPS-only leg for [a, b]: >= 5 min and >= 2 fixes inside, else None."""
+    from tmd.gps import haversine_m
+    if b - a < GPS_ONLY_MIN_S:
+        return None
+    inside = np.flatnonzero((t >= a) & (t <= b))
+    if len(inside) < 2:
+        return None
+    i, j = inside[0], inside[-1]
+    v = float(haversine_m(la[i], lo[i], la[j], lo[j]) / max(t[j] - t[i], 1.0))
+    still = v < GPS_ONLY_STILL_MPS
+    return {"start": a, "end": b, "span_min": (b - a) / STEP, "n_minutes": 0,
+            "top1": STILL if still else UNKNOWN, "mode": STILL if still else UNKNOWN,
+            "p1": np.nan, "top2": UNKNOWN, "p2": np.nan, "gps_covered_share": 1.0, "coverage": "gps",
+            "hint": "", "hint_share": np.nan, "n_fixes": len(inside),
+            "flag_reasons": [{"code": "gps_only_still" if still else "gps_only_moving",
+                              "speed_across_mps": round(v, 2), "fixes": int(len(inside))}],
+            "source": "rule:gps_only_still" if still else "rule:gps_only_moving"}
+
+
+def gps_only_legs(legs: pd.DataFrame, fixes: pd.DataFrame, day_lo: float, day_hi: float,
+                  gap_rule: GapRule | None = None) -> pd.DataFrame:
     """Legs for stretches without model minutes (11, approved 2026-11-04). fixes: t [s], lat, lon, accuracy already
     <= 500 m. A stretch = the time between consecutive model legs (and before the first / after the last, bounded by
     the day's first / last fix), at least 5 min long, with >= 2 fixes inside. Speed across (first -> last fix) < 0.5
-    m/s: a still leg (gps_only_still); else an unknown leg with the speed across (gps_only_moving). No fixes, no leg."""
-    from tmd.gps import haversine_m
+    m/s: a still leg (gps_only_still); else an unknown leg with the speed across (gps_only_moving). No fixes, no leg.
+
+    gap_rule (12, R1): first, the part of every moving gap of the day's fixes (`GapRule.moving`) that falls in a
+    stretch becomes its own leg if it is >= 5 min: mode unknown, hint `underground_rail`, reason gps_gap_moving (gap
+    minutes, speed across, the two fix times); the rest of the stretch is split around it and treated as above."""
+    from tmd.gps import gaps as find_gaps
     f = fixes[(fixes.t >= day_lo) & (fixes.t < day_hi)].sort_values("t")
     if len(f) < 2:
         return pd.DataFrame()
@@ -444,21 +476,69 @@ def gps_only_legs(legs: pd.DataFrame, fixes: pd.DataFrame, day_lo: float, day_hi
     s = np.sort(legs.start.to_numpy(float)) if len(legs) else np.zeros(0)
     e = np.sort(legs.end.to_numpy(float)) if len(legs) else np.zeros(0)
     bounds = [(t[0], s[0] if len(s) else t[-1])] + list(zip(e[:-1], s[1:])) + ([(e[-1], t[-1])] if len(e) else [])
+    mg = pd.DataFrame()
+    if gap_rule is not None:
+        g = find_gaps(f.rename(columns={"t": "time"}), [], min_gap_s=60.0)
+        mg = g[gap_rule.moving(g.dt.to_numpy(), g.v_across.to_numpy())].reset_index(drop=True)
     rows = []
     for a, b in bounds:
-        if b - a < GPS_ONLY_MIN_S:
-            continue
-        inside = np.flatnonzero((t >= a) & (t <= b))
-        if len(inside) < 2:
-            continue
-        i, j = inside[0], inside[-1]
-        v = float(haversine_m(la[i], lo[i], la[j], lo[j]) / max(t[j] - t[i], 1.0))
-        still = v < GPS_ONLY_STILL_MPS
-        rows.append({"start": a, "end": b, "span_min": (b - a) / STEP, "n_minutes": 0,
-                     "top1": STILL if still else UNKNOWN, "mode": STILL if still else UNKNOWN,
-                     "p1": np.nan, "top2": UNKNOWN, "p2": np.nan, "gps_covered_share": 1.0, "coverage": "gps",
-                     "hint": "", "hint_share": np.nan, "n_fixes": len(inside),
-                     "flag_reasons": [{"code": "gps_only_still" if still else "gps_only_moving",
-                                "speed_across_mps": round(v, 2), "fixes": int(len(inside))}],
-                     "source": "rule:gps_only_still" if still else "rule:gps_only_moving"})
+        pieces, cut = [], a
+        for gr in mg.itertuples():
+            ga, gb = max(gr.t0, a), min(gr.t1, b)
+            if gb - ga < GPS_ONLY_MIN_S:
+                continue
+            pieces.append((cut, ga))
+            rows.append({"start": ga, "end": gb, "span_min": (gb - ga) / STEP, "n_minutes": 0, "top1": UNKNOWN,
+                         "mode": UNKNOWN, "p1": np.nan, "top2": UNKNOWN, "p2": np.nan, "gps_covered_share": 0.0,
+                         "coverage": "gps", "hint": "underground_rail", "hint_share": np.nan, "n_fixes": 0,
+                         "flag_reasons": [{"code": "gps_gap_moving", "gap_minutes": round(float(gr.dt) / 60, 1),
+                                           "speed_across_mps": round(float(gr.v_across), 2),
+                                           "fix_before_ms": int(round(gr.t0 * 1000)),
+                                           "fix_after_ms": int(round(gr.t1 * 1000))}],
+                         "source": "rule:gps_gap_moving"})
+            cut = gb
+        pieces.append((cut, b))
+        for pa, pb in pieces:
+            r = _gps_only_leg(pa, pb, t, la, lo)
+            if r is not None:
+                rows.append(r)
     return pd.DataFrame(rows)
+
+
+# ---------------------------------------------------------------- moving GPS gaps (12)
+
+RAIL_HINT_GAP = "underground_rail"
+
+
+@dataclass(frozen=True)
+class GapRule:
+    """Moving GPS gap (12, approved 2026-11-05): length >= g_min_s, speed across in [v_lo, v_hi) m/s. k: factor on
+    the raw fused train and subway probabilities (not tram) of minutes with accelerometer data inside such a gap,
+    before the HMM (R2); k = 1 is R2 off. R1 (GPS-only gap legs) is on whenever a GapRule is given."""
+    g_min_s: float = 300.0
+    v_lo: float = 2.0
+    v_hi: float = 25.0
+    k: float = 1.0
+
+    def moving(self, dt: np.ndarray, v: np.ndarray) -> np.ndarray:
+        dt, v = np.asarray(dt, float), np.asarray(v, float)
+        return (dt >= self.g_min_s) & (v >= self.v_lo) & (v < self.v_hi)
+
+    def name(self) -> str:
+        return f"gap{self.g_min_s / 60:g}min_v{self.v_lo:g}-{self.v_hi:g}_k{self.k:g}"
+
+
+BOOST_FINE = [FINE_CLASSES.index(c) for c in ("train", "subway")]   # not tram (12, approved 2026-11-05)
+
+
+def boost_rail(raw: np.ndarray, in_gap: np.ndarray, k: float) -> np.ndarray:
+    """R2: the train and subway columns of the in-gap rows times k, rows renormalised; tram is not boosted (mostly
+    above ground, not checkable on dev). k = 1 or no gap rows: the input unchanged (same object)."""
+    in_gap = np.asarray(in_gap, bool)
+    if k == 1 or not in_gap.any():
+        return raw
+    cols = BOOST_FINE
+    out = raw.astype(np.float64, copy=True)
+    out[np.ix_(in_gap, cols)] *= k
+    out[in_gap] /= out[in_gap].sum(1, keepdims=True)
+    return out

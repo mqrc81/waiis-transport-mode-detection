@@ -125,3 +125,55 @@ def nearest_per_minute(fixes: pd.DataFrame, by: list[str] = ["user", "session"])
     f = fixes.assign(_dc=np.abs(fixes.time - (fixes.ts + 30.0)))
     f = f.sort_values(by + ["ts", "_dc", "time"], kind="stable")
     return f.drop_duplicates(by + ["ts"]).drop(columns="_dc").reset_index(drop=True)
+
+
+# ---------------------------------------------------------------- GPS gaps (experiment 12)
+
+def gaps(track: pd.DataFrame, by: list[str], min_gap_s: float = 60.0) -> pd.DataFrame:
+    """Gaps between consecutive fixes of each group (experiment 12): pass only good fixes (accuracy <= 500 m), so a
+    run of coarse fixes counts as missing. track: `by` + time [s], lat, lon. Returns one row per gap longer than
+    min_gap_s: `by`..., t0 (last fix before), t1 (first fix after), dt, dist_m (great circle), v_across = dist / dt."""
+    cols = by + ["t0", "t1", "dt", "dist_m", "v_across"]
+    if len(track) == 0:
+        return pd.DataFrame(columns=cols)
+    tr = track.sort_values(by + ["time"], kind="stable")
+    t, la, lo = tr.time.to_numpy(float), tr.lat.to_numpy(float), tr.lon.to_numpy(float)
+    grp = pd.factorize(pd.MultiIndex.from_frame(tr[by]))[0] if by else np.zeros(len(tr), int)
+    dt = np.diff(t)
+    i = np.flatnonzero((dt > min_gap_s) & (grp[1:] == grp[:-1]))
+    dist = haversine_m(la[i], lo[i], la[i + 1], lo[i + 1])
+    out = tr[by].iloc[i].reset_index(drop=True)
+    out["t0"], out["t1"], out["dt"], out["dist_m"] = t[i], t[i + 1], dt[i], dist
+    out["v_across"] = dist / dt[i]
+    return out[cols]
+
+
+def minute_gaps(minutes: pd.DataFrame, gaps_: pd.DataFrame, by: list[str]) -> pd.DataFrame:
+    """Per minute (rows of `minutes`: `by` + ts [clock-minute start, s]): the gap whose open interval (t0, t1) holds
+    the minute centre ts + 30, as gap (row of gaps_, -1 none), gap_dt, gap_v (speed across). Gaps of one group must
+    not overlap (consecutive fixes never do)."""
+    n = len(minutes)
+    gi = np.full(n, -1)
+    c = minutes.ts.to_numpy(float) + 30.0
+    if n and len(gaps_):
+        g = gaps_.reset_index(drop=True)
+        key_m = pd.MultiIndex.from_frame(minutes[by]) if by else None
+        key_g = pd.MultiIndex.from_frame(g[by]) if by else None
+        codes, uniq = pd.factorize(key_g) if by else (np.zeros(len(g), int), [0])
+        mcodes = uniq.get_indexer(key_m) if by else np.zeros(n, int)
+        order = np.lexsort((g.t0.to_numpy(), codes))
+        gc, t0, t1 = codes[order], g.t0.to_numpy()[order], g.t1.to_numpy()[order]
+        # search on (group, time) as one key: group code * span + time
+        span = max(np.nanmax(np.r_[t1, c]) - np.nanmin(np.r_[t0, c]), 1.0) * 2
+        base = min(np.nanmin(t0), np.nanmin(c))
+        kg = gc * span + (t0 - base)
+        km = mcodes * span + (c - base)
+        j = np.searchsorted(kg, km, side="right") - 1
+        jj = np.maximum(j, 0)
+        ok = (mcodes >= 0) & (j >= 0) & (gc[jj] == mcodes) & (c > t0[jj]) & (c < t1[jj])
+        gi[ok] = order[jj[ok]]
+    out = pd.DataFrame({"gap": gi}, index=minutes.index)
+    has = gi >= 0
+    out["gap_dt"] = np.where(has, gaps_.dt.to_numpy()[np.maximum(gi, 0)] if len(gaps_) else np.nan, np.nan)
+    out["gap_v"] = np.where(has, gaps_.v_across.to_numpy()[np.maximum(gi, 0)] if len(gaps_) else np.nan, np.nan)
+    return out

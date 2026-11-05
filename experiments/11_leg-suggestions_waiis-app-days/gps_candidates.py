@@ -15,16 +15,14 @@ import logging
 import mlflow
 import numpy as np
 import pandas as pd
-
-import dev
 from tmd import bench
-from tmd import gps as tgps
 from tmd.evaluate import cm_metrics, six_pred
 from tmd.features import gps as gf
 from tmd.labels import to_score6
 from tmd.progress import Progress
-from tmd.readers.waiis import COARSE_M
 from tmd.tracking import DataInput, run
+
+import dev
 
 log = logging.getLogger()
 CADENCE_S = 20.0
@@ -41,23 +39,8 @@ DESC = {"C1": "fix nearest the minute centre, within the minute",
 
 def thinned_track(keys: pd.DataFrame) -> pd.DataFrame:
     """SHL User 1's 1 Hz fixes thinned per recording to a fixed 20 s cadence, accuracy > 500 m dropped, with the
-    session of their minute (fixes outside the frame's sessions dropped)."""
-    full = bench.shl_gps_1hz("shl_user1").sort_values(["user", "rec", "time"]).reset_index(drop=True)
-    keep = []
-    for _, g in full.groupby(["user", "rec"], sort=False):
-        t = g.time.to_numpy()
-        keep.append(g.index.to_numpy()[tgps.thin(t, np.full(len(t), CADENCE_S))])
-    tr = full.loc[np.concatenate(keep)]
-    n_thin = len(tr)
-    tr = tr[tr.accuracy <= COARSE_M]
-    n_acc = len(tr)
-    lab = bench.read("shl_user1", "labels", columns=["user", "ts", "session"])
-    tr = tr.merge(lab, on=["user", "ts"], how="inner", validate="many_to_one")
-    log.info("1 Hz fixes %d; thinned to %g s: %d; accuracy <= %g m: %d; in a labelled-table minute: %d",
-             len(full), CADENCE_S, n_thin, COARSE_M, n_acc, len(tr))
-    iv = np.diff(tr.time.to_numpy())
-    log.info("thinned intervals: p50 %.1f s, share 20-21 s %.3f", np.median(iv[iv > 0]), ((iv >= 20) & (iv < 21)).mean())
-    return tr.reset_index(drop=True)
+    session of their minute. Moved to `tmd.models.e10.shl_thinned_track` in 12 (2026-11-05)."""
+    return dev.shl_thinned_track(keys)
 
 
 def per_minute(tr: pd.DataFrame, rule: str) -> pd.DataFrame:

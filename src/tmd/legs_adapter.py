@@ -2,6 +2,11 @@
 the tool's repo is available, its real format changes this file only.
 
 One JSON file per model and day. Times in UTC epoch ms. Modes on the tool's top level (`tmd.legs.TOOL_TOP`).
+
+Reason codes (`flag_reasons[].code`): low_confidence, short, no_gps, rail_hint_uncertain (model legs, 11);
+gps_only_still, gps_only_moving (GPS-only legs, 11); gps_gap_moving (12): on a GPS-only gap leg (unknown, sub-mode
+hint `underground_rail`; gap_minutes, speed_across_mps, fix_before_ms, fix_after_ms) or on a model leg holding
+minutes in a moving GPS gap (gap_model_minutes).
 """
 from __future__ import annotations
 
@@ -14,6 +19,9 @@ import pandas as pd
 from tmd import legs as L
 
 FORMAT = "tmd-legs/0.1"
+REASON_CODES = ("low_confidence", "short", "no_gps", "rail_hint_uncertain", "gps_only_still", "gps_only_moving",
+                "gps_gap_moving")
+RULE_VERSION = {"rule:gps_only_still": "11", "rule:gps_only_moving": "11", "rule:gps_gap_moving": "12"}
 
 
 def _mode(i) -> str:
@@ -28,7 +36,8 @@ def document(legs: pd.DataFrame, user: str, date: str, model_id: str, model_vers
              inputs: dict, code_commit: str) -> dict:
     out_legs = []
     for r in legs.itertuples():
-        top2 = [] if r.source == "rule:gps_only_moving" else \
+        assert all(f["code"] in REASON_CODES for f in r.flag_reasons), r.flag_reasons
+        top2 = [] if r.source in ("rule:gps_only_moving", "rule:gps_gap_moving") else \
             [{"mode": _mode(r.top1), "p": _num(r.p1)}] + ([{"mode": _mode(r.top2), "p": _num(r.p2)}]
                                                         if r.source == "model" else [])
         mid = model_id if r.source == "model" else r.source
@@ -39,7 +48,7 @@ def document(legs: pd.DataFrame, user: str, date: str, model_id: str, model_vers
             "low_confidence": bool(r.mode == L.UNKNOWN) if r.source == "model" else r.source != "model",
             "flag_reasons": list(r.flag_reasons), "coverage": r.coverage,
             "gps_covered_share": _num(r.gps_covered_share, 3), "n_minutes": int(r.n_minutes),
-            "model_id": mid, "model_version": model_version if r.source == "model" else "11"})
+            "model_id": mid, "model_version": model_version if r.source == "model" else RULE_VERSION[r.source]})
     m = legs.attrs.get("minutes", pd.DataFrame())
     out_min = [{"t_ms": int(row.ts) * 1000, "coverage": "acc+gps" if row.covered else "acc",
                 "p": {k: _num(getattr(row, f"p_{k}")) for k in L.MODES},
