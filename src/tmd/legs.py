@@ -136,7 +136,7 @@ class _Legs:
 def build(seq: np.ndarray, ts: np.ndarray, q: np.ndarray, rules: Rules = RAW) -> pd.DataFrame:
     """Legs of one evaluation set. seq, ts sorted by (seq, ts); q (N, 7) top-level minute probabilities.
     Returns one row per leg: seq, i0, i1 (minute index range), start, end [s], span_min, n_minutes, mode (id; -1
-    unknown), top1, p1 (= confidence), top2, p2, flags."""
+    unknown), top1, p1 (= confidence), top2, p2."""
     seq, ts = np.asarray(seq), np.asarray(ts, np.int64)
     q_cum = np.vstack([np.zeros((1, q.shape[1])), np.cumsum(q, 0)])
     i0, i1 = runs(seq, ts, q.argmax(1), rules.g)
@@ -379,3 +379,86 @@ def score(legs: pd.DataFrame, tl: pd.DataFrame, n_minutes: int, q: np.ndarray, d
                      "range_top1": float(hit[tj].mean()) if tj.any() else np.nan})
     matched = pd.DataFrame({"pred": P, "truth": T})
     return LegScore(m, pd.DataFrame(rows), matched)
+
+
+# ---------------------------------------------------------------- suggestions (11, stop-point 3)
+
+SHORT_MIN = 3.0                 # flag `short` below this span [min]
+NO_GPS_SHARE = 0.5              # coverage "acc+gps" from this share of GPS-covered minutes; vehicle legs below: no_gps
+HINT_UNCERTAIN = 0.6            # rail hint share below this: rail_hint_uncertain
+GPS_ONLY_MIN_S = 300.0          # GPS-only stretches shorter than this get no leg
+GPS_ONLY_STILL_MPS = 0.5
+FINE_RAIL = [FINE_CLASSES.index(c) for c in ("train", "subway", "tram")]
+
+
+def predict_legs(seq: np.ndarray, ts: np.ndarray, p: np.ndarray, covered: np.ndarray, rules: Rules) -> pd.DataFrame:
+    """Leg suggestions from model minutes (any order). p: (N, 8 or 9) fine minute probabilities after the HMM;
+    covered: GPS-covered minutes. Returns `build`'s table plus sub-mode hint, coverage and flag_reasons;
+    times in seconds. Minutes in the returned `minutes` attribute order: sorted by (seq, ts)."""
+    order = np.lexsort((ts, seq))
+    seq, ts, p, covered = np.asarray(seq)[order], np.asarray(ts, np.int64)[order], p[order], covered[order]
+    p9 = p if p.shape[1] == 9 else np.column_stack([p, np.zeros(len(p))])
+    q = top_probs(p9)
+    lg = build(seq, ts, q, rules)
+    cov_cum = np.concatenate([[0], np.cumsum(covered)])
+    rail_cum = np.vstack([np.zeros((1, 3)), np.cumsum(p9[:, FINE_RAIL], 0)])
+    n = (lg.i1 - lg.i0).to_numpy()
+    lg["gps_covered_share"] = (cov_cum[lg.i1] - cov_cum[lg.i0]) / n
+    lg["coverage"] = np.where(lg.gps_covered_share >= NO_GPS_SHARE, "acc+gps", "acc")
+    rail = (rail_cum[lg.i1] - rail_cum[lg.i0]) / n[:, None]
+    tot = rail.sum(1)
+    k = rail.argmax(1)
+    is_rail = lg.top1.to_numpy() == MODES.index("rail")
+    lg["hint"] = np.where(is_rail, np.array(["train", "metro", "tram"])[k], "")
+    lg["hint_share"] = np.where(is_rail & (tot > 0), rail.max(1) / np.maximum(tot, 1e-12), np.nan)
+    flags = []
+    for r in lg.itertuples():
+        f = []
+        if r.mode == UNKNOWN:
+            f.append({"code": "low_confidence", "confidence": round(float(r.p1), 3), "threshold": rules.c})
+        if r.span_min < SHORT_MIN:
+            f.append({"code": "short", "minutes": float(r.span_min)})
+        if r.top1 in VEHICLE and r.gps_covered_share < NO_GPS_SHARE:
+            f.append({"code": "no_gps", "gps_covered_share": round(float(r.gps_covered_share), 3)})
+        if r.hint and r.hint_share < HINT_UNCERTAIN:
+            f.append({"code": "rail_hint_uncertain", "share": round(float(r.hint_share), 3)})
+        flags.append(f)
+    lg["flag_reasons"] = flags
+    lg["source"] = "model"
+    lg.attrs["minutes"] = pd.DataFrame({"seq": seq, "ts": ts, "covered": covered, **{f"p_{m}": q[:, j] for j, m in
+                                                                                   enumerate(MODES)},
+                                        **{f"pf_{c}": p9[:, j] for j, c in enumerate(FINE_CLASSES)}})
+    return lg
+
+
+def gps_only_legs(legs: pd.DataFrame, fixes: pd.DataFrame, day_lo: float, day_hi: float) -> pd.DataFrame:
+    """Legs for stretches without model minutes (11, approved 2026-11-04). fixes: t [s], lat, lon, accuracy already
+    <= 500 m. A stretch = the time between consecutive model legs (and before the first / after the last, bounded by
+    the day's first / last fix), at least 5 min long, with >= 2 fixes inside. Speed across (first -> last fix) < 0.5
+    m/s: a still leg (gps_only_still); else an unknown leg with the speed across (gps_only_moving). No fixes, no leg."""
+    from tmd.gps import haversine_m
+    f = fixes[(fixes.t >= day_lo) & (fixes.t < day_hi)].sort_values("t")
+    if len(f) < 2:
+        return pd.DataFrame()
+    t, la, lo = f.t.to_numpy(), f.lat.to_numpy(), f.lon.to_numpy()
+    s = np.sort(legs.start.to_numpy(float)) if len(legs) else np.zeros(0)
+    e = np.sort(legs.end.to_numpy(float)) if len(legs) else np.zeros(0)
+    bounds = [(t[0], s[0] if len(s) else t[-1])] + list(zip(e[:-1], s[1:])) + ([(e[-1], t[-1])] if len(e) else [])
+    rows = []
+    for a, b in bounds:
+        if b - a < GPS_ONLY_MIN_S:
+            continue
+        inside = np.flatnonzero((t >= a) & (t <= b))
+        if len(inside) < 2:
+            continue
+        i, j = inside[0], inside[-1]
+        v = float(haversine_m(la[i], lo[i], la[j], lo[j]) / max(t[j] - t[i], 1.0))
+        still = v < GPS_ONLY_STILL_MPS
+        rows.append({"start": a, "end": b, "span_min": (b - a) / STEP, "n_minutes": 0,
+                     "top1": STILL if still else UNKNOWN, "mode": STILL if still else UNKNOWN,
+                     "p1": np.nan, "top2": UNKNOWN, "p2": np.nan, "gps_covered_share": 1.0, "coverage": "gps",
+                     "hint": "", "hint_share": np.nan, "n_fixes": len(inside),
+                     "flag_reasons": [{"code": "gps_only_still" if still else "gps_only_moving",
+                                "speed_across_mps": round(v, 2), "fixes": int(len(inside))}],
+                     "source": "rule:gps_only_still" if still else "rule:gps_only_moving"})
+    return pd.DataFrame(rows)

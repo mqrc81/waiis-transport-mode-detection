@@ -116,3 +116,12 @@ def calibrate_v0(speed: np.ndarray, target: float = SPEED_MISSING_SHARE, p0: flo
         else:
             hi = mid
     return float(np.exp((lo + hi) / 2))
+
+
+def nearest_per_minute(fixes: pd.DataFrame, by: list[str] = ["user", "session"]) -> pd.DataFrame:
+    """One fix per minute: the fix nearest the minute centre (ts + 30 s) within the clock minute (experiment 11, rule
+    C1, approved 2026-11-04). fixes: `by` + ts (clock-minute start [s]) + time [s] + lat, lon (+ any). Ties: the
+    earlier fix."""
+    f = fixes.assign(_dc=np.abs(fixes.time - (fixes.ts + 30.0)))
+    f = f.sort_values(by + ["ts", "_dc", "time"], kind="stable")
+    return f.drop_duplicates(by + ["ts"]).drop(columns="_dc").reset_index(drop=True)

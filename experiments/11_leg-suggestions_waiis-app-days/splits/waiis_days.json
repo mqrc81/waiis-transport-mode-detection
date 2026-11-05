@@ -1,0 +1,10 @@
+{
+  "name": "waiis_app_days",
+  "role": "review days (unlabelled; diaries only), not a test set",
+  "experiment": "11_leg-suggestions_waiis-app-days",
+  "days": [
+    {"user_key": "sub_0c0b7a3d92467061eee0", "date": "2026-10-30"},
+    {"user_key": "sub_0c0b7a3d92467061eee0", "date": "2026-10-31"},
+    {"user_key": "sub_0c0b7a3d92467061eee0", "date": "2026-11-03"}
+  ]
+}

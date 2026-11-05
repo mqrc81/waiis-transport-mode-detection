@@ -73,6 +73,8 @@ SPLITS = {
     "nor_tmd_test_v3": "splits/reserved_test_v3.json",
     "nor_tmd_dev": "experiments/09_frozen-benchmark_es-shl-nor-collecty/splits/folds_nor_tmd_collecty.csv",
     "collecty_dev": "experiments/09_frozen-benchmark_es-shl-nor-collecty/splits/folds_nor_tmd_collecty.csv",
+    # experiment 11: the WAIIS app days (review days with diaries, not a test set)
+    "waiis_app_days": "experiments/11_leg-suggestions_waiis-app-days/splits/waiis_days.json",
     "shl_user1_03_training": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",     # legacy (03 only)
     "shl_user1_03_validation": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
     "shl_user1_03_test": "experiments/03_label-curve_shl/splits/shl_u1_days.csv",
