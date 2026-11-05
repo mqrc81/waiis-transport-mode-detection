@@ -384,3 +384,172 @@ E2, `k` 1 → 2: hips 0.896 → 0.894, hand 2.139 → 2.139 (0 → 1 of 3 subway
 ### Open questions (stop-point 2)
 
 None. Approved 2026-11-05 (see Stop-points).
+
+### Stop-point 3 (2026-11-05): SHL Users 2–3, ExtraSensory test, WAIIS days (once, descriptive)
+
+**Commands** (commit `4dbc4df`, rule on in `tmd.suggest.SPECS` = `GAP_RULE`):
+- `uv run python sp3.py shl23|es_test|waiis` (logs `logs/sp3_*.log`, `*.out`);
+- `uv run python src/tmd/tracking.py export 12_gps-gap-rail_shl-waiis`, which writes `results/runs.csv`;
+- `uv run python tables.py > results/tables_from_runs.md`.
+
+The export has 84 runs, all clean: 72 dev runs at `bc60bfd`, 8 stop-point 3 runs at `4dbc4df`, and 4
+WAIIS runs with `k` = 1 at `a5a7fac` (below). Its
+`k_per_class` column is `tmd.tracking`'s numeric copy of the param `k`, here the boost factor.
+
+Each part ran with the rule off and on, from the same inputs.
+- **Checks:**
+  - **Rule off reproduces 11:** SHL Users 2–3 C1 leg metrics equal 11's `shl23_legs.csv`, and the WAIIS legs equal
+    11's output files.
+  - **10's saved test arrays:** the HMM on them reproduces 10's saved test `p` exactly (ExtraSensory test).
+- **WAIIS outputs** (rule on, `tmd-legs/0.1`, reasons `gps_gap_moving`) and the personal tables are under
+  `<processed>/12_gps-gap-rail_shl-waiis/waiis/` (not in git).
+
+**SHL Users 2–3** (reserved; all positions; 10's final models, seed 0; C1 at 20 s). There are 10 moving gaps (of 67)
+and 285 minutes per position: subway 127, train 69, car 25, bus 22, still 12, walking 6, unlabelled 24. The gaps
+are 4 subway, 2 train, 2 bus, 1 car, and 1 still at 20.5 m/s (a GPS jump). The 6 subway legs are the same legs in
+each position.
+
+| All positions pooled (off → on) | E1 | E2 |
+|---|---|---|
+| Edits per hour | 1.163 → 1.194 | 1.150 → 1.181 |
+| Time accuracy | 0.901 → 0.900 | 0.883 → 0.889 |
+| Leg F1 | 0.819 → 0.814 | 0.812 → 0.813 |
+| Subway leg recall (24 = 6 legs × 4 positions) | 0.708 → 0.667 | 0.667 → 0.708 |
+| Rail leg precision | 0.732 → 0.739 | 0.746 → 0.766 |
+| Extra rail legs per hour | 0.056 → 0.063 | 0.019 → 0.025 |
+| False rail: car / bus | 0.7% → 2.3% / 6.5% → 8.5% | 0 → 0 / 3.4% → 7.7% |
+
+- On hips, E1's car false rail goes from 2.6% to 9.4% (the 25-minute car gap). E2's bus false rail goes from 0 to
+  8.5%.
+- Hand gains for E2 (edits per hour 1.475 → 1.425, subway leg recall 0.50 → 0.67); E1 on hand is unchanged.
+- The rule doesn't hold up here: edits per hour rise for both models, by about 2.7%.
+
+**ExtraSensory test users** (reserved, 12 users, 809 h; false rail = share of labelled non-rail minutes inside rail
+legs). There are 6 moving gaps (of 10,309), 90 minutes, all Android.
+
+| Off → on | E1 | E2 |
+|---|---|---|
+| False rail, all | 0.181% → 0.227% (88 → 110 min) | 0.068% → 0.070% (33 → 34 min) |
+| — iPhone / Android | 0.061% → 0.061% / 0.325% → 0.424% | 0 → 0 / 0.149% → 0.153% |
+| False rail on walking | 0 → 0.53% (Android 0.84%) | 0 → 0 |
+| Edits per hour | 1.330 → 1.332 | 1.310 → 1.310 |
+
+- E1 rises by **0.046 pp**, above the 0.02 pp limit fixed for dev; E2 rises by 0.002 pp. This is descriptive, so
+  no choice is made on it (approved plan). The rise is 22 minutes, all on Android, where walking false rail goes
+  from 0 to 0.84%.
+
+**WAIIS days** (11's lenient comparison; 19 diary vehicle legs, 14 of them rail: 13 metro, 1 tram). Moving gaps per
+day: 2, 7 and 2 (of 22, 39 and 24 gaps). They hold only 11, 8 and 3 model minutes.
+
+| Off → on | E1 | E2 |
+|---|---|---|
+| Vehicle legs right / wrong / no data | 8 / 6 / 5 → 8 / 6 / 5 | 6 / 8 / 5 → 7 / 7 / 5 |
+| Vehicle core-minute accuracy | 0.807 → 0.807 | 0.699 → 0.747 |
+| Rail legs right (of 14) | 3 → 3 | 1 → 2 |
+| No-data metro legs with an `underground_rail` gap leg | 0 → 4 of 5 (mean share of the leg covered 0.63) | same (R1 doesn't depend on the model) |
+| Rail legs touched by a gap leg | 0 → 7 | 0 → 7 |
+| Extra vehicle / rail / gap legs | 0 / 0 / 0 → 0 / 0 / 0 | 0 / 0 / 0 → 0 / 0 / 0 |
+| Run time per day, single thread (mean / max) | 0.171 / 0.198 s → 0.173 / 0.200 s | 0.167 / 0.196 s → 0.168 / 0.195 s |
+
+- **R1:** 4 of the 5 metro legs without accelerometer data now show a gap leg (`unknown`, hint `underground_rail`)
+  covering 45–100% of the diary leg. The fifth (2026-10-31 D3) has no good fix before or after it inside the day's
+  track that makes a moving gap (longest gap 15 min at 1.9 m/s, below `v_lo`). No gap leg falls outside a diary rail
+  leg (±10 min).
+- **R2:** one leg changes, E2's 2026-11-03 D1 metro, from car to rail. Its hint is `train`, because train is boosted
+  too. E1 doesn't change.
+- **The 5 metro legs read as walking or still** (with accelerometer data) stay wrong for both models. GPS during the
+  diary rail legs (counts only; personal detail not kept):
+  - Three are short rides (4–7 min: 2026-10-30 D5, 2026-10-31 D9, 2026-11-03 D4) whose gaps are 3.0–4.6 min, under
+    `g_min`.
+  - 2026-10-31 D5: none of its model minutes falls inside the moving gap.
+  - 2026-10-31 D7: 6 of its 9 model minutes are in a moving gap. E1's raw fused rail probability there is 0.2–0.9,
+    but the HMM decodes still: rail is 0.01 off and 0.19 at `k` = 2. E2's raw rail is ≤ 0.11 there, and nothing
+    changes.
+  - **Coarse fixes:** WAIIS logs coarse fixes (> 500 m) underground in 8 of the 13 metro legs (open question of
+    stop-point 1). They count as missing, so the rule saw them as gaps as planned.
+- These days are not unseen (11). No choice was made on them.
+
+**R2 switched off after the once-check (2026-11-05).**
+- **Why:** `k` = 2 was chosen on dev, then failed on SHL Users 2–3 (both models, edits per hour +2.7%) and on the
+  ExtraSensory test guard (E1, +0.046 pp against the 0.02 pp limit).
+- **Change:** `tmd.suggest.GAP_RULE` now has `k` = 1 (commit `cef3b91`). R1 stays on: the `gps_gap_moving` gap legs
+  with hint `underground_rail`, and the reason on model legs holding gap minutes. Switching off returns to the
+  untuned setting; no other `k` is chosen from these results.
+- **WAIIS re-run** (`sp3.py waiis` at `a5a7fac`; 4 runs, `gap_rule` `gap5min_v2-25_k1`; the `k` = 2 runs stay in
+  the export as evidence; output `logs/sp3_waiis.out`, the `k` = 2 output kept as `logs/sp3_waiis_k2.out`):
+  - The vehicle-leg table with the rule on equals the rule off and 11's lenient statuses, for every leg and both
+    models: E1 8 / 6 / 5, E2 6 / 8 / 5 (right / wrong / no data).
+  - The same 4 of 5 no-data metro legs get an `underground_rail` gap leg (mean share of the leg covered 0.63).
+  - 7 rail legs are touched by a gap leg; there are no extra vehicle, rail or gap legs.
+  - Run time 0.15–0.16 s per day.
+- **Export:** 84 runs, all clean.
+
+### Deviations
+
+1. **R1 also covers stretches 11 left without a leg** (stop-point 2): a gap leg is made even when the stretch had
+   fewer than 2 fixes (`tmd/legs.py`, `gps_only_legs`). This follows the approved definition, but 11's stretch rule
+   alone would have dropped it.
+2. **The other positions' C1 GPS is the hips track** (SHL logs GPS on the hips phone), as in 10 and 11.
+3. **`sp3.py` imports 11's `lenient.py`, `review.py` and `shl23.py`** (read-only) for the lenient core, the diary
+   reader and the SHL Users 2–3 frames. They are 11's once-only helpers, so they were not moved to `src/tmd`.
+4. **R2 (`k` = 2) switched off after the once-check** (`src/tmd/suggest.py`, `GAP_RULE`). The Plan chose `k` on
+   dev and fixed it for the once-check. `k` = 2 failed there (SHL Users 2–3, both models; ExtraSensory test guard,
+   E1) and was set back to 1, the untuned setting. No other `k` is chosen from these results. R1 is unchanged.
+
+### Open questions (stop-point 3)
+
+- **R2:** switched off (`k` = 1) after the once-check; see above.
+- **HMM vs rail evidence on WAIIS metro** (2026-10-31 D7): raw rail evidence is overridden by the HMM's still
+  persistence. Raising it inside gaps far enough (`k` ≥ 4) costs car false rail on SHL. A gap-aware transition
+  (leaving still is easier inside a moving gap) would be a different rule, not tested here.
+
+## Conclusion
+
+**Draft — not approved.**
+
+**Question.** Can GPS loss while moving mark underground rail, so the suggestion engine proposes metro where it
+showed unknown GPS-only legs or read metro minutes as walking or still?
+
+**Answer: yes for the first, barely for the second.**
+
+- **Where there's no accelerometer data (R1), the gap is a useful hint.** On the WAIIS days, 4 of the 5 metro legs
+  that 11 couldn't suggest at all now show an `unknown` leg with the hint `underground_rail` and the reason
+  `gps_gap_moving` (gap minutes, speed across, the two fix times). There are no false hints. The leg stays
+  `unknown` because, read as GPS only, the gaps' rail precision on SHL User 1 is 0.77 and metro precision about 0.5.
+  The movement condition matters: missing GPS alone is common and mostly an Android effect in ExtraSensory, where
+  moving gaps are 0.1–0.3% of minutes.
+- **Where there is accelerometer data (R2), the gain is small and doesn't carry over.**
+  - **Dev (SHL User 1, all positions):** `k` = 2 cut edits per hour by 2.7% for E1 and 1.6% for E2, with subway leg
+    recall up 0.06–0.07. Most of the gain came from 9 subway legs off the hips. Larger `k` turns SHL's long car GPS
+    outages and bus gaps into rail.
+  - **SHL Users 2–3:** edits per hour went up for both models (E1 1.163 → 1.194, E2 1.150 → 1.181), through car and
+    bus false rail.
+  - **ExtraSensory test:** E1's false rail rose by 0.046 pp, above the 0.02 pp limit set for dev (22 minutes,
+    Android, walking). E2's rose by 0.002 pp.
+  - **WAIIS days:** one metro leg changed (E2), and E1 is unchanged. The metro minutes read as walking or still are
+    mostly short rides with gaps under 5 min, or minutes where the HMM keeps still against the rail evidence.
+- **Road vehicles do lose GPS while moving.** SHL car outages last up to an hour and bus gaps are short, so gap length
+  and speed don't separate them from metro. Train loses GPS as often as metro (46% of its minutes), which is why the
+  hint is `underground_rail`, not `metro`.
+- **Cost:** about 0.17 s per WAIIS day, unchanged.
+
+**In the engine** (`tmd.suggest`, rules version `legs-v2 (12)`): **R1 only.**
+- Both models get the R1 gap legs (`unknown`, hint `underground_rail`, reason `gps_gap_moving`) for moving gaps of
+  ≥ 5 min at 2–25 m/s. The output format stays `tmd-legs/0.1` with the new reason code.
+- **R2 was switched off after the once-check.** `k` = 2 was chosen on dev, then failed on SHL Users 2–3 (both
+  models) and on the ExtraSensory test guard (E1). Switching off returns to the untuned setting (`k` = 1), and no
+  other `k` is chosen from these results. This is recorded as deviation 4.
+- With R1 only, the WAIIS vehicle-leg suggestions equal 11's, plus the 4 hinted gap legs.
+
+**Limits.**
+- The decisive evidence is a few legs: 9 subway legs off the hips on dev, 6 on SHL Users 2–3, and 13 metro legs on
+  three WAIIS days of one person, one iPhone.
+- SHL logs no coarse fixes, so the WAIIS case of coarse fixes underground is untested on dev.
+- R1 can't be scored on dev (SHL always has accelerometer data).
+
+**Next.**
+1. **Follow-up for the retraining with labelled WAIIS days:** WAIIS metro minutes with raw fused rail around 0.4
+   are decoded as still by the HMM (2026-10-31 D7, E1). The retrained model and its HMM should be checked on such
+   minutes.
+2. Fixing metro read as walking or still is a model question, not a gap rule. It belongs to the next model
+   experiment (E1 + Collecty, then labelled WAIIS days), with metro minutes from WAIIS phones off the hips.

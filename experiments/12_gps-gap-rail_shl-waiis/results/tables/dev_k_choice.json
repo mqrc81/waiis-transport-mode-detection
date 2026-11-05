@@ -1,0 +1,24 @@
+{
+ "E1": {
+  "k": 2,
+  "feasible": [
+   1,
+   2
+  ],
+  "best_edits_per_h": 0.875548162709814,
+  "base_edits_per_h": 0.9027672765764403,
+  "es_guard_delta_pp": 0.0,
+  "rule_off": false
+ },
+ "E2": {
+  "k": 2,
+  "feasible": [
+   1,
+   2
+  ],
+  "best_edits_per_h": 0.9504007258430365,
+  "base_edits_per_h": 0.961742023287464,
+  "es_guard_delta_pp": 0.0,
+  "rule_off": false
+ }
+}
