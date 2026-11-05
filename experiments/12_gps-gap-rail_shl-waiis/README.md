@@ -292,8 +292,15 @@ recomputed on leg modes):
 
 **Dev run.** `uv run python dev_k.py grid` (log `logs/dev_k.log`, table `results/tables/dev_k.csv`, choice
 `dev_k_choice.json`), then `uv run python dev_k.py sensitivity` (`sensitivity.csv`).
-- 72 MLflow runs (`dev_k_<model>_k<k>_seed<s>`, `sens_<model>_<rule>`). **All are dirty:** the code above was not
-  committed when they ran. They are to be re-run clean after the code is committed (about 3 min).
+- 72 MLflow runs (`dev_k_<model>_k<k>_seed<s>`, `sens_<model>_<rule>`), all clean at commit `bc60bfd`.
+- **Re-run after the stop-point 2 approval.** The first run (all rail columns boosted, tram included for E1) was
+  dirty. At the approval its 72 runs were deleted from MLflow, the boost was restricted to train and subway, and
+  everything was re-run clean with the code committed.
+  - Choice and feasible set unchanged: `k` = 2 for both, only `k` 1–2 feasible.
+  - Only E1 at `k` ≥ 4 moved: `k` = 4 edits per hour 0.887 → 0.882; `k` = 16 car false rail 4.98% → 4.96%.
+  - Everything at `k` ≤ 2, the sensitivity, and all of E2 are unchanged. E1's tram probability is near zero on
+    SHL.
+  - The tables below are the clean run's.
 - Checks before scoring:
   - The other positions and ExtraSensory reproduce 10's saved `p` exactly from 10's saved raw arrays (max |diff| 0;
     one HMM sequence per position).
@@ -309,16 +316,16 @@ inside rail legs. The ExtraSensory column is the mean of seeds 0–2.
 |---|---|---|---|---|---|---|---|---|---|
 | E1 | 1 | 0.903 | 0.958 | 0.686 | 0.738 | 0.007 | 0.28% | 0 | 0.22% |
 | E1 | **2** | **0.876** | 0.962 | 0.771 | 0.801 | 0.009 | 0.28% | 0.17% | 0.22% |
-| E1 | 4 | 0.887 | 0.961 | 0.771 | 0.787 | 0.016 | 0.92% ✗ | 0.28% | 0.22% |
+| E1 | 4 | 0.882 | 0.961 | 0.771 | 0.787 | 0.016 | 0.92% ✗ | 0.28% | 0.22% |
 | E1 | 8 | 0.887 | 0.959 | 0.757 | 0.772 | 0.023 | 1.49% ✗ | 0.62% ✗ | 0.22% |
-| E1 | 16 | 0.932 | 0.950 | 0.757 | 0.742 | 0.045 | 4.98% ✗ | 2.44% ✗ | 0.23% |
+| E1 | 16 | 0.932 | 0.950 | 0.757 | 0.742 | 0.045 | 4.96% ✗ | 2.44% ✗ | 0.23% |
 | E1 | 32 | 0.937 | 0.941 | 0.757 | 0.729 | 0.052 ✗ | 9.48% ✗ | 4.02% ✗ | 0.23% |
 | E2 | 1 | 0.962 | 0.946 | 0.686 | 0.692 | 0.030 | 0.44% | 0.17% | 0.09% |
 | E2 | **2** | **0.950** | 0.948 | 0.743 | 0.714 | 0.032 | 0.72% | 0.20% | 0.09% |
 | E2 | 4 | 0.923 | 0.949 | 0.814 | 0.758 | 0.034 | 2.01% ✗ | 0.25% | 0.09% |
 | E2 | 8 | 0.944 | 0.948 | 0.786 | 0.743 | 0.041 | 2.27% ✗ | 0.53% | 0.09% |
 | E2 | 16 | 0.960 | 0.943 | 0.786 | 0.727 | 0.052 | 4.70% ✗ | 1.24% ✗ | 0.09% |
-| E2 | 32 | 0.994 | 0.931 | 0.743 | 0.692 | 0.070 ✗ | 9.86% ✗ | 3.65% ✗ | 0.09% |
+| E2 | 32 | 0.993 | 0.931 | 0.743 | 0.691 | 0.070 ✗ | 9.86% ✗ | 3.65% ✗ | 0.09% |
 
 ✗ = breaks a constraint ((b): extra rail legs per hour up > 0.05; (c): false rail on a class up > 0.5 pp).
 False rail on still: E1 2.39% → 2.51% at `k` = 2 and 2.90% from `k` = 4 (+0.51 pp, just over the limit); E2 9.70% →
@@ -376,6 +383,4 @@ E2, `k` 1 → 2: hips 0.896 → 0.894, hand 2.139 → 2.139 (0 → 1 of 3 subway
 
 ### Open questions (stop-point 2)
 
-- **Clean re-run.** Committing the code and re-running `dev_k.py grid` and `sensitivity` (about 3 min) would make
-  the 72 runs clean. The dirty ones would then be deleted from MLflow, as in 11.
-- **`k` per model:** both get 2 here. `tmd.suggest.SPECS` gets `gap=GapRule(k=2)` for E1 and E2 only after the OK.
+None. Approved 2026-11-05 (see Stop-points).

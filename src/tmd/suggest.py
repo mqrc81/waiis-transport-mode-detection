@@ -4,9 +4,10 @@ HMM -> legs (`tmd.legs.predict_legs`) + GPS-only legs. Models are 10's final mod
 GPS input (11, rule C1, approved 2026-11-04): fixes with accuracy <= 500 m, assigned to the session whose
 accelerometer span +- 150 s contains them, one fix per minute nearest the minute centre, gps-v2 features.
 Leg rules (11, approved 2026-11-04): E2 s_veh 0, s_other 3, g 10, l_min 2, c 0.5; E1 raw HMM legs, c 0.5.
-Moving GPS gaps (12): `Spec.gap` (a `tmd.legs.GapRule`, None = off). Gaps are found on the day's good fixes
-(accuracy <= 500 m); R2 boosts the raw rail probabilities of model minutes in a moving gap by k before the HMM, R1
-adds GPS-only gap legs (unknown, hint underground_rail).
+Moving GPS gaps (12, approved 2026-11-05): `Spec.gap` (a `tmd.legs.GapRule`; None = off), for both models gap
+>= 5 min, speed across 2-25 m/s, k = 2. Gaps are found on the day's good fixes (accuracy <= 500 m). R2 boosts the
+raw train and subway probabilities of model minutes in a moving gap by k before the HMM; R1 adds GPS-only gap legs
+(unknown, hint underground_rail).
 """
 from __future__ import annotations
 
@@ -30,6 +31,9 @@ GPS_VERSION = "gps-v2"
 RULES_VERSION = "legs-v2 (12)"
 
 
+GAP_RULE = L.GapRule(g_min_s=300.0, v_lo=2.0, v_hi=25.0, k=2.0)   # 12, approved 2026-11-05 (both models)
+
+
 @dataclass(frozen=True)
 class Spec:
     id: str
@@ -42,9 +46,10 @@ class Spec:
 
 
 SPECS = {"E2": Spec("E2", "10:test_E2_seed0", MODELS10 / "test_E2_seed0.txt", MODELS10 / "test_gps_seed0.txt",
-                    MODELS10 / "test_E2_seed0_hmm.npz", L.Rules(s_veh=0, s_other=3, g=10, l_min=2, c=0.5)),
+                    MODELS10 / "test_E2_seed0_hmm.npz", L.Rules(s_veh=0, s_other=3, g=10, l_min=2, c=0.5),
+                    GAP_RULE),
          "E1": Spec("E1", "10:test_E1_seed0", MODELS10 / "test_E1_seed0.txt", MODELS10 / "test_gps_seed0.txt",
-                    MODELS10 / "test_E1_seed0_hmm.npz", L.Rules(c=0.5))}
+                    MODELS10 / "test_E1_seed0_hmm.npz", L.Rules(c=0.5), GAP_RULE)}
 
 
 @dataclass
