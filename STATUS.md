@@ -149,7 +149,7 @@ dataset in [experiment 11's README](experiments/11_leg-suggestions_waiis-app-day
 - **Platform:** iPhone 16, confirmed 2026-11-04; not recorded in the data. **Axis signs:** iOS signs kept (scaled to
   m/s², not converted to Android's) is strongly indicated given the iPhone, not confirmed by a face-up recording. v2's
   iOS sign rule applies to WAIIS iPhone data as `× −1`; E1 / E2's features are sign-invariant. Device table (platform,
-  phone model, axis convention per user and period): `<data>/processed/waiis/metadata/waiis_devices.csv`, outside git.
+  phone model, axis convention per user and period): `metadata/waiis_devices.csv` (in git).
 - **Diaries** of the three days (rough times, card-validation GT starts) and the review outputs:
   `<data>/processed/11_leg-suggestions_waiis-app-days/waiis/` (personal, outside git).
 

@@ -48,8 +48,8 @@ note as what the manifest records). "Proposed" below marks the approved proposal
 (t [s], xyz in the Android convention, m/s²), GPS fixes, sessions, minute windows.
 
 - **Platform:** not recorded anywhere in the data (Results). The reader takes it from the device table
-  `<data>/processed/waiis/metadata/waiis_devices.csv` (outside git since 2026-11-05; layout in the README next to it):
-  one row per user key and device period
+  `metadata/waiis_devices.csv` (project level, in git; layout in `metadata/README.md`): one row per user key and
+  device period
   (`valid_from` / `valid_to`), with platform, phone model and the axis convention kept apart from its evidence. It
   fails when a recorded day has no row or several. Current row: `sub_0c0b…`, iphone, iPhone 16, axis convention
   `ios` (strongly indicated, not confirmed by a face-up recording), confirmed 2026-11-04. When the app stores the
@@ -301,7 +301,7 @@ std |acc| < 0.03 m/s².
   dates. Folders are UTC days.
 - **The phone's own activity flag is useless:** 95% of fixes say `in_vehicle` with `is_moving = true`; the median
   reported speed is 1.0 m/s.
-- **Platform and phone model:** iPhone 16, confirmed 2026-11-04 (`<data>/processed/waiis/metadata/waiis_devices.csv`). **Not recorded in the data:**
+- **Platform and phone model:** iPhone 16, confirmed 2026-11-04 (`metadata/waiis_devices.csv`). **Not recorded in the data:**
   not in the manifest, the parquet columns or the parquet key-value metadata; GPS `source` is always `waiis`.
 - **Device selection:** the manifest records `selected_device_rule = greatest_data_object_bytes`. With one user and
   one phone, what happens with a second device is not observable here; open question for the data build.
@@ -423,8 +423,8 @@ probabilities, GPS features) and `results/tables/` (git-ignored until the export
 **Before the dev runs** (as asked at the OK of stop-point 1):
 - `app_days/`: the four WAIIS day scripts moved here from 08 and rewired to `tmd.readers.waiis` (Results, stop-point 1).
 - Device table moved to `metadata/waiis_devices.csv` (project level, in git; one row per user key and device period;
-  layout in `metadata/README.md`); moved again on 2026-11-05 to `<data>/processed/waiis/metadata/` (outside git;
-  commit `b7afa68`). Reader `tmd.readers.waiis` and tests `tests/test_waiis_reader.py`,
+  layout in `metadata/README.md`). On 2026-11-05 it was moved to `<data>/processed/waiis/metadata/` (outside git,
+  commit `b7afa68`) and back to `metadata/` the same day, since the shared reader, not one experiment, uses it. Reader `tmd.readers.waiis` and tests `tests/test_waiis_reader.py`,
   `tests/test_waiis_sign_invariance.py`.
 - **Sign invariance passes** on a WAIIS day (10-30, first 40 minute windows): windows read with and without the
   `× −1` rule are exact negatives; the 580 features and E1 / E2's acc-model probabilities are identical (tolerance
@@ -598,7 +598,7 @@ raw HMM legs instead, with `c` 0.5.
 
 **Open questions:**
 - Platform and phone model should come from the app or the data build once more users label. Until then the reader
-  uses `<data>/processed/waiis/metadata/waiis_devices.csv`.
+  uses `metadata/waiis_devices.csv`.
 - Axis signs of the WAIIS iPhone: a face-up recording (no effect on E1 / E2).
 - Device selection in the data build (`selected_device_rule = greatest_data_object_bytes`) with a second device.
 
