@@ -818,7 +818,9 @@ much apart: it is near its ceiling after the HMM.
 2. **Metro and tram:** where data exist, metro minutes are still often read as walking or still. The one tram leg
    reads as bus, and E1's tram class didn't fire.
 
-Bike, car and bus legs were right for every model, and no model suggested a vehicle leg where the diary had none.
+Bike, car and bus legs were right for every model (3 of 3, 1 of 1, 1 of 1), and no model suggested a vehicle leg
+where the diary had none. **Rail legs right: E1 3 of 14, E2 1, package 0; 5 of the 14 had no accelerometer data.**
+Metro suggestions are not usable yet; expect to label metro by hand.
 
 **Limits:**
 - one person, one iPhone, three days, rough diary times;
@@ -831,3 +833,4 @@ Bike, car and bus legs were right for every model, and no model suggested a vehi
 - **E1 + Collecty**, then with labelled WAIIS days added, chosen on `waiis_bench_v2` dev, not on these three days.
 - The app's recording gap in the metro: an app question, not a model one.
 - Platform and phone model stored by the app or the data build.
+- Adapt the label tree and output format (`tmd.legs_adapter`) to the labelling tool's repo once it is available.
