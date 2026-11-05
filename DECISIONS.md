@@ -334,8 +334,6 @@ and `results/runs.csv`.
 
 ## 2026-11-05: E1 is the labelling tool's default suggestion model; E2 stays selectable
 
-**Draft — not approved.**
-
 **Decision.**
 - The WAIIS labelling tool suggests legs from **experiment 10's E1** by default (`tmd.suggest`, raw HMM legs,
   confidence threshold 0.5, GPS rule C1). **E2 stays selectable** with its own leg rules.

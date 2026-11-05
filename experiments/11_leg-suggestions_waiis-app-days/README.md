@@ -777,8 +777,6 @@ By mode (right of legs; no data): bike 3 of 3 for all; car 1 of 1; bus 1 of 1; *
 
 ## Conclusion
 
-**Draft — not approved.**
-
 **What was built.** A first suggestion engine for the WAIIS labelling tool:
 - `tmd.readers.waiis` reads a day, with the platform from a device table;
 - `tmd.suggest` runs a saved model on it (minute windows, features, GPS rule C1, fusion, HMM);
