@@ -331,3 +331,36 @@ tunnels) is unknown.
 
 **Evidence.** `experiments/10_gps-acc-baseline_waiis-bench-v2/README.md` (Results: stop-points 2 and 3; Conclusion)
 and `results/runs.csv`.
+
+## 2026-11-05: E1 is the labelling tool's default suggestion model; E2 stays selectable
+
+**Draft — not approved.**
+
+**Decision.**
+- The WAIIS labelling tool suggests legs from **experiment 10's E1** by default (`tmd.suggest`, raw HMM legs,
+  confidence threshold 0.5, GPS rule C1). **E2 stays selectable** with its own leg rules.
+- This changes only the suggestion part of the 2026-11-03 entry ("the model for leg suggestions"). **E2 stays the
+  reference model on `waiis_bench_v2`**; nothing on the benchmark or the reserved test changes.
+- Suggestions are not checked labels: the confidence threshold flags almost nothing, and confident legs can be wrong.
+
+**Why.**
+- **SHL User 1 (dev, three seeds):** E1 better in every seed: edits per hour 0.858 vs 0.893, time accuracy 0.964 vs
+  0.954, wrong unflagged time 3.6% vs 4.6% (through still minutes, not rail).
+- **ExtraSensory dev:** tied (edits per hour 1.405 vs 1.382, leg F1 0.717 vs 0.720).
+- **SHL Users 2–3 (once, hips):** leg F1 0.861 vs 0.823, rail leg recall 0.93 vs 0.80.
+- **WAIIS days (lenient comparison with the diaries):** 8 of 19 vehicle legs right vs 6; paired, E1 alone right on 2
+  metro legs, E2 alone on none; vehicle core-minute accuracy 0.81 vs 0.70.
+
+**Limits of the evidence.**
+- WAIIS: one person, one iPhone, three days, rough diary times, 83 core vehicle minutes; the difference is 2 metro
+  legs. These days are no longer unseen.
+- E1 trains on NOR-TMD. In 10 it lost on ExtraSensory dev six-class (−0.013) through false rail on still minutes without
+  GPS and false bus (2026-11-03 entry). The leg metrics here don't show that cost on ExtraSensory (tied), but WAIIS
+  users with resting phones and no location could meet it.
+- E1's tram class didn't fire on the one tram leg; metro minutes are still often read as walking or still.
+- 5 of 19 WAIIS vehicle legs had no accelerometer data (app recording gap): no model can suggest them.
+
+**Next:** E1 + Collecty, then with labelled WAIIS days added, chosen on `waiis_bench_v2` dev, not on these three days.
+
+**Evidence.** `experiments/11_leg-suggestions_waiis-app-days/README.md` (Results, stop-points 2 and 3; Conclusion) and
+`results/runs.csv`.

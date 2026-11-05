@@ -1,0 +1,31 @@
+         vehicle_legs  vehicle_right  vehicle_found  vehicle_wrong  vehicle_no_data  vehicle_core_minutes_with_data  vehicle_core_minute_accuracy  other_legs  other_right  other_found  other_wrong  other_no_data  other_core_minutes_with_data  other_core_minute_accuracy  extra_vehicle_legs
+E2               19.0            6.0            6.0            8.0              5.0                            83.0                      0.698795         9.0          4.0          4.0          1.0            4.0                          23.0                    0.739130                 0.0
+E1               19.0            8.0            8.0            6.0              5.0                            83.0                      0.807229         9.0          4.0          4.0          1.0            4.0                          23.0                    0.739130                 0.0
+package          19.0            5.0            5.0            9.0              5.0                            83.0                      0.542169         9.0          5.0          5.0          0.0            4.0                          23.0                    0.826087                 0.0
+
+per mode:          bike_legs  bike_right  bike_no_data  bus_legs  bus_right  bus_no_data  car_legs  car_right  car_no_data  rail_legs  rail_right  rail_no_data  running_legs  running_right  running_no_data  walking_legs  walking_right  walking_no_data
+E2             3.0         3.0           0.0       1.0        1.0          0.0       1.0        1.0          0.0       14.0         1.0           5.0           1.0            0.0              1.0           8.0            4.0              3.0
+E1             3.0         3.0           0.0       1.0        1.0          0.0       1.0        1.0          0.0       14.0         3.0           5.0           1.0            0.0              1.0           8.0            4.0              3.0
+package        3.0         3.0           0.0       1.0        1.0          0.0       1.0        1.0          0.0       14.0         0.0           5.0           1.0            0.0              1.0           8.0            5.0              3.0
+
+paired (vehicle legs with data in both): {'both right': 6, 'neither': 6, 'only E1': 2}
+      date start_local end_local mode sub_mode    E2    E1 package       pair
+2026-10-30       23:29     23:49  car          right right   right both right
+2026-10-30       19:44     19:51 rail    metro wrong wrong   wrong    neither
+2026-10-30       21:39     21:52 rail    metro wrong right   wrong    only E1
+2026-10-31       17:52     18:08 rail    metro right right   wrong both right
+2026-10-31       20:16     20:31 rail    metro wrong wrong   wrong    neither
+2026-10-31       20:39     20:50 rail    metro wrong wrong   wrong    neither
+2026-10-31       21:09     21:13 rail    metro wrong wrong   wrong    neither
+2026-11-03       13:33     13:53 rail    metro wrong right   wrong    only E1
+2026-11-03       14:02     14:10 bike          right right   right both right
+2026-11-03       16:57     17:05 rail     tram wrong wrong   wrong    neither
+2026-11-03       17:39     17:45 rail    metro wrong wrong   wrong    neither
+2026-11-03       18:05     19:10  bus          right right   right both right
+2026-11-03       20:14     20:22 bike          right right   right both right
+2026-11-03       21:52     22:09 bike          right right   right both right
+
+extra vehicle legs:
+Empty DataFrame
+Columns: [date, model, mode, start_local, end_local, minutes]
+Index: []

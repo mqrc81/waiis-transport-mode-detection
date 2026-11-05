@@ -1,6 +1,6 @@
 # Status
 
-*As of 2026-11-04. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
+*As of 2026-11-05. Project facts and rules: [CLAUDE.md](CLAUDE.md). Decisions: [DECISIONS.md](DECISIONS.md).*
 
 ## 1. Data
 
@@ -122,6 +122,21 @@ approved 2026-11-02. No models.
 - **iOS sign:** iOS accelerometers report in g with the opposite sign to Android (also in ExtraSensory). v2 converts
   iOS to the Android convention and m/s²; 05 / 06's features are sign-invariant, so v1 results are unaffected.
 
+### Leg suggestions for the labelling tool (11; Conclusion draft, not approved)
+
+**11 leg suggestions on the WAIIS app days** ([README](experiments/11_leg-suggestions_waiis-app-days/README.md),
+2026-11-05): the first suggestion engine (`tmd.readers.waiis`, `tmd.suggest`, `tmd.legs`, `tmd.legs_adapter`; one
+file per model and day; ~0.15 s per day). Its DECISIONS.md entry (E1 as the tool's default, E2 selectable) is
+**draft, not approved**.
+- **GPS input:** one fix per minute, nearest the minute centre (C1); all ~20 s fixes cost accuracy.
+- **Legs:** the HMM makes them; extra leg rules gain ~1% edits per hour. Confidence doesn't catch the main errors
+  (ExtraSensory ~8% of time wrong and unflagged; `c` 0.5 flags almost nothing): a suggestion is not a checked label.
+- **E1 vs E2:** E1 better on SHL User 1 (every seed) and SHL Users 2–3 hips, tied on ExtraSensory dev; on the WAIIS
+  days (lenient comparison with diaries) 8 vs 6 of 19 vehicle legs right, paired 2–0, all metro.
+- **WAIIS limits:** 5 of 19 vehicle legs (metros) have no accelerometer data (app recording gap); metro minutes often
+  read as walking / still; the one tram leg reads as bus. Bike, car and bus right; no false vehicle legs.
+- The three WAIIS days are used and no longer unseen.
+
 ### WAIIS app data (own days, descriptive)
 
 Three unlabelled days of WAIIS app recordings (2026-10-30, 10-31, 11-03; one person, one iPhone 16), described as one
@@ -133,7 +148,10 @@ dataset in [experiment 11's README](experiments/11_leg-suggestions_waiis-app-day
 - **Accelerometer:** m/s², gravity included, 24.9 Hz real rate in ~5 min bursts while moving.
 - **Platform:** iPhone 16, confirmed 2026-11-04; not recorded in the data. **Axis signs:** iOS signs kept (scaled to
   m/s², not converted to Android's) is strongly indicated given the iPhone, not confirmed by a face-up recording. v2's
-  iOS sign rule applies to WAIIS iPhone data as `× −1`; E1 / E2's features are sign-invariant.
+  iOS sign rule applies to WAIIS iPhone data as `× −1`; E1 / E2's features are sign-invariant. Device table (platform,
+  phone model, axis convention per user and period): `<data>/processed/waiis/metadata/waiis_devices.csv`, outside git.
+- **Diaries** of the three days (rough times, card-validation GT starts) and the review outputs:
+  `<data>/processed/11_leg-suggestions_waiis-app-days/waiis/` (personal, outside git).
 
 ## 3. Superseded experiments
 
@@ -153,18 +171,19 @@ dataset in [experiment 11's README](experiments/11_leg-suggestions_waiis-app-day
 
 ## 4. Next experiment
 
-1. **NOR-TMD follow-up:** keep NOR-TMD's vehicle gains (its test: 0.778 vs 0.469) without the false rail
-   and false bus on ExtraSensory (e.g. a lower NOR-TMD weight, still minutes of many devices as hard negatives;
-   per-user false-rail counts as a check; 4E98F91F's resting signal against NOR-TMD's other classes), with a tram-aware HMM;
-   dev first, ExtraSensory test only for the model it chooses.
-2. **Leg suggestions** for the labelling tool (in parallel): `predict_legs` with 10's E2,
-   E1's saved models alongside, evaluated on SHL, my own labelled WAIIS days and later MobilityNet; harness ready
-   for WAIIS labels.
-3. **GPS track:** Geolife, MTL Trajet, SHL 1 Hz (MOBIS if granted); cadence-robust gps-v3 for WAIIS's ~20 s fixes
+1. **E1 + Collecty**, then with labelled WAIIS days added (11's draft). Chosen on `waiis_bench_v2` dev, not on the
+   three WAIIS days used in 11. Carries the NOR-TMD follow-up: keep NOR-TMD's vehicle gains (its test 0.778 vs 0.469)
+   without the false rail and false bus on ExtraSensory (e.g. a lower NOR-TMD weight, still minutes of many devices
+   as hard negatives, per-user false-rail counts, 4E98F91F's resting signal), with a tram-aware HMM; metro minutes
+   read as walking / still on WAIIS; ExtraSensory test only for the model it chooses. Leg metrics with
+   `tmd.legs` beside the six-class score.
+2. **GPS track:** Geolife, MTL Trajet, SHL 1 Hz (MOBIS if granted); cadence-robust gps-v3 for WAIIS's ~20 s fixes
    and ~5 min coarse fixes on vehicle legs without good GPS; leg-level classification of vehicle legs.
 
 Later: InceptionTime / LIMU-BERT on v2, walk-aware fusion, map context for bus vs car, driver vs passenger.
-Open WAIIS questions: axis signs (iOS signs strongly indicated on the confirmed iPhone 16, to confirm with a
-face-up recording); platform and phone model stored with the data; modes needed. Answered by the app-days
+Open WAIIS questions: the app's recording gap in the metro (5 of 19 vehicle legs without accelerometer data in 11);
+axis signs (iOS signs strongly indicated on the confirmed iPhone 16, to confirm with a face-up recording); platform
+and phone model stored by the app or the data build once more users label; the data build's device selection with a
+second device; the labelling tool's real format (one adapter module); modes needed. Answered by the app-days
 description (11): recording in ~5 min bursts while moving, m/s² with gravity, GPS stays on the 20 s cadence at
 vehicle stops.

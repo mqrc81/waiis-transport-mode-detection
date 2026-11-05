@@ -719,5 +719,115 @@ covered.
 - Hand is the weakest position for both (wrong unflagged time 15–19%); flagging stays near 0–2% of legs.
 - C1 at 20 s against the per-minute GPS the model was trained on: hips leg F1 +0.007 (E2) / −0.008 (E1), edits +5%.
 
-**Waiting for the review** of each leg in `review/<day>_legs_review.csv` (right / wrong / unsure). Then Results,
-draft Conclusion, STATUS.md.
+#### Lenient comparison with the diaries (replaces the manual review; `lenient.py`, MLflow `lenient_<model>`)
+
+**Deviation 11 (from the Plan's review step):** no manual leg review; the `review` / `review_note` columns of
+`review/<day>_legs_review.csv` stay empty. Instead (decided 2026-11-05), an automatic, lenient comparison: diary modes
+are taken as correct, diary times as approximate.
+- **Core minutes:** each diary leg loses 3 min at each end if marked GT or GT start (card swipes can be a few minutes
+  off either way), 5 min otherwise; a leg too short keeps its middle minute. Only core minutes are scored, so boundary
+  error never counts.
+- **Scored minutes:** the day's accelerometer minute windows (the same set for every model). A minute's prediction is
+  the mode of the model's leg at the minute centre (unknown is never right); for the package, its leg there.
+- Per diary leg and model: **right** = most core minutes with data have the diary's top-level mode; **found** = at
+  least one does; **no data** = no core minute has accelerometer data (an app recording gap, counted apart);
+  **wrong** = data, not right. Walking was not tracked from 10-31 on: listed walking legs are scored, walking / still
+  predictions are never counted as extra.
+- **Extra vehicle legs:** predicted bike / car / bus / rail model legs that overlap no diary vehicle leg widened by
+  10 min on each side.
+
+Tables generated from `results/runs.csv` (`tables.py` → `results/tables_from_runs.md`); per leg in
+`<processed>/11_.../waiis/review/lenient_*.csv`.
+
+**Vehicle legs (bike, car, bus, rail), 19 diary legs:**
+
+| | E2 | E1 | package |
+|---|---|---|---|
+| right | 6 | **8** | 5 |
+| found (≥ 1 core minute right) | 6 | 8 | 5 |
+| wrong | 8 | 6 | 9 |
+| no data (app recording gap) | 5 | 5 | 5 |
+| core-minute accuracy on minutes with data (83 minutes) | 0.70 | **0.81** | 0.54 |
+| extra vehicle legs | 0 | 0 | 0 |
+
+By mode (right of legs; no data): bike 3 of 3 for all; car 1 of 1; bus 1 of 1; **rail: E2 1, E1 3, package 0 of
+14** (no data 5: the metros 10-30 19:26, 10-31 14:08, 16:16, 22:51 and 23:13).
+
+**Walking, running, still** (9 diary legs; no still legs in the diaries): right 4 / 4 / 5 (E2 / E1 / package), wrong
+1 / 1 / 0 (10-30 19:00–19:26, "with some standing", read as still), no data 4 (three short walks and the run on
+10-31); core-minute accuracy 0.74 / 0.74 / 0.83 on 23 minutes.
+
+**Paired E1 vs E2, vehicle legs with data in both (14):**
+
+| | legs |
+|---|---|
+| both right (6) | car 10-30 23:29; metro 10-31 17:52; bike 11-03 14:02, 20:14, 21:52; bus 11-03 18:05 |
+| only E1 (2) | metro 10-30 21:39 (E2: walking, 7 of 7 core minutes); metro 11-03 13:33 (E2: car, 4 of 4) |
+| only E2 (0) | – |
+| neither (6) | metro 10-30 19:44 (walking, 1 minute); metro 10-31 20:16 (still, 2), 20:39 (still, 5), 21:09 (walking, 1); tram 11-03 16:57 (bus, 2); metro 11-03 17:39 (walking, 1) |
+
+- **E1 is right on 2 legs where E2 is wrong, never the reverse**, and its core-minute accuracy on vehicle legs is 0.81
+  vs 0.70; the difference is all metro.
+- **Most remaining errors rest on 1–2 core minutes** (four of the six "neither" legs): the app recorded little inside
+  those metros. 10-31 20:39 is the clearest miss: 5 core minutes read as still by both.
+- **Bike, car and bus are right for all three**, and no model suggests a vehicle leg where the diary has none.
+- 5 of 19 vehicle legs (all metros) have no core minute with accelerometer data: the app's recording gap, not a model
+  error. Without the app recording in the metro, no model can suggest those legs.
+- Descriptive only; no rule or threshold changed. The three days are no longer unseen.
+
+## Conclusion
+
+**Draft — not approved.**
+
+**What was built.** A first suggestion engine for the WAIIS labelling tool:
+- `tmd.readers.waiis` reads a day, with the platform from a device table;
+- `tmd.suggest` runs a saved model on it (minute windows, features, GPS rule C1, fusion, HMM);
+- `tmd.legs.predict_legs` turns minute probabilities into legs on the tool's top level, with top-2, rail hint, data
+  coverage and flags, plus GPS-only legs where the app recorded no accelerometer;
+- `tmd.legs_adapter` is the only module that knows the (provisional) output format: one file per model and day, with
+  the minute probabilities for range scoring.
+
+It takes about 0.15 s per day per model on one thread.
+
+**How WAIIS GPS feeds the model:** one fix per minute, the one nearest the minute centre (C1). Feeding all ~20 s fixes
+costs accuracy (GPS model alone 0.70 → 0.60 six-class F1 on SHL User 1). Among the one-fix rules SHL User 1 can't tell
+much apart: it is near its ceiling after the HMM.
+
+**What the dev data say about legs:**
+- The HMM already makes the legs. Leg rules on top gain about 1% edits per hour on SHL User 1, within seed spread.
+  E2 keeps its chosen rules; E1 uses the raw HMM legs.
+- **Confidence does not catch the main errors.** On ExtraSensory about 8% of labelled time is wrong and unflagged
+  (walking read as still, bus); `c` 0.9 would flag 19.5% of legs for −1.5 points. The suggestions use `c` 0.5, which
+  flags almost nothing. A high-confidence suggestion is not a checked one.
+- The second mode rarely holds the truth when the first is wrong (≤ 37% of such legs), so it is listed but not shown.
+- 20 s fixes don't improve leg boundaries over the minute grid.
+- About 5 edits per day of SHL User 1 and 16 per ExtraSensory user-day with E2's rules.
+
+**E1 vs E2:**
+- **SHL User 1:** E1 is better in every seed (0.86 vs 0.89 edits per hour, time accuracy 0.964 vs 0.954), through still
+  minutes rather than rail.
+- **ExtraSensory dev:** tied.
+- **SHL Users 2–3 (once):** E1 is ahead on the hips (leg F1 0.861 vs 0.823, rail leg recall 0.93 vs 0.80); other
+  positions are mixed.
+- **WAIIS days** (lenient comparison with the diaries): E1 is right on 8 of 19 vehicle legs, E2 on 6, the package on 5.
+  Paired, E1 alone is right on 2 metro legs and E2 alone on none; core-minute accuracy is 0.81 vs 0.70.
+
+**What limits suggestions on WAIIS data:**
+1. **Recording gaps:** 5 of the 19 vehicle legs (all metros) have no accelerometer minute at their core. 7 of the 13
+   metro legs have none at all. No model can suggest them; they appear as GPS-only unknown legs.
+2. **Metro and tram:** where data exist, metro minutes are still often read as walking or still. The one tram leg
+   reads as bus, and E1's tram class didn't fire.
+
+Bike, car and bus legs were right for every model, and no model suggested a vehicle leg where the diary had none.
+
+**Limits:**
+- one person, one iPhone, three days, rough diary times;
+- 83 core vehicle minutes; most metro errors rest on 1–2 minutes;
+- one tram leg;
+- these three days have now been used and are no longer unseen;
+- the dev choices rest on one SHL person (near ceiling) and ExtraSensory's coarse labels.
+
+**Next:**
+- **E1 + Collecty**, then with labelled WAIIS days added, chosen on `waiis_bench_v2` dev, not on these three days.
+- The app's recording gap in the metro: an app question, not a model one.
+- Platform and phone model stored by the app or the data build.
