@@ -1,0 +1,10 @@
+      date   model  diary_legs  diary_matched  diary_missed  extra_legs  legs_model  legs_gps_only_still  legs_gps_only_moving  legs_unknown_low_confidence  run_seconds_total  minutes
+2026-10-30      E2          10              2             8           2        11.0                  4.0                   3.0                          0.0               0.17    138.0
+2026-10-30      E1          10              5             5           2        13.0                  4.0                   3.0                          0.0               0.17    138.0
+2026-10-30 package          10              3             7           5         NaN                  NaN                   NaN                          NaN                NaN      NaN
+2026-10-31      E2          11              0            11           1        10.0                  4.0                   5.0                          0.0               0.12    119.0
+2026-10-31      E1          11              0            11           1        10.0                  4.0                   5.0                          0.0               0.12    119.0
+2026-10-31 package          11              0            11           1         NaN                  NaN                   NaN                          NaN                NaN      NaN
+2026-11-03      E2           7              2             5           3        21.0                  5.0                   4.0                          0.0               0.16    160.0
+2026-11-03      E1           7              2             5           2        21.0                  5.0                   4.0                          0.0               0.17    160.0
+2026-11-03 package           7              1             6          10         NaN                  NaN                   NaN                          NaN                NaN      NaN
