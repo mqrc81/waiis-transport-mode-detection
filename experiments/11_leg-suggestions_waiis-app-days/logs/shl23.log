@@ -1,0 +1,5 @@
+2026-11-05 10:12:04,009 SHL 2-3 1 Hz 101516 -> 20 s 5190 fixes; C1 covered hips minutes 0.648
+2026-11-05 10:12:04,075 E2 shl_user23 per-minute GPS reproduces 10's saved test p: max |diff| 0.00e+00
+2026-11-05 10:12:04,276 E2 shl_user23_other per-minute GPS reproduces 10's saved test p: max |diff| 0.00e+00
+2026-11-05 10:12:04,847 E1 shl_user23 per-minute GPS reproduces 10's saved test p: max |diff| 0.00e+00
+2026-11-05 10:12:05,083 E1 shl_user23_other per-minute GPS reproduces 10's saved test p: max |diff| 0.00e+00

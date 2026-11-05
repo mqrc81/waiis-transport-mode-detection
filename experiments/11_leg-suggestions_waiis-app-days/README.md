@@ -602,3 +602,112 @@ raw HMM legs instead, with `c` 0.5.
 
 **Next (stop-point 3), after the diaries:** E1 and E2 on the three WAIIS days with these rules, review sheets
 (including the tram check), SHL Users 2–3 once.
+
+### Stop-point 3: the WAIIS days and SHL Users 2–3 (2026-11-05)
+
+**Diaries** (written by the recording person before any model ran on the days; received 2026-11-05): 28 legs (10 /
+11 / 7), saved as `<processed>/11_.../waiis/diaries/<date>.csv` (local time, tool top level, rail sub-mode, `gt` =
+start / end / both confirmed by public transport card validation). Rough times otherwise. Metro / train validation
+can come a few minutes before boarding, bus / tram a few minutes after; for public transport only the start is known.
+**Walking was not tracked from 10-31 on** (beyond the listed legs), so walking / running legs on 10-31 and 11-03 are
+"not in diary", not extra. Modes: metro → rail (hint metro), tram → rail (hint tram), bicycle → bike, run → running.
+
+**Code** (commits `b7dba28`, `4379b1a`, `6ddef89`): `tmd.suggest` (WAIIS path: reader → minute windows → 580 features →
+C1 GPS → saved model → fusion → HMM → `tmd.legs.predict_legs` + `gps_only_legs`), `tmd.legs_adapter` (the output
+format), `waiis_days.py` (both models, three days, output files, review sheets, MLflow `waiis_<date>_<model>`),
+`review.py` (diary matching, tram check, package legs, sheet), `rail_minutes.py`, `shl23.py`. Tests:
+`tests/test_suggest.py`; all 118 tests pass. Outputs (personal, outside git) under `<processed>/11_.../waiis/`:
+`user=<key>/date=<day>/legs_<model>.json`, `review/<day>_sheet.png`, `review/<day>_legs_review.csv` (one row per leg
+with empty `review` / `review_note` columns for right / wrong / unsure), `review/diary_matching.csv`,
+`review/tram_check.csv`, `review/summary.csv`.
+
+**Deviations at stop-point 3:**
+6. *GPS-only stretches* (`tmd.legs.gps_only_legs`): the 5 min minimum length applies to moving stretches too (the
+   Plan set it for still ones), so the short pauses between legs of one session don't become unknown legs.
+7. *Diary times parsed at second resolution* (`review.py`, `diary`): the first dry run (no MLflow) matched nothing
+   because pandas parsed the times at second resolution; fixed before any logged run.
+8. *Walking on 11-03*: the first logged runs counted walking legs on 11-03 as extra; the diary note says walking
+   wasn't tracked from 10-31 on. Re-run; the six first runs are kept in MLflow with tag `superseded`.
+
+#### Run time (single thread, `logs/waiis_days.log`)
+
+Reading, minute windows, features, both GPS steps, model, HMM and legs: **0.12–0.18 s per day per model** for 2.0–2.7
+h of accelerometer data (119–160 minute windows), about 1 ms per minute window. Model sizes and per-window latency
+are 10's (unchanged models).
+
+#### Suggestions per day (E2 / E1)
+
+| | 2026-10-30 | 2026-10-31 | 2026-11-03 |
+|---|---|---|---|
+| minute windows; GPS-covered | 138; 89% | 119; 91% | 160; 95% |
+| model legs | 11 / 13 | 10 / 10 | 21 / 21 |
+| GPS-only legs: still / moving (unknown) | 4 / 3 | 4 / 5 | 5 / 4 |
+| model legs below `c` 0.5 (unknown) | 0 / 0 | 0 / 0 | 0 / 0 |
+| diary legs matched (same mode, IoU ≥ 0.5) | 2 / **5** of 10 | 0 / 0 of 11 | 2 / 2 of 7 |
+| extra legs (moving mode, < 50% inside a same-mode diary leg) | 2 / 2 | 1 / 1 | 3 / 2 |
+| package (`fusion_late__hmm_viterbi`): matched, extra | 3, 5 | 0, 1 | 1, 10 |
+
+**By diary mode, all three days** (E2 / E1; same-mode share = share of the diary leg's time under legs of its mode;
+data = share under model legs, i.e. with accelerometer minutes):
+
+| diary mode | legs | matched | same-mode share | data |
+|---|---|---|---|---|
+| rail (13 metro, 2 tram) | 15 | **0 / 1** | 0.02 / 0.09 | 0.48 |
+| walking | 8 | 1 / 3 | 0.42 / 0.40 | 0.46 |
+| bus | 1 | 0 / 0 | 0.46 / 0.45 | 0.51 |
+| bike | 2 | 2 / 2 | 0.78 | 0.81 |
+| car | 1 | 1 / 1 | 0.95 | 0.95 |
+| running | 1 | 0 / 0 | 0 | 0 |
+
+- **Missing accelerometer data is the first problem.** Half of the diary's rail time has no model minute: the app
+  didn't record. 7 of the 13 metro legs have no accelerometer minute at all. Those stretches become GPS-only unknown
+  legs with their speed across (e.g. 10-31: 14:04–14:31 at 5.5 m/s, 17:58–18:11 at 8.8 m/s), so the trip shows but has
+  no mode. The two late metros on 10-31 (22:51, 23:13) come after the accelerometer stopped (21:28) and fall into one
+  2 h unknown leg (1.1 m/s across).
+- **Where metro minutes exist, they are rarely rail** (`rail_minutes.py`, `logs/rail_minutes.log`; 55 model minutes in
+  6 metro legs, 76% GPS-covered): **E1 rail 20 of 55** (subway 16, train 4), **E2 rail 4 of 55**; otherwise walking
+  (E2 28, E1 19) and still (16 / 16). Some walking minutes are likely real: a GT start is the card validation, before
+  the walk to the platform. Without GPS, E1 says rail on 9 of 13 minutes. The one E1-matched metro is 10-30 21:39–21:52
+  (hint metro); E2 has a 4 min rail leg on 10-31 17:54 (IoU too small to match).
+- **Bike and car are right** (both bike legs and the car leg matched by both models, 0.95–1.00 confidence where data
+  exist). **Bus** (11-03, 18:05–19:10, rough times) is found as two bus legs (18:31–18:39, 18:47–19:09) split by a
+  6 min GPS-only gap; IoU 0.34, not matched.
+- **Confident errors, as on dev:** the extras are confident (bike 0.95, bus 0.93–0.95 for the trams; car 0.68 at the
+  start of the 11-03 metro; walking ≥ 0.90 near the 10-30 car trip, plausibly unlisted walks). No model leg fell below
+  `c` 0.5 on any day.
+- **The package** (`fusion_late__hmm_viterbi`, 18 s rows; descriptive): 4 of 28 matched (E2 4, E1 7); no rail at all,
+  more extra legs on 11-03 (10, mostly short flips).
+
+#### Tram check (`review/tram_check.csv`; descriptive, no model choice)
+
+| diary tram leg (11-03) | model minutes; GPS | E2: leg, minute argmax | E1: leg, minute argmax |
+|---|---|---|---|
+| 14:01–14:10 (GT start) | 6; 100% | bike; bike 6 | bike; bike 6 |
+| 16:57–17:05 (GT start) | 8; 100% | bus; bus 8 | bus; bus 8 |
+
+- **Neither tram leg is right at the top level** (both should be rail). E1, with a tram class and GPS, gives tram 0 of
+  14 minutes (mean rail probability 0.00); the share of tram / train / subway is 0 in both legs for both models.
+- This is E1's first tram check with GPS: on these two legs its tram class doesn't fire.
+
+#### SHL Users 2–3, once (`shl23.py`, `logs/shl23.log`, `results/tables/shl23_legs.csv`, MLflow `shl23_E2/E1`)
+
+10's final models reproduce 10's saved test probabilities for these rows exactly (max |difference| 0). 40 h of
+labelled time, 113 truth legs per position. C1: 1 Hz track thinned to 20 s (5,190 fixes), 65% of hips minutes
+covered.
+
+| E2 / E1 | GPS | leg F1 | edits / h | time accuracy | wrong unflagged time | rail leg recall |
+|---|---|---|---|---|---|---|
+| hips | per minute | 0.823 / **0.861** | 1.03 / 0.95 | 0.923 / 0.941 | 7.7% / 5.9% | 0.80 / 0.93 |
+| hips | C1, 20 s | 0.830 / 0.853 | 1.08 / 1.00 | 0.926 / 0.935 | 7.4% / 6.5% | 0.80 / 0.93 |
+| bag | per minute | 0.858 / 0.886 | 0.85 / 0.73 | 0.928 / 0.928 | 7.2% / 7.2% | 0.80 / 1.00 |
+| torso | per minute | 0.863 / 0.812 | 0.83 / 1.10 | 0.893 / 0.897 | 10.7% / 10.2% | 0.87 / 0.87 |
+| hand | per minute | 0.785 / 0.767 | 1.40 / 1.45 | 0.806 / 0.850 | 19.2% / 14.8% | 0.80 / 0.80 |
+
+(C1 for bag / torso / hand: `results/tables/shl23_legs.csv`; within ±0.07 leg F1 of per minute, edits +0–0.35 / h.)
+
+- E1 is ahead on the hips (leg F1 +0.04, rail leg recall 0.93 vs 0.80), as on SHL User 1; mixed elsewhere.
+- Hand is the weakest position for both (wrong unflagged time 15–19%); flagging stays near 0–2% of legs.
+- C1 at 20 s against the per-minute GPS the model was trained on: hips leg F1 +0.007 (E2) / −0.008 (E1), edits +5%.
+
+**Waiting for the review** of each leg in `review/<day>_legs_review.csv` (right / wrong / unsure). Then Results,
+draft Conclusion, STATUS.md.
