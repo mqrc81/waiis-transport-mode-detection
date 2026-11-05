@@ -15,7 +15,7 @@ pid) and logs "progress 7/36 ...". Nothing here touches randomness or results.
 
 Tasks
 -----
-A long task (ML runs, or more than about 5 min of work) starts with a plan: its items with minute estimates.
+A long task (ML runs, or more than about 5 min of work) starts with a plan: its items with optimistic minute estimates.
 
     uv run python -m tmd.progress plan "Exp 11: leg grid" 11:gps_candidates=10 11:leg_grid=15 11:readme=5
     uv run python -m tmd.progress done 11:readme      # an item that is not a Progress run
