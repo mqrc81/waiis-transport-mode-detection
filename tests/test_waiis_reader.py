@@ -1,4 +1,4 @@
-"""tmd.readers.waiis: device table lookup, axis sign, sessions (no data needed)."""
+"""tmd.readers.waiis: device table lookup, axis sign, sessions (synthetic tables; the real table only if present)."""
 import numpy as np
 import pandas as pd
 import pytest
@@ -13,7 +13,9 @@ def _table(rows):
     return pd.DataFrame([dict(zip(COLS, r)) for r in rows], columns=COLS).fillna("")
 
 
-def test_committed_table_covers_the_recorded_user():
+def test_device_table_covers_the_recorded_user():
+    if not waiis.DEVICES.exists():
+        pytest.skip("device table not on this machine")
     t = waiis.devices()
     assert list(t.columns) == COLS
     d = waiis.device("sub_0c0b7a3d92467061eee0", "2026-11-03", t)

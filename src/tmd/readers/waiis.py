@@ -6,7 +6,7 @@ context and the package's own predictions.
   `read_gps` adds `t` [s]. Fix states from the speed over a 60 s baseline (`fix_states`; 08's descriptive definition).
 - Accelerometer: `t_ms`, `ax`, `ay`, `az` in m/s2 with gravity, ~24.9 Hz in ~5 min bursts while moving. `read_acc`
   returns times [s] and xyz **in the Android axis convention** (v2's rule A1), using the device table.
-- Platform and phone model are not in the data: `metadata/waiis_devices.csv` (`device`).
+- Platform and phone model are not in the data: `<data>/processed/waiis/metadata/waiis_devices.csv` (`device`).
 """
 from __future__ import annotations
 
@@ -18,10 +18,10 @@ import pandas as pd
 
 from tmd import candidates
 from tmd.gps import haversine_m
-from tmd.paths import PROJECT, RAW
+from tmd.paths import PROCESSED, RAW
 
 ROOT = RAW / "waiis"
-DEVICES = PROJECT / "metadata" / "waiis_devices.csv"
+DEVICES = PROCESSED / "waiis" / "metadata" / "waiis_devices.csv"   # outside git (moved 2026-11-05)
 SESSION_JOIN_S = 120.0          # bursts whose pause is <= this join into one session (11, approved 2026-11-04)
 COARSE_M = 500.0                # a fix with accuracy above this counts as missing (11)
 STATE_BINS = [-np.inf, 0.5, 2.5, 4.0, np.inf]
